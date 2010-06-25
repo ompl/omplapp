@@ -1,7 +1,7 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
 * 
-*  Copyright (c) 2008, Willow Garage, Inc.
+*  Copyright (c) 2010, Rice University
 *  All rights reserved.
 * 
 *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
 *     copyright notice, this list of conditions and the following
 *     disclaimer in the documentation and/or other materials provided
 *     with the distribution.
-*   * Neither the name of the Willow Garage nor the names of its
+*   * Neither the name of Rice University nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
 * 
@@ -32,15 +32,13 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/* \author Ioan Sucan, Mark Moll */
 
 #ifndef OMPL_BASE_STATE_SAMPLER_
 #define OMPL_BASE_STATE_SAMPLER_
 
 #include "ompl/util/RandomNumbers.h"
 #include "ompl/base/State.h"
-
-#include <boost/function.hpp>
 #include <vector>
 
 namespace ompl
@@ -48,69 +46,149 @@ namespace ompl
     namespace base
     {
 	
-	class SpaceInformation;
-	
-	/** \brief Abstract definition of a state sampler */
+	template<class State>
 	class StateSampler
-	{	    
-	public:
-
-	    /** \brief Constructor */
-	    StateSampler(const SpaceInformation *si) : m_si(si) 
-	    {
-	    }
-	    
-	    /** \brief Destructor */
-	    virtual ~StateSampler(void)
-	    {
-	    }
-	    
-	    /** \brief Sample a state */
-	    virtual void sample(base::State *state) = 0;
-	    
-	    /** \brief Sample a state near another, within given bounds */
-	    virtual void sampleNear(base::State *state, const base::State *near, const double rho) = 0;
-	    
-	    /** \brief Sample a state near another, within bounds given for each dimension */
-	    virtual void sampleNear(base::State *state, const base::State *near, const std::vector<double> &rho) = 0;
-	    
-	    /** \brief Return a reference to the random number generator used */
-	    RNG& getRNG(void)
-	    {
-		return m_rng;
-	    }
-	    
-	protected:
-	    
-	    const SpaceInformation *m_si;
-	    RNG                     m_rng;
-	};
-
-
-	/** \brief Prototype for a function returning StateSampler instances */
-	typedef boost::function1<StateSampler*, const SpaceInformation*> StateSamplerAllocator;
-
-	/** \brief Simple class to make instantiating state samplers easier */
-	class StateSamplerInstance
 	{
 	public:
-
-	    StateSamplerInstance(const SpaceInformation *si);
-	    ~StateSamplerInstance(void);
-	    
-	    /** \brief Allow easy access the functions of the contained sampler */
-	    StateSampler& operator()(void)
-	    {
-		return *m_sampler;
-	    }
-	    
-	private:
-	    
-	    StateSampler *m_sampler;
+		typedef StateSpace<State> StateSpace_t;
+		typedef State State_t;
+			
+		virtual void setStateSpace(StateSpace_t* statespace) 
+		{
+			m_statespace = statespace;
+		}
+		/// Sample a state
+		virtual void sample()(State& state) = 0;
+		/// Sample a state near another, within given bounds
+		virtual void sampleNear(State& state, const State& near, const double rho) = 0;
+ 		/// Sample a state near another, within bounds given for each dimension
+		virtual void sampleNear(State& state, const State& near, const std::vector<double>& rho) = 0;
+		/// Return a reference to the random number generator used
+		RNG& getRNG(void)
+		{
+			return m_rng;
+		}
+	protected:
+		StateSpace_t* m_statespace;
+		RNG m_rng;
 	};
 	
-    }
-    
+	template<class State>
+	class UniformStateSampler : public StateSampler<State>
+	{
+	public:
+		virtual void sample(State& state);
+		virtual void sampleNear(State& state, const State& near, const double rho);
+		virtual void sampleNear(State& state, const State& near, const State& rho);
+	};
+	
+
+	template<std::size_t N>
+	class UniformStateSampler : public StateSampler<State<double,N> >
+	{
+		virtual void sample(State_t& s)
+		{
+			for (unsigned int i = 0 ; i < State_t::size() ; ++i)
+				s[i] = m_rng.uniformReal(m_statespace->lowerBound[i], 
+					m_statespace->upperBound[i]);
+		}
+		virtual void sample(State_t& s, const State_t& near, const double rho)
+		{
+			for (unsigned int i = 0 ; i < State_t::size() ; ++i)
+				m_rng.uniformReal(std::max(m_statespace->lowerBound[i], near[i] - rho), 
+					std::min(m_statespace->upperBound[i], near[i] + rho));
+		}
+		virtual void sample(State_t& s, const State_t& near, const State_t& rho)
+		{
+			for (unsigned int i = 0 ; i < State_t::size() ; ++i)
+				m_rng.uniformReal(std::max(m_statespace->lowerBound[i], near[i] - rho[i]), 
+					std::min(m_statespace->upperBound[i], near[i] + rho[i]));
+		}
+	};
+	
+	template<std::size_t N>
+	class UniformStateSampler : public StateSampler<State<int,N> >
+	{
+		virtual void sample(State_t& s)
+		{
+			for (unsigned int i = 0 ; i < State_t::size() ; ++i)
+				s[i] = m_rng.uniformInt(m_statespace->lowerBound[i], 
+					m_statespace->upperBound[i]);
+		}
+		virtual void sample(State_t& s, const State_t& near, const double rho)
+		{
+			for (unsigned int i = 0 ; i < State_t::size() ; ++i)
+				m_rng.uniformInt(std::max(m_statespace->lowerBound[i], near[i] - rho), 
+					std::min(m_statespace->upperBound[i], near[i] + rho));
+		}
+		virtual void sample(State_t& s, const State_t& near, const State_t& rho)
+		{
+			for (unsigned int i = 0 ; i < State_t::size() ; ++i)
+				m_rng.uniformInt(std::max(m_statespace->lowerBound[i], near[i] - rho[i]), 
+					std::min(m_statespace->upperBound[i], near[i] + rho[i]));
+		}
+	};
+	
+	template<>
+	class UniformStateSampler : public StateSampler<Rotation3D>
+	{
+		virtual void sample(State_t& s)
+		{
+			m_rng.quaternion(s.data());
+		}
+		virtual void sample(State_t& s, const State_t& near, const double rho)
+		{
+			sample(s);
+		}
+		virtual void sample(State_t& s, const State_t& near, const State_t& rho)
+		{
+			sample(s);
+		}		
+	};
+	
+	template<class T1, class T2>
+	class UniformStateSampler : public StateSampler<std::pair<T1, T2> >
+	{
+		virtual void sample(State_t& s)
+		{
+			sample(s.first);
+			sample(s.second);
+		}
+		virtual void sample(State_t& s, const State_t& near, const double rho)
+		{
+			sample(s.first, near.first, rho);
+			sample(s.second, near.second, rho);
+		}
+		virtual void sample(State_t& s, const State_t& near, const State_t& rho)
+		{
+			sample(s.first, near.first, rho);
+			sample(s.second, near.second, rho);
+		}		
+	};
+
+	template<>
+	class UniformStateSampler : public StateSampler<StateComposite>
+	{
+		virtual void sample(State_t& s)
+		{
+			for (unsigned int i=0; i<State_t::size(); ++i)
+				sample(*s[i]);
+		}
+		virtual void sample(State_t& s, const State_t& near, const double rho)
+		{
+			for (unsigned int i=0; i<State_t::size(); ++i)
+				sample(*s[i], *near[i], rho);
+		}
+		virtual void sample(State_t& s, const State_t& near, const State_t& rho)
+		{
+			for (unsigned int i=0; i<State_t::size(); ++i)
+				sample(*s[i], *near[i], *rho[i]);
+		}		
+	};
+	
+	
+	}
+
 }
 
 

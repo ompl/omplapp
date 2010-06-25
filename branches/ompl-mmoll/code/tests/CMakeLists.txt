@@ -28,10 +28,20 @@ if(BUILD_TESTS)
 				${Boost_FILESYSTEM_LIBRARY}
 				${Boost_SYSTEM_LIBRARY}
 				${Boost_THREAD_LIBRARY}
-				${Boost_DATE_TIME_LIBRARY} ${GTEST_LIBRARIES})
+			${Boost_DATE_TIME_LIBRARY} ${GTEST_LIBRARIES})
 			add_test(${test_name} ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 		endmacro(add_ompl_test)
 
+		macro(add_ompl_test2 test_name)
+			add_executable(${ARGV})
+			target_link_libraries(${test_name} 
+				${Boost_FILESYSTEM_LIBRARY}
+				${Boost_SYSTEM_LIBRARY}
+				${Boost_THREAD_LIBRARY}
+				${Boost_DATE_TIME_LIBRARY} 
+				${GTEST_LIBRARIES})
+			add_test(${test_name} ${EXECUTABLE_OUTPUT_PATH}/${test_name})
+		endmacro(add_ompl_test2)
 	endif(ROS)
 
 	# Test kinematic motion planners on a 2D map
@@ -51,4 +61,6 @@ if(BUILD_TESTS)
 	# Test compilation
 	add_ompl_test(test_compile compile/compile.cpp)
 
+	# Test State class hierarchy
+	add_ompl_test2(test_state test_state.cpp)
 endif(BUILD_TESTS)
