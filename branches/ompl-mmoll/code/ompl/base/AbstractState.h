@@ -1,7 +1,7 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
 * 
-*  Copyright (c) 2008, Willow Garage, Inc.
+*  Copyright (c) 2010, Rice University
 *  All rights reserved.
 * 
 *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
 *     copyright notice, this list of conditions and the following
 *     disclaimer in the documentation and/or other materials provided
 *     with the distribution.
-*   * Neither the name of the Willow Garage nor the names of its
+*   * Neither the name of Rice University nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
 * 
@@ -32,63 +32,51 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/* \author Ioan Sucan, Mark Moll */
 
-#ifndef OMPL_BASE_PATH_
-#define OMPL_BASE_PATH_
+#ifndef OMPL_BASE_ABSTRACTSTATE_
+#define OMPL_BASE_ABSTRACTSTATE_
 
 #include "ompl/base/General.h"
 
 namespace ompl
 {
-    namespace base
-    {
-	class SpaceInformation;
+	namespace base
+	{
+
+	/// Negligible difference between state components
+	template<class T>
+	struct epsilon
+	{
+		static const T value;
+	};
+	template<>
+	struct epsilon<double>
+	{
+		static const double value = 1e-6;
+	};
+	template<>
+	struct epsilon<int>
+	{
+		static const int value = 0;
+	};
 	
-	/// Abstract definition of a path
-	class Path
+	/// Abstract base class for state classes
+	class AbstractState
 	{
 	public:
-		/// Constructor. A path must always know the space information it is part of
-		Path(const StateSpace& statespace) : m_statespace(statespace)
-		{
-		}
-
-		/// Returns the state space this path is part of
-		const StateSpace& getStateSpace(void) const
-		{
-			return m_si;
-		}
-
- 		/// Return the length of a path
-		virtual double length(void) const = 0;
-	    
-	protected:
-	    const StateSpace& m_statespace;
+		virtual AbstractState* clone() = 0;
+		static std::size_t size();
+		virtual double distance(const AbstractState&) const = 0;
+		// virtual AbstractState& invert() = 0;
+		// virtual AbstractState& operator+=(const AbstractState&) = 0;
+		// virtual AbstractState& operator-=(const AbstractState&) = 0;
+		virtual bool operator==(const AbstractState&) const = 0;
+		virtual void interpolate(const AbstractState&, const double, AbstractState&) const = 0;
+		virtual bool satisfiesBounds(const AbstractState&, const AbstractState&) const = 0;
+		virtual AbstractState& enforceBounds(const AbstractState&, const AbstractState&) = 0;
 	};
-	
-	class DefaultPath : public Path
-	{
-		DefaultPath(const StateSpace& statespace) : Path(statespace)
-		{
-		}
-		
-		~DefaultPath()
-		{
-			std::vector<AbstractState*>::iterator i;
-			for (i = m_states.begin(); i != m_states.end(); i++)
-				delete m_states[i];
-		}
-		
-		virtual double length(void)
-		{
-			return static_cast<double>(m_states.size());
-		}
-		
-		std::vector<AbstractState*> m_states;
-	};
-	
-    }
+
+	}
 }
-
 #endif

@@ -38,36 +38,24 @@
 #define OMPL_BASE_STATE_DISTANCE_EVALUATOR_
 
 #include "ompl/base/General.h"
-#include "ompl/base/State.h"
+#include "ompl/base/AbstractState.h"
 
 namespace ompl
 {
     
     namespace base
     {
-	
-	class SpaceInformation;
-	
-	/** \brief Abstract definition for a class evaluating distance between states. The () operator must be defined. The implementation of this class must be thread safe. */
+	/// Abstract definition for a class evaluating distance between states. The ()
+	/// operator must be defined. The implementation of this class must be thread
+	/// safe.
 	class StateDistanceEvaluator
 	{
 	public:
-	    
-	    /** \brief Constructor */
-	    StateDistanceEvaluator(const SpaceInformation *si) : m_si(si)
-	    {
-	    }
-	    
-	    /** \brief Destructor */
-	    virtual ~StateDistanceEvaluator(void)
-	    {
-	    }
-	    /** \brief Return true if the state is valid */
-	    virtual double operator()(const State *state1, const State *state2) const = 0;
-	    
-	protected:
-	    
-	    const SpaceInformation *m_si;	    
+		/// Return distance between two states
+		virtual double operator()(const AbstractState& state1, const AbstractState& state2)
+		{
+			return state1.distance(state2);
+		}
 	};
 	
     }

@@ -48,11 +48,9 @@ namespace ompl
 	template<class State>
 	class StateSpace
 	{
-		typedef StateSampler<State> StateSampler_t;
-		typedef StateValidityChecker<State> StateValidityChecker_t;
-		
-		StateSpace(const StateSampler_t& sampler, 
-			const StateValidityChecker_t& validityChecker)
+		StateSpace(const StateSampler& sampler = , 
+			const StateValidityChecker& validityChecker,
+			const StateDistanceEvaluator& distanceEvaluator)
 			: m_sampler(sampler), m_validityChecker(validityChecker)
 		{
 			m_sampler.setStateSpace(this);
@@ -69,6 +67,7 @@ namespace ompl
 		{
 			m_validityChecker(state);
 		}
+
 
 		/// Set bounding box
 		void setBoundingBox(const State& lo, const State& hi)
@@ -108,12 +107,15 @@ namespace ompl
 	protected:
 		State                  m_lowerBound;
 		State                  m_upperBound;
-		StateSampler_t         m_sampler;
-		StateValidityChecker_t m_validityChecker;
+
+		StateSampler           m_sampler;
+		StateValidityChecker   m_validityChecker;
+		StateDistanceEvaluator m_distanceEvaluator;
+		
 		msg::Interface         m_msg;
 		
-		friend class StateSampler_t;
-		friend class StateValidityChecker_t;
+		friend class StateSampler;
+		friend class StateValidityChecker;
 	};
 	
 	}
