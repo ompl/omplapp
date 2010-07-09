@@ -34,6 +34,34 @@
 
 #include "ompl/base/Manifold.h"
 
+ompl::base::Manifold::~Manifold(void)
+{
+    if (m_lowerBound)
+	freeState(m_lowerBound);
+    if (m_upperBound)
+	freeState(m_upperBound);
+}
+
+void ompl::base::Manifold::setBounds(const State *lower, const State *upper)
+{
+    setLowerBound(lower);
+    setUpperBound(upper);    
+}
+
+void ompl::base::Manifold::setUpperBound(const State *bound)
+{
+    if (!m_upperBound)
+	m_upperBound = allocState();
+    copyState(m_upperBound, bound);
+}
+
+void ompl::base::Manifold::setLowerBound(const State *bound)
+{
+    if (!m_lowerBound)
+	m_lowerBound = allocState();
+    copyState(m_lowerBound, bound);
+}
+
 void ompl::base::Manifold::printState(State *state, std::ostream &out) const
 {
     out << state << std::endl;
@@ -136,10 +164,26 @@ void ompl::base::CompoundManifold::freeState(State *state) const
     delete state;
 }
 
-void ompl::base::CompoundManifold::printState(State *state, std::ostream &out) const
+void ompl::base::CompoundManifold::setUpperBound(const State *bound)
+{
+    Manifold::setUpperBound(bound);
+    const CompoundState *cstate = static_cast<const CompoundState*>(bound);
+    for (unsigned int i = 0 ; i < m_components.size() ; ++i)
+	m_components[i]->setUpperBound(cstate->components[i]);
+}
+
+void ompl::base::CompoundManifold::setLowerBound(const State *bound)
+{
+    Manifold::setLowerBound(bound);
+    const CompoundState *cstate = static_cast<const CompoundState*>(bound);
+    for (unsigned int i = 0 ; i < m_components.size() ; ++i)
+	m_components[i]->setLowerBound(cstate->components[i]);
+}
+
+void ompl::base::CompoundManifold::printState(const State *state, std::ostream &out) const
 {
     out << "Compound [" << std::endl;
-    CompoundState *cstate = static_cast<CompoundState*>(state);
+    const CompoundState *cstate = static_cast<const CompoundState*>(state);
     for (unsigned int i = 0 ; i < m_components.size() ; ++i)
 	m_components[i]->printState(cstate->components[i], out);
     out << "]" << std::endl;

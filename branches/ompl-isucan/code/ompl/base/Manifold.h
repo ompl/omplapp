@@ -41,6 +41,7 @@
 #include "ompl/base/State.h"
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 
 namespace ompl
 {
@@ -52,13 +53,11 @@ namespace ompl
 	{
 	public:
 	    
-	    Manifold(void)
+	    Manifold(void) : m_lowerBound(NULL), m_upperBound(NULL)
 	    {
 	    }
 	    
-	    virtual ~Manifold(void)
-	    {
-	    }
+	    virtual ~Manifold(void);
 
 	    /** \brief Get the dimension of the space */
 	    virtual unsigned int getDimension(void) const = 0;
@@ -91,10 +90,28 @@ namespace ompl
 	    
 	    /** \brief Free the memory of the allocated state */
 	    virtual void freeState(State *state) const = 0;
+	    
+	    /** \brief Set the bounds of this manifold. This defines
+		the subset of the manifold in which sampling takes
+		place and where valid states can exist. */
+	    virtual void setBounds(const State *lower, const State *upper);
 
+	    /** \brief Set the upper bound of this manifold. */
+	    virtual void setUpperBound(const State *bound);
+
+	    /** \brief Set the upper bound of this manifold. */
+	    virtual void setLowerBound(const State *bound);
+	    
 	    /** \brief Print a state to screen */
 	    virtual void printState(const State *state, std::ostream &out) const;
 	    
+	protected:
+
+	    /** \brief Lower bound for the manifold */
+	    State *m_lowerBound;
+
+	    /** \brief Upper bound for the manifold */
+	    State *m_upperBound;
 	};
 		
     	class CompoundManifold : public Manifold
@@ -136,8 +153,12 @@ namespace ompl
 	    virtual void freeState(State *state) const;	 
 
 	    virtual void printState(const State *state, std::ostream &out) const;
-	    
-	public:
+
+	    virtual void setUpperBound(const State *bound);
+
+	    virtual void setLowerBound(const State *bound);
+
+	protected:
 	    
 	    std::vector<Manifold*> m_components;
 	    std::vector<double>    m_weights;
