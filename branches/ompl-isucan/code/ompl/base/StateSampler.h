@@ -37,8 +37,9 @@
 #ifndef OMPL_BASE_STATE_SAMPLER_
 #define OMPL_BASE_STATE_SAMPLER_
 
-#include "ompl/util/RandomNumbers.h"
 #include "ompl/base/State.h"
+#include "ompl/util/RandomNumbers.h"
+#include "ompl/util/ClassForward.h"
 #include <vector>
 
 namespace ompl
@@ -46,7 +47,9 @@ namespace ompl
     namespace base
     {
 	
-	class Manifold;
+	ClassForward(Manifold);
+	ClassForward(SpaceInformation);
+	ClassForward(StateSampler);
 	
 	/** \brief Abstract definition of a state sampler. */
 	class StateSampler
@@ -54,7 +57,7 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    StateSampler(const Manifold *manifold) : m_manifold(manifold)
+	    StateSampler(const ManifoldConstPtr &manifold) : m_manifold(manifold)
 	    {
 	    }
 	    
@@ -77,8 +80,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    const Manifold *m_manifold;
-	    RNG             m_rng;
+	    ManifoldConstPtr m_manifold;
+	    RNG              m_rng;
 	};
 
 	/** \brief Definition of a compound state sampler. This is useful to construct samplers for compound states. */
@@ -87,19 +90,21 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    CompoundStateSampler(const Manifold *manifold) : StateSampler(manifold) 
+	    CompoundStateSampler(const ManifoldConstPtr &manifold) : StateSampler(manifold) 
 	    {
 	    }
 	    
 	    /** \brief Destructor. This frees the added samplers as well. */
-	    virtual ~CompoundStateSampler(void);
+	    virtual ~CompoundStateSampler(void)
+	    {
+	    }
 	    
 	    /** \brief Add a sampler as part of the new compound
 		sampler. This sampler is used to sample part of the
 		compound state. Ownership of the passed sampler
 		instance is assumed and memory is freed upon
 		destruction. */
-	    virtual void addSampler(StateSampler *sampler);
+	    virtual void addSampler(const StateSamplerPtr &sampler);
 	    
 	    /** \brief Sample a state. */
 	    virtual void sample(State *state);
@@ -109,32 +114,11 @@ namespace ompl
 	    
 	protected:
 	    
-	    std::vector<StateSampler*> m_samplers;
+	    std::vector<StateSamplerPtr> m_samplers;
+	    std::size_t                  m_samplerCount;
+	    
 	};
-
-	/** \brief Class to make instantiating state samplers
-	    easier. Given the state space, allocate the correct state
-	    sampler. The state sampler is freed on destruction. */
-	class StateSamplerInstance
-	{
-	public:
-
-	    StateSamplerInstance(const SpaceInformation *si);
-	    ~StateSamplerInstance(void);
-	    
-	    /** \brief Allow easy access the functions of the contained sampler */
-	    StateSampler& operator()(void)
-	    {
-		return *m_sampler;
-	    }
-	    
-	private:
-	    
-	    StateSampler *m_sampler;
-	};
-	
     }
-    
 }
 
 

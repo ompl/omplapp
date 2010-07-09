@@ -42,7 +42,6 @@
 
 namespace ompl
 {
-    
     namespace base
     {
 	
@@ -51,7 +50,7 @@ namespace ompl
 	{
 	public:
 	    
-	    GoalStates(const SpaceInformation *si) : GoalSampleableRegion(si), samplePosition(0)
+	    GoalStates(const SpaceInformationConstPtr &si) : GoalSampleableRegion(si), samplePosition(0)
 	    {
 	    }
 	    
@@ -62,20 +61,20 @@ namespace ompl
 	    }
 	    
 	    /** \brief Sample a state in the goal region */
-	    virtual void sampleGoal(base::State *st) const;
+	    virtual void sampleGoal(State *st) const;
 	    
 	    /** \brief Return the maximum number of samples that can be asked for before repeating */
 	    virtual unsigned int maxSampleCount(void) const;
 	    
 	    /** \brief Compute the distance to the goal (heuristic) */
-	    virtual double distanceGoal(const base::State *st) const;	    
+	    virtual double distanceGoal(const State *st) const;	    
 	    
 	    /** \brief Print information about the goal data structure
 		to a stream */
 	    virtual void print(std::ostream &out = std::cout) const;
 	    
 	    /** \brief The goal state */
-	    std::vector<base::State*> states;
+	    std::vector<State*> states;
 	    
 	private:
 	    

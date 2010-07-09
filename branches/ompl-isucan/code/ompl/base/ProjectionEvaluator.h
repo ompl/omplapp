@@ -37,9 +37,8 @@
 #ifndef OMPL_BASE_PROJECTION_EVALUATOR_
 #define OMPL_BASE_PROJECTION_EVALUATOR_
 
-#include "ompl/base/General.h"
 #include "ompl/base/State.h"
-#include <valarray>
+#include "ompl/util/ClassForward.h"
 #include <vector>
 #include <cmath>
 
@@ -49,14 +48,14 @@ namespace ompl
     namespace base
     {
 
-	class SpaceInformation;
+	ClassForward(Manifold);
 	
 	/** \brief Abstract definition for a class computing projections. The implementation of this class must be thread safe. */
 	class ProjectionEvaluator
 	{
 	public:
 	    
-	    ProjectionEvaluator(const SpaceInformation *si) : m_si(si)
+	    ProjectionEvaluator(const ManifoldConstPtr &si) : m_si(si)
 	    {
 	    }
 	    
@@ -105,8 +104,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    const SpaceInformation *m_si;	    
-	    std::vector<double>     m_cellDimensions;
+	    SpaceInformationConstPtr m_si;	    
+	    std::vector<double>      m_cellDimensions;
 	    
 	};
 	

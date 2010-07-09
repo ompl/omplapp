@@ -32,26 +32,35 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_GENERAL_
-#define OMPL_BASE_GENERAL_
+#ifndef OMPL_UTIL_EXCEPTION_
+#define OMPL_UTIL_EXCEPTION_
 
-
-// definitions that should be available in every file of OMPL
+#include "ompl/util/Console.h"
+#include <stdexcept>
 
 namespace ompl
 {
-
-#ifdef OMPL_FLOAT
     
-    typedef RealType float;
-
-#elsif 
-    
-    typedef RealType double;
-    
-#endif
+    class Exception : public std::runtime_error
+    {
+    public:
+	
+	explicit
+	Exception(const std::string& what) : std::runtime_error(what)
+	{
+	    m_msg.error(what);
+	}
+	
+	virtual ~Exception(void) throw()
+	{
+	}
+	
+    private:
+	
+	msg::Interface m_msg;
+    };
     
 }
 

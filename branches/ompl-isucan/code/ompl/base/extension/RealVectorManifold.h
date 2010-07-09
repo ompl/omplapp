@@ -34,45 +34,77 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_STATE_VALIDITY_CHECKER_
-#define OMPL_BASE_STATE_VALIDITY_CHECKER_
+#ifndef OMPL_BASE_REAL_VECTOR_MANIFOLD_
+#define OMPL_BASE_REAL_VECTOR_MANIFOLD_
 
-#include "ompl/base/State.h"
+#include "ompl/base/Manifold.h"
 
 namespace ompl
 {
-    
     namespace base
     {
-
-	class SpaceInformation;
 	
-	/** \brief Abstract definition for a class checking the
-	    validity of states. The () operator must be defined. The
-	    implementation of this class must be thread safe. */
-	class StateValidityChecker
+	class RealVectorState : public State
 	{
 	public:
-
-	    /** \brief Constructor */
-	    StateValidityChecker(const SpaceInformation *si) : m_si(si)
-	    {
-	    }
-	    
-	    /** \brief Destructor */
-	    virtual ~StateValidityChecker(void)
-	    {
-	    }
-	    
-	    /** \brief Return true if the state is valid */
-	    virtual bool operator()(const State *state) const = 0;
-	    
-	protected:
-	    
-	    const SpaceInformation *m_si;
-	    
+	    double *values;
 	};
 	
+	class RealVectorManifold : public Manifold
+	{
+	public:
+	    
+	    RealVectorManifold(unsigned int dim) : m_dimension(dim)
+	    {
+	    }
+	    
+	    virtual ~RealVectorManifold(void)
+	    {	
+    }
+
+	    /** \brief Get the dimension of the space */
+	    virtual unsigned int getDimension(void) const
+	    {
+		return m_dimension;
+	    }
+	    
+	    /** \brief Bring the state within the bounds of the state space */
+	    virtual void enforceBounds(State *state) const;
+	    	    
+	    /** \brief Check if a state is inside the bounding box */
+	    virtual bool satisfiesBounds(const State *state) const;
+	    
+	    /** \brief Copy a state to another */
+	    virtual void copyState(State *destination, const State *source) const = 0;
+	    
+	    /** \brief Computes distance to between two states */
+	    virtual double distance(const State *state1, const State *state2) const = 0;
+	    
+	    /** \brief Checks whether two states are equal */
+	    virtual bool equalStates(const State *state1, const State *state2) const = 0;
+
+	    /** \brief Computes the state that lies at time t \in [0, 1] on the
+		segment that connects the current state to the
+		destination state */
+	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const = 0;
+
+	    /** \brief Allocate an instance of a state sampler for this space */
+	    virtual StateSampler* allocStateSampler(void) const = 0;
+	    
+	    /** \brief Allocate a state that can store a point in the described space */
+	    virtual State* allocState(void) const = 0;
+	    
+	    /** \brief Free the memory of the allocated state */
+	    virtual void freeState(State *state) const = 0;
+
+	    /** \brief Print a state to screen */
+	    virtual void printState(const State *state, std::ostream &out) const;
+
+	protected:
+	    
+	    unsigned int m_dimension;
+	    
+	};
     }
 }
 

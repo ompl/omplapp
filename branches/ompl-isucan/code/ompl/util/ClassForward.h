@@ -34,37 +34,22 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_STATE_ALLOCATOR_
-#define OMPL_BASE_STATE_ALLOCATOR_
+#ifndef OMPL_UTIL_CLASS_FORWARD_
+#define OMPL_UTIL_CLASS_FORWARD_
 
-#include "ompl/base/State.h"
+#include <boost/shared_ptr.hpp>
 
-namespace ompl
-{
+/** \brief Macro that defines a forward declaration for a class, and
+    shared pointers, weak pointers, const shared pointers and const
+    weak pointers. For example ClassForward(MyType); will produce type
+    definitions for MyType, MyTypePtr, MyTypeWPtr, MyTypeConstPtr and
+    MyTypeConstWPtr. */
+#define ClassForward(C)					\
+    class C;						\
+    typedef boost::shared_ptr<C> C##Ptr;		\
+    typedef boost::weak_ptr<C> C##WPtr;			\
+    typedef boost::shared_ptr<const C> C##ConstPtr;	\
+    typedef boost::weak_ptr<const C> C##ConstWPtr
 
-    namespace base
-    {	
-    
-	/** \brief Definition for a class allocating states */
-	class StateAllocator
-	{
-	public:
-	    
-	    StateAllocator(void) 
-	    {
-	    }
-	    
-	    virtual ~StateAllocator(void)
-	    {
-	    }
-	    
-	    virtual AbstractState* allocState(void) = 0;
-	    virtual void freeState(AbstractState*) = 0;
-	    
-	};
-
-	class RealState
-    }
-}
 
 #endif

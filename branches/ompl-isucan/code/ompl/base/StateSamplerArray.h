@@ -38,38 +38,44 @@
 #define OMPL_BASE_STATE_SAMPLER_ARRAY_
 
 #include "ompl/base/StateSampler.h"
-
+#include "ompl/util/ClassForward.h"
+#include <vector>
+   
 namespace ompl
 {
     namespace base
     {
 
-	class SpaceInformation;
+	ClassForward(SpaceInformation);
 	
 	class StateSamplerArray
 	{
 	public:
 	    
-	    StateSamplerArray(const SpaceInformation *si) : m_si(si)
+	    StateSamplerArray(const SpaceInformationConstPtr &si) : m_si(si)
 	    {
 	    }
 	    
 	    ~StateSamplerArray(void)
 	    {
-		resize(0);
 	    }
 	    
-	    StateSampler* operator[](unsigned int index)
+	    StateSampler* operator[](std::size_t index)
 	    {
-		return m_samplers[index];
+		return m_samplers[index].get();
 	    }
 
-	    void resize(unsigned int count);
+	    void resize(std::size_t count);
+	    
+	    std::size_t size(void) const
+	    {
+		return m_samplers.size();
+	    }
 	    
 	private:
 	    
-	    std::vector<StateSampler*>  m_samplers;
-	    const SpaceInformation     *m_si;
+	    std::vector<StateSamplerPtr> m_samplers;
+	    SpaceInformationConstPtr     m_si;
 	};
     }
 }

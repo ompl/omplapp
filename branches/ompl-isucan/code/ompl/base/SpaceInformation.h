@@ -32,17 +32,17 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_BASE_SPACE_INFORMATION_
 #define OMPL_BASE_SPACE_INFORMATION_
 
-#include "ompl/base/General.h"
 #include "ompl/base/State.h"
 #include "ompl/base/StateValidityChecker.h"
 #include "ompl/base/Manifold.h"
 #include "ompl/base/StateSampler.h"
 
+#include "ompl/util/ClassForward.h"
 #include "ompl/util/Console.h"
 
 #include <cstdlib>
@@ -60,6 +60,8 @@ namespace ompl
     namespace base
     {
 
+	ClassForward(SpaceInformation);
+	
 	/** \brief The base class for space information. This contains
 	    all the information about the space planning is done in.
 	    setup() needs to be called as well, before use */
@@ -73,7 +75,6 @@ namespace ompl
 	    {
 		m_setup = false;
 		m_stateValidityChecker = NULL;
-		m_stateDimension = 0;
 	    }
 	    
 	    /** \brief Destructor */
@@ -125,6 +126,18 @@ namespace ompl
 	    {
 		return (*m_stateValidityChecker)(state);
 	    }
+
+	    /** \brief Allocate memory for a state */
+	    State* allocState(void) const
+	    {
+		return m_manifold->allocState();
+	    }
+	    
+	    /** \brief Free the memory of a state */
+	    void freeState(State *state) const
+	    {
+		m_manifold->freeState(state);
+	    }
 	    
 	    /** \brief Copy a state to another */
 	    void copyState(State *destination, const State *source) const
@@ -155,14 +168,16 @@ namespace ompl
 	    {
 		m_manifold->enforceBounds(state);
 	    }
+
+	    /** \brief Allocate a state sampler */
+	    StateSamplerPtr allocStateSampler(void) const
+	    {
+		return m_manifold->allocStateSampler();
+	    }
 	    
 	    /** \brief Find a valid state near a given one. If the given state is valid, it will be returned itself.
 	     *  The two passed state pointers must point to different states. Returns true on success.  */
 	    bool searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const;
-
-	    /************************************************************/
-	    /* Utility functions                                        */
-	    /************************************************************/
 	    
 	    /** \brief Print a state to a stream */
 	    void printState(const State *state, std::ostream &out = std::cout) const
@@ -180,9 +195,7 @@ namespace ompl
 	    bool isSetup(void) const;
 	    
 	protected:
-	    	    
-
-	    unsigned int                 m_stateDimension;
+	    
 	    StateValidityChecker        *m_stateValidityChecker;
 	    Manifold                    *m_manifold;
 	    

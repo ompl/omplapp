@@ -37,38 +37,23 @@
 #include "ompl/base/StateSampler.h"
 #include "ompl/base/SpaceInformation.h"
 
-ompl::base::CompoundStateSampler::~CompoundStateSampler(void)
-{
-    for (unsigned int i = 0 ; i < m_samplers.size() ; ++i)
-	delete m_samplers[i];
-}
-
-void ompl::base::CompoundStateSampler::addSampler(StateSampler *sampler)
+void ompl::base::CompoundStateSampler::addSampler(const StateSamplerPtr &sampler)
 {
     m_samplers.push_back(sampler);
+    m_samplerCount = m_samplers.size();
 }
 
 void ompl::base::CompoundStateSampler::sample(State *state)
 {
     State **comps = static_cast<CompoundState*>(state)->components;
-    for (unsigned int i = 0 ; i < m_samplers.size() ; ++i)
+    for (std::size_t i = 0 ; i < m_samplerCount ; ++i)
 	m_samplers[i]->sample(comps[i]);
 }
 
-void sampleNear(base::State *state, const State *near, const double distance)
+void ompl::base::CompoundStateSampler::sampleNear(State *state, const State *near, const double distance)
 {    
     State **comps = static_cast<CompoundState*>(state)->components;
-    State **nearComps = static_cast<CompoundState*>(near)->components;
-    for (unsigned int i = 0 ; i < m_samplers.size() ; ++i)
+    State **nearComps = static_cast<const CompoundState*>(near)->components;
+    for (std::size_t i = 0 ; i < m_samplerCount ; ++i)
 	m_samplers[i]->sampleNear(comps[i], nearComps[i], distance);
-}
-
-ompl::base::StateSamplerInstance::StateSamplerInstance(const SpaceInformation *si)
-{
-    m_sampler = si->getTopology()->allocStateSampler();
-}
-	    
-ompl::base::StateSamplerInstance::~StateSamplerInstance(void)
-{
-    delete m_sampler;
 }

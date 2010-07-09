@@ -37,21 +37,16 @@
 #include "ompl/base/StateSamplerArray.h"
 #include "ompl/base/SpaceInformation.h"
 
-
-void ompl::base::StateSamplerArray::resize(unsigned int count)
+void ompl::base::StateSamplerArray::resize(std::size_t count)
 {
     if (m_samplers.size() > count)
-    {
-	for (unsigned int i = count ; i < m_samplers.size() ; ++i)
-	    delete m_samplers[i];
 	m_samplers.resize(count);
-    }
     else
 	if (m_samplers.size() < count)
 	{
-	    unsigned int c = m_samplers.size();
+	    std::size_t c = m_samplers.size();
 	    m_samplers.resize(count);
-	    for (unsigned int i = c ; i < count ; ++i)
-		m_samplers[i] = m_si->allocNewStateSampler();
+	    for (std::size_t i = c ; i < count ; ++i)
+		m_samplers[i] = m_si->allocStateSampler();
 	}   
 }

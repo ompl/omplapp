@@ -35,9 +35,7 @@
 /* \author Ioan Sucan */
 
 #include "ompl/base/SpaceInformation.h"
-// #include "ompl/base/UniformStateSampler.h"
-
-#include <cstring>
+#include "ompl/util/Exception.h"
 #include <cassert>
 
 /*
@@ -54,13 +52,17 @@ bool ompl::base::SpaceInformation::equalStates(const State *a, const State *b) c
     return true;
 }
 */
+
 void ompl::base::SpaceInformation::setup(void)
 {
     if (m_setup)
-	m_msg.error("Space information setup called multiple times");
+	m_msg.warn("Space information setup called multiple times");
+    
+    if (!m_stateValidityChecker)
+	throw Exception("State validity checker not set!");
     
     if (m_manifold->getDimension() <= 0)
-	m_msg.error("State space dimension must be > 0");
+	throw Exception("The dimension of the manifold we plan in must be > 0");
     
     m_setup = true;
 }
@@ -118,12 +120,12 @@ bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *
     if (!result)
     {
 	// try to find a valid state nearby
-	StateSamplerInstance ss(this);
-	State               *temp = m_manifold->allocState();
+	StateSamplerPtr ss = allocStateSampler();
+	State        *temp = m_manifold->allocState();
 	copyState(temp, state);	
 	for (unsigned int i = 0 ; i < attempts && !result ; ++i)
 	{
-	    ss().sampleNear(state, temp, distance);
+	    ss->sampleNear(state, temp, distance);
 	    result = isValid(state);
 	}
 	m_manifold->freeState(temp);
@@ -135,6 +137,8 @@ bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *
 void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
+    m_manifold->printSettings(out);
+    
     /*
     out << "  - dimension = " << m_stateDimension << std::endl;
     out << "  - bounding box:" << std::endl;

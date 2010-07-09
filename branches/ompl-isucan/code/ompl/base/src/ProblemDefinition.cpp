@@ -36,9 +36,9 @@
 
 #include "ompl/base/ProblemDefinition.h"
 #include "ompl/base/GoalState.h"
+#include "ompl/base/GoalStates.h"
 
 #include <sstream>
-#include <cassert>
 
 bool ompl::base::ProblemDefinition::hasStartState(const State *state, unsigned int *startIndex)
 {
@@ -52,88 +52,66 @@ bool ompl::base::ProblemDefinition::hasStartState(const State *state, unsigned i
     return false;
 }
 
-bool ompl::base::ProblemDefinition::fixInvalidInputStates(const std::vector<double> &rhoStart, const std::vector<double> &rhoGoal, unsigned int attempts)
-{
-    assert(rhoStart.size() == rhoGoal.size() && rhoStart.size() == m_si->getStateDimension());
+bool ompl::base::ProblemDefinition::fixInvalidInputState(State *state, double dist, bool start, unsigned int attempts)
+{ 
+    bool result = false;
+
+    bool b = m_si->satisfiesBounds(state);
+    bool v = false;
+    if (b)
+    {
+	v = m_si->isValid(state);
+	if (!v)
+	    m_msg.debug("%s state is not valid", start ? "Start" : "Goal");
+    }
+    else
+	m_msg.debug("%s state is not within space bounds", start ? "Start" : "Goal");
     
+    if (!b || !v)
+    {
+	std::stringstream ss;
+	m_si->printState(state, ss);
+	ss << " within distance " << dist;
+	m_msg.debug("Attempting to fix %s state %s", start ? "start" : "goal", ss.str().c_str());
+	
+	State *temp = m_si->allocState();
+	if (m_si->searchValidNearby(temp, state, dist, attempts))
+	{
+	    m_si->copyState(state, temp);
+	    result = true;
+	}
+	else
+	    m_msg.warn("Unable to fix %s state", start ? "start" : "goal");
+	m_si->freeState(temp);
+    }
+    
+    return result;    
+}
+
+bool ompl::base::ProblemDefinition::fixInvalidInputStates(double distStart, double distGoal, unsigned int attempts)
+{
     bool result = true;
     
     // fix start states
     for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
-    {
-	base::State *st = m_startStates[i];
-	if (st)
-	{
-	    bool b = m_si->satisfiesBounds(st);
-	    bool v = false;
-	    if (b)
-	    {
-		v = m_si->isValid(st);
-		if (!v)
-		    m_msg.debug("Initial state is not valid");
-	    }
-	    else
-		m_msg.debug("Initial state is not within space bounds");
-	    
-	    if (!b || !v)
-	    {
-		std::stringstream ss;
-		m_si->printState(st, ss);
-		ss << " within margins [ ";
-		for (unsigned int j = 0 ; j < rhoStart.size() ; ++j)
-		    ss << rhoStart[j] << " ";
-		ss << "]";		
-		m_msg.debug("Attempting to fix initial state %s", ss.str().c_str());
-		base::State temp(m_si->getStateDimension());
-		if (m_si->searchValidNearby(&temp, st, rhoStart, attempts))
-		    m_si->copyState(st, &temp);
-		else
-		{
-		    m_msg.warn("Unable to fix start state %u", i);
-		    result = false;
-		}
-	    }
-	}
-    }
+	if (!fixInvalidInputState(m_startStates[i], distStart, true, attempts))
+	    result = false;
     
     // fix goal state
-    base::GoalState *goal = dynamic_cast<base::GoalState*>(m_goal);
+    GoalState *goal = dynamic_cast<GoalState*>(m_goal.get());
     if (goal)
     {
-	base::State *st = goal->state;
-	if (st)
-	{
-	    bool b = m_si->satisfiesBounds(st);
-	    bool v = false;
-	    if (b)
-	    {
-		v = m_si->isValid(st);
-		if (!v)
-		    m_msg.debug("Goal state is not valid");
-	    }
-	    else
-		m_msg.debug("Goal state is not within space bounds");
-	    
-	    if (!b || !v)
-	    {
-		
-		std::stringstream ss;
-		m_si->printState(st, ss);
-		ss << " within margins [ ";
-		for (unsigned int i = 0 ; i < rhoGoal.size() ; ++i)
-		    ss << rhoGoal[i] << " ";
-		ss << "]";
-		m_msg.debug("Attempting to fix goal state %s", ss.str().c_str());
-		base::State temp(m_si->getStateDimension());
-		if (m_si->searchValidNearby(&temp, st, rhoGoal, attempts))
-		    m_si->copyState(st, &temp);
-		else
-		{
-		    m_msg.warn("Unable to fix goal state");
-		    result = false;
-		}
-	    }
-	}
+	if (!fixInvalidInputState(goal->state, distGoal, false, attempts))
+	    result = false;
+    }
+
+    // fix goal state
+    GoalStates *goals = dynamic_cast<GoalStates*>(m_goal.get());
+    if (goals)
+    {
+	for (unsigned int i = 0 ; i < goals->states.size() ; ++i)
+	    if (!fixInvalidInputState(goals->states[i], distGoal, false, attempts))
+		result = false;
     }
     
     return result;    

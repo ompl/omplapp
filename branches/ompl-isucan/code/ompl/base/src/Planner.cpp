@@ -35,11 +35,12 @@
 /* \author Ioan Sucan */
 
 #include "ompl/base/Planner.h"
+#include "ompl/util/Exception.h"
 
-ompl::base::Planner::Planner(SpaceInformation *si) : m_si(si), m_pdef(NULL), m_type(PLAN_UNKNOWN), m_setup(false)
+ompl::base::Planner::Planner(const SpaceInformationPtr &si) : m_si(si), m_type(PLAN_UNKNOWN), m_setup(false)
 {
     if (!m_si)
-	m_msg.error("Invalid space information instance");
+	throw Exception("Invalid space information instance");
     if (!m_si->isSetup())
 	m_msg.warn("It is best if space information setup has been called before a planner is instantiated");
 }
@@ -49,12 +50,17 @@ ompl::base::PlannerType ompl::base::Planner::getType(void) const
     return m_type;
 }
 
-const ompl::base::ProblemDefinition* ompl::base::Planner::getProblemDefinition(void) const
+const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinition(void)
 {
     return m_pdef;
 }
 
-void ompl::base::Planner::setProblemDefinition(ProblemDefinition *pdef)
+ompl::base::ProblemDefinitionConstPtr ompl::base::Planner::getProblemDefinition(void) const
+{
+    return m_pdef;
+}
+
+void ompl::base::Planner::setProblemDefinition(const ProblemDefinitionPtr &pdef)
 {
     clear();
     m_pdef = pdef;
@@ -63,7 +69,7 @@ void ompl::base::Planner::setProblemDefinition(ProblemDefinition *pdef)
 void ompl::base::Planner::setup(void)
 {
     if (!m_si->isSetup())
-	m_msg.error("Space information setup should have been called before planner setup was called");
+	throw Exception("Space information setup should have been called before planner setup was called");
     if (m_setup)
 	m_msg.error("Planner setup called multiple times");		
     m_setup = true;

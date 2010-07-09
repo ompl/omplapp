@@ -34,14 +34,14 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_MOTION_PLANNER_
-#define OMPL_BASE_MOTION_PLANNER_
+#ifndef OMPL_BASE_PLANNER_
+#define OMPL_BASE_PLANNER_
 
-#include "ompl/base/General.h"
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/base/ProblemDefinition.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/Time.h"
+#include "ompl/util/ClassForward.h"
 
 namespace ompl
 {
@@ -67,6 +67,8 @@ namespace ompl
 		PLAN_TO_GOAL_ANY    = 32768 | PLAN_TO_GOAL_REGION
 	    };
 	
+	ClassForward(Planner);
+	
 	/** \brief Base class for a planner */
 	class Planner
 	{
@@ -74,7 +76,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor */
-	    Planner(SpaceInformation *si);
+	    Planner(const SpaceInformationPtr &si);
 	    
 	    /** \brief Destructor */
 	    virtual ~Planner(void)
@@ -82,12 +84,15 @@ namespace ompl
 	    }
 
 	    /** \brief Get the problem definition the planner is trying to solve */
-	    const ProblemDefinition* getProblemDefinition(void) const;
+	    const ProblemDefinitionPtr& getProblemDefinition(void);
+
+	    /** \brief Get the problem definition the planner is trying to solve */
+	    ProblemDefinitionConstPtr getProblemDefinition(void) const;
 	    
 	    /** \brief Set the problem definition for the planner. The
 		problem needs to be set before calling solve(). This
 		also clears the internal datastructures of the planner. */
-	    void setProblemDefinition(ProblemDefinition *pdef);
+	    void setProblemDefinition(const ProblemDefinitionPtr &pdef);
 	    
 	    /** \brief Function that can solve the motion planning
 		problem. This function can be called multiple times on
@@ -118,12 +123,12 @@ namespace ompl
 	    
 	protected:
 	    
-	    SpaceInformation  *m_si;
-	    ProblemDefinition *m_pdef;
-	    PlannerType        m_type;	
-	    bool               m_setup;
-	    msg::Interface     m_msg;
-	};    
+	    SpaceInformationPtr  m_si;
+	    ProblemDefinitionPtr m_pdef;
+	    PlannerType          m_type;	
+	    bool                 m_setup;
+	    msg::Interface       m_msg;
+	};
     }
 }
 

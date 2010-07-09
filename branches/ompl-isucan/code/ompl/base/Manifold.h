@@ -34,11 +34,13 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_TOPOLOGY_
-#define OMPL_BASE_TOPOLOGY_
+#ifndef OMPL_BASE_MANIFOLD_
+#define OMPL_BASE_MANIFOLD_
 
-#include "ompl/base/General.h"
 #include "ompl/base/State.h"
+#include "ompl/base/StateSampler.h"
+#include "ompl/util/Console.h"
+#include "ompl/util/ClassForward.h"
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -47,13 +49,14 @@ namespace ompl
 {
     namespace base
     {
-	class StateSampler;
+	
+	ClassForward(Manifold);
 	
 	class Manifold
 	{
 	public:
 	    
-	    Manifold(void) : m_lowerBound(NULL), m_upperBound(NULL)
+	    Manifold(void)
 	    {
 	    }
 	    
@@ -83,7 +86,7 @@ namespace ompl
 	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const = 0;
 
 	    /** \brief Allocate an instance of a state sampler for this space */
-	    virtual StateSampler* allocStateSampler(void) const = 0;
+	    virtual StateSamplerPtr allocStateSampler(void) const = 0;
 	    
 	    /** \brief Allocate a state that can store a point in the described space */
 	    virtual State* allocState(void) const = 0;
@@ -94,43 +97,55 @@ namespace ompl
 	    /** \brief Set the bounds of this manifold. This defines
 		the subset of the manifold in which sampling takes
 		place and where valid states can exist. */
-	    virtual void setBounds(const State *lower, const State *upper);
+	    virtual void setBounds(const State *lower, const State *upper) = 0;
 
-	    /** \brief Set the upper bound of this manifold. */
-	    virtual void setUpperBound(const State *bound);
+	    /** \brief Check if the manifold requires bounds. For
+		instance, a quaternion representation does not need
+		bounds, while a representation of 3D space does. */
+	    virtual bool requiresBounds(void) const = 0;
 
-	    /** \brief Set the upper bound of this manifold. */
-	    virtual void setLowerBound(const State *bound);
+	    /** \brief Clear the set bounds. This function needs to be
+		called if bounds were previously set, to avoid any
+		memory leaks. */
+	    virtual void clearBounds(void) = 0;
+	    	    
+	    /** \brief Return the dimension of the projection defined on this manifold. */
+	    virtual unsigned int getProjectionDimension(void) const;
 	    
-	    /** \brief Print a state to screen */
+	    /** \brief Compute the projection as an array of double values */
+	    virtual void project(const State *state, double *projection) const;
+	    
+	    /** \brief Print a state to a stream */
 	    virtual void printState(const State *state, std::ostream &out) const;
 	    
+	    /** \brief Print the settings for this manifold to a stream */
+	    virtual void printSettings(std::ostream &out) const;
+	    
 	protected:
-
-	    /** \brief Lower bound for the manifold */
-	    State *m_lowerBound;
-
-	    /** \brief Upper bound for the manifold */
-	    State *m_upperBound;
+	    
+	    msg::Interface  m_msg;
+	    
 	};
-		
+	
     	class CompoundManifold : public Manifold
 	{
 	public:
 	    
-	    CompoundManifold(void) : Manifold()
+	    CompoundManifold(void) : Manifold(), m_componentCount(0)
 	    {
 	    }
 	    
-	    virtual ~CompoundManifold(void);
-	    
+	    virtual ~CompoundManifold(void)
+	    {
+	    }
+	    	    
 	    /** \brief Adds the topology of a space as part of the
 		compound space. For computing distances within the
 		compound space, the weight of the component also needs
 		to be specified. Ownership of the passed topology
 		instance is assumed and memory is freed upon
 		destruction. */
-	    virtual void addManifold(Manifold *component, double weight);
+	    virtual void addManifold(const ManifoldPtr &component, double weight);
 
 	    virtual unsigned int getDimension(void) const;
 
@@ -146,22 +161,31 @@ namespace ompl
 	    
 	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const;
 	    
-	    virtual StateSampler* allocStateSampler(void) const;
+	    virtual StateSamplerPtr allocStateSampler(void) const;
 	    
 	    virtual State* allocState(void) const;
 	    
 	    virtual void freeState(State *state) const;	 
 
+	    virtual void setBounds(const State *lower, const State *upper);
+	    
+	    virtual bool requiresBounds(void) const;
+	    
+	    virtual void clearBounds(void);
+
+	    virtual unsigned int getProjectionDimension(void) const;
+	    
+	    virtual void project(const State *state, double *projection) const;
+	    
 	    virtual void printState(const State *state, std::ostream &out) const;
 
-	    virtual void setUpperBound(const State *bound);
-
-	    virtual void setLowerBound(const State *bound);
+	    virtual void printSettings(std::ostream &out) const;
 
 	protected:
 	    
-	    std::vector<Manifold*> m_components;
-	    std::vector<double>    m_weights;
+	    std::vector<ManifoldPtr> m_components;
+	    std::size_t              m_componentCount;
+	    std::vector<double>      m_weights;
 	    
 	};
     }

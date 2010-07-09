@@ -50,7 +50,7 @@ namespace ompl
 	{
 	public:
 	    
-	    GoalSampleableRegion(const SpaceInformation *si) : GoalRegion(si)
+	    GoalSampleableRegion(const SpaceInformationConstPtr &si) : GoalRegion(si)
 	    {
 	    }
 	    

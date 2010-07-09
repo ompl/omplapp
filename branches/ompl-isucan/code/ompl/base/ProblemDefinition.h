@@ -41,6 +41,7 @@
 #include "ompl/base/Goal.h"
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/util/Console.h"
+#include "ompl/util/ClassForward.h"
 
 #include <vector>
 #include <cstdlib>
@@ -51,24 +52,29 @@ namespace ompl
     namespace base
     {
 	
+	ClassForward(ProblemDefinition);
+	
 	/** \brief Definition of a problem to be solved. This includes
 	    the start state(s) for the system and a goal specification */
 	class ProblemDefinition
 	{
 	public:
 	    
-	    ProblemDefinition(SpaceInformation *si) : m_si(si), m_goal(NULL)
+	    ProblemDefinition(const SpaceInformationPtr &si) : m_si(si)
 	    {
 	    }
 	    
 	    virtual ~ProblemDefinition(void)
 	    {
+		clearStartStates();
 	    }
 	    
 	    /** \brief Add a start state */
-	    void addStartState(State *state)
+	    void addStartState(const State *state)
 	    {
-		m_startStates.push_back(state);
+		State *copy = m_si->allocState();
+		m_si->copyState(copy, state);
+		m_startStates.push_back(copy);
 	    }
 	    
 	    /** \brief Check whether a specified starting state is
@@ -80,13 +86,7 @@ namespace ompl
 	    void clearStartStates(void)
 	    {
 		for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
-		    delete m_startStates[i];
-		m_startStates.clear();
-	    }
-	    
-	    /** \brief Clear all start states but do not free memory */
-	    void forgetStartStates(void)
-	    {
+		    m_si->freeState(m_startStates[i]);
 		m_startStates.clear();
 	    }
 	    
@@ -109,38 +109,28 @@ namespace ompl
 	    }
 
 	    /** \brief Set the goal. The memory for a previous goal is freed. */
-	    void setGoal(Goal *goal)
+	    void setGoal(const GoalPtr &goal)
 	    {
-		if (m_goal)
-		    delete m_goal;
 		m_goal = goal;
 	    }
 	    
 	    /** \brief Clear the goal. Memory is freed. */
 	    void clearGoal(void)
 	    {
-		if (m_goal)
-		    delete m_goal;
-		m_goal = NULL;
+		m_goal.reset();
 	    }
 	    
 	    /** \brief Return the current goal */
-	    const Goal* getGoal(void) const
+	    GoalConstPtr getGoal(void) const
 	    {
 		return m_goal;
 	    }
 
 	    /** \brief Return the current goal */
-	    Goal* getGoal(void)
+	    const GoalPtr& getGoal(void)
 	    {
 		return m_goal;
 	    }
-	    
-	    /** \brief Clear the goal, but do not free its memory */
-	    void forgetGoal(void)
-	    {
-		m_goal = NULL;
-	    }	
 	    
 	    /** \brief A problem is trivial if the given starting state already
 		in the goal region, so we need no motion planning. startID
@@ -151,18 +141,21 @@ namespace ompl
 	    
 	    /** \brief Many times the start or goal state will barely touch an obstacle. In this case, we may want to automaticaly
 	      * find a nearby state that is valid so motion planning can be performed. This function enables this behaviour.
-	      * The allowed distance (per state component) for both start and goal states is specified. The number of attempts
+	      * The allowed distance for both start and goal states is specified. The number of attempts
 	      * is also specified. Returns true if all states are valid after completion. */
-	    bool fixInvalidInputStates(const std::vector<double> &rhoStart, const std::vector<double> &rhoGoal, unsigned int attempts);
+	    bool fixInvalidInputStates(double distStart, double distGoal, unsigned int attempts);
 	    
 	    /** \brief Print information about the start and goal states */
-	    void print(std::ostream &out = std::cout) const;	    
+	    void print(std::ostream &out = std::cout) const;
 
 	protected:
 	    
-	    SpaceInformation    *m_si;
+	    /** \brief Helper function for fixInvalidInputStates(). Attempts to fix an individual state */
+	    bool fixInvalidInputState(State *state, double dist, bool start, unsigned int attempts);
+
+	    SpaceInformationPtr  m_si;
 	    std::vector<State*>  m_startStates;
-	    Goal                *m_goal;
+	    GoalPtr              m_goal;
 	    
 	    msg::Interface       m_msg;
 	};

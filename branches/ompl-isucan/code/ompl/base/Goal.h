@@ -37,9 +37,9 @@
 #ifndef OMPL_BASE_GOAL_
 #define OMPL_BASE_GOAL_
 
-#include "ompl/base/General.h"
 #include "ompl/base/State.h"
 #include "ompl/base/Path.h"
+#include "ompl/util/ClassForward.h"
 #include <iostream>
 #include <cstdlib>
 
@@ -48,7 +48,8 @@ namespace ompl
     namespace base
     {
 	
-	class SpaceInformation;
+	ClassForward(SpaceInformation);
+	ClassForward(Goal);
 	
 	/** \brief Abstract definition of goals. Will contain solutions, if found */
 	class Goal
@@ -56,15 +57,13 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. The goal must always know the space information it is part of */
-	    Goal(const SpaceInformation *si) : m_si(si), m_path(NULL), m_difference(-1.0), m_approximate(false)
+	    Goal(const SpaceInformationConstPtr &si) : m_si(si), m_difference(-1.0), m_approximate(false)
 	    {
 	    }
 	    
 	    /** \brief Destructor. Clears the solution as well */
 	    virtual ~Goal(void)
 	    {
-		if (m_path)
-		    delete m_path;
 	    }
 	    
 	    /** \brief Return true if the state statisfies the goal
@@ -89,34 +88,31 @@ namespace ompl
 	    /** \brief Returns true if a solution path has been found (could be approximate) */
 	    bool isAchieved(void) const
 	    {
-		return m_path != NULL;
+		return m_path;
 	    }
 	    
 	    /** \brief Return the found solution path. 
 
 		This will need to be casted into the specialization
 		computed by the planner */
-	    Path* getSolutionPath(void) const
+	    PathConstPtr getSolutionPath(void) const
 	    {
 		return m_path;
 	    }
 	    
-	    /** \brief Forget the solution path. Memory is not freed.
-		
-		This is useful when the user wants to keep the
-		solution path but wants to clear the goal. The user
-		takes responsibilty to free the memory for the
-		solution path. */
-	    void forgetSolutionPath(void)
+	    /** \brief Return the found solution path. 
+
+		This will need to be casted into the specialization
+		computed by the planner */
+	    const PathPtr& getSolutionPath(void)
 	    {
-		m_path = NULL;
-	    }	    
+		return m_path;
+	    }
+	    
 	    
 	    /** \brief Update the solution path. If a previous solution path exists, it is deleted. */
-	    void setSolutionPath(Path *path, bool approximate = false)
+	    void setSolutionPath(const PathPtr &path, bool approximate = false)
 	    {
-		if (m_path)
-		    delete m_path;
 		m_path = path;
 		m_approximate = approximate;
 	    }
@@ -124,7 +120,7 @@ namespace ompl
 	    /** \brief Forget the solution path. Memory is freed. */
 	    void clearSolutionPath(void)
 	    {
-		setSolutionPath(NULL);		
+		m_path.reset();
 	    }
 	    
 	    /** \brief If a difference between the desired solution and the
@@ -153,22 +149,22 @@ namespace ompl
 	    /** \brief Print information about the goal */
 	    virtual void print(std::ostream &out = std::cout) const
 	    {
-		out << "Goal memory address " << reinterpret_cast<const void*>(this) << std::endl;
+		out << "Goal memory address " << this << std::endl;
 	    }
 	    
 	protected:
 	    
 	    /** \brief The space information for this goal */
-	    const SpaceInformation *m_si;
+	    SpaceInformationConstPtr m_si;
 
 	    /** \brief Solution path, if found */
-	    Path                   *m_path;
+	    PathPtr                  m_path;
 	    	    
 	    /** \brief The achieved difference between the found solution and the desired goal */
-	    double                  m_difference;
+	    double                   m_difference;
 	    
 	    /** \brief True if goal was not achieved, but an approximate solution was found */
-	    bool                    m_approximate;
+	    bool                     m_approximate;
 	    
 	};
 		

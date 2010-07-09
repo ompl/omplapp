@@ -37,13 +37,15 @@
 #ifndef OMPL_BASE_PATH_
 #define OMPL_BASE_PATH_
 
-#include "ompl/base/General.h"
+#include "ompl/util/ClassForward.h"
 
 namespace ompl
 {
     namespace base
     {
-	class SpaceInformation;
+	
+	ClassForward(SpaceInformation);
+	ClassForward(Path);
 	
 	/** \brief Abstract definition of a path */
 	class Path
@@ -51,7 +53,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. A path must always know the space information it is part of */
-	    Path(const SpaceInformation *si) : m_si(si)
+	    Path(const SpaceInformationConstPtr &si) : m_si(si)
 	    {
 	    }
 	    
@@ -61,7 +63,7 @@ namespace ompl
 	    }
 	    
 	    /** \brief Returns the space information this path is part of */
-	    const SpaceInformation* getSpaceInformation(void) const
+	    const SpaceInformationConstPtr& getSpaceInformation(void) const
 	    {
 		return m_si;
 	    }
@@ -71,7 +73,7 @@ namespace ompl
 	    
 	protected:
 	    
-	    const SpaceInformation *m_si;
+	    SpaceInformationConstPtr m_si;
 	};
 	
     }

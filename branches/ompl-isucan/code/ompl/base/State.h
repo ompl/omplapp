@@ -37,13 +37,11 @@
 #ifndef OMPL_BASE_STATE_
 #define OMPL_BASE_STATE_
 
-#include "ompl/base/General.h"
-
 namespace ompl
 {
     namespace base
     {
-
+	
 	/** \brief Definition of an abstract state */
 	class State
 	{
@@ -71,6 +69,7 @@ namespace ompl
 	    {
 	    }
 	    
+	    /** \brief The components that make up a compound state */
 	    State **components;
 	};
 	

@@ -47,11 +47,11 @@ namespace ompl
     {
 	
 	/** \brief Definition of a goal region */
-	class GoalRegion : public base::Goal
+	class GoalRegion : public Goal
 	{
 	public:
 	    
-	    GoalRegion(const SpaceInformation *si) : Goal(si), threshold(0.0)
+	    GoalRegion(const SpaceInformationConstPtr &si) : Goal(si), threshold(0.0)
 	    {
 	    }
 	    
@@ -62,10 +62,10 @@ namespace ompl
 	    /** \brief Decide whether a given state is part of the
 		goal region. Returns true if the distance to goal is
 		less than the threshold */
-	    virtual bool isSatisfied(const base::State *st, double *distance = NULL) const;
+	    virtual bool isSatisfied(const State *st, double *distance = NULL) const;
 	    
 	    /** \brief Compute the distance to the goal (heuristic) */
-	    virtual double distanceGoal(const base::State *st) const = 0;
+	    virtual double distanceGoal(const State *st) const = 0;
 	    
 	    /** \brief Print information about the goal data structure
 		to a stream */
