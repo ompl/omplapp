@@ -45,7 +45,7 @@ namespace ompl
 	/** \brief Definition of an abstract state */
 	class State
 	{
-	public:
+	protected:
 	    
 	    State(void)
 	    {

@@ -39,6 +39,12 @@
 #include <cassert>
 #include <limits>
 
+ompl::base::GoalStates::~GoalStates(void)
+{
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+	m_si->freeState(states[i]);
+}
+
 double ompl::base::GoalStates::distanceGoal(const State *st) const
 {
     double dist = std::numeric_limits<double>::infinity();
@@ -53,7 +59,7 @@ double ompl::base::GoalStates::distanceGoal(const State *st) const
 
 void ompl::base::GoalStates::print(std::ostream &out) const
 {
-    out << states.size() << " goal states, threshold = " << threshold << ", memory address = " << reinterpret_cast<const void*>(this) << std::endl;
+    out << states.size() << " goal states, threshold = " << threshold << ", memory address = " << this << std::endl;
     for (unsigned int i = 0 ; i < states.size() ; ++i)
     {
 	m_si->printState(states[i], out);

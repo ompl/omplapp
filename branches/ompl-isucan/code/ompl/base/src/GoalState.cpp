@@ -36,7 +36,13 @@
 
 #include "ompl/base/GoalState.h"
 #include "ompl/base/SpaceInformation.h"
-	    
+
+ompl::base::GoalState::~GoalState(void)
+{
+    if (state)
+	m_si->freeState(state);
+}	    
+
 double ompl::base::GoalState::distanceGoal(const State *st) const
 {
     return m_si->distance(st, state);

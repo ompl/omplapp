@@ -54,11 +54,7 @@ namespace ompl
 	    {
 	    }
 	    
-	    virtual ~GoalStates(void)
-	    {
-		for (unsigned int i = 0 ; i < states.size() ; ++i)
-		    delete states[i];
-	    }
+	    virtual ~GoalStates(void);
 	    
 	    /** \brief Sample a state in the goal region */
 	    virtual void sampleGoal(State *st) const;
