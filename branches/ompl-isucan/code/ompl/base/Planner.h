@@ -42,6 +42,7 @@
 #include "ompl/util/Console.h"
 #include "ompl/util/Time.h"
 #include "ompl/util/ClassForward.h"
+#include <vector>
 
 namespace ompl
 {
@@ -49,6 +50,9 @@ namespace ompl
     namespace base
     {
 	
+	/** \brief Different planners may be able to handle only specific types of goal regions. For instance, the most
+	    general goal representation is not suitable for bi-directional planners. Planners set their type to specify 
+	    which type of goal regions they can handle.*/
 	enum PlannerType
 	    {
 		/** \brief This value should not be set */
@@ -68,6 +72,23 @@ namespace ompl
 	    };
 	
 	ClassForward(Planner);
+	ClassForward(PlannerData);
+	
+	/** \brief Datatype holding data a planner can expose for debug purposes. */
+	class PlannerData
+	{
+	public:
+	    PlannerData(void)
+	    {
+	    }
+	    
+	    virtual ~PlannerData(void)
+	    {
+	    }
+	    
+	    /** \brief The list of states in the current exploration datastructure */
+	    std::vector<State*> states;
+	};
 	
 	/** \brief Base class for a planner */
 	class Planner
@@ -100,22 +121,22 @@ namespace ompl
 		is not changed (unpredictable results otherwise). The
 		only change in the problem definition that is
 		accounted for is the addition of starting or goal
-		states. */
+		states (but not changing previously added start/goal states). */
 	    virtual bool solve(double solveTime) = 0;
 	    
 	    /** \brief Clear all internal datastructures. Subsequent
 		calls to solve() will ignore all previous work. */
 	    virtual void clear(void) = 0;
 	    
-	    /** \brief Get states in current exploration datastructure */
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const = 0;
+	    /** \brief Get information about the current run of the motion planner  */
+	    virtual void getPlannerData(const PlannerDataPtr &data) const = 0;
 	    
 	    /** \brief Return the type of the motion planner. This is useful if
 		the planner wants to advertise what type of problems it
 		can solve */
 	    PlannerType getType(void) const;
 	    
-	    /** \brief Perform extra configuration steps, if needed */
+	    /** \brief Perform extra configuration steps, if needed. This must be called before solving */
 	    virtual void setup(void);
 	    
 	protected:
