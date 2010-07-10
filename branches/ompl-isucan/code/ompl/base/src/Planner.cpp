@@ -50,12 +50,7 @@ ompl::base::PlannerType ompl::base::Planner::getType(void) const
     return m_type;
 }
 
-const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinition(void)
-{
-    return m_pdef;
-}
-
-ompl::base::ProblemDefinitionConstPtr ompl::base::Planner::getProblemDefinition(void) const
+const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinition(void) const
 {
     return m_pdef;
 }
@@ -71,7 +66,8 @@ void ompl::base::Planner::setup(void)
     if (!m_si->isSetup())
 	throw Exception("Space information setup should have been called before planner setup was called");
     if (m_setup)
-	m_msg.error("Planner setup called multiple times");		
-    m_setup = true;
+	m_msg.warn("Planner setup called multiple times");
+    else
+	m_setup = true;
 }
 

@@ -32,26 +32,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/util/Exception.h"
 #include <cassert>
-
-/*
-void ompl::base::SpaceInformation::copyState(State *destination, const State *source) const
-{
-    memcpy(destination->values, source->values, sizeof(double) * m_stateDimension);
-}
-
-bool ompl::base::SpaceInformation::equalStates(const State *a, const State *b) const
-{
-    for (unsigned int i = 0 ; i < m_stateDimension ; ++i)
-	if (a->values[i] != b->values[i])
-	    return false;
-    return true;
-}
-*/
 
 void ompl::base::SpaceInformation::setup(void)
 {

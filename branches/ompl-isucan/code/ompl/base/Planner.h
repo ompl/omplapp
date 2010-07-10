@@ -84,10 +84,7 @@ namespace ompl
 	    }
 
 	    /** \brief Get the problem definition the planner is trying to solve */
-	    const ProblemDefinitionPtr& getProblemDefinition(void);
-
-	    /** \brief Get the problem definition the planner is trying to solve */
-	    ProblemDefinitionConstPtr getProblemDefinition(void) const;
+	    const ProblemDefinitionPtr& getProblemDefinition(void) const;
 	    
 	    /** \brief Set the problem definition for the planner. The
 		problem needs to be set before calling solve(). This
