@@ -155,34 +155,6 @@ void ompl::base::CompoundManifold::freeState(State *state) const
     delete cstate;
 }
 
-bool ompl::base::CompoundManifold::requiresBounds(void) const
-{
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-	if (m_components[i]->requiresBounds())
-	    return true;
-    return false;
-}
-
-void ompl::base::CompoundManifold::setBounds(const State *lower, const State *upper)
-{
-    if (requiresBounds())
-    {
-	const CompoundState *cstateU = static_cast<const CompoundState*>(upper);
-	const CompoundState *cstateL = static_cast<const CompoundState*>(lower);
-	for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-	    if (m_components[i]->requiresBounds())
-		m_components[i]->setBounds(cstateL->components[i], cstateU->components[i]);
-    }
-    else
-	m_msg.warn("No bounds are required for this manifold");
-}
-
-void ompl::base::CompoundManifold::clearBounds(void)
-{  
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->clearBounds();
-}
-
 unsigned int ompl::base::CompoundManifold::getProjectionDimension(void) const
 {   
     unsigned int dim = 0;

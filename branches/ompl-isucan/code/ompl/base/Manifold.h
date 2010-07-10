@@ -93,21 +93,6 @@ namespace ompl
 	    
 	    /** \brief Free the memory of the allocated state */
 	    virtual void freeState(State *state) const = 0;
-	    
-	    /** \brief Set the bounds of this manifold. This defines
-		the subset of the manifold in which sampling takes
-		place and where valid states can exist. */
-	    virtual void setBounds(const State *lower, const State *upper) = 0;
-
-	    /** \brief Check if the manifold requires bounds. For
-		instance, a quaternion representation does not need
-		bounds, while a representation of 3D space does. */
-	    virtual bool requiresBounds(void) const = 0;
-
-	    /** \brief Clear the set bounds. This function needs to be
-		called if bounds were previously set, to avoid any
-		memory leaks. */
-	    virtual void clearBounds(void) = 0;
 	    	    
 	    /** \brief Return the dimension of the projection defined on this manifold. */
 	    virtual unsigned int getProjectionDimension(void) const;
@@ -166,12 +151,6 @@ namespace ompl
 	    virtual State* allocState(void) const;
 	    
 	    virtual void freeState(State *state) const;	 
-
-	    virtual void setBounds(const State *lower, const State *upper);
-	    
-	    virtual bool requiresBounds(void) const;
-	    
-	    virtual void clearBounds(void);
 
 	    virtual unsigned int getProjectionDimension(void) const;
 	    

@@ -84,26 +84,6 @@ void ompl::base::SpaceInformation::printState(const State *state, std::ostream &
 	out << "NULL" << std::endl;
 }
 
-bool ompl::base::SpaceInformation::satisfiesBounds(const State *s) const
-{
-    for (unsigned int i = 0 ; i < m_stateDimension ; ++i)
-	if (s->values[i] - STATE_EPSILON > m_stateComponent[i].maxValue ||
-	    s->values[i] + STATE_EPSILON < m_stateComponent[i].minValue)
-	    return false;
-    return true;
-}
-
-void ompl::base::SpaceInformation::enforceBounds(base::State *state) const
-{
-    for (unsigned int i = 0 ; i < m_stateDimension ; ++i)
-    {
-	if (state->values[i] > m_stateComponent[i].maxValue)
-	    state->values[i] = m_stateComponent[i].maxValue;
-	else
-	    if (state->values[i] < m_stateComponent[i].minValue)
-		state->values[i] = m_stateComponent[i].minValue;
-    }
-}
 */
 bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const
 {

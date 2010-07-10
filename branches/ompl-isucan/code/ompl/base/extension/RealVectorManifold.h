@@ -34,34 +34,63 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_REAL_VECTOR_MANIFOLD_
-#define OMPL_BASE_REAL_VECTOR_MANIFOLD_
+#ifndef OMPL_BASE_EXTENSION_REAL_VECTOR_MANIFOLD_
+#define OMPL_BASE_EXTENSION_REAL_VECTOR_MANIFOLD_
 
 #include "ompl/base/Manifold.h"
+#include <vector>
+#include <utility>
 
 namespace ompl
 {
-    namespace base
+    namespace ext
     {
 	
-	class RealVectorState : public State
+	class RealVectorState : public base::State
 	{
 	public:
 	    double *values;
 	};
 	
-	class RealVectorManifold : public Manifold
+	typedef std::pair< std::vector<double>, std::vector<double> > RealVectorBounds;
+	
+	class RealVectorStateSampler : public base::StateSampler
 	{
 	public:
 	    
-	    RealVectorManifold(unsigned int dim) : m_dimension(dim)
+	    RealVectorStateSampler(const ManifoldConstPtr &si);
+	    
+	    virtual void sample(State *state);	    
+	    virtual void sampleNear(State *state, const State *near, const double distance);
+	    
+	protected:
+	    
+	    const RealVectorBounds &m_bounds;
+	    
+	};
+	
+	class RealVectorManifold : public base:Manifold
+	{
+	public:
+	    
+	    RealVectorManifold(unsigned int dim) : base::Manifold(), m_dimension(dim)
 	    {
 	    }
 	    
 	    virtual ~RealVectorManifold(void)
 	    {	
-    }
-
+	    }
+	    
+	    void setBounds(const RealVectorBounds &bounds)
+	    {
+		m_bounds = bounds;
+	    }
+	    
+	    const RealVectorBounds& getBounds(void) const
+	    {
+		return m_bounds;
+	    }
+	    
 	    /** \brief Get the dimension of the space */
 	    virtual unsigned int getDimension(void) const
 	    {
@@ -69,7 +98,11 @@ namespace ompl
 	    }
 	    
 	    /** \brief Bring the state within the bounds of the state space */
-	    virtual void enforceBounds(State *state) const;
+	    virtual void enforceBounds(State *state) const
+	    {
+		RealVectorState *rstate = static_cast<RealVectorState*>(state);
+		
+	    }	    
 	    	    
 	    /** \brief Check if a state is inside the bounding box */
 	    virtual bool satisfiesBounds(const State *state) const;
@@ -102,7 +135,9 @@ namespace ompl
 
 	protected:
 	    
-	    unsigned int m_dimension;
+	    unsigned int        m_dimension;
+	    std::vector<double> m_lowerBound;
+	    std::vector<double> m_upperBound;
 	    
 	};
     }
