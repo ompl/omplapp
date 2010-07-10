@@ -51,6 +51,16 @@ void ompl::base::Manifold::project(const State * /* state */, double * /* projec
     throw Exception("No projection defined for this manifold");
 }
 
+ompl::base::EuclideanProjection ompl::base::Manifold::allocProjection(void) const
+{
+    return new double[getProjectionDimension()];
+}
+
+void ompl::base::Manifold::freeProjection(EuclideanProjection proj) const
+{
+    delete[] proj;
+}
+
 void ompl::base::Manifold::printState(const State *state, std::ostream &out) const
 {
     out << "State instance: " << state << std::endl;
@@ -131,7 +141,7 @@ void ompl::base::CompoundManifold::interpolate(const State *from, const State *t
 
 ompl::base::StateSamplerPtr ompl::base::CompoundManifold::allocStateSampler(void) const
 {
-    CompoundStateSampler *ss = new CompoundStateSampler(ManifoldConstPtr(this));
+    CompoundStateSampler *ss = new CompoundStateSampler(this);
     for (std::size_t i = 0 ; i < m_componentCount ; ++i)
 	ss->addSampler(m_components[i]->allocStateSampler());
     return StateSamplerPtr(ss);
@@ -140,7 +150,7 @@ ompl::base::StateSamplerPtr ompl::base::CompoundManifold::allocStateSampler(void
 ompl::base::State* ompl::base::CompoundManifold::allocState(void) const
 {
     CompoundState *state = new CompoundState();
-    state->components = new State*[m_componentCount];    
+    state->components = new State*[m_componentCount];
     for (std::size_t i = 0 ; i < m_componentCount ; ++i)
 	state->components[i] = m_components[i]->allocState();
     return state;

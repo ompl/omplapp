@@ -38,6 +38,7 @@
 #define OMPL_BASE_STATE_VALIDITY_CHECKER_
 
 #include "ompl/base/State.h"
+#include "ompl/util/ClassForward.h"
 
 namespace ompl
 {
@@ -45,17 +46,18 @@ namespace ompl
     namespace base
     {
 
-	class SpaceInformation;
+	ClassForward(SpaceInformation);
+	ClassForward(StateValidityChecker);
 	
 	/** \brief Abstract definition for a class checking the
-	    validity of states. The () operator must be defined. The
-	    implementation of this class must be thread safe. */
+	    validity of states. The implementation of this class must
+	    be thread safe. */
 	class StateValidityChecker
 	{
 	public:
 
 	    /** \brief Constructor */
-	    StateValidityChecker(const SpaceInformation *si) : m_si(si)
+	    StateValidityChecker(const SpaceInformationPtr &si) : m_si(si)
 	    {
 	    }
 	    
@@ -65,11 +67,11 @@ namespace ompl
 	    }
 	    
 	    /** \brief Return true if the state is valid */
-	    virtual bool operator()(const State *state) const = 0;
+	    virtual bool isValid(const State *state) const = 0;
 	    
 	protected:
 	    
-	    const SpaceInformation *m_si;
+	    SpaceInformationPtr m_si;
 	    
 	};
 	

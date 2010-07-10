@@ -46,22 +46,25 @@ namespace ompl
     namespace ext
     {
 	
+	/** \brief The definition of a state in R^n */
 	class RealVectorState : public base::State
 	{
 	public:
 	    double *values;
 	};
 	
+	/** \brief The lower and upper bounds for an R^n manifold */
 	typedef std::pair< std::vector<double>, std::vector<double> > RealVectorBounds;
 	
-	class RealVectorStateSampler : public base::StateSampler
+	/** \brief Uniform sampler for the R^n manifold */
+	class RealVectorStateUniformSampler : public base::StateSampler
 	{
 	public:
 	    
-	    RealVectorStateSampler(const ManifoldConstPtr &si);
+	    RealVectorStateUniformSampler(const base::Manifold *manifold);
 	    
-	    virtual void sample(State *state);	    
-	    virtual void sampleNear(State *state, const State *near, const double distance);
+	    virtual void sample(base::State *state);
+	    virtual void sampleNear(base::State *state, const base::State *near, const double distance);
 	    
 	protected:
 	    
@@ -69,11 +72,12 @@ namespace ompl
 	    
 	};
 	
-	class RealVectorManifold : public base:Manifold
+	/** \brief A manifold representing R^n. The distance function is the square of L2 and sampling is uniform */
+	class RealVectorManifold : public base::Manifold
 	{
 	public:
 	    
-	    RealVectorManifold(unsigned int dim) : base::Manifold(), m_dimension(dim)
+	    RealVectorManifold(unsigned int dim) : base::Manifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double))
 	    {
 	    }
 	    
@@ -92,53 +96,46 @@ namespace ompl
 	    }
 	    
 	    /** \brief Get the dimension of the space */
-	    virtual unsigned int getDimension(void) const
-	    {
-		return m_dimension;
-	    }
+	    virtual unsigned int getDimension(void) const;
 	    
 	    /** \brief Bring the state within the bounds of the state space */
-	    virtual void enforceBounds(State *state) const
-	    {
-		RealVectorState *rstate = static_cast<RealVectorState*>(state);
-		
-	    }	    
+	    virtual void enforceBounds(base::State *state) const;
 	    	    
 	    /** \brief Check if a state is inside the bounding box */
-	    virtual bool satisfiesBounds(const State *state) const;
+	    virtual bool satisfiesBounds(const base::State *state) const;
 	    
 	    /** \brief Copy a state to another */
-	    virtual void copyState(State *destination, const State *source) const = 0;
+	    virtual void copyState(base::State *destination, const base::State *source) const;
 	    
 	    /** \brief Computes distance to between two states */
-	    virtual double distance(const State *state1, const State *state2) const = 0;
+	    virtual double distance(const base::State *state1, const base::State *state2) const;
 	    
 	    /** \brief Checks whether two states are equal */
-	    virtual bool equalStates(const State *state1, const State *state2) const = 0;
+	    virtual bool equalStates(const base::State *state1, const base::State *state2) const;
 
 	    /** \brief Computes the state that lies at time t \in [0, 1] on the
 		segment that connects the current state to the
 		destination state */
-	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const = 0;
+	    virtual void interpolate(const base::State *from, const base::State *to, const double t, base::State *state) const;
 
 	    /** \brief Allocate an instance of a state sampler for this space */
-	    virtual StateSampler* allocStateSampler(void) const = 0;
+	    virtual base::StateSamplerPtr allocStateSampler(void) const;
 	    
 	    /** \brief Allocate a state that can store a point in the described space */
-	    virtual State* allocState(void) const = 0;
+	    virtual base::State* allocState(void) const;
 	    
 	    /** \brief Free the memory of the allocated state */
-	    virtual void freeState(State *state) const = 0;
+	    virtual void freeState(base::State *state) const;
 
 	    /** \brief Print a state to screen */
-	    virtual void printState(const State *state, std::ostream &out) const;
+	    virtual void printState(const base::State *state, std::ostream &out) const;
 
 	protected:
 	    
-	    unsigned int        m_dimension;
-	    std::vector<double> m_lowerBound;
-	    std::vector<double> m_upperBound;
-	    
+	    unsigned int     m_dimension;
+	    std::size_t      m_stateBytes;
+	    RealVectorBounds m_bounds;
+
 	};
     }
 }

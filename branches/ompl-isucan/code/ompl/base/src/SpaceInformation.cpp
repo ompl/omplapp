@@ -71,20 +71,7 @@ bool ompl::base::SpaceInformation::isSetup(void) const
 {
     return m_setup;
 }
-/*
-void ompl::base::SpaceInformation::printState(const State *state, std::ostream &out) const
-{
-    if (state)
-    {
-	for (unsigned int i = 0 ; i < m_stateDimension ; ++i)
-	    out << state->values[i] << " ";
-	out << std::endl;
-    }
-    else
-	out << "NULL" << std::endl;
-}
 
-*/
 bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const
 {
     assert(near != state);
@@ -118,11 +105,4 @@ void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
     m_manifold->printSettings(out);
-    
-    /*
-    out << "  - dimension = " << m_stateDimension << std::endl;
-    out << "  - bounding box:" << std::endl;
-    for (unsigned int i = 0 ; i < m_stateDimension ; ++i)
-	out << "[" << m_stateComponent[i].minValue << ", " <<  m_stateComponent[i].maxValue << "](" << m_stateComponent[i].resolution << ") ";
-	out << std::endl; */
 }

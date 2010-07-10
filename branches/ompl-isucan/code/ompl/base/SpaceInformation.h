@@ -71,10 +71,8 @@ namespace ompl
 	    
 	    /** \brief Constructor. Sets the instance of the manifold
 		to plan on. */
-	    SpaceInformation(Manifold *manifold) : m_manifold(manifold)
+	    SpaceInformation(const ManifoldPtr &manifold) : m_manifold(manifold), m_setup(false)
 	    {
-		m_setup = false;
-		m_stateValidityChecker = NULL;
 	    }
 	    
 	    /** \brief Destructor */
@@ -83,13 +81,7 @@ namespace ompl
 	    }
 	    	    
 	    /** \brief Return the instance of the used manifold */
-	    Manifold* getManifold(void)
-	    {
-		return m_manifold;
-	    }	
-	    
-	    /** \brief Return the instance of the used manifold */
-	    const Manifold* getManifold(void) const
+	    const ManifoldPtr& getManifold(void) const
 	    {
 		return m_manifold;
 	    }	
@@ -98,22 +90,16 @@ namespace ompl
 		use. No memory freeing is performed. Parallel
 		implementations of planners assume this validity
 		checker is thread safe. */
-	    void setStateValidityChecker(StateValidityChecker *svc)
+	    void setStateValidityChecker(const StateValidityCheckerPtr &svc)
 	    {
 		m_stateValidityChecker = svc;
 	    }
 	    
 	    /** \brief Return the instance of the used state validity checker */
-	    StateValidityChecker* getStateValidityChecker(void)
+	    const StateValidityCheckerPtr& getStateValidityChecker(void) const
 	    {
 		return m_stateValidityChecker;
 	    }	
-	    
-	    /** \brief Return the instance of the used state validity checker */
-	    const StateValidityChecker* getStateValidityChecker(void) const
-	    {
-		return m_stateValidityChecker;
-	    }
 	    
 	    /** \brief Return the dimension of the state space */
 	    unsigned int getStateDimension(void) const
@@ -124,7 +110,7 @@ namespace ompl
 	    /** \brief Check if a given state is valid or not */
 	    bool isValid(const State *state) const
 	    {
-		return (*m_stateValidityChecker)(state);
+		return m_stateValidityChecker->isValid(state);
 	    }
 
 	    /** \brief Allocate memory for a state */
@@ -143,6 +129,14 @@ namespace ompl
 	    void copyState(State *destination, const State *source) const
 	    {
 		m_manifold->copyState(destination, source);
+	    }
+	    
+	    /** \brief Clone a state */
+	    State* cloneState(const State *source) const
+	    {
+		State *copy = m_manifold->allocState();
+		m_manifold->copyState(copy, source);
+		return copy;
 	    }
 	    
 	    /** \brief Check if two states are the same */
@@ -196,12 +190,12 @@ namespace ompl
 	    
 	protected:
 	    
-	    StateValidityChecker        *m_stateValidityChecker;
-	    Manifold                    *m_manifold;
+	    StateValidityCheckerPtr m_stateValidityChecker;
+	    ManifoldPtr             m_manifold;
 	    
-	    bool                         m_setup;
+	    bool                    m_setup;
 
-	    msg::Interface               m_msg;
+	    msg::Interface          m_msg;
 	};
 	
     }

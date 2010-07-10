@@ -57,7 +57,7 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    StateSampler(const ManifoldConstPtr &manifold) : m_manifold(manifold)
+	    StateSampler(const Manifold *manifold) : m_manifold(manifold)
 	    {
 	    }
 	    
@@ -80,8 +80,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    ManifoldConstPtr m_manifold;
-	    RNG              m_rng;
+	    const Manifold *m_manifold;
+	    RNG             m_rng;
 	};
 
 	/** \brief Definition of a compound state sampler. This is useful to construct samplers for compound states. */
@@ -90,7 +90,7 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    CompoundStateSampler(const ManifoldConstPtr &manifold) : StateSampler(manifold) 
+	    CompoundStateSampler(const Manifold* manifold) : StateSampler(manifold) 
 	    {
 	    }
 	    

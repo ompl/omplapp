@@ -51,7 +51,7 @@ namespace ompl
 	{
 	public:
 	    
-	    GoalRegion(const SpaceInformationConstPtr &si) : Goal(si), threshold(0.0)
+	    GoalRegion(const SpaceInformationPtr &si) : Goal(si), threshold(0.0)
 	    {
 	    }
 	    

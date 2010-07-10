@@ -61,7 +61,7 @@ namespace ompl
 	{
 	public:
 	    
-	    CompoundState(void)
+	    CompoundState(void) : State()
 	    {
 	    }
 	    

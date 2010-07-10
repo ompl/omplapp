@@ -32,80 +32,82 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_BASE_PROJECTION_EVALUATOR_
 #define OMPL_BASE_PROJECTION_EVALUATOR_
 
-#include "ompl/base/State.h"
+#include "ompl/base/Manifold.h"
 #include "ompl/util/ClassForward.h"
 #include <vector>
-#include <cmath>
 
 namespace ompl
 {
     
     namespace base
     {
-
-	ClassForward(Manifold);
 	
-	/** \brief Abstract definition for a class computing projections. The implementation of this class must be thread safe. */
+	/** \brief Grid cells corresponding to a projection value are described in terms of their coordinates. q*/
+	typedef std::vector<int> ProjectionCoordinates;
+	
+	ClassForward(ProjectionEvaluator);
+	
+	/** \brief Abstract definition for a class computing
+	    projections to R^n. Integer grids can be imposed on this
+	    projection by setting cell sizes. The implementation of
+	    this class is thread safe. */
 	class ProjectionEvaluator
 	{
 	public:
 	    
-	    ProjectionEvaluator(const ManifoldConstPtr &si) : m_si(si)
+	    ProjectionEvaluator(const ManifoldPtr &manifold, const std::vector<double> &cellDimensions) : m_manifold(manifold)
 	    {
+		setCellDimensions(cellDimensions);
 	    }
 	    
-	    /** \brief Destructor */
 	    virtual ~ProjectionEvaluator(void)
 	    {
 	    }
 	    
 	    /** \brief Return the dimension of the projection defined by this evaluator */
-	    virtual unsigned int getDimension(void) const = 0;
+	    unsigned int getDimension(void) const
+	    {
+		return m_manifold->getProjectionDimension();
+	    }
 	    
 	    /** \brief Compute the projection as an array of double values */
-	    virtual void operator()(const State *state, double *projection) const = 0;
-	    
+	    void project(const State *state, EuclideanProjection projection) const
+	    {
+		m_manifold->project(state, projection);
+	    }
+	    	    
 	    /** \brief Define the dimension (each component) of a grid cell. The
 		number of dimensions set here must be the same as the
 		dimension of the projection computed by the projection
 		evaluator. */
-	    void setCellDimensions(const std::vector<double> &cellDimensions)
-	    {
-		m_cellDimensions = cellDimensions;
-	    }
+	    void setCellDimensions(const std::vector<double> &cellDimensions);
 	    
 	    /** \brief Get the dimension (each component) of a grid cell  */
-	    void getCellDimensions(std::vector<double> &cellDimensions) const
+	    const std::vector<double>& getCellDimensions(void) const
 	    {
-		cellDimensions = m_cellDimensions;
+		return m_cellDimensions;
 	    }
 	    
 	    /** \brief Compute integer coordinates for a projection */
-	    void computeCoordinates(const double *projection, std::vector<int> &coord) const
-	    {
-		unsigned int dim = getDimension();
-		coord.resize(dim);
-		for (unsigned int i = 0 ; i < dim ; ++i)
-		    coord[i] = (int)trunc(projection[i]/m_cellDimensions[i]);
-	    }
+	    void computeCoordinates(const EuclideanProjection projection, ProjectionCoordinates &coord) const;
 	    
 	    /** \brief Compute integer coordinates for a state */
-	    void computeCoordinates(const State *state, std::vector<int> &coord) const
+	    void computeCoordinates(const State *state, ProjectionCoordinates &coord) const
 	    {
 		double projection[getDimension()];
-		(*this)(state, projection);
+		project(state, projection);
 		computeCoordinates(projection, coord);
 	    }
 	    
 	protected:
 	    
-	    SpaceInformationConstPtr m_si;	    
-	    std::vector<double>      m_cellDimensions;
+	    ManifoldPtr          m_manifold;
+	    std::vector<double>  m_cellDimensions;
 	    
 	};
 	

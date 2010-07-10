@@ -57,7 +57,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. The goal must always know the space information it is part of */
-	    Goal(const SpaceInformationConstPtr &si) : m_si(si), m_difference(-1.0), m_approximate(false)
+	    Goal(const SpaceInformationPtr &si) : m_si(si), m_difference(-1.0), m_approximate(false)
 	    {
 	    }
 	    
@@ -90,21 +90,12 @@ namespace ompl
 	    {
 		return m_path;
 	    }
-	    
+
 	    /** \brief Return the found solution path. 
 
 		This will need to be casted into the specialization
 		computed by the planner */
-	    PathConstPtr getSolutionPath(void) const
-	    {
-		return m_path;
-	    }
-	    
-	    /** \brief Return the found solution path. 
-
-		This will need to be casted into the specialization
-		computed by the planner */
-	    const PathPtr& getSolutionPath(void)
+	    const PathPtr& getSolutionPath(void) const
 	    {
 		return m_path;
 	    }
@@ -155,7 +146,7 @@ namespace ompl
 	protected:
 	    
 	    /** \brief The space information for this goal */
-	    SpaceInformationConstPtr m_si;
+	    SpaceInformationPtr      m_si;
 
 	    /** \brief Solution path, if found */
 	    PathPtr                  m_path;

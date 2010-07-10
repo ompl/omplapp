@@ -53,7 +53,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. A path must always know the space information it is part of */
-	    Path(const SpaceInformationConstPtr &si) : m_si(si)
+	    Path(const SpaceInformationPtr &si) : m_si(si)
 	    {
 	    }
 	    
@@ -61,19 +61,13 @@ namespace ompl
 	    virtual ~Path(void)
 	    {
 	    }
-	    
-	    /** \brief Returns the space information this path is part of */
-	    const SpaceInformationConstPtr& getSpaceInformation(void) const
-	    {
-		return m_si;
-	    }
-	    
+	    	    
 	    /** \brief Return the length of a path */
 	    virtual double length(void) const = 0;
 	    
 	protected:
 	    
-	    SpaceInformationConstPtr m_si;
+	    SpaceInformationPtr m_si;
 	};
 	
     }

@@ -72,9 +72,7 @@ namespace ompl
 	    /** \brief Add a start state */
 	    void addStartState(const State *state)
 	    {
-		State *copy = m_si->allocState();
-		m_si->copyState(copy, state);
-		m_startStates.push_back(copy);
+		m_startStates.push_back(m_si->cloneState(state));
 	    }
 	    
 	    /** \brief Check whether a specified starting state is
@@ -121,13 +119,7 @@ namespace ompl
 	    }
 	    
 	    /** \brief Return the current goal */
-	    GoalConstPtr getGoal(void) const
-	    {
-		return m_goal;
-	    }
-
-	    /** \brief Return the current goal */
-	    const GoalPtr& getGoal(void)
+	    const GoalPtr& getGoal(void) const
 	    {
 		return m_goal;
 	    }
