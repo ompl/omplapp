@@ -34,46 +34,64 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_PATH_
-#define OMPL_BASE_PATH_
+#include "ompl/geometric/PathGeometric.h"
 
-#include "ompl/util/ClassForward.h"
-
-namespace ompl
+ompl::geometric::PathGeometric::PathGeometric(const PathGeometric &path) : base::Path(path.m_si)
 {
-    namespace base
-    {
-	
-	ClassForward(SpaceInformation);
-	ClassForward(Path);
-	
-	/** \brief Abstract definition of a path */
-	class Path
-	{
-	public:
-	    
-	    /** \brief Constructor. A path must always know the space information it is part of */
-	    Path(const SpaceInformationPtr &si) : m_si(si)
-	    {
-	    }
-	    
-	    /** \brief Destructor */
-	    virtual ~Path(void)
-	    {
-	    }
-	    
-	    /** \brief Return the length of a path */
-	    virtual double length(void) const = 0;
-	    
-	    /** \brief Check if the path is valid */
-	    virtual bool check(void) const = 0;
-	    	    
-	protected:
-	    
-	    SpaceInformationPtr m_si;
-	};
-
-    }
+    states.resize(path.states.size());
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+	states[i] = m_si->cloneState(path.states[i]);
 }
 
-#endif
+void ompl::geometric::PathGeometric::freeMemory(void)
+{
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+	m_si->freeState(states[i]);
+}
+
+double ompl::geometric::PathGeometric::length(void) const
+{
+    return (double)states.size();
+}
+
+bool ompl::geometric::PathGeometric::check(void) const
+{
+    bool result = true;
+    if (states.size() > 0)
+    {
+	if (m_si->isValid(states[0]))
+	{
+	    int last = states.size() - 1;
+	    for (int j = 0 ; result && j < last ; ++j)
+		if (!m_si->checkMotion(states[j], states[j + 1]))
+		    result = false;
+	}
+	else
+	    result = false;
+    }
+    return result;
+}
+
+void ompl::geometric::PathGeometric::interpolate(double factor) const
+{
+    /*
+    std::vector<base::State*> newStates;
+    const int n1 = path->states.size() - 1;
+    
+    for (int i = 0 ; i < n1 ; ++i)
+    {
+	base::State *s1 = path->states[i];
+	base::State *s2 = path->states[i + 1];
+	
+	newStates.push_back(s1);
+	
+	std::vector<base::State*> block;
+	m_stateInterpolator->getStates(s1, s2, block, factor, false, true);
+	newStates.insert(newStates.end(), block.begin(), block.end());
+    }
+    newStates.push_back(path->states[n1]);
+    
+    path->states.swap(newStates); */
+    
+}
+

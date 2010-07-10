@@ -36,7 +36,17 @@
 
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/util/Exception.h"
+#include <queue>
+#include <utility>
+#include <limits>
+#include <cmath>
 #include <cassert>
+
+ompl::base::SpaceInformation::SpaceInformation(const ManifoldPtr &manifold) : m_manifold(manifold), m_resolution(0.0), m_setup(false)
+{
+    if (!m_manifold)
+	throw Exception("Invalid manifold definition");
+}
 
 void ompl::base::SpaceInformation::setup(void)
 {
@@ -48,6 +58,9 @@ void ompl::base::SpaceInformation::setup(void)
     
     if (m_manifold->getDimension() <= 0)
 	throw Exception("The dimension of the manifold we plan in must be > 0");
+    
+    if (m_resolution < std::numeric_limits<double>::epsilon())
+	throw Exception("The resolution at which states need to be checked for validity must be > 0.0");
     
     m_setup = true;
 }
@@ -86,8 +99,89 @@ bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *
     return result;
 }
 
+bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2, State *lastValidState, double *lastValidTime) const
+{
+    /* assume motion starts in a valid configuration so s1 is valid */
+    if (!isValid(s2))
+	return false;
+
+    bool result = true;
+    int nd = (int)ceil(distance(s1, s2) / m_resolution);
+    
+    /* temporary storage for the checked state */
+    State *test = allocState();
+    
+    for (int j = 1 ; j < nd ; ++j)
+    {
+	m_manifold->interpolate(s1, s2, (double)j / (double)nd, test);
+	if (!m_si->isValid(test))
+	{
+	    if (lastValidState)
+		m_manifold->interpolate(s1, s2, (double)(j - 1) / (double)nd, lastValidState);
+	    if (lastValidTime)
+		*lastValidTime = (double)(j - 1) / (double)nd;
+	    result = false;
+	    break;
+	}
+    }
+    freeState(test);
+    
+    return result;
+}
+
+bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2) const
+{
+    /* assume motion starts in a valid configuration so s1 is valid */
+    if (!isValid(s2))
+	return false;
+    
+    bool result = true;
+    int nd = (int)ceil(distance(s1, s2) / m_resolution);
+    
+    /* initialize the queue of test positions */
+    std::queue< std::pair<int, int> > pos;
+    if (nd >= 2)
+	pos.push(std::make_pair(1, nd - 1));
+    
+    /* temporary storage for the checked state */
+    State *test = allocState();
+    
+    /* repeatedly subdivide the path segment in the middle (and check the middle) */
+    while (!pos.empty())
+    {
+	std::pair<int, int> x = pos.front();
+	
+	int mid = (x.first + x.second) / 2;
+	m_manifold->interpolate(s1, s2, (double)mid / (double)nd, test);
+	
+	if (!isValid(test))
+	{
+	    result = false;
+	    break;
+	}
+		
+	pos.pop();
+	
+	if (x.first < mid)
+	    pos.push(std::make_pair(x.first, mid - 1));
+	if (x.second > mid)
+	    pos.push(std::make_pair(mid + 1, x.second));
+    }
+    
+    freeState(test);
+    
+    return result;
+}
+
+unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, const State *s2, std::vector<base::State*> &states, bool alloc) const
+{
+}
+
+
 void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
+    out << "  - manifold:" << std::endl;
     m_manifold->printSettings(out);
+    out << "  - state validity check resolution: " << m_resolution << std::endl;
 }

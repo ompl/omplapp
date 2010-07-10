@@ -34,45 +34,55 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_PATH_
-#define OMPL_BASE_PATH_
+#ifndef OMPL_GEOMETRIC_PATH_GEOMETRIC_
+#define OMPL_GEOMETRIC_PATH_GEOMETRIC_
 
-#include "ompl/util/ClassForward.h"
+#include "ompl/base/SpaceInformation.h"
+#include "ompl/base/Path.h"
+#include <vector>
 
 namespace ompl
 {
-    namespace base
+    namespace geometric
     {
 	
-	ClassForward(SpaceInformation);
-	ClassForward(Path);
-	
-	/** \brief Abstract definition of a path */
-	class Path
+	/** \brief Definition of a geometric path.
+
+	    This is the type of path computed by geometric planners. */
+	class PathGeometric : public base::Path
 	{
 	public:
 	    
-	    /** \brief Constructor. A path must always know the space information it is part of */
-	    Path(const SpaceInformationPtr &si) : m_si(si)
+	    PathGeometric(const base::SpaceInformationPtr &si) : base::Path(si)
 	    {
 	    }
 	    
-	    /** \brief Destructor */
-	    virtual ~Path(void)
+	    PathGeometric(const PathGeometric &path);
+	    
+	    virtual ~PathGeometric(void)
 	    {
+		freeMemory();
 	    }
-	    
-	    /** \brief Return the length of a path */
-	    virtual double length(void) const = 0;
-	    
+
+	    /** \brief Compute the length of a geometric path (number of states) */
+	    virtual double length(void) const;
+
 	    /** \brief Check if the path is valid */
-	    virtual bool check(void) const = 0;
-	    	    
+	    virtual bool check(void) const;	
+
+	    /** \brief Insert states in a path, at the collision checking resolution */
+	    void interpolate(double factor = 1.0) const;
+
+	    /** \brief The list of states that make up the path */
+	    std::vector<base::State*> states;
+	    
 	protected:
 	    
-	    SpaceInformationPtr m_si;
+	    /** \brief Free the memory corresponding to the states on this path */
+	    void freeMemory(void);
+	    
 	};
-
+	
     }
 }
 

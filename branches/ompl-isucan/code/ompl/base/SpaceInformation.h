@@ -71,9 +71,7 @@ namespace ompl
 	    
 	    /** \brief Constructor. Sets the instance of the manifold
 		to plan on. */
-	    SpaceInformation(const ManifoldPtr &manifold) : m_manifold(manifold), m_setup(false)
-	    {
-	    }
+	    SpaceInformation(const ManifoldPtr &manifold);
 	    
 	    /** \brief Destructor */
 	    virtual ~SpaceInformation(void)
@@ -101,6 +99,19 @@ namespace ompl
 		return m_stateValidityChecker;
 	    }	
 	    
+	    /** \brief Set the resolution (maximum distance between states) at which state validity needs to be
+		verified in order for a motion between two states to be considered valid */
+	    void setStateValidityCheckingResolution(double resolution)
+	    {
+		m_resolution = resolution;
+	    }
+	    
+	    /** \brief Get the resolution (maximum distance between states) at which state validity is verified */
+	    double getStateValidityCheckingResolution(void) const
+	    {
+		return m_resolution;
+	    }
+	    
 	    /** \brief Return the dimension of the state space */
 	    unsigned int getStateDimension(void) const
 	    {
@@ -124,7 +135,13 @@ namespace ompl
 	    {
 		m_manifold->freeState(state);
 	    }
-	    
+
+	    /** \brief Print a state to a stream */
+	    void printState(const State *state, std::ostream &out = std::cout) const
+	    {
+		m_manifold->printState(state, out);
+	    }
+
 	    /** \brief Copy a state to another */
 	    void copyState(State *destination, const State *source) const
 	    {
@@ -171,14 +188,19 @@ namespace ompl
 	    
 	    /** \brief Find a valid state near a given one. If the given state is valid, it will be returned itself.
 	     *  The two passed state pointers must point to different states. Returns true on success.  */
-	    bool searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const;
+	    virtual bool searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const;
 	    
-	    /** \brief Print a state to a stream */
-	    void printState(const State *state, std::ostream &out = std::cout) const
-	    {
-		m_manifold->printState(state, out);
-	    }
+	    /** \brief Incrementally check if the path between two motions is valid. Also compute the last state that was
+		valid and the time of that state. The time is used to parametrize the motion from s1 to s2, s1 being at t =
+		0 and s2 being at t = 1. */
+	    virtual bool checkMotion(const State *s1, const State *s2, State *lastValidState, double *lastValidTime) const;
 	    
+	    /** \brief Check if the path between two motions is valid using subdivision.  */
+	    virtual bool checkMotion(const State *s1, const State *s2) const;
+	    
+	    /** \brief Get the states that make up a motion. Returns the number of states that were added */
+	    virtual unsigned int getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, bool alloc) const;
+
 	    /** \brief Print information about the current instance of the state space */
 	    virtual void printSettings(std::ostream &out = std::cout) const;
 	    
@@ -192,6 +214,7 @@ namespace ompl
 	    
 	    StateValidityCheckerPtr m_stateValidityChecker;
 	    ManifoldPtr             m_manifold;
+	    double                  m_resolution;
 	    
 	    bool                    m_setup;
 

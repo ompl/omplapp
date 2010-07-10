@@ -90,7 +90,7 @@ namespace ompl
 	    {
 		return m_path;
 	    }
-
+	    
 	    /** \brief Return the found solution path. 
 
 		This will need to be casted into the specialization
