@@ -72,26 +72,24 @@ bool ompl::geometric::PathGeometric::check(void) const
     return result;
 }
 
-void ompl::geometric::PathGeometric::interpolate(double factor) const
+void ompl::geometric::PathGeometric::interpolate(double factor) 
 {
-    /*
     std::vector<base::State*> newStates;
-    const int n1 = path->states.size() - 1;
+    const int n1 = states.size() - 1;
     
     for (int i = 0 ; i < n1 ; ++i)
     {
-	base::State *s1 = path->states[i];
-	base::State *s2 = path->states[i + 1];
+	base::State *s1 = states[i];
+	base::State *s2 = states[i + 1];
 	
 	newStates.push_back(s1);
 	
 	std::vector<base::State*> block;
-	m_stateInterpolator->getStates(s1, s2, block, factor, false, true);
+	m_si->getMotionStates(s1, s2, block, factor, false, true);
 	newStates.insert(newStates.end(), block.begin(), block.end());
     }
-    newStates.push_back(path->states[n1]);
     
-    path->states.swap(newStates); */
-    
+    newStates.push_back(states[n1]);
+    states.swap(newStates);
 }
 

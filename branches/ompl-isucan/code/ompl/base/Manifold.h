@@ -51,9 +51,6 @@ namespace ompl
     {
 	
 	ClassForward(Manifold);
-
-	/** \brief The datatype for state projections. */
-	typedef double* EuclideanProjection;
 	
 	/** \brief Representation of a space in which planning can be
 	    performed. Topology specific sampling and interpolation
@@ -100,18 +97,6 @@ namespace ompl
 	    /** \brief Free the memory of the allocated state */
 	    virtual void freeState(State *state) const = 0;
 	    	    
-	    /** \brief Return the dimension of the projection defined on this manifold. */
-	    virtual unsigned int getProjectionDimension(void) const;
-	    
-	    /** \brief Compute the projection as an array of double values */
-	    virtual void project(const State *state, double *projection) const;
-	    
-	    /** \brief Allocate memory for a projection */
-	    EuclideanProjection allocProjection(void) const;
-	    
-	    /** \brief Free the memory of a projection */
-	    void freeProjection(EuclideanProjection proj) const;
-	    
 	    /** \brief Print a state to a stream */
 	    virtual void printState(const State *state, std::ostream &out) const;
 	    
@@ -164,10 +149,6 @@ namespace ompl
 	    
 	    virtual void freeState(State *state) const;	 
 
-	    virtual unsigned int getProjectionDimension(void) const;
-	    
-	    virtual void project(const State *state, double *projection) const;
-	    
 	    virtual void printState(const State *state, std::ostream &out) const;
 
 	    virtual void printSettings(std::ostream &out) const;

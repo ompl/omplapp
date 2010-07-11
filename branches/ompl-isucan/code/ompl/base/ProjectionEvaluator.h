@@ -49,6 +49,9 @@ namespace ompl
 	
 	/** \brief Grid cells corresponding to a projection value are described in terms of their coordinates. q*/
 	typedef std::vector<int> ProjectionCoordinates;
+
+	/** \brief The datatype for state projections. */
+	typedef double* EuclideanProjection;
 	
 	ClassForward(ProjectionEvaluator);
 	
@@ -70,16 +73,10 @@ namespace ompl
 	    }
 	    
 	    /** \brief Return the dimension of the projection defined by this evaluator */
-	    unsigned int getDimension(void) const
-	    {
-		return m_manifold->getProjectionDimension();
-	    }
+	    virtual unsigned int getDimension(void) const = 0;
 	    
 	    /** \brief Compute the projection as an array of double values */
-	    void project(const State *state, EuclideanProjection projection) const
-	    {
-		m_manifold->project(state, projection);
-	    }
+	    virtual void project(const State *state, EuclideanProjection projection) const = 0;
 	    	    
 	    /** \brief Define the dimension (each component) of a grid cell. The
 		number of dimensions set here must be the same as the

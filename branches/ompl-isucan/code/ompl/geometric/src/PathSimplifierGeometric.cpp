@@ -34,19 +34,19 @@
 
 /* \author Ioan Sucan */
 
-#include "ompl/kinematic/PathSimplifierKinematic.h"
+#include "ompl/geometric/PathSimplifierGeometric.h"
 #include <cstdlib>
 
-void ompl::kinematic::PathSimplifierKinematic::reduceVertices(PathKinematic *path)
+void ompl::geometric::PathSimplifierGeometric::reduceVertices(PathGeometric &path)
 {
-    if (!path || path->states.size() < 3)
+    if (path.states.size() < 3)
 	return;    
     
     unsigned int nochange = 0;
     
     for (unsigned int i = 0 ; i < m_maxSteps && nochange < m_maxEmptySteps ; ++i, ++nochange)
     {
-	int count = path->states.size();
+	int count = path.states.size();
 	int maxN  = count - 1;
 	int range = 1 + (int)((double)count * m_rangeRatio);
 	
@@ -66,63 +66,19 @@ void ompl::kinematic::PathSimplifierKinematic::reduceVertices(PathKinematic *pat
 	if (p1 > p2)
 	    std::swap(p1, p2);
 	
-	if (m_si->checkMotion(path->states[p1], path->states[p2]))
+	if (m_si->checkMotion(path.states[p1], path.states[p2]))
 	{
 	    for (int i = p1 + 1 ; i < p2 ; ++i)
-		delete path->states[i];
-	    path->states.erase(path->states.begin() + p1 + 1, path->states.begin() + p2);
+		m_si->freeState(path.states[i]);
+	    path.states.erase(path.states.begin() + p1 + 1, path.states.begin() + p2);
 	    nochange = 0;
 	}
     }
 }
 
-void ompl::kinematic::PathSimplifierKinematic::simplifyMax(PathKinematic *path)
+void ompl::geometric::PathSimplifierGeometric::simplifyMax(PathGeometric &path)
 {
     reduceVertices(path);
-    m_si->interpolatePath(path, 3.0);
+    path.interpolate(3.0);
     reduceVertices(path);
-    removeRedundantCommands(path);    
-}
-
-void ompl::kinematic::PathSimplifierKinematic::removeRedundantCommands(PathKinematic *path) const
-{
-    if (!path || path->states.size() < 3)
-	return;
-
-    unsigned int dim = m_si->getStateDimension();
-    int         last = path->states.size() - 1;
-    double   *backup = new double[path->states.size()];
-    
-    for (unsigned int i = 0 ; i < dim ; ++i)
-    {
-	double command = path->states[0]->values[i];
-	if (command != path->states[last]->values[i])
-	    continue;
-	
-	bool diff = false;
-	for (int j = 1 ; j < last ; ++j)
-	{
-	    backup[j] = path->states[j]->values[i];
-	    if (path->states[j]->values[i] != command)
-	    {
-		path->states[j]->values[i] = command;
-		diff = true;
-	    }
-	}
-	
-	if (diff)
-	{
-	    bool change_back = false;	
-	    for (int j = 0 ; change_back && j < last ; ++j)
-		if (!m_si->checkMotion(path->states[j], path->states[j + 1]))
-		    change_back = true;
-	    if (change_back)
-	    {
-		for (int j = 1 ; j < last ; ++j)
-		    path->states[j]->values[i] = backup[j];
-	    }
-	}
-    }
-    
-    delete[] backup;
 }

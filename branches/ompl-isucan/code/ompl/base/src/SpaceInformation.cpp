@@ -114,7 +114,7 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2,
     for (int j = 1 ; j < nd ; ++j)
     {
 	m_manifold->interpolate(s1, s2, (double)j / (double)nd, test);
-	if (!m_si->isValid(test))
+	if (!isValid(test))
 	{
 	    if (lastValidState)
 		m_manifold->interpolate(s1, s2, (double)(j - 1) / (double)nd, lastValidState);
@@ -173,10 +173,44 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
     return result;
 }
 
-unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, const State *s2, std::vector<base::State*> &states, bool alloc) const
+std::size_t ompl::base::SpaceInformation::getMotionStates(const State *s1, const State *s2, std::vector<base::State*> &states, double factor, bool endpoints, bool alloc) const
 {
+    int nd = (int)ceil(distance(s1, s2) / (m_resolution * factor));
+    
+    if (alloc)
+    {
+	states.resize(nd + (endpoints ? 1 : -1));
+	if (endpoints)
+	    states[0] = allocState();
+    }
+    
+    std::size_t added = 0;
+    
+    if (endpoints && states.size() > 0)
+    {
+	copyState(states[0], s1);
+	added++;
+    }
+    
+    /* find the states in between */
+    for (int j = 1 ; j < nd && added < states.size() ; ++j)
+    {
+	if (alloc)
+	    states[added] = allocState();
+	m_manifold->interpolate(s1, s2, (double)j / (double)nd, states[added]);
+	added++;
+    }
+    
+    if (added < states.size() && endpoints)
+    {
+	if (alloc)
+	    states[added] = allocState();
+	copyState(states[added], s2);
+	added++;
+    }
+    
+    return added;
 }
-
 
 void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {

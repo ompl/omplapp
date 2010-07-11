@@ -41,26 +41,6 @@ ompl::base::Manifold::~Manifold(void)
 { 
 }
 
-unsigned int ompl::base::Manifold::getProjectionDimension(void) const
-{
-    return 0;
-}
-
-void ompl::base::Manifold::project(const State * /* state */, double * /* projection */) const
-{
-    throw Exception("No projection defined for this manifold");
-}
-
-ompl::base::EuclideanProjection ompl::base::Manifold::allocProjection(void) const
-{
-    return new double[getProjectionDimension()];
-}
-
-void ompl::base::Manifold::freeProjection(EuclideanProjection proj) const
-{
-    delete[] proj;
-}
-
 void ompl::base::Manifold::printState(const State *state, std::ostream &out) const
 {
     out << "State instance: " << state << std::endl;
@@ -163,30 +143,6 @@ void ompl::base::CompoundManifold::freeState(State *state) const
 	m_components[i]->freeState(cstate->components[i]);
     delete[] cstate->components;
     delete cstate;
-}
-
-unsigned int ompl::base::CompoundManifold::getProjectionDimension(void) const
-{   
-    unsigned int dim = 0;
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-	dim += m_components[i]->getProjectionDimension();
-    return dim;
-}
-
-void ompl::base::CompoundManifold::project(const State *state, double *projection) const
-{
-    const CompoundState *cstate = static_cast<const CompoundState*>(state);
-    unsigned int pos = 0;
-    
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-    {
-	unsigned int d = m_components[i]->getProjectionDimension();
-	if (d > 0)
-	{
-	    m_components[i]->project(cstate->components[i], projection + pos);
-	    pos += d;
-	}
-    }
 }
 
 void ompl::base::CompoundManifold::printState(const State *state, std::ostream &out) const

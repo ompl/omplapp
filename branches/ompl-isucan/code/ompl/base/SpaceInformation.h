@@ -198,8 +198,12 @@ namespace ompl
 	    /** \brief Check if the path between two motions is valid using subdivision.  */
 	    virtual bool checkMotion(const State *s1, const State *s2) const;
 	    
-	    /** \brief Get the states that make up a motion. Returns the number of states that were added */
-	    virtual unsigned int getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, bool alloc) const;
+	    /** \brief Get the states that make up a motion. Returns the number of states that were added.
+
+		The states are added at the distance specified by the collision checking resolution times the factor
+		specified. A factor larger than 1 will result in fewer states per motion. The endpoints (s1 and s2) can 
+		optionally be part of the computed set of states. */
+	    virtual std::size_t getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const;
 
 	    /** \brief Print information about the current instance of the state space */
 	    virtual void printSettings(std::ostream &out = std::cout) const;

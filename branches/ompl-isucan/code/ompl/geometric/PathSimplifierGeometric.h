@@ -32,28 +32,32 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PATH_SIMPLIFIER_KINEMATIC_
-#define OMPL_KINEMATIC_PATH_SIMPLIFIER_KINEMATIC_
+#ifndef OMPL_GEOMETRIC_PATH_SIMPLIFIER_GEOMETRIC_
+#define OMPL_GEOMETRIC_PATH_SIMPLIFIER_GEOMETRIC_
 
-#include "ompl/kinematic/SpaceInformationKinematic.h"
-
+#include "ompl/base/SpaceInformation.h"
+#include "ompl/geometric/PathGeometric.h"
+#include "ompl/util/ClassForward.h"
+#include "ompl/util/RandomNumbers.h"
 
 namespace ompl
 {
 
-    namespace kinematic
+    namespace geometric
     {
+
+	ClassForward(PathSimplifierGeometric);
 	
-	/** \brief This class contains smoothers that can be applied to kinematic paths.
+	/** \brief This class contains smoothers that can be applied to geometric paths.
 
 	 These are in fact routines that shorten the path, and do not
 	 necessarily make it smoother.*/
-	class PathSimplifierKinematic
+	class PathSimplifierGeometric
 	{
 	public:
-	    PathSimplifierKinematic(SpaceInformationKinematic *si)
+	    PathSimplifierGeometric(const base::SpaceInformationPtr &si)
 	    {
 		m_si = si;
 		m_rangeRatio = 0.2;
@@ -61,7 +65,7 @@ namespace ompl
 		m_maxEmptySteps = 3;
 	    }
 	    
-	    virtual ~PathSimplifierKinematic(void)
+	    virtual ~PathSimplifierGeometric(void)
 	    {
 	    }
 	    
@@ -95,26 +99,23 @@ namespace ompl
 		m_maxEmptySteps = maxEmptySteps;
 	    }
 	    
-	    /** Given a path, attempt to remove vertices from it while keeping the path valid */
-	    virtual void reduceVertices(PathKinematic *path);
+	    /** \brief Given a path, attempt to remove vertices from it while keeping the path valid */
+	    virtual void reduceVertices(PathGeometric &path);
 	    
-	    /** Given a path, attempt to reduce redundant commands */
-	    virtual void removeRedundantCommands(PathKinematic *path) const;
-	    
-	    /** Given a path, attempt to remove vertices from it while
+	    /** \brief Given a path, attempt to remove vertices from it while
 	     * keeping the path valid.  Then, interpolate the path, to add
 	     * more vertices and try to remove them again. This should
 	     * produce smoother solutions. removeRedundantCommands is also
 	     * called.  */
-	    virtual void simplifyMax(PathKinematic *path);
+	    virtual void simplifyMax(PathGeometric &path);
 	    
 	protected:
 	    
-	    SpaceInformationKinematic *m_si;
-	    RNG                        m_rng;
-	    double                     m_rangeRatio;
-	    unsigned int               m_maxSteps;
-	    unsigned int               m_maxEmptySteps;
+	    base::SpaceInformationPtr m_si;
+	    RNG                       m_rng;
+	    double                    m_rangeRatio;
+	    unsigned int              m_maxSteps;
+	    unsigned int              m_maxEmptySteps;
 	};    
     }
 }

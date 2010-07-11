@@ -45,7 +45,7 @@ namespace ompl
 {
     namespace geometric
     {
-	
+
 	/** \brief Definition of a geometric path.
 
 	    This is the type of path computed by geometric planners. */
@@ -71,8 +71,8 @@ namespace ompl
 	    virtual bool check(void) const;	
 
 	    /** \brief Insert states in a path, at the collision checking resolution */
-	    void interpolate(double factor = 1.0) const;
-
+	    void interpolate(double factor = 1.0);
+	    
 	    /** \brief The list of states that make up the path */
 	    std::vector<base::State*> states;
 	    
