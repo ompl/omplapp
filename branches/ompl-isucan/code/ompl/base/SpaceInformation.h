@@ -186,6 +186,11 @@ namespace ompl
 		return m_manifold->allocStateSampler();
 	    }
 	    
+	    /** \brief Estimate the maximum (underapproximation)
+		extent of the space we are planning in. This is done
+		through random sampling. */
+	    virtual double estimateExtent(unsigned int samples = 10);
+	    
 	    /** \brief Find a valid state near a given one. If the given state is valid, it will be returned itself.
 	     *  The two passed state pointers must point to different states. Returns true on success.  */
 	    virtual bool searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const;
@@ -219,6 +224,7 @@ namespace ompl
 	    StateValidityCheckerPtr m_stateValidityChecker;
 	    ManifoldPtr             m_manifold;
 	    double                  m_resolution;
+	    double                  m_maxExtent;
 	    
 	    bool                    m_setup;
 
