@@ -40,6 +40,7 @@
 #include "ompl/base/State.h"
 #include "ompl/base/Goal.h"
 #include "ompl/base/SpaceInformation.h"
+#include "ompl/base/ScopedState.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/ClassForward.h"
 

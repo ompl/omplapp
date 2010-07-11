@@ -48,7 +48,6 @@ namespace ompl
     {
 	
 	ClassForward(Manifold);
-	ClassForward(SpaceInformation);
 	ClassForward(StateSampler);
 	
 	/** \brief Abstract definition of a state sampler. */
@@ -118,6 +117,7 @@ namespace ompl
 	    std::size_t                  m_samplerCount;
 	    
 	};
+
     }
 }
 

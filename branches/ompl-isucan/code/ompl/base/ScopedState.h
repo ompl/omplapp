@@ -34,45 +34,74 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_STATE_
-#define OMPL_BASE_STATE_
+#ifndef OMPL_BASE_SCOPED_STATE_
+#define OMPL_BASE_SCOPED_STATE_
+
+#include "ompl/base/SpaceInformation.h"
+#include "ompl/util/Exception.h"
+#include "boost/concept_check.hpp"
 
 namespace ompl
 {
     namespace base
     {
 	
-	/** \brief Definition of an abstract state */
-	class State
-	{
-	protected:
-	    
-	    State(void)
-	    {
-	    }
-	    
-	    virtual ~State(void)
-	    {
-	    }
-	};
+	/** \brief Definition of a scoped state. 
 
-	/** \brief Definition of a compound state */
-	class CompoundState : public State
+	    This class allocates a state of a desired type using the
+	    allocation mechanism of the manifold the state is part
+	    of. The state is then freed when the instance goes out of
+	    scope using the corresponding free mechanism. */
+	template<class T = State>
+	class ScopedState
 	{
+	    
+	    /** \brief Make sure the type we are allocating is indeed a state */
+	    BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+	    
 	public:
 	    
-	    CompoundState(void) : State()
+	    /** \brief Given the space that we are working with, allocate a state from the corresponding
+		manifold. Throw an exception if the desired type to cast this state into does not match the type of states
+		allocated. */
+	    explicit
+	    ScopedState(const SpaceInformationPtr &si) : m_si(si)
 	    {
+		State *s = m_si->allocState();
+		m_state = dynamic_cast<T*>(s);
+		if (!m_state)
+		{
+		    m_si->freeState(s);
+		    throw Exception("Space information does not allocate states of desired type");
+		}
 	    }
 	    
-	    virtual ~CompoundState(void)
+	    /** \brief Free the memory of the internally allocated state */
+	    ~ScopedState(void)
 	    {
+		m_si->freeState(m_state);
+	    }	    
+	    
+	    T& operator*(void) const
+	    {
+		return *m_state;
 	    }
 	    
-	    /** \brief The components that make up a compound state */
-	    State **components;
+	    T* operator->(void) const
+	    {
+		return m_state;
+	    }
+	    
+	    T* get(void) const
+	    {
+		return m_state;
+	    }
+	    
+	private:
+	    
+	    SpaceInformationPtr  m_si;	    
+	    T                   *m_state;
 	};
-	
     }
 }
 

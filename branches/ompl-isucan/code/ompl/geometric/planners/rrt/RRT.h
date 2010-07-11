@@ -32,23 +32,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_RRT_RRT_
-#define OMPL_KINEMATIC_PLANNERS_RRT_RRT_
+#ifndef OMPL_GEOMETRIC_PLANNERS_RRT_RRT_
+#define OMPL_GEOMETRIC_PLANNERS_RRT_RRT_
 
-#include "ompl/base/Planner.h"
-#include "ompl/kinematic/SpaceInformationKinematic.h"
+#include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 
 namespace ompl
 {
     
-    namespace kinematic
+    namespace geometric
     {
 	
 	/**
-	   @anchor kRRT
+	   @anchor gRRT
 	   
 	   @par Short description
 	   
@@ -74,8 +73,8 @@ namespace ompl
 	{
 	public:
 	    
-	    RRT(SpaceInformationKinematic *si) : base::Planner(si),
-						 m_sCore(si)
+	    RRT(const base::SpaceInformationPtr &si) : base::Planner(si),
+						       m_sCore(si->allocStateSampler())
 	    {
 		m_type = base::PLAN_TO_GOAL_ANY;
 		m_msg.setPrefix("RRT");
@@ -91,7 +90,7 @@ namespace ompl
 		freeMemory();
 	    }
 
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	    virtual bool solve(double solveTime);
 	    
@@ -163,14 +162,12 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int dimension) : state(new base::State(dimension)), parent(NULL)
+		Motion(const base::SpaceInformationPtr &si) : state(si->allocState()), parent(NULL)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
 		}
 		
 		base::State       *state;
@@ -178,20 +175,14 @@ namespace ompl
 		
 	    };
 	    
-	    void freeMemory(void)
-	    {
-		std::vector<Motion*> motions;
-		m_nn.list(motions);
-		for (unsigned int i = 0 ; i < motions.size() ; ++i)
-		    delete motions[i];
-	    }
+	    void freeMemory(void);
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
 		return m_si->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerInstance           m_sCore;
+	    base::StateSamplerPtr                m_sCore;
 
 	    NearestNeighborsSqrtApprox<Motion*>  m_nn;
 	    unsigned int                         m_addedStartStates;

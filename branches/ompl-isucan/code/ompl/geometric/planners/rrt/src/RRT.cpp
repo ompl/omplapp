@@ -34,16 +34,26 @@
 
 /* \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/rrt/RRT.h"
+#include "ompl/geometric/planners/rrt/RRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
 #include <limits>
 
-bool ompl::kinematic::RRT::solve(double solveTime)
+void ompl::geometric::RRT::freeMemory(void)
 {
-    SpaceInformationKinematic  *si     = dynamic_cast<SpaceInformationKinematic*>(m_si);
-    base::Goal                 *goal   = m_pdef->getGoal();
+    std::vector<Motion*> motions;
+    m_nn.list(motions);
+    for (unsigned int i = 0 ; i < motions.size() ; ++i)
+    {
+	if (motions[i]->state)
+	    m_si->freeState(motions[i]->state);
+	delete motions[i];
+    }
+}
+
+bool ompl::geometric::RRT::solve(double solveTime)
+{
+    base::Goal                 *goal   = m_pdef->getGoal().get();
     base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
-    unsigned int                   dim = si->getStateDimension();
     
     if (!goal)
     {
@@ -56,10 +66,10 @@ bool ompl::kinematic::RRT::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, st);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, st);
 	    m_nn.add(motion);
 	}
 	else
@@ -81,9 +91,9 @@ bool ompl::kinematic::RRT::solve(double solveTime)
     Motion *solution  = NULL;
     Motion *approxsol = NULL;
     double  approxdif = std::numeric_limits<double>::infinity();
-    Motion *rmotion   = new Motion(dim);
+    Motion *rmotion   = new Motion(m_si);
     base::State *rstate = rmotion->state;
-    base::State *xstate = new base::State(dim);
+    base::State *xstate = m_si->allocState();
     
     while (time::now() < endTime)
     {
@@ -104,11 +114,11 @@ bool ompl::kinematic::RRT::solve(double solveTime)
 	    xstate->values[i] = fabs(diff) < range[i] ? rmotion->state->values[i] : nmotion->state->values[i] + diff * m_rho;
 	}
 	
-	if (si->checkMotion(nmotion->state, xstate))
+	if (m_si->checkMotion(nmotion->state, xstate))
 	{
 	    /* create a motion */
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, xstate);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, xstate);
 	    motion->parent = nmotion;
 	    
 	    m_nn.add(motion);
@@ -146,21 +156,19 @@ bool ompl::kinematic::RRT::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathKinematic *path = new PathKinematic(m_si);
+	PathGeometric *path = new PathGeometric(m_si);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
-	{   
-	    base::State *st = new base::State(dim);
-	    si->copyState(st, mpath[i]->state);
-	    path->states.push_back(st);
-	}
+	    path->states.push_back(si->cloneState(mpath[i]->state));
 	goal->setDifference(approxdif);
-	goal->setSolutionPath(path, approximate);
+	goal->setSolutionPath(PathPtr(path), approximate);
 
 	if (approximate)
 	    m_msg.warn("Found approximate solution");
     }
 
-    delete xstate;
+    m_si->freeState(xstate);
+    if (rmotion->state)
+	m_si->freeState(rmotion->state);
     delete rmotion;
 	
     m_msg.inform("Created %u states", m_nn.size());
@@ -168,11 +176,11 @@ bool ompl::kinematic::RRT::solve(double solveTime)
     return goal->isAchieved();
 }
 
-void ompl::kinematic::RRT::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::geometric::RRT::getPlannerData(PlannerData &data) const
 {
     std::vector<Motion*> motions;
     m_nn.list(motions);
-    states.resize(motions.size());
+    data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	states[i] = motions[i]->state;
 }

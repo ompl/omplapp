@@ -34,46 +34,12 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_STATE_
-#define OMPL_BASE_STATE_
+#ifndef OMPL_GEOMETRIC_PLANNER_INCLUDES_
+#define OMPL_GEOMETRIC_PLANNER_INCLUDES_
 
-namespace ompl
-{
-    namespace base
-    {
-	
-	/** \brief Definition of an abstract state */
-	class State
-	{
-	protected:
-	    
-	    State(void)
-	    {
-	    }
-	    
-	    virtual ~State(void)
-	    {
-	    }
-	};
-
-	/** \brief Definition of a compound state */
-	class CompoundState : public State
-	{
-	public:
-	    
-	    CompoundState(void) : State()
-	    {
-	    }
-	    
-	    virtual ~CompoundState(void)
-	    {
-	    }
-	    
-	    /** \brief The components that make up a compound state */
-	    State **components;
-	};
-	
-    }
-}
+#include "ompl/base/Planner.h"
+#include "ompl/base/SpaceInformation.h"
+#include "ompl/geometric/PathGeometric.h"
+#include "ompl/util/RandomNumbers.h"
 
 #endif

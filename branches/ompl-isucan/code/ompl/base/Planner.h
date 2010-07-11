@@ -87,7 +87,7 @@ namespace ompl
 	    }
 	    
 	    /** \brief The list of states in the current exploration datastructure */
-	    std::vector<State*> states;
+	    std::vector<const State*> states;
 	};
 	
 	/** \brief Base class for a planner */
@@ -129,7 +129,7 @@ namespace ompl
 	    virtual void clear(void) = 0;
 	    
 	    /** \brief Get information about the current run of the motion planner  */
-	    virtual void getPlannerData(const PlannerDataPtr &data) const = 0;
+	    virtual void getPlannerData(PlannerData &data) const = 0;
 	    
 	    /** \brief Return the type of the motion planner. This is useful if
 		the planner wants to advertise what type of problems it
