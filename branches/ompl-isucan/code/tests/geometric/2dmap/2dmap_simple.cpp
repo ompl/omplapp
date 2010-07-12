@@ -38,8 +38,9 @@
 #include <boost/filesystem.hpp>
 
 #include "ompl/base/GoalState.h"
-#include "ompl/kinematic/planners/rrt/RRTConnect.h"
-#include "ompl/kinematic/SimpleSetup.h"
+#include "ompl/base/extension/RealVectorManifold.h"
+#include "ompl/geometric/planners/rrt/RRT.h"
+#include "ompl/geometric/SimpleSetup.h"
 
 #include "../../resources/config.h"
 #include "environment2D.h"
@@ -56,16 +57,18 @@ class myStateValidityChecker : public base::StateValidityChecker
 {
 public:
 
-    myStateValidityChecker(const base::SpaceInformation *si, const std::vector< std::vector<int> > &grid) :
+    myStateValidityChecker(const base::SpaceInformationPtr &si, const std::vector< std::vector<int> > &grid) :
 	base::StateValidityChecker(si), m_grid(grid)
     {
     }
     
-    virtual bool operator()(const base::State *state) const
+    virtual bool isValid(const base::State *state) const
     {
+	const ext::RealVectorState *rstate = static_cast<const ext::RealVectorState*>(state);
+	
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(state->values[0]);
-	int y = (int)(state->values[1]);
+	int x = (int)(rstate->values[0]);
+	int y = (int)(rstate->values[1]);
 	return m_grid[x][y] == 0; // 0 means valid state
     }
     
@@ -75,28 +78,12 @@ protected:
 
 };
 
-/** Declare a class used in evaluating distance between states (Manhattan distance) */
-class myStateDistanceEvaluator : public base::StateDistanceEvaluator
+base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si)
 {
-public:
-
-    myStateDistanceEvaluator(const base::SpaceInformation *si) : base::StateDistanceEvaluator(si)
-    {
-    }
-    
-    virtual double operator()(const base::State *state1, const base::State *state2) const
-    {
-	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x1 = (int)(state1->values[0]);
-	int y1 = (int)(state1->values[1]);
-	
-	int x2 = (int)(state2->values[0]);
-	int y2 = (int)(state2->values[1]);
-
-	return abs(x1 - x2) + abs(y1 - y2);
-    }
-    
-};
+    geometric::RRT *rrt = new geometric::RRT(si);
+    rrt->setRange(0.95);
+    return base::PlannerPtr(rrt);
+}
 
 class mySetup : public kinematic::SimpleSetup
 {
@@ -116,21 +103,10 @@ public:
 	return goal;
     }
     
-    virtual base::Planner* allocPlanner(kinematic::SpaceInformationKinematic *si)
-    {
-	kinematic::RRTConnect *rrt = new kinematic::RRTConnect(si);
-	rrt->setRange(0.95);
-	return rrt;
-    }
     
     virtual base::StateValidityChecker* allocStateValidityChecker(const base::SpaceInformation *si)
     {
 	return new myStateValidityChecker(si, env_.grid);
-    }
-    
-    virtual base::StateDistanceEvaluator* allocStateDistanceEvaluator(const base::SpaceInformation *si)
-    {
-	return new myStateDistanceEvaluator(si);
     }
     
     virtual void configureSpaceInformation(kinematic::SpaceInformationKinematic *si)
