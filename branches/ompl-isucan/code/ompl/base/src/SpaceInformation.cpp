@@ -41,6 +41,7 @@
 #include <limits>
 #include <cmath>
 #include <cassert>
+#include <cstdio>
 
 ompl::base::SpaceInformation::SpaceInformation(const ManifoldPtr &manifold) : m_manifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false)
 {
@@ -61,11 +62,9 @@ void ompl::base::SpaceInformation::setup(void)
     
     if (m_resolution < std::numeric_limits<double>::round_error())
     {
-	m_resolution = estimateExtent() / 50.0;
+	m_resolution = estimateExtent(10000) / 50.0;
 	m_msg.warn("The resolution at which states need to be checked for collision is detected to be %f", m_resolution);
     }
-    
-	throw Exception("The resolution at which states need to be checked for validity must be > 0.0");
     
     m_setup = true;
 }
@@ -116,7 +115,7 @@ double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
 	    break;
 	std::swap(a, b);
     }
-
+        
     // free memory
     for (unsigned int i = 0 ; i  < samples ; ++i)
 	freeState(states[i]);

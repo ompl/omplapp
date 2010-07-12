@@ -102,9 +102,10 @@ double ompl::ext::RealVectorManifold::distance(const base::State *state1, const 
     double dist = 0.0;
     const double *s1 = static_cast<const RealVectorState*>(state1)->values;
     const double *s2 = static_cast<const RealVectorState*>(state2)->values;
+    
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
     {	 
-	double diff = (s1++) - (s2++);
+	double diff = (*s1++) - (*s2++);
 	dist += diff * diff;
     }
     return dist;
@@ -116,7 +117,7 @@ bool ompl::ext::RealVectorManifold::equalStates(const base::State *state1, const
     const double *s2 = static_cast<const RealVectorState*>(state2)->values;
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
     {	 
-	double diff = (s1++) - (s2++);
+	double diff = (*s1++) - (*s2++);
 	if (fabs(diff) > std::numeric_limits<double>::round_error())
 	    return false;
     }
@@ -162,4 +163,17 @@ void ompl::ext::RealVectorManifold::printState(const base::State *state, std::os
     }
     else
 	out << "NULL" << std::endl;
+}
+
+void ompl::ext::RealVectorManifold::printSettings(std::ostream &out) const
+{
+    out << "Real vector manifold with bounds: " << std::endl;
+    out << "  - min: ";
+    for (unsigned int i = 0 ; i < m_dimension ; ++i)
+	out << m_bounds.first[i] << " ";
+    out << std::endl;    
+    out << "  - max: ";
+    for (unsigned int i = 0 ; i < m_dimension ; ++i)
+	out << m_bounds.second[i] << " ";
+    out << std::endl;
 }

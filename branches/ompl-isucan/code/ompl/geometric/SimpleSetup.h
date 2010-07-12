@@ -116,7 +116,8 @@ namespace ompl
 		if (!m_configured)
 		{
 		    m_si->setup();
-		    m_planner = pa(m_si);
+		    m_planner = m_pa(m_si);
+		    m_planner->setProblemDefinition(m_pdef);
 		    m_planner->setup();
 		    m_configured = true;
 		}
@@ -139,19 +140,33 @@ namespace ompl
 	    	    
 	    void simplifySolution(void)
 	    {
-		const PathPtr &p = getSolutionPath();
+		const base::PathPtr &p =  m_pdef->getGoal()->getSolutionPath();
 		if (p)
-		    m_psk->simplifyMax(dynamic_cast<PathGeometric&>(*p));
+		    m_psk->simplifyMax(static_cast<PathGeometric&>(*p));
 		else
 		    m_msg.warn("No solution to simplify");
 	    }
 	    
-	    const PathPtr& getSolutionPath(void) const
+	    const PathGeometric& getSolutionPath(void) const
 	    {
 		if (m_pdef->getGoal())
-		    return m_pdef->getGoal()->getSolutionPath();
-		else
-		    return PathPtr();
+		{
+		    const base::PathPtr &p = m_pdef->getGoal()->getSolutionPath();
+		    if (p)
+			return static_cast<const PathGeometric&>(*p);
+		}
+		throw Exception("No solution path");		
+	    }	
+	    
+	    PathGeometric& getSolutionPath(void)
+	    {
+		if (m_pdef->getGoal())
+		{
+		    const base::PathPtr &p = m_pdef->getGoal()->getSolutionPath();
+		    if (p)
+			return static_cast<PathGeometric&>(*p);
+		}
+		throw Exception("No solution path");		
 	    }
 	    
 	protected:

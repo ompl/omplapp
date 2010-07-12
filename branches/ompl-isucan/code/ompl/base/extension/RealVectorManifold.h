@@ -129,7 +129,10 @@ namespace ompl
 
 	    /** \brief Print a state to screen */
 	    virtual void printState(const base::State *state, std::ostream &out) const;
-
+	    
+	    /** \brief Print the settings for this manifold to a stream */
+	    virtual void printSettings(std::ostream &out) const;
+	    
 	protected:
 	    
 	    unsigned int     m_dimension;

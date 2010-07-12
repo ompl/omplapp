@@ -78,64 +78,13 @@ protected:
 
 };
 
+/** Define a function that constructs planner instances */
 base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si)
 {
     geometric::RRT *rrt = new geometric::RRT(si);
     rrt->setRange(0.95);
     return base::PlannerPtr(rrt);
 }
-
-class mySetup : public kinematic::SimpleSetup
-{
-public:
-    
-    mySetup(const Environment2D &env) : kinematic::SimpleSetup(), env_(env)
-    {
-    }
-    
-    virtual base::Goal* allocGoal(const base::SpaceInformation *si)
-    {
-	base::GoalState *goal = new base::GoalState(si);
-	goal->state = new base::State(2);
-	goal->state->values[0] = env_.goal.first;
-	goal->state->values[1] = env_.goal.second;
-	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
-	return goal;
-    }
-    
-    
-    virtual base::StateValidityChecker* allocStateValidityChecker(const base::SpaceInformation *si)
-    {
-	return new myStateValidityChecker(si, env_.grid);
-    }
-    
-    virtual void configureSpaceInformation(kinematic::SpaceInformationKinematic *si)
-    {
-	std::vector<base::StateComponent> stateComponent(2);
-
-	// dimension 0 (x) spans between [0, width) 
-	// dimension 1 (y) spans between [0, height) 
-	// since sampling is continuous and we round down, we allow values until just under the max limit
-	// the resolution is 1.0 since we check cells only
-
-	stateComponent[0].minValue = 0.0;
-	stateComponent[0].maxValue = (double)env_.width - 0.000000001;
-	stateComponent[0].resolution = 0.5;
-	stateComponent[0].type = base::StateComponent::LINEAR;
-	
-	stateComponent[1].minValue = 0.0;
-	stateComponent[1].maxValue = (double)env_.height - 0.000000001;
-	stateComponent[1].resolution = 0.5;
-	stateComponent[1].type = base::StateComponent::LINEAR;
-	
-	si->setStateComponents(stateComponent);
-    }
-    
-protected:
-    
-    Environment2D env_;
-    
-};
 
 /** A base class for testing planners */
 class TestPlanner
@@ -153,20 +102,44 @@ public:
     {	 
 	bool result = true;
 	
-	mySetup setup(env);
-	setup.configure();
+	geometric::SimpleSetup setup(base::ManifoldPtr(new ext::RealVectorManifold(2)), boost::bind(&allocPlanner, _1));
+	ext::RealVectorBounds bounds;
+	
+	std::vector<double> lowBound, upBound;
+	bounds.first.push_back(0.0);
+	bounds.first.push_back(0.0);
+	bounds.second.push_back((double)env.width - 0.000000001);
+	bounds.second.push_back((double)env.height - 0.000000001);
+	
+	static_cast<ext::RealVectorManifold*>(setup.getSpaceInformation()->getManifold().get())->setBounds(bounds);
+	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation(), env.grid)));
+
+	setup.getPathSimplifier()->setMaxSteps(50);
+	setup.getPathSimplifier()->setMaxEmptySteps(10);
+
+	setup.getSpaceInformation()->printSettings();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::State *state = new base::State(2);
+	base::ScopedState<ext::RealVectorState> state(setup.getSpaceInformation());
 	state->values[0] = env.start.first;
 	state->values[1] = env.start.second;
-	setup.getProblemDefinition()->addStartState(state);
+	setup.getProblemDefinition()->addStartState(state.get());
 	
+
+	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
+	goal->state = setup.getSpaceInformation()->allocState();
+	static_cast<ext::RealVectorState*>(goal->state)->values[0] = env.goal.first;
+	static_cast<ext::RealVectorState*>(goal->state)->values[1] = env.goal.second;
+	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
+
+	setup.setGoal(base::GoalPtr(goal));
+	
+
 	/* start counting time */
 	ompl::time::point startTime = ompl::time::now();	
 	
 	/* call the planner to solve the problem */
-	if (setup.getPlanner()->solve(SOLUTION_TIME))
+	if (setup.solve(SOLUTION_TIME))
 	{
 	    ompl::time::duration elapsed = ompl::time::now() - startTime;
 	    if (time)
@@ -174,12 +147,10 @@ public:
 	    if (show)
 		printf("Found solution in %f seconds!\n", ompl::time::seconds(elapsed));
 	    
-	    kinematic::PathKinematic *path = static_cast<kinematic::PathKinematic*>(setup.getGoal()->getSolutionPath());
+	    geometric::PathGeometric &path = setup.getSolutionPath();
 	    
 	    /* make the solution more smooth */
-	    setup.getPathSimplifier()->setMaxSteps(50);
-	    setup.getPathSimplifier()->setMaxEmptySteps(10);
-
+	    
 	    startTime = ompl::time::now();
 	    setup.getPathSimplifier()->reduceVertices(path);
 	    elapsed = ompl::time::now() - startTime;
@@ -191,10 +162,10 @@ public:
 		printf("Simplified solution in %f seconds!\n", ompl::time::seconds(elapsed));
 
 	    /* fill in values that were linearly interpolated */
-	    setup.getSpaceInformation()->interpolatePath(path);
+	    path.interpolate();
 	    
 	    if (pathLength)
-		*pathLength += path->states.size();
+		*pathLength += path.length();
 
 	    if (show)
 	    {
@@ -204,10 +175,10 @@ public:
 	    
 	    Environment2D temp = env;
 	    /* display the solution */	    
-	    for (unsigned int i = 0 ; i < path->states.size() ; ++i)
+	    for (unsigned int i = 0 ; i < path.states.size() ; ++i)
 	    {
-		int x = (int)(path->states[i]->values[0]);
-		int y = (int)(path->states[i]->values[1]);
+		int x = (int)(static_cast<ext::RealVectorState*>(path.states[i])->values[0]);
+		int y = (int)(static_cast<ext::RealVectorState*>(path.states[i])->values[1]);
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else
@@ -223,9 +194,6 @@ public:
 	else
 	    result = false;
 	
-	// free memory for start states
-	setup.getProblemDefinition()->clearStartStates();
-	
 	return result;
     }    
 };
@@ -239,7 +207,7 @@ public:
 	double time   = 0.0;
 	double length = 0.0;
 	int    good   = 0;
-	int    N      = 100;
+	int    N      = 1;
 
 	for (int i = 0 ; i < N ; ++i)
 	    if (p->execute(env, false, &time, &length))
