@@ -77,6 +77,12 @@ namespace ompl
 		m_startStates.push_back(m_si->cloneState(state));
 	    }
 	    
+	    /** \brief Add a start state */
+	    void addStartState(const ScopedState<> &state)
+	    {
+		m_startStates.push_back(m_si->cloneState(state.get()));
+	    }
+	    
 	    /** \brief Check whether a specified starting state is
 		already included in the problem definition and
 		optionally return the index of that starting state */

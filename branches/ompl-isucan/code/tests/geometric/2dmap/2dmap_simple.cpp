@@ -51,8 +51,8 @@ using namespace ompl;
 
 static const double SOLUTION_TIME = 1.0;
 
-/** Declare a class used in validating states. Such a class definition is needed for any use
- * of a kinematic planner */
+/** \brief Declare a class used in validating states. Such a class
+    definition is needed for any use of a kinematic planner */
 class myStateValidityChecker : public base::StateValidityChecker
 {
 public:
@@ -100,7 +100,55 @@ public:
 	return abs(x1 - x2) + abs(y1 - y2);
     }
 };
+
+class mySetup
+{
+public:
     
+    mySetup(Environment2D &env, const geometric::PlannerAllocator &pa) : setup(base::ManifoldPtr(new myManifold(2)), pa)
+    {
+	ext::RealVectorBounds bounds(2);
+	
+	std::vector<double> lowBound, upBound;
+	bounds.low[0] = 0.0;
+	bounds.low[1] = 0.0;
+	bounds.high[0] = (double)env.width - 0.000000001;
+	bounds.high[1] = (double)env.height - 0.000000001;
+	
+	static_cast<ext::RealVectorManifold*>(setup.getSpaceInformation()->getManifold().get())->setBounds(bounds);
+	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
+
+	setup.getPathSimplifier()->setMaxSteps(50);
+	setup.getPathSimplifier()->setMaxEmptySteps(10);
+	setup.getSpaceInformation()->setStateValidityCheckingResolution(1.0);
+	
+	setup.getSpaceInformation()->printSettings();
+	
+	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
+	base::ScopedState<ext::RealVectorState> state(setup.getSpaceInformation());
+	state->values[0] = env.start.first;
+	state->values[1] = env.start.second;
+	setup.getProblemDefinition()->addStartState(state);
+
+	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
+	goal->state = setup.getSpaceInformation()->allocState();
+	static_cast<ext::RealVectorState*>(goal->state)->values[0] = env.goal.first;
+	static_cast<ext::RealVectorState*>(goal->state)->values[1] = env.goal.second;
+	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
+
+	setup.setGoal(base::GoalPtr(goal));
+    }
+    
+    geometric::SimpleSetup* operator->(void)
+    {
+	return &setup;
+    }
+
+private:
+    
+    geometric::SimpleSetup setup;
+};
+
 
 /** Define a function that constructs planner instances */
 base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si)
@@ -129,45 +177,13 @@ public:
     {	 
 	bool result = true;
 	
-	geometric::SimpleSetup setup(base::ManifoldPtr(new myManifold(2)), boost::bind(&allocPlanner, _1));
-	ext::RealVectorBounds bounds(2);
-	
-	std::vector<double> lowBound, upBound;
-	bounds.low[0] = 0.0;
-	bounds.low[1] = 0.0;
-	bounds.high[0] = (double)env.width - 0.000000001;
-	bounds.high[1] = (double)env.height - 0.000000001;
-	
-	static_cast<ext::RealVectorManifold*>(setup.getSpaceInformation()->getManifold().get())->setBounds(bounds);
-	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
-
-	setup.getPathSimplifier()->setMaxSteps(50);
-	setup.getPathSimplifier()->setMaxEmptySteps(10);
-	setup.getSpaceInformation()->setStateValidityCheckingResolution(1.0);
-	
-	setup.getSpaceInformation()->printSettings();
-	
-	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::ScopedState<ext::RealVectorState> state(setup.getSpaceInformation());
-	state->values[0] = env.start.first;
-	state->values[1] = env.start.second;
-	setup.getProblemDefinition()->addStartState(state.get());
-	
-
-	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
-	goal->state = setup.getSpaceInformation()->allocState();
-	static_cast<ext::RealVectorState*>(goal->state)->values[0] = env.goal.first;
-	static_cast<ext::RealVectorState*>(goal->state)->values[1] = env.goal.second;
-	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
-
-	setup.setGoal(base::GoalPtr(goal));
-	
-
+	mySetup setup(env, boost::bind(&allocPlanner, _1));
+ 
 	/* start counting time */
 	ompl::time::point startTime = ompl::time::now();	
 	
 	/* call the planner to solve the problem */
-	if (setup.solve(SOLUTION_TIME))
+	if (setup->solve(SOLUTION_TIME))
 	{
 	    ompl::time::duration elapsed = ompl::time::now() - startTime;
 	    if (time)
@@ -175,12 +191,12 @@ public:
 	    if (show)
 		printf("Found solution in %f seconds!\n", ompl::time::seconds(elapsed));
 	    
-	    geometric::PathGeometric &path = setup.getSolutionPath();
+	    geometric::PathGeometric &path = setup->getSolutionPath();
 	    
 	    /* make the solution more smooth */
 	    
 	    startTime = ompl::time::now();
-	    setup.getPathSimplifier()->reduceVertices(path);
+	    setup->getPathSimplifier()->reduceVertices(path);
 	    elapsed = ompl::time::now() - startTime;
 
 	    if (time)
@@ -282,7 +298,7 @@ protected:
     bool          verbose;
 };
 
-TEST_F(PlanTest, kinematic_RRT)
+TEST_F(PlanTest, geometric_RRT)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -294,6 +310,36 @@ TEST_F(PlanTest, kinematic_RRT)
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.01);
     EXPECT_TRUE(avglength < 70.0);
+}
+
+TEST(ScopedStateTest, Simple)
+{
+    base::ManifoldPtr m(new ext::RealVectorManifold(2));
+    
+    base::ScopedState<ext::RealVectorManifold::StateType> s1(m);
+    s1->values[0] = 1.0;
+    s1->values[1] = 2.0;
+    
+    base::ScopedState<ext::RealVectorManifold::StateType> s2 = s1;
+    EXPECT_TRUE(s2->values[1] == s1->values[1]);
+    
+    base::ScopedState<> s3 = s1;
+    EXPECT_TRUE(s2 == s3);
+    
+    base::ScopedState<> s4 = s3;
+
+    base::ScopedState<ext::RealVectorManifold::StateType> s5 = s4;
+    EXPECT_TRUE(s5 == s1);
+
+    s1->values[1] = 4.0;
+    
+    EXPECT_TRUE(s5 != s1);
+    
+    base::ScopedState<ext::RealVectorManifold::StateType> s6(s4);
+    EXPECT_TRUE(s6 != s1);
+    s1 = s4;
+    s4 = s1;
+    EXPECT_TRUE(s6 == s1);
 }
 
 int main(int argc, char **argv)

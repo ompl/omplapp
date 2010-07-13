@@ -67,20 +67,22 @@ namespace ompl
 		cast this state into does not match the type of states
 		allocated. */
 	    explicit
-	    ScopedState(const SpaceInformationPtr &si) : m_si(si)
-	    {
-		State *s = m_si->allocState();
+	    ScopedState(const SpaceInformationPtr &si) : m_manifold(si->getManifold())
+	    {	
+		State *s = m_manifold->allocState();
 		m_state = dynamic_cast<T*>(s);
 		if (!m_state)
 		{
-		    m_si->freeState(s);
-		    throw Exception("Space information does not allocate states of desired type");
+		    m_manifold->freeState(s);
+		    throw Exception("Manifold does not allocate states of desired type");
 		}
 	    }
+	    
 	    /** \brief Given the manifold that we are working with,
 		allocate a state. Throw an exception if the desired
 		type to cast this state into does not match the type
 		of states allocated. */
+	    explicit
 	    ScopedState(const ManifoldPtr &manifold) : m_manifold(manifold)
 	    {
 		State *s = m_manifold->allocState();
@@ -91,34 +93,113 @@ namespace ompl
 		    throw Exception("Manifold does not allocate states of desired type");
 		}
 	    }
-	    
+
+	    /** \brief Copy constructor */
+	    ScopedState(const ScopedState<T> &other) : m_manifold(other.getManifold())
+	    { 
+		State *s = m_manifold->allocState();
+		m_state = dynamic_cast<T*>(s);
+		m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+	    }
+
+	    /** \brief Copy constructor that allows instantiation from states of other type */
+	    template<class O>
+	    ScopedState(const ScopedState<O> &other) : m_manifold(other.getManifold())
+	    { 
+		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, State*>));
+		
+		if (!dynamic_cast<const T*>(other.get()))
+		    throw Exception("Unable to copy state");
+		
+		State *s = m_manifold->allocState();
+		m_state = dynamic_cast<T*>(s);
+		m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+	    }
+
+
 	    /** \brief Free the memory of the internally allocated state */
 	    ~ScopedState(void)
-	    {
-		if (m_si)
-		    m_si->freeState(m_state);
-		else
-		    m_manifold->freeState(m_state);
+	    {	
+		m_manifold->freeState(m_state);
 	    }	    
+
+	    /** \brief Get the manifold that the state corresponds to */
+	    const ManifoldPtr& getManifold(void) const
+	    {
+		return m_manifold;
+	    }
 	    
+	    /** \brief Assignment operator */
+	    ScopedState<T>& operator=(const ScopedState<T> &other)
+	    {
+		if (&other != this)
+		{
+		    m_manifold->freeState(m_state);
+		    m_manifold = other.getManifold();
+		    
+		    State *s = m_manifold->allocState();
+		    m_state = dynamic_cast<T*>(s);
+		    m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+		}
+		return *this;
+	    }
+
+	    /** \brief Assignment operator that allows conversion of states */
+	    template<class O>
+	    ScopedState<T>& operator=(const ScopedState<O> &other)
+	    {
+		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, State*>));
+
+		if (!dynamic_cast<const T*>(other.get()))
+		    throw Exception("Unable to copy state");
+		
+		if (reinterpret_cast<const void*>(&other) != reinterpret_cast<const void*>(this))
+		{
+		    m_manifold->freeState(m_state);
+		    m_manifold = other.getManifold();
+		    
+		    State *s = m_manifold->allocState();
+		    m_state = dynamic_cast<T*>(s);
+		    m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+		}
+		return *this;
+	    }
+
+	    /** \brief Checks equality of two states */
+	    template<class O>
+	    bool operator==(const ScopedState<O> &other) const
+	    {
+		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, State*>));
+		return m_manifold->equalStates(dynamic_cast<const State*>(m_state), dynamic_cast<const State*>(other.get()));
+	    }
+
+	    /** \brief Checks equality of two states */	    
+	    template<class O>
+	    bool operator!=(const ScopedState<O> &other) const
+	    {
+		return !(*this == other);
+	    }
+	    
+	    /** \brief De-references to the contained state */
 	    T& operator*(void) const
 	    {
 		return *m_state;
 	    }
 	    
+	    /** \brief Returns a pointer to the contained state */
 	    T* operator->(void) const
 	    {
 		return m_state;
 	    }
 	    
+	    /** \brief Returns a pointer to the contained state */
 	    T* get(void) const
 	    {
 		return m_state;
 	    }
-	    
+
 	private:
 	    
-	    SpaceInformationPtr  m_si;
 	    ManifoldPtr          m_manifold;
 	    T                   *m_state;
 	};
