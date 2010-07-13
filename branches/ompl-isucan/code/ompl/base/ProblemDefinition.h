@@ -55,6 +55,7 @@ namespace ompl
 	
 	ClassForward(ProblemDefinition);
 	
+	
 	/** \brief Definition of a problem to be solved. This includes
 	    the start state(s) for the system and a goal specification */
 	class ProblemDefinition

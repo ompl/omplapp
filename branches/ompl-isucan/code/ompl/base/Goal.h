@@ -38,6 +38,7 @@
 #define OMPL_BASE_GOAL_
 
 #include "ompl/base/State.h"
+#include "ompl/base/SpaceInformation.h"
 #include "ompl/base/Path.h"
 #include "ompl/util/ClassForward.h"
 #include <iostream>
@@ -48,7 +49,6 @@ namespace ompl
     namespace base
     {
 	
-	ClassForward(SpaceInformation);
 	ClassForward(Goal);
 	
 	/** \brief Abstract definition of goals. Will contain solutions, if found */

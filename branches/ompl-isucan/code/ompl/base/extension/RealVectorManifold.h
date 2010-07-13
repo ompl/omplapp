@@ -39,7 +39,6 @@
 
 #include "ompl/base/Manifold.h"
 #include <vector>
-#include <utility>
 
 namespace ompl
 {
@@ -54,21 +53,40 @@ namespace ompl
 	};
 	
 	/** \brief The lower and upper bounds for an R^n manifold */
-	typedef std::pair< std::vector<double>, std::vector<double> > RealVectorBounds;
+	class RealVectorBounds
+	{
+	public:
+	    RealVectorBounds(unsigned int dim)
+	    {
+		low.resize(dim, 0.0);
+		high.resize(dim, 0.0);
+	    }
+	    /*
+	    RealVectorBounds& operator=(const RealVectorBounds &other)
+	    {
+		if (this != &other)
+		{
+		    low = other.low;
+		    high = other.high;
+		}
+		return *this;
+	    }
+	    */
+	    std::vector<double> low;
+	    std::vector<double> high;
+	};
 	
 	/** \brief Uniform sampler for the R^n manifold */
 	class RealVectorStateUniformSampler : public base::StateSampler
 	{
 	public:
 	    
-	    RealVectorStateUniformSampler(const base::Manifold *manifold);
+	    RealVectorStateUniformSampler(const base::Manifold *manifold) : base::StateSampler(manifold)
+	    {
+	    }
 	    
 	    virtual void sample(base::State *state);
 	    virtual void sampleNear(base::State *state, const base::State *near, const double distance);
-	    
-	protected:
-	    
-	    const RealVectorBounds &m_bounds;
 	    
 	};
 	
@@ -76,8 +94,11 @@ namespace ompl
 	class RealVectorManifold : public base::Manifold
 	{
 	public:
-	    
-	    RealVectorManifold(unsigned int dim) : base::Manifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double))
+
+	    /** \brief Define the type of state allocated by this manifold */
+	    typedef RealVectorState StateType;
+
+	    RealVectorManifold(unsigned int dim) : base::Manifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double)), m_bounds(dim)
 	    {
 	    }
 	    
@@ -85,11 +106,8 @@ namespace ompl
 	    {	
 	    }
 	    
-	    void setBounds(const RealVectorBounds &bounds)
-	    {
-		m_bounds = bounds;
-	    }
-	    
+	    void setBounds(const RealVectorBounds &bounds);
+
 	    const RealVectorBounds& getBounds(void) const
 	    {
 		return m_bounds;

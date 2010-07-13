@@ -61,8 +61,10 @@ namespace ompl
 	    
 	public:
 	    
-	    /** \brief Given the space that we are working with, allocate a state from the corresponding
-		manifold. Throw an exception if the desired type to cast this state into does not match the type of states
+	    /** \brief Given the space that we are working with,
+		allocate a state from the corresponding
+		manifold. Throw an exception if the desired type to
+		cast this state into does not match the type of states
 		allocated. */
 	    explicit
 	    ScopedState(const SpaceInformationPtr &si) : m_si(si)
@@ -75,11 +77,28 @@ namespace ompl
 		    throw Exception("Space information does not allocate states of desired type");
 		}
 	    }
+	    /** \brief Given the manifold that we are working with,
+		allocate a state. Throw an exception if the desired
+		type to cast this state into does not match the type
+		of states allocated. */
+	    ScopedState(const ManifoldPtr &manifold) : m_manifold(manifold)
+	    {
+		State *s = m_manifold->allocState();
+		m_state = dynamic_cast<T*>(s);
+		if (!m_state)
+		{
+		    m_manifold->freeState(s);
+		    throw Exception("Manifold does not allocate states of desired type");
+		}
+	    }
 	    
 	    /** \brief Free the memory of the internally allocated state */
 	    ~ScopedState(void)
 	    {
-		m_si->freeState(m_state);
+		if (m_si)
+		    m_si->freeState(m_state);
+		else
+		    m_manifold->freeState(m_state);
 	    }	    
 	    
 	    T& operator*(void) const
@@ -99,7 +118,8 @@ namespace ompl
 	    
 	private:
 	    
-	    SpaceInformationPtr  m_si;	    
+	    SpaceInformationPtr  m_si;
+	    ManifoldPtr          m_manifold;
 	    T                   *m_state;
 	};
     }

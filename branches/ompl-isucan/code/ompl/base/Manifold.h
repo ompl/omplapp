@@ -113,6 +113,9 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief Define the type of state allocated by this manifold */
+	    typedef CompoundState StateType;
+	    
 	    CompoundManifold(void) : Manifold(), m_componentCount(0)
 	    {
 	    }
@@ -128,7 +131,13 @@ namespace ompl
 		instance is assumed and memory is freed upon
 		destruction. */
 	    virtual void addManifold(const ManifoldPtr &component, double weight);
-
+	    
+	    /** \brief Get the number of manifolds that make up the compound manifold */
+	    std::size_t getManifoldCount(void) const;
+	    
+	    /** \brief Get a specific manifold from the compound manifold */
+	    const ManifoldPtr& getManifold(const std::size_t index) const;
+	    
 	    virtual unsigned int getDimension(void) const;
 
 	    virtual void enforceBounds(State *state) const;

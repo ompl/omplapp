@@ -58,6 +58,19 @@ void ompl::base::CompoundManifold::addManifold(const ManifoldPtr &component, dou
     m_componentCount = m_componentCount;
 }
 
+std::size_t ompl::base::CompoundManifold::getManifoldCount(void) const
+{
+    return m_componentCount;
+}
+
+const ompl::base::ManifoldPtr& ompl::base::CompoundManifold::getManifold(const std::size_t index) const
+{
+    if (m_componentCount > index)
+	return m_components[index];
+    else
+	throw Exception("Manifold index does not exist");
+}
+
 unsigned int ompl::base::CompoundManifold::getDimension(void) const
 {
     unsigned int dim = 0;

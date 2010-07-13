@@ -57,7 +57,7 @@ class myStateValidityChecker : public base::StateValidityChecker
 {
 public:
 
-    myStateValidityChecker(const base::SpaceInformationPtr &si, const std::vector< std::vector<int> > &grid) :
+    myStateValidityChecker(base::SpaceInformation *si, const std::vector< std::vector<int> > &grid) :
 	base::StateValidityChecker(si), m_grid(grid)
     {
     }
@@ -78,13 +78,40 @@ protected:
 
 };
 
+class myManifold : public ext::RealVectorManifold
+{
+public:
+    
+    myManifold(unsigned int dim) : ext::RealVectorManifold(dim)
+    {
+    }
+    
+    virtual double distance(const base::State *state1, const base::State *state2) const
+    {
+	const ext::RealVectorState *rstate1 = static_cast<const ext::RealVectorState*>(state1);
+	const ext::RealVectorState *rstate2 = static_cast<const ext::RealVectorState*>(state2);
+
+	int x1 = (int)(rstate1->values[0]);
+	int y1 = (int)(rstate1->values[1]);
+	
+	int x2 = (int)(rstate2->values[0]);
+	int y2 = (int)(rstate2->values[1]);
+
+	return abs(x1 - x2) + abs(y1 - y2);
+    }
+};
+    
+
 /** Define a function that constructs planner instances */
 base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si)
 {
     geometric::RRT *rrt = new geometric::RRT(si);
-    rrt->setRange(0.95);
+    rrt->setRange(10.0);
     return base::PlannerPtr(rrt);
 }
+
+
+
 
 /** A base class for testing planners */
 class TestPlanner
@@ -102,21 +129,22 @@ public:
     {	 
 	bool result = true;
 	
-	geometric::SimpleSetup setup(base::ManifoldPtr(new ext::RealVectorManifold(2)), boost::bind(&allocPlanner, _1));
-	ext::RealVectorBounds bounds;
+	geometric::SimpleSetup setup(base::ManifoldPtr(new myManifold(2)), boost::bind(&allocPlanner, _1));
+	ext::RealVectorBounds bounds(2);
 	
 	std::vector<double> lowBound, upBound;
-	bounds.first.push_back(0.0);
-	bounds.first.push_back(0.0);
-	bounds.second.push_back((double)env.width - 0.000000001);
-	bounds.second.push_back((double)env.height - 0.000000001);
+	bounds.low[0] = 0.0;
+	bounds.low[1] = 0.0;
+	bounds.high[0] = (double)env.width - 0.000000001;
+	bounds.high[1] = (double)env.height - 0.000000001;
 	
 	static_cast<ext::RealVectorManifold*>(setup.getSpaceInformation()->getManifold().get())->setBounds(bounds);
-	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation(), env.grid)));
+	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
 
 	setup.getPathSimplifier()->setMaxSteps(50);
 	setup.getPathSimplifier()->setMaxEmptySteps(10);
-
+	setup.getSpaceInformation()->setStateValidityCheckingResolution(1.0);
+	
 	setup.getSpaceInformation()->printSettings();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
@@ -207,7 +235,7 @@ public:
 	double time   = 0.0;
 	double length = 0.0;
 	int    good   = 0;
-	int    N      = 1;
+	int    N      = 100;
 
 	for (int i = 0 ; i < N ; ++i)
 	    if (p->execute(env, false, &time, &length))
@@ -254,7 +282,7 @@ protected:
     bool          verbose;
 };
 
-TEST_F(PlanTest, kinematic_RRTConnect)
+TEST_F(PlanTest, kinematic_RRT)
 {
     double success    = 0.0;
     double avgruntime = 0.0;

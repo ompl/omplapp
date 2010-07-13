@@ -81,7 +81,8 @@ namespace ompl
 		
 		m_addedStartStates = 0;
 		m_nn.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
-		m_goalBias = 0.05;	    
+		m_goalBias = 0.05;
+		m_maxDistance = 0.0;
 	    }
 	    
 	    virtual ~RRT(void)
@@ -135,6 +136,8 @@ namespace ompl
 	    {
 		return m_maxDistance;
 	    }
+	    
+	    virtual void setup(void);
 	    
 	protected:
 	    
