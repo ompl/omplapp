@@ -115,7 +115,7 @@ public:
 	bounds.high[0] = (double)env.width - 0.000000001;
 	bounds.high[1] = (double)env.height - 0.000000001;
 	
-	static_cast<ext::RealVectorManifold*>(setup.getSpaceInformation()->getManifold().get())->setBounds(bounds);
+	static_cast<ext::RealVectorManifold*>(setup.getManifold().get())->setBounds(bounds);
 	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
 
 	setup.getPathSimplifier()->setMaxSteps(50);

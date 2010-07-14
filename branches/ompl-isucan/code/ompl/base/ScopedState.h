@@ -164,7 +164,7 @@ namespace ompl
 		}
 		return *this;
 	    }
-
+	    
 	    /** \brief Checks equality of two states */
 	    template<class O>
 	    bool operator==(const ScopedState<O> &other) const

@@ -73,6 +73,11 @@ namespace ompl
 		return m_si;
 	    }
 	    
+	    const base::ManifoldPtr& getManifold(void) const
+	    {
+		return m_si->getManifold();
+	    }
+	    
 	    const base::ProblemDefinitionPtr& getProblemDefinition(void) const
 	    {
 		return m_pdef;
