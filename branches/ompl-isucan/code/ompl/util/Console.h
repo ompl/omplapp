@@ -40,44 +40,74 @@
 #include <string>
 #include <cstdarg>
 
-/** Main namespace */
 namespace ompl
 {
     
-    /** Message namespace */
+    /** \brief Message namespace. This contains classes needed to
+	output error messages (or logging) from within the library. */
     namespace msg
     {
 	
-	/** The piece of code that desires interaction with an action
-	    or an output handler should use an instance of this
-	    class */
+	/** \brief The piece of code that desires interaction with an
+	    action or an output handler should use an instance of this
+	    class. This class connects to the active OutputHandler (if
+	    any) and forwards messages. */
 	class Interface
 	{
 	public: 
 	    
+	    /** \brief The text that will appear in front of every
+		message forwarded by this Interface instance can be
+		optionally set as a constructor argument. */
+	    explicit
 	    Interface(const std::string &prefix = "");
 	    virtual ~Interface(void);
 	    
+	    /** \brief Set the text that will appear in front of every
+		message forwarded by this Interface instance. */
 	    void setPrefix(const std::string &prefix);
 	    
+	    /** \brief Forward information */
 	    void inform(const std::string &text) const;
+
+	    /** \brief Forward a warning */
 	    void warn(const std::string &text) const;
+
+	    /** \brief Forward an error */
 	    void error(const std::string &text) const;
+	    
+	    /** \brief Forward a debug message */
 	    void debug(const std::string &text) const;
 
+	    /** \brief Forward information */
 	    void inform(const char *msg, ...) const;
+
+	    /** \brief Forward a warning */
 	    void warn(const char *msg, ...) const;
+
+	    /** \brief Forward an error */
 	    void error(const char *msg, ...) const;
+
+	    /** \brief Forward a debug message */
 	    void debug(const char *msg, ...) const;
 
 	protected:
 	    
+	    /** \brief Used internally to transform formatted messages to strings */
 	    std::string combine(const char *msg, va_list ap) const;
-	    std::string m_prefix;
-	    
+
+	    /** \brief The string that appears in front of very forwarded message. */
+	    std::string m_prefix;	    
 	};
 	
-	/** Generic class to handle output from a piece of code */
+	/** \brief Generic class to handle output from a piece of
+	    code. 
+
+	    In order to handle output from the library in different
+	    ways, an implementation of this class needs to be
+	    provided. The Interface class forwards calls to an
+	    instance of OutputHandler. This instance can be set with
+	    the useOutputHandler function. */
 	class OutputHandler
 	{
 	public:
@@ -90,19 +120,21 @@ namespace ompl
 	    {
 	    }
 
-	    /** Print an error message: "Error: ...." */
+	    /** \brief Print an error message: "Error: ...." */
 	    virtual void error(const std::string &text) = 0;
 
-	    /** Print an warning message: "Warning: ...." */
+	    /** \brief Print an warning message: "Warning: ...." */
 	    virtual void warn(const std::string &text) = 0;
 
-	    /** Print some information: "Information: ...." */
+	    /** \brief Print some information: "Information: ...." */
 	    virtual void inform(const std::string &text) = 0;
 	    
-	    /** Print a debug message */
+	    /** \brief Print a debug message */
 	    virtual void debug(const std::string &text) = 0;
 	};
 
+	/** \brief Default implementation of OutputHandler. This sends
+	    the information to the console. */
 	class OutputHandlerSTD : public OutputHandler
 	{
 	public:
@@ -111,23 +143,24 @@ namespace ompl
 	    {
 	    }
 	    
-	    /** Print an error message: "Error: ...." */
 	    virtual void error(const std::string &text);
 	    
-	    /** Print an warning message: "Warning: ...." */
 	    virtual void warn(const std::string &text);
 
-	    /** Print some information: "Information: ...." */
 	    virtual void inform(const std::string &text);
-	    
-	    /** Print a debug message */
+
 	    virtual void debug(const std::string &text);
 	    
 	    
 	};
-
+	
+	/** \brief This function instructs ompl that no messages should be outputed. */
 	void noOutputHandler(void);
+	
+	/** \brief Specify the instance of the OutputHandler to use. By default, this is OutputHandlerSTD */
 	void useOutputHandler(OutputHandler *oh);
+
+	/** \brief Get the instance of the OutputHandler currently used. This is NULL in case there is no output handler. */
 	OutputHandler* getOutputHandler(void);
     }
     

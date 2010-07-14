@@ -8,7 +8,7 @@
    is no environment specification, there is no collision detection or
    visualisation. There are only motion planners. The purpose of this
    library is to be extensible and freely available. It currently
-   contains a set of kinematic sampling-based motion planners and some
+   contains a set of geometric sampling-based motion planners and some
    initial versions of planners that can account for differential
    constraints.
 
@@ -27,7 +27,7 @@
    has pointers to instances of classes used for distance evaluation,
    state validation and sampling. This class is not meant to be used
    directly. Specializations such as
-   ompl::kinematic::SpaceInformationKinematic are intended for the
+   ompl::geometric::SpaceInformationGeometric are intended for the
    user.
 
    <hr> 
@@ -41,20 +41,20 @@
 
    @section avail_planners Available Planners
    
-   @subsection kinematic_planners Planning under geometric constraints
+   @subsection geometric_planners Planning under geometric constraints
 
    This set of planners only accounts for the geometric constraints of
    the system.  Infinite accelerations and velocities are assumed.
 
 
-   - @ref kRRT "Rapidly-exploring Random Trees (RRT)"
+   - @ref gRRT "Rapidly-exploring Random Trees (RRT)"
    - @ref kLazyRRT "Lazy RRT (LazyRRT)"
    - @ref kRRTC "RRT Connect (RRTConnect)"
    - @ref kpRRT "Parallel Rapidly-exploring Random Trees (pRRT)"
    - @ref kSBL "Single-query Bi-directional Lazy collision checking planner (SBL)"
    - @ref kpSBL "Parallel Single-query Bi-directional Lazy collision checking planner (pSBL)"
    - @ref kEST "Expansive Space Trees (EST)"
-   - @ref kKPIECE1 "Kinematic Planning by Interior-Exterior Cell Exploration (KPIECE)"
+   - @ref kKPIECE1 "Geometric Planning by Interior-Exterior Cell Exploration (KPIECE)"
    - @ref kLBKPIECE1 "Lazy Bi-directional KPIECE (LBKPIECE)"	
 
    Other tools:
@@ -67,8 +67,8 @@
 
    @subsubsection plannerinstance Instantiating a planner
 
-   In order to use a motion planner (ompl::kinematic::XXX, from @b
-   ompl/kinematic/planners), an instance of a kinematic space
+   In order to use a motion planner (ompl::geometric::XXX, from @b
+   ompl/geometric/planners), an instance of a geometric space
    information must be available. This instance is supplied to the
    planner's constructor.  After creation, a call to the planner's @b
    setup() method must be made and the planner instance is ready for
@@ -77,10 +77,10 @@
 
    @subsubsection spaceinfo Instantiating a space information class
 
-   Creating an actual instance of a kinematic space information class
-   (ompl::kinematic::SpaceInformationKinematic) is trivial as the
-   constructor requires no parameters. However, this class needs to be
-   configured before use:
+   Creating an actual instance of a space information class
+   (ompl::base::SpaceInformation) is trivial as the constructor
+   requires no parameters. However, this class needs to be configured
+   before use:
 
      - a std::vector < ompl::base::StateComponent > must be supplied to
        the space information class by calling @b
@@ -93,8 +93,9 @@
 
      - an ompl::base::Goal specification must be set using @b
        setGoal. For simplicity, specifications of this class are
-       available: ompl::base::GoalRegion, ompl::base::GoalState,
-       ompl::kinematic::GoalRegionKinematic.
+       available: ompl::base::GoalRegion,
+       ompl::base::GoalSampleableRegion, ompl::base::GoalState,
+       ompl::base::GoalStates.
 
      - ompl::base::StateValidityChecker is an abstract class that
        provides functionality for determining whether a state is valid
@@ -126,18 +127,18 @@
        specified, a default allocator that instantiates
        ompl::base::UniformStateSampler is assumed.
 
-     - ompl::kinematic::StateInterpolatorKinematic is an abstract
+     - ompl::geometric::StateInterpolatorGeometric is an abstract
        class that provides functionality for interpolating between
        states. This class is assumed to be thread safe. Users can set
        which instance of this class to use by calling @b
        setStateInterpolator. If no state interpolator is provided, a
        linear one is assumed
-       (ompl::kinematic::LinearStateInterpolatorKinematic).
+       (ompl::geometric::LinearStateInterpolatorGeometric).
 
 
    Some of these parameters can als be set if the user provides a
    space information class that inherits from
-   ompl::kinematic::SpaceInformationKinematic. This use is encouraged
+   ompl::geometric::SpaceInformationGeometric. This use is encouraged
    if it simplifies the code.
 
    Once the class is instantiated and all parameters have been set,
@@ -148,11 +149,11 @@
 
    @code
 
-   #include <ompl/kinematic/SpaceInformationKinematic.h>
-   #include <ompl/kinematic/planners/rrt/RRT.h>
+   #include <ompl/geometric/SpaceInformationGeometric.h>
+   #include <ompl/geometric/planners/rrt/RRT.h>
    #include <ompl/base/GoalState.h>
 
-   #include <ompl/kinematic/PathSmootherKinematic.h>
+   #include <ompl/geometric/PathSmootherGeometric.h>
 
    ...
 
@@ -176,7 +177,7 @@
 
    ...
 
-   ompl::kinematic::SpaceInformationKinematic *si = new ompl::kinematic::SpaceInformationKinematic();
+   ompl::geometric::SpaceInformationGeometric *si = new ompl::geometric::SpaceInformationGeometric();
    
    std::vector<ompl::base::StateComponent> stateSpec;
    // fill stateSpec
@@ -204,19 +205,19 @@
    si->setStateSamplerAllocator(boost::bind(myAllocStateSampler, _1));
 
    // this is only to show the API. The default is assumed anyway, we don't need to set it
-   ompl::kinematic::StateInterpolatorKinematic *sik = new ompl::kinematic::LinearStateInterpolatorKinematic(si);
+   ompl::geometric::StateInterpolatorGeometric *sik = new ompl::geometric::LinearStateInterpolatorGeometric(si);
    si->setStateInterpolator(sik);
 
 
    si->setup();
 
-   ompl::base::Planner *p = new ompl::kinematic::RRT(si);
+   ompl::base::Planner *p = new ompl::geometric::RRT(si);
    p->setup();
    p->solve(0.5);
    
-   // the goal contains a pointer to an abstract path, but we know it is actually a kinematic one
-   // since we used a kinematic planner
-   ompl::kinematic::PathKinematic *solution = static_cast<ompl::kinematic::PathKinematic*>(si->getGoal()->getSolutionPath());
+   // the goal contains a pointer to an abstract path, but we know it is actually a geometric one
+   // since we used a geometric planner
+   ompl::geometric::PathGeometric *solution = static_cast<ompl::geometric::PathGeometric*>(si->getGoal()->getSolutionPath());
    
 
    // make the goal region forget about the solution it found; if
@@ -224,8 +225,8 @@
    // deleted when the goal instance is deleted
    gs->forgetSolutionPath();
 
-   // create an instance if a kinematic smoother 
-   ompl::kinematic::PathSmootherKinematic *smoother = new ompl::kinematic::PathSmootherKinematic(si);
+   // create an instance if a geometric smoother 
+   ompl::geometric::PathSmootherGeometric *smoother = new ompl::geometric::PathSmootherGeometric(si);
    smoother->smoothMax(solution); // the smoothing is done in place
    
    // output solution somehow 

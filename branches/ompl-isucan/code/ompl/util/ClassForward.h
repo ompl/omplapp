@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_UTIL_CLASS_FORWARD_
 #define OMPL_UTIL_CLASS_FORWARD_

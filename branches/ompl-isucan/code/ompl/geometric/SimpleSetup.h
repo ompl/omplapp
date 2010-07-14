@@ -50,16 +50,13 @@ namespace ompl
 
     namespace geometric
     {
-	
-	/** \brief Definition of a function that can allocate a planner */
-	typedef boost::function<base::PlannerPtr(const base::SpaceInformationPtr&)> PlannerAllocator;
-	
+		
 	/** \brief Create the set of classes typically needed to solve a
 	    geometric problem */
 	class SimpleSetup
 	{
 	public:
-	    SimpleSetup(const base::ManifoldPtr &manifold, const PlannerAllocator &pa) : m_configured(false)
+	    SimpleSetup(const base::ManifoldPtr &manifold, const base::PlannerAllocator &pa) : m_configured(false)
 	    {
 		m_si.reset(new base::SpaceInformation(manifold));
 		m_pdef.reset(new base::ProblemDefinition(m_si));
@@ -174,7 +171,7 @@ namespace ompl
 	    base::SpaceInformationPtr     m_si;
 	    base::ProblemDefinitionPtr    m_pdef;
 	    base::PlannerPtr              m_planner;
-	    PlannerAllocator              m_pa;
+	    base::PlannerAllocator        m_pa;
 	    
 	    PathSimplifierGeometricPtr    m_psk;
 	    bool                          m_configured;

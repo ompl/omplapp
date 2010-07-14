@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_UTIL_EXCEPTION_
 #define OMPL_UTIL_EXCEPTION_
@@ -42,11 +42,16 @@
 
 namespace ompl
 {
-    
+  
+    /** \brief The exception type for ompl */
     class Exception : public std::runtime_error
     {
     public:
 	
+	/** \brief This is just a wrapper on std::runtime_error with
+	    the addition that the what() message of the exception is
+	    sent to the console as well (in case some logging is
+	    performed). */
 	explicit
 	Exception(const std::string& what) : std::runtime_error(what)
 	{

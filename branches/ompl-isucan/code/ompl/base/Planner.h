@@ -42,6 +42,7 @@
 #include "ompl/util/Console.h"
 #include "ompl/util/Time.h"
 #include "ompl/util/ClassForward.h"
+#include <boost/function.hpp>
 #include <vector>
 
 namespace ompl
@@ -147,6 +148,9 @@ namespace ompl
 	    bool                 m_setup;
 	    msg::Interface       m_msg;
 	};
+
+	/** \brief Definition of a function that can allocate a planner */
+	typedef boost::function<PlannerPtr(const SpaceInformationPtr&)> PlannerAllocator;
     }
 }
 

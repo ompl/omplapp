@@ -49,13 +49,13 @@
 #include <vector>
 #include <iostream>
 
-/** \brief Main namespace */
+/** \brief Main namespace. Contains everything in this library */
 namespace ompl
 {
     
     /** \brief This namespace contains sampling based planning
 	routines shared by both planning under geometric constraints
-	(kinematic) and planning under differential constraints
+	(geometric) and planning under differential constraints
 	(dynamic) */
     namespace base
     {

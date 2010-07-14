@@ -69,7 +69,7 @@ namespace ompl
 		to a stream */
 	    virtual void print(std::ostream &out = std::cout) const;
 	    
-	    /** \brief The goal state */
+	    /** \brief The goal states */
 	    std::vector<State*> states;
 	    
 	private:

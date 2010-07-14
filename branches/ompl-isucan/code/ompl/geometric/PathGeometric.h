@@ -43,6 +43,8 @@
 
 namespace ompl
 {
+
+    /** \brief This namespace contains code that is specific to planning under geometric constraints */
     namespace geometric
     {
 

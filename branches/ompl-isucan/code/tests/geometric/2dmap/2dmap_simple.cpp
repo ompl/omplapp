@@ -105,7 +105,7 @@ class mySetup
 {
 public:
     
-    mySetup(Environment2D &env, const geometric::PlannerAllocator &pa) : setup(base::ManifoldPtr(new myManifold(2)), pa)
+    mySetup(Environment2D &env, const base::PlannerAllocator &pa) : setup(base::ManifoldPtr(new myManifold(2)), pa)
     {
 	ext::RealVectorBounds bounds(2);
 	
