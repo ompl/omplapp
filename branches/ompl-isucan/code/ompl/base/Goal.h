@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_BASE_GOAL_
 #define OMPL_BASE_GOAL_
@@ -42,7 +42,7 @@
 #include "ompl/base/Path.h"
 #include "ompl/util/ClassForward.h"
 #include <iostream>
-#include <cstdlib>
+#include <limits>
 
 namespace ompl
 {
@@ -57,7 +57,8 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. The goal must always know the space information it is part of */
-	    Goal(const SpaceInformationPtr &si) : m_si(si), m_difference(-1.0), m_approximate(false)
+	    Goal(const SpaceInformationPtr &si) : m_si(si), m_maximumPathLength(std::numeric_limits<double>::max()),
+						  m_difference(-1.0), m_approximate(false)
 	    {
 	    }
 	    
@@ -73,6 +74,23 @@ namespace ompl
 	     *  Note: if this function returns true,
 	     *  isStartGoalPairValid() need not be called. */
 	    virtual bool isSatisfied(const State *st, double *distance) const = 0;
+
+	    /** \brief Return true if the state statisfies the goal
+	     *  constraints and the path length is less than the
+	     *  desired maximum length.  This call aslo computes the
+	     *  distance between the state given as argument and the
+	     *  goal. */
+	    bool isSatisfied(const State *st, double pathLength, double *distance) const
+	    {
+		if (pathLength > m_maximumPathLength)
+		{
+		    if (distance != NULL)
+			isSatisfied(st, distance);
+		    return false;
+		}
+		else
+		    return isSatisfied(st, distance);
+	    }
 	    
 	    /** \brief Since there can be multiple starting states
 		(and multiple goal states) it is possible certain
@@ -90,6 +108,21 @@ namespace ompl
 	    {
 		return m_path;
 	    }
+
+	    /** \brief Get the maximum length allowed for a solution path */
+	    double getMaximumPathLength(void) const
+	    {
+		return m_maximumPathLength;
+	    }
+
+	    /** \brief Set the maximum length allowed for a solution
+		path. This value is checked only in the version of
+		isSatisfied() that takes the path length as
+		argument */
+	    void setMaximumPathLength(double maximumPathLength)
+	    {
+		m_maximumPathLength = maximumPathLength;
+	    }
 	    
 	    /** \brief Return the found solution path. 
 
@@ -98,8 +131,7 @@ namespace ompl
 	    const PathPtr& getSolutionPath(void) const
 	    {
 		return m_path;
-	    }
-	    
+	    }	    
 	    
 	    /** \brief Update the solution path. If a previous solution path exists, it is deleted. */
 	    void setSolutionPath(const PathPtr &path, bool approximate = false)
@@ -147,7 +179,10 @@ namespace ompl
 	    
 	    /** \brief The space information for this goal */
 	    SpaceInformationPtr      m_si;
-
+	    
+	    /** \brief The maximum length allowed for the solution path */
+	    double                   m_maximumPathLength;
+	    
 	    /** \brief Solution path, if found */
 	    PathPtr                  m_path;
 	    	    
@@ -156,7 +191,7 @@ namespace ompl
 	    
 	    /** \brief True if goal was not achieved, but an approximate solution was found */
 	    bool                     m_approximate;
-	    
+
 	};
 		
     }
