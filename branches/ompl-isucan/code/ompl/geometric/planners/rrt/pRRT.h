@@ -32,13 +32,12 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_RRT_pRRT_
-#define OMPL_KINEMATIC_PLANNERS_RRT_pRRT_
+#ifndef OMPL_GEOMETRIC_PLANNERS_RRT_pRRT_
+#define OMPL_GEOMETRIC_PLANNERS_RRT_pRRT_
 
-#include "ompl/base/Planner.h"
-#include "ompl/kinematic/SpaceInformationKinematic.h"
+#include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/base/StateSamplerArray.h"
 #include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 #include <boost/thread/mutex.hpp>
@@ -46,11 +45,11 @@
 namespace ompl
 {
     
-    namespace kinematic
+    namespace geometric
     {
 	
 	/**
-	   @anchor kpRRT
+	   @anchor gpRRT
 	   
 	   @par Short description
 	   
@@ -75,8 +74,8 @@ namespace ompl
 	{
 	public:
 	    
-	    pRRT(SpaceInformationKinematic *si) : base::Planner(si),
-						  m_sCoreArray(si)
+	    pRRT(const base::SpaceInformationPtr &si) : base::Planner(si),
+							m_sCoreArray(si)
 	    {
 		m_type = base::PLAN_TO_GOAL_ANY;
 		m_msg.setPrefix("pRRT");
@@ -84,8 +83,8 @@ namespace ompl
 		m_addedStartStates = 0;
 		m_nn.setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));
 		setThreadCount(2);
-		m_goalBias = 0.05;	    
-		m_rho = 0.5;
+		m_goalBias = 0.05;
+		m_maxDistance = 0.0;
 	    }
 	    
 	    virtual ~pRRT(void)
@@ -93,7 +92,7 @@ namespace ompl
 		freeMemory();
 	    }
 	    
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	    virtual bool solve(double solveTime);
 	    
@@ -127,29 +126,19 @@ namespace ompl
 	    /** \brief Set the range the planner is supposed to use.
 
 		This parameter greatly influences the runtime of the
-		algorithm. It is probably a good idea to find what a
-		good value is for each model the planner is used
-		for. The range parameter influences how this @b qm
-		along the path between @b qc and @b qr is chosen. @b
-		qr may be too far, and it may not be best to have @b
-		qm = @b qr all the time (range = 1.0 implies @b qm =
-		@b qr. range should be less than 1.0). However, in a
-		large space, it is also good to leave the neighborhood
-		of @b qc (range = 0.0 implies @b qm = @b qc and no
-		progress is made. rande should be larger than
-		0.0). Multiple values of this range parameter should
-		be tried until a suitable one is found. */
-	    void setRange(double rho)
+		algorithm. It represents the maximum length of a
+		motion to be added in the tree of motions. */
+	    void setRange(double distance)
 	    {
-		m_rho = rho;
+		m_maxDistance = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_rho;
+		return m_maxDistance;
 	    }
-	    
+	    	    
 	    /** \brief Set the number of threads the planner should use. Default is 2. */
 	    void setThreadCount(unsigned int nthreads);
 	    
@@ -168,14 +157,12 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int dimension) : state(new base::State(dimension)), parent(NULL)
+		Motion(const base::SpaceInformationPtr &si) : state(si->allocState()), parent(NULL)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
 		}
 		
 		base::State       *state;
@@ -192,14 +179,7 @@ namespace ompl
 	    };
 
 	    void threadSolve(unsigned int tid, time::point endTime, SolutionInfo *sol);
-	    
-	    void freeMemory(void)
-	    {
-		std::vector<Motion*> motions;
-		m_nn.list(motions);
-		for (unsigned int i = 0 ; i < motions.size() ; ++i)
-		    delete motions[i];
-	    }
+	    void freeMemory(void);
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
@@ -214,7 +194,7 @@ namespace ompl
 	    unsigned int                        m_threadCount;
 	    
 	    double                              m_goalBias;
-	    double                              m_rho;
+	    double                              m_maxDistance;
 	};
 	
     }
