@@ -88,14 +88,14 @@ namespace ompl
 
 	    /** \brief Cast a component of this instance to a desired type. */
 	    template<class T>
-	    const T* as(const int index) const
+	    const T* as(const unsigned int index) const
 	    {
 		return static_cast<const T*>(components[index]);
 	    }
 
 	    /** \brief Cast a component of this instance to a desired type. */
 	    template<class T>
-	    T* as(const int index)
+	    T* as(const unsigned int index)
 	    {
 		return static_cast<T*>(components[index]);
 	    }

@@ -65,6 +65,20 @@ namespace ompl
 	    
 	    virtual ~Manifold(void);
 
+	    /** \brief Cast this instance to a desired type. */
+	    template<class T>
+	    T* as(void)
+	    {
+		return static_cast<T*>(this);
+	    }
+
+	    /** \brief Cast this instance to a desired type. */
+	    template<class T>
+	    const T* as(void) const
+	    {
+		return static_cast<const T*>(this);
+	    }
+
 	    /** \brief Get the dimension of the space */
 	    virtual unsigned int getDimension(void) const = 0;
 
@@ -123,7 +137,14 @@ namespace ompl
 	    virtual ~CompoundManifold(void)
 	    {
 	    }
-	    	    
+
+	    /** \brief Cast a component of this instance to a desired type. */
+	    template<class T>
+	    T* as(const std::size_t index) const
+	    {
+		return static_cast<T*>(getManifold(index).get());
+	    }
+	    
 	    /** \brief Adds the topology of a space as part of the
 		compound space. For computing distances within the
 		compound space, the weight of the component also needs

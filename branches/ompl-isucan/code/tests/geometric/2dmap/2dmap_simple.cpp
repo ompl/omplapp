@@ -78,31 +78,6 @@ protected:
 
 };
 
-/*
-class myManifold : public ext::RealVectorManifold
-{
-public:
-    
-    myManifold(unsigned int dim) : ext::RealVectorManifold(dim)
-    {
-    }
-    
-    virtual double distance(const base::State *state1, const base::State *state2) const
-    {
-	const ext::RealVectorState *rstate1 = static_cast<const ext::RealVectorState*>(state1);
-	const ext::RealVectorState *rstate2 = static_cast<const ext::RealVectorState*>(state2);
-
-	int x1 = (int)(rstate1->values[0]);
-	int y1 = (int)(rstate1->values[1]);
-	
-	int x2 = (int)(rstate2->values[0]);
-	int y2 = (int)(rstate2->values[1]);
-
-	return abs(x1 - x2) + abs(y1 - y2);
-    }
-};
-*/
-
 class myManifold1 : public ext::RealVectorManifold
 {
 public:
@@ -136,8 +111,8 @@ public:
 	myManifold1 *m2 = new myManifold1();
 	m2->setBounds(bounds);
 	
-	static_cast<base::CompoundManifold*>(setup.getManifold().get())->addManifold(base::ManifoldPtr(m1), 1.0);
-	static_cast<base::CompoundManifold*>(setup.getManifold().get())->addManifold(base::ManifoldPtr(m2), 1.0);
+	setup.getManifold()->as<base::CompoundManifold>()->addManifold(base::ManifoldPtr(m1), 1.0);
+	setup.getManifold()->as<base::CompoundManifold>()->addManifold(base::ManifoldPtr(m2), 1.0);
 	
 	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
 
@@ -245,8 +220,8 @@ public:
 	    /* display the solution */	    
 	    for (unsigned int i = 0 ; i < path.states.size() ; ++i)
 	    {
-		int x = (int)(static_cast<ext::RealVectorState*>(path.states[i])->values[0]);
-		int y = (int)(static_cast<ext::RealVectorState*>(path.states[i])->values[1]);
+		int x = (int)path.states[i]->as<base::CompoundState>()->as<ext::RealVectorState>(0)->values[0];
+		int y = (int)path.states[i]->as<base::CompoundState>()->as<ext::RealVectorState>(1)->values[0];
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else
