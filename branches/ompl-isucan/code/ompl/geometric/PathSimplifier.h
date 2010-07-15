@@ -34,8 +34,8 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_GEOMETRIC_PATH_SIMPLIFIER_GEOMETRIC_
-#define OMPL_GEOMETRIC_PATH_SIMPLIFIER_GEOMETRIC_
+#ifndef OMPL_GEOMETRIC_PATH_SIMPLIFIER_
+#define OMPL_GEOMETRIC_PATH_SIMPLIFIER_
 
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/geometric/PathGeometric.h"
@@ -48,16 +48,16 @@ namespace ompl
     namespace geometric
     {
 
-	ClassForward(PathSimplifierGeometric);
+	ClassForward(PathSimplifier);
 	
 	/** \brief This class contains smoothers that can be applied to geometric paths.
 
 	 These are in fact routines that shorten the path, and do not
 	 necessarily make it smoother.*/
-	class PathSimplifierGeometric
+	class PathSimplifier
 	{
 	public:
-	    PathSimplifierGeometric(const base::SpaceInformationPtr &si)
+	    PathSimplifier(const base::SpaceInformationPtr &si)
 	    {
 		m_si = si;
 		m_rangeRatio = 0.2;
@@ -65,7 +65,7 @@ namespace ompl
 		m_maxEmptySteps = 3;
 	    }
 	    
-	    virtual ~PathSimplifierGeometric(void)
+	    virtual ~PathSimplifier(void)
 	    {
 	    }
 	    

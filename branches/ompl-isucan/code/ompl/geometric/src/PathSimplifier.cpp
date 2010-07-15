@@ -32,12 +32,12 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/geometric/PathSimplifierGeometric.h"
+#include "ompl/geometric/PathSimplifier.h"
 #include <cstdlib>
 
-void ompl::geometric::PathSimplifierGeometric::reduceVertices(PathGeometric &path)
+void ompl::geometric::PathSimplifier::reduceVertices(PathGeometric &path)
 {
     if (path.states.size() < 3)
 	return;    
@@ -76,7 +76,7 @@ void ompl::geometric::PathSimplifierGeometric::reduceVertices(PathGeometric &pat
     }
 }
 
-void ompl::geometric::PathSimplifierGeometric::simplifyMax(PathGeometric &path)
+void ompl::geometric::PathSimplifier::simplifyMax(PathGeometric &path)
 {
     reduceVertices(path);
     path.interpolate(3.0);

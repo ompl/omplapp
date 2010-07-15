@@ -40,7 +40,7 @@
 #include "ompl/base/Planner.h"
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/geometric/PathGeometric.h"
-#include "ompl/geometric/PathSimplifierGeometric.h"
+#include "ompl/geometric/PathSimplifier.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/Exception.h"
 #include <boost/function.hpp>
@@ -60,7 +60,7 @@ namespace ompl
 	    {
 		m_si.reset(new base::SpaceInformation(manifold));
 		m_pdef.reset(new base::ProblemDefinition(m_si));
-		m_psk.reset(new PathSimplifierGeometric(m_si));
+		m_psk.reset(new PathSimplifier(m_si));
 		m_pa = pa;
 	    }
 	    
@@ -108,7 +108,7 @@ namespace ompl
 		return m_planner;
 	    }
 
-	    const PathSimplifierGeometricPtr& getPathSimplifier(void) const
+	    const PathSimplifierPtr& getPathSimplifier(void) const
 	    {
 		return m_psk;
 	    }
@@ -178,7 +178,7 @@ namespace ompl
 	    base::PlannerPtr              m_planner;
 	    base::PlannerAllocator        m_pa;
 	    
-	    PathSimplifierGeometricPtr    m_psk;
+	    PathSimplifierPtr             m_psk;
 	    bool                          m_configured;
 	    msg::Interface                m_msg;
 	    
