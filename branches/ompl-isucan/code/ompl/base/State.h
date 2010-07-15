@@ -54,6 +54,23 @@ namespace ompl
 	    virtual ~State(void)
 	    {
 	    }
+	    
+	public:
+
+	    /** \brief Cast this instance to a desired type. */
+	    template<class T>
+	    const T* as(void) const
+	    {
+		return static_cast<const T*>(this);
+	    }
+
+	    /** \brief Cast this instance to a desired type. */
+	    template<class T>
+	    T* as(void)
+	    {
+		return static_cast<T*>(this);
+	    }
+	    
 	};
 
 	/** \brief Definition of a compound state */
@@ -67,6 +84,20 @@ namespace ompl
 	    
 	    virtual ~CompoundState(void)
 	    {
+	    }
+
+	    /** \brief Cast a component of this instance to a desired type. */
+	    template<class T>
+	    const T* as(const int index) const
+	    {
+		return static_cast<const T*>(components[index]);
+	    }
+
+	    /** \brief Cast a component of this instance to a desired type. */
+	    template<class T>
+	    T* as(const int index)
+	    {
+		return static_cast<T*>(components[index]);
 	    }
 	    
 	    /** \brief The components that make up a compound state */

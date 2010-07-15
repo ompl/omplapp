@@ -138,6 +138,9 @@ namespace ompl
 	    /** \brief Get a specific manifold from the compound manifold */
 	    const ManifoldPtr& getManifold(const std::size_t index) const;
 	    
+	    /** \brief Get a specific manifold's weight from the compound manifold (used in distance computation) */
+	    double getManifoldWeight(const std::size_t index) const;
+	    
 	    virtual unsigned int getDimension(void) const;
 
 	    virtual void enforceBounds(State *state) const;

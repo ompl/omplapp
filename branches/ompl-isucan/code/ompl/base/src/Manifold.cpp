@@ -55,7 +55,7 @@ void ompl::base::CompoundManifold::addManifold(const ManifoldPtr &component, dou
 {
     m_components.push_back(component);
     m_weights.push_back(weight);
-    m_componentCount = m_componentCount;
+    m_componentCount = m_components.size();
 }
 
 std::size_t ompl::base::CompoundManifold::getManifoldCount(void) const
@@ -67,6 +67,14 @@ const ompl::base::ManifoldPtr& ompl::base::CompoundManifold::getManifold(const s
 {
     if (m_componentCount > index)
 	return m_components[index];
+    else
+	throw Exception("Manifold index does not exist");
+}
+
+double ompl::base::CompoundManifold::getManifoldWeight(const std::size_t index) const
+{
+    if (m_componentCount > index)
+	return m_weights[index];
     else
 	throw Exception("Manifold index does not exist");
 }
@@ -129,7 +137,7 @@ void ompl::base::CompoundManifold::interpolate(const State *from, const State *t
     const CompoundState *cto    = static_cast<const CompoundState*>(to);
     CompoundState       *cstate = static_cast<CompoundState*>(state);
     for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->interpolate(cfrom->components[i], cto->components[i], t, cstate);
+	m_components[i]->interpolate(cfrom->components[i], cto->components[i], t, cstate->components[i]);
 }
 
 ompl::base::StateSamplerPtr ompl::base::CompoundManifold::allocStateSampler(void) const
@@ -146,7 +154,7 @@ ompl::base::State* ompl::base::CompoundManifold::allocState(void) const
     state->components = new State*[m_componentCount];
     for (std::size_t i = 0 ; i < m_componentCount ; ++i)
 	state->components[i] = m_components[i]->allocState();
-    return state;
+    return static_cast<State*>(state);
 }
 
 void ompl::base::CompoundManifold::freeState(State *state) const 

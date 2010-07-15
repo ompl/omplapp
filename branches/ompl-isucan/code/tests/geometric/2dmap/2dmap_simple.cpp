@@ -64,11 +64,11 @@ public:
     
     virtual bool isValid(const base::State *state) const
     {
-	const ext::RealVectorState *rstate = static_cast<const ext::RealVectorState*>(state);
-	
+        const base::CompoundState *cstate = state->as<base::CompoundState>();
+    
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(rstate->values[0]);
-	int y = (int)(rstate->values[1]);
+	int x = (int)(cstate->as<ext::RealVectorState>(0)->values[0]);
+	int y = (int)(cstate->as<ext::RealVectorState>(1)->values[0]);
 	return m_grid[x][y] == 0; // 0 means valid state
     }
     
@@ -78,6 +78,7 @@ protected:
 
 };
 
+/*
 class myManifold : public ext::RealVectorManifold
 {
 public:
@@ -100,22 +101,44 @@ public:
 	return abs(x1 - x2) + abs(y1 - y2);
     }
 };
+*/
+
+class myManifold1 : public ext::RealVectorManifold
+{
+public:
+    
+    myManifold1() : ext::RealVectorManifold(1)
+    {
+    }
+    
+    virtual double distance(const base::State *state1, const base::State *state2) const
+    {
+	int x1 = (int)(state1->as<ext::RealVectorState>()->values[0]);
+	int x2 = (int)(state2->as<ext::RealVectorState>()->values[0]);
+	
+	return abs(x1 - x2);
+    }
+};
 
 class mySetup
 {
 public:
     
-    mySetup(Environment2D &env, const base::PlannerAllocator &pa) : setup(base::ManifoldPtr(new myManifold(2)), pa)
+    mySetup(Environment2D &env, const base::PlannerAllocator &pa) : setup(base::ManifoldPtr(new base::CompoundManifold()), pa)
     {
-	ext::RealVectorBounds bounds(2);
-	
-	std::vector<double> lowBound, upBound;
+	ext::RealVectorBounds bounds(1);
 	bounds.low[0] = 0.0;
-	bounds.low[1] = 0.0;
 	bounds.high[0] = (double)env.width - 0.000000001;
-	bounds.high[1] = (double)env.height - 0.000000001;
+	myManifold1 *m1 = new myManifold1();
+	m1->setBounds(bounds);
 	
-	static_cast<ext::RealVectorManifold*>(setup.getManifold().get())->setBounds(bounds);
+	bounds.high[0] = (double)env.height - 0.000000001;
+	myManifold1 *m2 = new myManifold1();
+	m2->setBounds(bounds);
+	
+	static_cast<base::CompoundManifold*>(setup.getManifold().get())->addManifold(base::ManifoldPtr(m1), 1.0);
+	static_cast<base::CompoundManifold*>(setup.getManifold().get())->addManifold(base::ManifoldPtr(m2), 1.0);
+	
 	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
 
 	setup.getPathSimplifier()->setMaxSteps(50);
@@ -125,15 +148,16 @@ public:
 	setup.getSpaceInformation()->printSettings();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::ScopedState<ext::RealVectorState> state(setup.getSpaceInformation());
-	state->values[0] = env.start.first;
-	state->values[1] = env.start.second;
+	base::ScopedState<base::CompoundState> state(setup.getSpaceInformation());
+	state->as<ext::RealVectorState>(0)->values[0] = env.start.first;
+	state->as<ext::RealVectorState>(1)->values[0] = env.start.second;
 	setup.getProblemDefinition()->addStartState(state);
 
 	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
 	goal->state = setup.getSpaceInformation()->allocState();
-	static_cast<ext::RealVectorState*>(goal->state)->values[0] = env.goal.first;
-	static_cast<ext::RealVectorState*>(goal->state)->values[1] = env.goal.second;
+	
+	goal->state->as<base::CompoundState>()->as<ext::RealVectorState>(0)->values[0] = env.goal.first;
+	goal->state->as<base::CompoundState>()->as<ext::RealVectorState>(1)->values[0] = env.goal.second;
 	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
 
 	setup.setGoal(base::GoalPtr(goal));

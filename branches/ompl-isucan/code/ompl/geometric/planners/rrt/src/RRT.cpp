@@ -100,7 +100,7 @@ bool ompl::geometric::RRT::solve(double solveTime)
     Motion *rmotion   = new Motion(m_si);
     base::State *rstate = rmotion->state;
     base::State *xstate = m_si->allocState();
-    
+
     while (time::now() < endTime)
     {
 
@@ -109,7 +109,7 @@ bool ompl::geometric::RRT::solve(double solveTime)
 	    goal_s->sampleGoal(rstate);
 	else
 	    m_sCore->sample(rstate);
-
+	
 	/* find closest state in the tree */
 	Motion *nmotion = m_nn.nearest(rmotion);
 	base::State *dstate = rstate;
@@ -118,10 +118,10 @@ bool ompl::geometric::RRT::solve(double solveTime)
 	double d = m_si->distance(nmotion->state, rmotion->state);
 	if (d > m_maxDistance)
 	{
-	    m_si->getManifold()->interpolate(nmotion->state, rmotion->state, m_maxDistance / d, xstate);
+	    m_si->getManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
 	    dstate = xstate;
 	}
-	
+
 	if (m_si->checkMotion(nmotion->state, dstate))
 	{
 	    /* create a motion */
