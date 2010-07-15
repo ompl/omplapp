@@ -41,8 +41,14 @@
 
 ompl::base::GoalStates::~GoalStates(void)
 {
+    clear();
+}
+
+void ompl::base::GoalStates::clear(void)
+{
     for (unsigned int i = 0 ; i < states.size() ; ++i)
 	m_si->freeState(states[i]);
+    states.clear();
 }
 
 double ompl::base::GoalStates::distanceGoal(const State *st) const
@@ -78,3 +84,15 @@ unsigned int ompl::base::GoalStates::maxSampleCount(void) const
 {
     return states.size();
 }
+
+void ompl::base::GoalStates::addState(const State* st)
+{
+    states.push_back(m_si->cloneState(st));
+}
+
+void ompl::base::GoalStates::addState(const ScopedState<> &st)
+{
+    addState(st.get());
+}
+
+	    

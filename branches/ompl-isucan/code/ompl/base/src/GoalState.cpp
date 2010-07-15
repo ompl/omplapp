@@ -63,3 +63,16 @@ unsigned int ompl::base::GoalState::maxSampleCount(void) const
 {
     return 1;
 }
+
+void ompl::base::GoalState::setState(const State* st)
+{
+    if (state)
+	m_si->freeState(state);
+    state = m_si->cloneState(st);
+}
+
+void ompl::base::GoalState::setState(const ScopedState<> &st)
+{
+    setState(st.get());
+}
+

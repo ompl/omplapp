@@ -38,6 +38,7 @@
 #define OMPL_BASE_GOAL_STATE_
 
 #include "ompl/base/GoalSampleableRegion.h"
+#include "ompl/base/ScopedState.h"
 
 namespace ompl
 {
@@ -68,6 +69,12 @@ namespace ompl
 	    /** \brief Print information about the goal data structure
 		to a stream */
 	    virtual void print(std::ostream &out = std::cout) const;
+	    
+	    /** \brief Set the goal state */
+	    void setState(const State* st);
+	    
+	    /** \brief Set the goal state */
+	    void setState(const ScopedState<> &st);
 	    
 	    /** \brief The goal state */
 	    State *state;

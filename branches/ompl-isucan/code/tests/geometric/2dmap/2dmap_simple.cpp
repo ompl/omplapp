@@ -129,12 +129,13 @@ public:
 	setup.getProblemDefinition()->addStartState(state);
 
 	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
-	goal->state = setup.getSpaceInformation()->allocState();
-	
-	goal->state->as<base::CompoundState>()->as<ext::RealVectorState>(0)->values[0] = env.goal.first;
-	goal->state->as<base::CompoundState>()->as<ext::RealVectorState>(1)->values[0] = env.goal.second;
-	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
 
+	base::ScopedState<base::CompoundState> gstate(setup.getSpaceInformation());	
+	gstate->as<ext::RealVectorState>(0)->values[0] = env.goal.first;
+	gstate->as<ext::RealVectorState>(1)->values[0] = env.goal.second;
+	goal->setState(gstate);
+	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
+	
 	setup.setGoal(base::GoalPtr(goal));
     }
     
