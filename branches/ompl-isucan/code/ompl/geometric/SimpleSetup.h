@@ -56,7 +56,7 @@ namespace ompl
 	class SimpleSetup
 	{
 	public:
-	    SimpleSetup(const base::ManifoldPtr &manifold, const base::PlannerAllocator &pa) : m_configured(false)
+	    SimpleSetup(const base::StateManifoldPtr &manifold, const base::PlannerAllocator &pa) : m_configured(false)
 	    {
 		m_si.reset(new base::SpaceInformation(manifold));
 		m_pdef.reset(new base::ProblemDefinition(m_si));
@@ -73,9 +73,9 @@ namespace ompl
 		return m_si;
 	    }
 	    
-	    const base::ManifoldPtr& getManifold(void) const
+	    const base::StateManifoldPtr& getStateManifold(void) const
 	    {
-		return m_si->getManifold();
+		return m_si->getStateManifold();
 	    }
 	    
 	    const base::ProblemDefinitionPtr& getProblemDefinition(void) const

@@ -38,7 +38,7 @@
 #include <boost/filesystem.hpp>
 
 #include "ompl/base/GoalState.h"
-#include "ompl/base/extension/RealVectorManifold.h"
+#include "ompl/base/manifolds/RealVectorStateManifold.h"
 #include "ompl/geometric/planners/rrt/RRT.h"
 #include "ompl/geometric/SimpleSetup.h"
 
@@ -67,8 +67,8 @@ public:
         const base::CompoundState *cstate = state->as<base::CompoundState>();
     
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(cstate->as<ext::RealVectorState>(0)->values[0]);
-	int y = (int)(cstate->as<ext::RealVectorState>(1)->values[0]);
+	int x = (int)(cstate->as<base::RealVectorState>(0)->values[0]);
+	int y = (int)(cstate->as<base::RealVectorState>(1)->values[0]);
 	return m_grid[x][y] == 0; // 0 means valid state
     }
     
@@ -78,18 +78,18 @@ protected:
 
 };
 
-class myManifold1 : public ext::RealVectorManifold
+class myManifold1 : public base::RealVectorStateManifold
 {
 public:
     
-    myManifold1() : ext::RealVectorManifold(1)
+    myManifold1() : base::RealVectorStateManifold(1)
     {
     }
     
     virtual double distance(const base::State *state1, const base::State *state2) const
     {
-	int x1 = (int)(state1->as<ext::RealVectorState>()->values[0]);
-	int x2 = (int)(state2->as<ext::RealVectorState>()->values[0]);
+	int x1 = (int)(state1->as<base::RealVectorState>()->values[0]);
+	int x2 = (int)(state2->as<base::RealVectorState>()->values[0]);
 	
 	return abs(x1 - x2);
     }
@@ -99,9 +99,9 @@ class mySetup
 {
 public:
     
-    mySetup(Environment2D &env, const base::PlannerAllocator &pa) : setup(base::ManifoldPtr(new base::CompoundManifold()), pa)
+    mySetup(Environment2D &env, const base::PlannerAllocator &pa) : setup(base::StateManifoldPtr(new base::CompoundStateManifold()), pa)
     {
-	ext::RealVectorBounds bounds(1);
+	base::RealVectorBounds bounds(1);
 	bounds.low[0] = 0.0;
 	bounds.high[0] = (double)env.width - 0.000000001;
 	myManifold1 *m1 = new myManifold1();
@@ -111,8 +111,8 @@ public:
 	myManifold1 *m2 = new myManifold1();
 	m2->setBounds(bounds);
 	
-	setup.getManifold()->as<base::CompoundManifold>()->addManifold(base::ManifoldPtr(m1), 1.0);
-	setup.getManifold()->as<base::CompoundManifold>()->addManifold(base::ManifoldPtr(m2), 1.0);
+	setup.getStateManifold()->as<base::CompoundStateManifold>()->addSubManifold(base::StateManifoldPtr(m1), 1.0);
+	setup.getStateManifold()->as<base::CompoundStateManifold>()->addSubManifold(base::StateManifoldPtr(m2), 1.0);
 	
 	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
 
@@ -124,15 +124,15 @@ public:
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
 	base::ScopedState<base::CompoundState> state(setup.getSpaceInformation());
-	state->as<ext::RealVectorState>(0)->values[0] = env.start.first;
-	state->as<ext::RealVectorState>(1)->values[0] = env.start.second;
+	state->as<base::RealVectorState>(0)->values[0] = env.start.first;
+	state->as<base::RealVectorState>(1)->values[0] = env.start.second;
 	setup.getProblemDefinition()->addStartState(state);
 
 	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
 
 	base::ScopedState<base::CompoundState> gstate(setup.getSpaceInformation());	
-	gstate->as<ext::RealVectorState>(0)->values[0] = env.goal.first;
-	gstate->as<ext::RealVectorState>(1)->values[0] = env.goal.second;
+	gstate->as<base::RealVectorState>(0)->values[0] = env.goal.first;
+	gstate->as<base::RealVectorState>(1)->values[0] = env.goal.second;
 	goal->setState(gstate);
 	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
 	
@@ -221,8 +221,8 @@ public:
 	    /* display the solution */	    
 	    for (unsigned int i = 0 ; i < path.states.size() ; ++i)
 	    {
-		int x = (int)path.states[i]->as<base::CompoundState>()->as<ext::RealVectorState>(0)->values[0];
-		int y = (int)path.states[i]->as<base::CompoundState>()->as<ext::RealVectorState>(1)->values[0];
+		int x = (int)path.states[i]->as<base::CompoundState>()->as<base::RealVectorState>(0)->values[0];
+		int y = (int)path.states[i]->as<base::CompoundState>()->as<base::RealVectorState>(1)->values[0];
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else
@@ -314,13 +314,13 @@ TEST_F(PlanTest, geometric_RRT)
 
 TEST(ScopedStateTest, Simple)
 {
-    base::ManifoldPtr m(new ext::RealVectorManifold(2));
+    base::StateManifoldPtr m(new base::RealVectorStateManifold(2));
     
-    base::ScopedState<ext::RealVectorManifold::StateType> s1(m);
+    base::ScopedState<base::RealVectorStateManifold::StateType> s1(m);
     s1->values[0] = 1.0;
     s1->values[1] = 2.0;
     
-    base::ScopedState<ext::RealVectorManifold::StateType> s2 = s1;
+    base::ScopedState<base::RealVectorStateManifold::StateType> s2 = s1;
     EXPECT_TRUE(s2->values[1] == s1->values[1]);
     
     base::ScopedState<> s3 = s1;
@@ -328,14 +328,14 @@ TEST(ScopedStateTest, Simple)
     
     base::ScopedState<> s4 = s3;
 
-    base::ScopedState<ext::RealVectorManifold::StateType> s5 = s4;
+    base::ScopedState<base::RealVectorStateManifold::StateType> s5 = s4;
     EXPECT_TRUE(s5 == s1);
 
     s1->values[1] = 4.0;
     
     EXPECT_TRUE(s5 != s1);
     
-    base::ScopedState<ext::RealVectorManifold::StateType> s6(s4);
+    base::ScopedState<base::RealVectorStateManifold::StateType> s6(s4);
     EXPECT_TRUE(s6 != s1);
     s1 = s4;
     s4 = s1;

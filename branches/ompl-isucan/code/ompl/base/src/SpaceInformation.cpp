@@ -42,9 +42,9 @@
 #include <cmath>
 #include <cassert>
 
-ompl::base::SpaceInformation::SpaceInformation(const ManifoldPtr &manifold) : m_manifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false)
+ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : m_stateManifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false)
 {
-    if (!m_manifold)
+    if (!m_stateManifold)
 	throw Exception("Invalid manifold definition");
 }
 
@@ -56,7 +56,7 @@ void ompl::base::SpaceInformation::setup(void)
     if (!m_stateValidityChecker)
 	throw Exception("State validity checker not set!");
     
-    if (m_manifold->getDimension() <= 0)
+    if (m_stateManifold->getDimension() <= 0)
 	throw Exception("The dimension of the manifold we plan in must be > 0");
     
     if (m_resolution < std::numeric_limits<double>::round_error())
@@ -141,14 +141,14 @@ bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *
     {
 	// try to find a valid state nearby
 	StateSamplerPtr ss = allocStateSampler();
-	State        *temp = m_manifold->allocState();
+	State        *temp = m_stateManifold->allocState();
 	copyState(temp, state);	
 	for (unsigned int i = 0 ; i < attempts && !result ; ++i)
 	{
 	    ss->sampleNear(state, temp, distance);
 	    result = isValid(state);
 	}
-	m_manifold->freeState(temp);
+	m_stateManifold->freeState(temp);
     }
     
     return result;
@@ -168,11 +168,11 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2,
     
     for (int j = 1 ; j < nd ; ++j)
     {
-	m_manifold->interpolate(s1, s2, (double)j / (double)nd, test);
+	m_stateManifold->interpolate(s1, s2, (double)j / (double)nd, test);
 	if (!isValid(test))
 	{
 	    if (lastValidState)
-		m_manifold->interpolate(s1, s2, (double)(j - 1) / (double)nd, lastValidState);
+		m_stateManifold->interpolate(s1, s2, (double)(j - 1) / (double)nd, lastValidState);
 	    if (lastValidTime)
 		*lastValidTime = (double)(j - 1) / (double)nd;
 	    result = false;
@@ -207,7 +207,7 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
 	std::pair<int, int> x = pos.front();
 	
 	int mid = (x.first + x.second) / 2;
-	m_manifold->interpolate(s1, s2, (double)mid / (double)nd, test);
+	m_stateManifold->interpolate(s1, s2, (double)mid / (double)nd, test);
 	
 	if (!isValid(test))
 	{
@@ -252,7 +252,7 @@ unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, cons
     {
 	if (alloc)
 	    states[added] = allocState();
-	m_manifold->interpolate(s1, s2, (double)j / (double)nd, states[added]);
+	m_stateManifold->interpolate(s1, s2, (double)j / (double)nd, states[added]);
 	added++;
     }
     
@@ -325,6 +325,6 @@ void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
     out << "  - manifold:" << std::endl;
-    m_manifold->printSettings(out);
+    m_stateManifold->printSettings(out);
     out << "  - state validity check resolution: " << m_resolution << std::endl;
 }

@@ -34,19 +34,19 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_EXTENSION_REAL_VECTOR_MANIFOLD_
-#define OMPL_BASE_EXTENSION_REAL_VECTOR_MANIFOLD_
+#ifndef OMPL_BASE_EXTENSION_REAL_VECTOR_STATE_MANIFOLD_
+#define OMPL_BASE_EXTENSION_REAL_VECTOR_STATE_MANIFOLD_
 
-#include "ompl/base/Manifold.h"
+#include "ompl/base/StateManifold.h"
 #include <vector>
 
 namespace ompl
 {
-    namespace ext
+    namespace base
     {
 	
 	/** \brief The definition of a state in R^n */
-	class RealVectorState : public base::State
+	class RealVectorState : public State
 	{
 	public:
 	    double *values;
@@ -61,48 +61,38 @@ namespace ompl
 		low.resize(dim, 0.0);
 		high.resize(dim, 0.0);
 	    }
-	    /*
-	    RealVectorBounds& operator=(const RealVectorBounds &other)
-	    {
-		if (this != &other)
-		{
-		    low = other.low;
-		    high = other.high;
-		}
-		return *this;
-	    }
-	    */
+
 	    std::vector<double> low;
 	    std::vector<double> high;
 	};
 	
 	/** \brief Uniform sampler for the R^n manifold */
-	class RealVectorStateUniformSampler : public base::StateSampler
+	class RealVectorStateUniformSampler : public StateSampler
 	{
 	public:
 	    
-	    RealVectorStateUniformSampler(const base::Manifold *manifold) : base::StateSampler(manifold)
+	    RealVectorStateUniformSampler(const StateManifold *manifold) : StateSampler(manifold)
 	    {
 	    }
 	    
-	    virtual void sample(base::State *state);
-	    virtual void sampleNear(base::State *state, const base::State *near, const double distance);
+	    virtual void sample(State *state);
+	    virtual void sampleNear(State *state, const State *near, const double distance);
 	    
 	};
 	
-	/** \brief A manifold representing R^n. The distance function is the square of L2 and sampling is uniform */
-	class RealVectorManifold : public base::Manifold
+	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
+	class RealVectorStateManifold : public StateManifold
 	{
 	public:
 
 	    /** \brief Define the type of state allocated by this manifold */
 	    typedef RealVectorState StateType;
 
-	    RealVectorManifold(unsigned int dim) : base::Manifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double)), m_bounds(dim)
+	    RealVectorStateManifold(unsigned int dim) : StateManifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double)), m_bounds(dim)
 	    {
 	    }
 	    
-	    virtual ~RealVectorManifold(void)
+	    virtual ~RealVectorStateManifold(void)
 	    {	
 	    }
 	    
@@ -117,36 +107,36 @@ namespace ompl
 	    virtual unsigned int getDimension(void) const;
 	    
 	    /** \brief Bring the state within the bounds of the state space */
-	    virtual void enforceBounds(base::State *state) const;
+	    virtual void enforceBounds(State *state) const;
 	    	    
 	    /** \brief Check if a state is inside the bounding box */
-	    virtual bool satisfiesBounds(const base::State *state) const;
+	    virtual bool satisfiesBounds(const State *state) const;
 	    
 	    /** \brief Copy a state to another */
-	    virtual void copyState(base::State *destination, const base::State *source) const;
+	    virtual void copyState(State *destination, const State *source) const;
 	    
 	    /** \brief Computes distance to between two states */
-	    virtual double distance(const base::State *state1, const base::State *state2) const;
+	    virtual double distance(const State *state1, const State *state2) const;
 	    
 	    /** \brief Checks whether two states are equal */
-	    virtual bool equalStates(const base::State *state1, const base::State *state2) const;
+	    virtual bool equalStates(const State *state1, const State *state2) const;
 
 	    /** \brief Computes the state that lies at time t \in [0, 1] on the
 		segment that connects the current state to the
 		destination state */
-	    virtual void interpolate(const base::State *from, const base::State *to, const double t, base::State *state) const;
+	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const;
 
-	    /** \brief Allocate an instance of a state sampler for this space */
-	    virtual base::StateSamplerPtr allocStateSampler(void) const;
+	    /** \brief Allocate an instance of a uniform state sampler for this space */
+	    virtual StateSamplerPtr allocUniformStateSampler(void) const;
 	    
 	    /** \brief Allocate a state that can store a point in the described space */
-	    virtual base::State* allocState(void) const;
+	    virtual State* allocState(void) const;
 	    
 	    /** \brief Free the memory of the allocated state */
-	    virtual void freeState(base::State *state) const;
+	    virtual void freeState(State *state) const;
 
 	    /** \brief Print a state to screen */
-	    virtual void printState(const base::State *state, std::ostream &out) const;
+	    virtual void printState(const State *state, std::ostream &out) const;
 	    
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;

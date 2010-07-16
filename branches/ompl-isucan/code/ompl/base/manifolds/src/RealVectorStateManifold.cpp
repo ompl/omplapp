@@ -34,25 +34,26 @@
 
 /** \author Ioan Sucan */
 
-#include "ompl/base/extension/RealVectorManifold.h"
+#include "ompl/base/manifolds/RealVectorStateManifold.h"
 #include "ompl/util/Exception.h"
 #include <cstring>
 #include <limits>
+#include <cmath>
 
-void ompl::ext::RealVectorStateUniformSampler::sample(base::State *state)
+void ompl::base::RealVectorStateUniformSampler::sample(State *state)
 {
     const unsigned int dim = m_manifold->getDimension();
-    const RealVectorBounds &bounds = static_cast<const RealVectorManifold*>(m_manifold)->getBounds();
+    const RealVectorBounds &bounds = static_cast<const RealVectorStateManifold*>(m_manifold)->getBounds();
     
     RealVectorState *rstate = static_cast<RealVectorState*>(state);
     for (unsigned int i = 0 ; i < dim ; ++i)
 	rstate->values[i] = m_rng.uniformReal(bounds.low[i], bounds.high[i]);
 }
 
-void ompl::ext::RealVectorStateUniformSampler::sampleNear(base::State *state, const base::State *near, const double distance)
+void ompl::base::RealVectorStateUniformSampler::sampleNear(State *state, const State *near, const double distance)
 {
     const unsigned int dim = m_manifold->getDimension();
-    const RealVectorBounds &bounds = static_cast<const RealVectorManifold*>(m_manifold)->getBounds();
+    const RealVectorBounds &bounds = static_cast<const RealVectorStateManifold*>(m_manifold)->getBounds();
 
     RealVectorState *rstate = static_cast<RealVectorState*>(state);
     const RealVectorState *rnear = static_cast<const RealVectorState*>(near);
@@ -62,7 +63,7 @@ void ompl::ext::RealVectorStateUniformSampler::sampleNear(base::State *state, co
 			      std::min(bounds.high[i], rnear->values[i] + distance));
 }
 
-void ompl::ext::RealVectorManifold::setBounds(const RealVectorBounds &bounds)
+void ompl::base::RealVectorStateManifold::setBounds(const RealVectorBounds &bounds)
 {
     if (bounds.low.size() != bounds.high.size())
 	throw Exception("Lower and upper bounds are not of same dimension");
@@ -71,12 +72,12 @@ void ompl::ext::RealVectorManifold::setBounds(const RealVectorBounds &bounds)
     m_bounds = bounds;
 }
 
-unsigned int ompl::ext::RealVectorManifold::getDimension(void) const
+unsigned int ompl::base::RealVectorStateManifold::getDimension(void) const
 {
     return m_dimension;
 }
 
-void ompl::ext::RealVectorManifold::enforceBounds(base::State *state) const
+void ompl::base::RealVectorStateManifold::enforceBounds(State *state) const
 {
     RealVectorState *rstate = static_cast<RealVectorState*>(state);
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
@@ -89,7 +90,7 @@ void ompl::ext::RealVectorManifold::enforceBounds(base::State *state) const
     }
 }    
 	    	    
-bool ompl::ext::RealVectorManifold::satisfiesBounds(const base::State *state) const
+bool ompl::base::RealVectorStateManifold::satisfiesBounds(const State *state) const
 {
     const RealVectorState *rstate = static_cast<const RealVectorState*>(state);    
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
@@ -99,13 +100,13 @@ bool ompl::ext::RealVectorManifold::satisfiesBounds(const base::State *state) co
     return true;
 }
 
-void ompl::ext::RealVectorManifold::copyState(base::State *destination, const base::State *source) const
+void ompl::base::RealVectorStateManifold::copyState(State *destination, const State *source) const
 {
     memcpy(static_cast<RealVectorState*>(destination)->values,
 	   static_cast<const RealVectorState*>(source)->values, m_stateBytes);    
 }
 
-double ompl::ext::RealVectorManifold::distance(const base::State *state1, const base::State *state2) const
+double ompl::base::RealVectorStateManifold::distance(const State *state1, const State *state2) const
 {
     double dist = 0.0;
     const double *s1 = static_cast<const RealVectorState*>(state1)->values;
@@ -116,10 +117,10 @@ double ompl::ext::RealVectorManifold::distance(const base::State *state1, const 
 	double diff = (*s1++) - (*s2++);
 	dist += diff * diff;
     }
-    return dist;
+    return sqrt(dist);
 }
 
-bool ompl::ext::RealVectorManifold::equalStates(const base::State *state1, const base::State *state2) const
+bool ompl::base::RealVectorStateManifold::equalStates(const State *state1, const State *state2) const
 {
     const double *s1 = static_cast<const RealVectorState*>(state1)->values;
     const double *s2 = static_cast<const RealVectorState*>(state2)->values;
@@ -132,7 +133,7 @@ bool ompl::ext::RealVectorManifold::equalStates(const base::State *state1, const
     return true;
 }
 
-void ompl::ext::RealVectorManifold::interpolate(const base::State *from, const base::State *to, const double t, base::State *state) const
+void ompl::base::RealVectorStateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
 {
     const RealVectorState *rfrom = static_cast<const RealVectorState*>(from);
     const RealVectorState *rto = static_cast<const RealVectorState*>(to);
@@ -141,26 +142,26 @@ void ompl::ext::RealVectorManifold::interpolate(const base::State *from, const b
 	rstate->values[i] = rfrom->values[i] + (rto->values[i] - rfrom->values[i]) * t;
 }
 
-ompl::base::StateSamplerPtr ompl::ext::RealVectorManifold::allocStateSampler(void) const 
+ompl::base::StateSamplerPtr ompl::base::RealVectorStateManifold::allocUniformStateSampler(void) const 
 {
-    return base::StateSamplerPtr(new RealVectorStateUniformSampler(this));
+    return StateSamplerPtr(new RealVectorStateUniformSampler(this));
 }
 
-ompl::base::State* ompl::ext::RealVectorManifold::allocState(void) const
+ompl::base::State* ompl::base::RealVectorStateManifold::allocState(void) const
 {
     RealVectorState *rstate = new RealVectorState();
     rstate->values = new double[m_dimension];
     return rstate;
 }
 
-void ompl::ext::RealVectorManifold::freeState(base::State *state) const
+void ompl::base::RealVectorStateManifold::freeState(State *state) const
 {
     RealVectorState *rstate = static_cast<RealVectorState*>(state);
     delete[] rstate->values;
     delete rstate;
 }
 
-void ompl::ext::RealVectorManifold::printState(const base::State *state, std::ostream &out) const
+void ompl::base::RealVectorStateManifold::printState(const State *state, std::ostream &out) const
 {
     if (state)
     {
@@ -173,7 +174,7 @@ void ompl::ext::RealVectorManifold::printState(const base::State *state, std::os
 	out << "NULL" << std::endl;
 }
 
-void ompl::ext::RealVectorManifold::printSettings(std::ostream &out) const
+void ompl::base::RealVectorStateManifold::printSettings(std::ostream &out) const
 {
     out << "Real vector manifold with bounds: " << std::endl;
     out << "  - min: ";

@@ -41,13 +41,14 @@
 #include "ompl/util/RandomNumbers.h"
 #include "ompl/util/ClassForward.h"
 #include <vector>
+#include <boost/function.hpp>
 
 namespace ompl
 {
     namespace base
     {
 	
-	ClassForward(Manifold);
+	ClassForward(StateManifold);
 	ClassForward(StateSampler);
 	
 	/** \brief Abstract definition of a state sampler. */
@@ -56,7 +57,7 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    StateSampler(const Manifold *manifold) : m_manifold(manifold)
+	    StateSampler(const StateManifold *manifold) : m_manifold(manifold)
 	    {
 	    }
 	    
@@ -79,8 +80,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    const Manifold *m_manifold;
-	    RNG             m_rng;
+	    const StateManifold *m_manifold;
+	    RNG                  m_rng;
 	};
 
 	/** \brief Definition of a compound state sampler. This is useful to construct samplers for compound states. */
@@ -89,7 +90,7 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    CompoundStateSampler(const Manifold* manifold) : StateSampler(manifold) 
+	    CompoundStateSampler(const StateManifold* manifold) : StateSampler(manifold) 
 	    {
 	    }
 	    
@@ -118,6 +119,8 @@ namespace ompl
 	    
 	};
 
+	/** \brief Definition of a function that can allocate a state sampler */
+	typedef boost::function<StateSamplerPtr(const StateManifold*)> StateSamplerAllocator;
     }
 }
 

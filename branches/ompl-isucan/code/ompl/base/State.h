@@ -37,6 +37,8 @@
 #ifndef OMPL_BASE_STATE_
 #define OMPL_BASE_STATE_
 
+#include <boost/concept_check.hpp>
+
 namespace ompl
 {
     namespace base
@@ -61,13 +63,19 @@ namespace ompl
 	    template<class T>
 	    const T* as(void) const
 	    {
+		/** \brief Make sure the type we are allocating is indeed a state */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+
 		return static_cast<const T*>(this);
 	    }
 
 	    /** \brief Cast this instance to a desired type. */
 	    template<class T>
 	    T* as(void)
-	    {
+	    {	
+		/** \brief Make sure the type we are allocating is indeed a state */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+		
 		return static_cast<T*>(this);
 	    }
 	    
@@ -89,7 +97,10 @@ namespace ompl
 	    /** \brief Cast a component of this instance to a desired type. */
 	    template<class T>
 	    const T* as(const unsigned int index) const
-	    {
+	    {	    	
+		/** \brief Make sure the type we are allocating is indeed a state */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+
 		return static_cast<const T*>(components[index]);
 	    }
 
@@ -97,6 +108,9 @@ namespace ompl
 	    template<class T>
 	    T* as(const unsigned int index)
 	    {
+		/** \brief Make sure the type we are allocating is indeed a state */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+		
 		return static_cast<T*>(components[index]);
 	    }
 	    

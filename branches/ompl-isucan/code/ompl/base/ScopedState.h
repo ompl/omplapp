@@ -39,7 +39,7 @@
 
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/util/Exception.h"
-#include "boost/concept_check.hpp"
+#include <boost/concept_check.hpp>
 
 namespace ompl
 {
@@ -67,14 +67,14 @@ namespace ompl
 		cast this state into does not match the type of states
 		allocated. */
 	    explicit
-	    ScopedState(const SpaceInformationPtr &si) : m_manifold(si->getManifold())
+	    ScopedState(const SpaceInformationPtr &si) : m_manifold(si->getStateManifold())
 	    {	
 		State *s = m_manifold->allocState();
 		m_state = dynamic_cast<T*>(s);
 		if (!m_state)
 		{
 		    m_manifold->freeState(s);
-		    throw Exception("Manifold does not allocate states of desired type");
+		    throw Exception("StateManifold does not allocate states of desired type");
 		}
 	    }
 	    
@@ -83,14 +83,14 @@ namespace ompl
 		type to cast this state into does not match the type
 		of states allocated. */
 	    explicit
-	    ScopedState(const ManifoldPtr &manifold) : m_manifold(manifold)
+	    ScopedState(const StateManifoldPtr &manifold) : m_manifold(manifold)
 	    {
 		State *s = m_manifold->allocState();
 		m_state = dynamic_cast<T*>(s);
 		if (!m_state)
 		{
 		    m_manifold->freeState(s);
-		    throw Exception("Manifold does not allocate states of desired type");
+		    throw Exception("StateManifold does not allocate states of desired type");
 		}
 	    }
 
@@ -124,7 +124,7 @@ namespace ompl
 	    }	    
 
 	    /** \brief Get the manifold that the state corresponds to */
-	    const ManifoldPtr& getManifold(void) const
+	    const StateManifoldPtr& getManifold(void) const
 	    {
 		return m_manifold;
 	    }
@@ -200,7 +200,7 @@ namespace ompl
 
 	private:
 	    
-	    ManifoldPtr          m_manifold;
+	    StateManifoldPtr     m_manifold;
 	    T                   *m_state;
 	};
     }

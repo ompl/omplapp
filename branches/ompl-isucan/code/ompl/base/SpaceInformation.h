@@ -39,7 +39,7 @@
 
 #include "ompl/base/State.h"
 #include "ompl/base/StateValidityChecker.h"
-#include "ompl/base/Manifold.h"
+#include "ompl/base/StateManifold.h"
 #include "ompl/base/StateSampler.h"
 
 #include "ompl/util/ClassForward.h"
@@ -71,7 +71,7 @@ namespace ompl
 	    
 	    /** \brief Constructor. Sets the instance of the manifold
 		to plan on. */
-	    SpaceInformation(const ManifoldPtr &manifold);
+	    SpaceInformation(const StateManifoldPtr &manifold);
 	    
 	    /** \brief Destructor */
 	    virtual ~SpaceInformation(void)
@@ -79,9 +79,9 @@ namespace ompl
 	    }
 	    	    
 	    /** \brief Return the instance of the used manifold */
-	    const ManifoldPtr& getManifold(void) const
+	    const StateManifoldPtr& getStateManifold(void) const
 	    {
-		return m_manifold;
+		return m_stateManifold;
 	    }	
 	    
 	    /** \brief Set the instance of the validity checker to
@@ -115,7 +115,7 @@ namespace ompl
 	    /** \brief Return the dimension of the state space */
 	    unsigned int getStateDimension(void) const
 	    {
-		return m_manifold->getDimension();
+		return m_stateManifold->getDimension();
 	    }
 	    
 	    /** \brief Check if a given state is valid or not */
@@ -127,63 +127,63 @@ namespace ompl
 	    /** \brief Allocate memory for a state */
 	    State* allocState(void) const
 	    {
-		return m_manifold->allocState();
+		return m_stateManifold->allocState();
 	    }
 	    
 	    /** \brief Free the memory of a state */
 	    void freeState(State *state) const
 	    {
-		m_manifold->freeState(state);
+		m_stateManifold->freeState(state);
 	    }
 
 	    /** \brief Print a state to a stream */
 	    void printState(const State *state, std::ostream &out = std::cout) const
 	    {
-		m_manifold->printState(state, out);
+		m_stateManifold->printState(state, out);
 	    }
 
 	    /** \brief Copy a state to another */
 	    void copyState(State *destination, const State *source) const
 	    {
-		m_manifold->copyState(destination, source);
+		m_stateManifold->copyState(destination, source);
 	    }
 	    
 	    /** \brief Clone a state */
 	    State* cloneState(const State *source) const
 	    {
-		State *copy = m_manifold->allocState();
-		m_manifold->copyState(copy, source);
+		State *copy = m_stateManifold->allocState();
+		m_stateManifold->copyState(copy, source);
 		return copy;
 	    }
 	    
 	    /** \brief Check if two states are the same */
 	    bool equalStates(const State *state1, const State *state2) const
 	    {
-		return m_manifold->equalStates(state1, state2);
+		return m_stateManifold->equalStates(state1, state2);
 	    }
 	    
 	    /** \brief Check if a state is inside the bounding box */
 	    bool satisfiesBounds(const State *state) const
 	    {
-		return m_manifold->satisfiesBounds(state);
+		return m_stateManifold->satisfiesBounds(state);
 	    }
 	    
 	    /** \brief Compute the distance between two states */
 	    double distance(const State *state1, const State *state2) const
 	    {
-		return m_manifold->distance(state1, state2);
+		return m_stateManifold->distance(state1, state2);
 	    }
 
 	    /** \brief Bring the state within the bounds of the state space */
 	    void enforceBounds(State *state) const
 	    {
-		m_manifold->enforceBounds(state);
+		m_stateManifold->enforceBounds(state);
 	    }
 
 	    /** \brief Allocate a state sampler */
 	    StateSamplerPtr allocStateSampler(void) const
 	    {
-		return m_manifold->allocStateSampler();
+		return m_stateManifold->allocStateSampler();
 	    }
 	    
 	    /** \brief Estimate the maximum (underapproximation)
@@ -229,7 +229,7 @@ namespace ompl
 	protected:
 	    
 	    StateValidityCheckerPtr m_stateValidityChecker;
-	    ManifoldPtr             m_manifold;
+	    StateManifoldPtr        m_stateManifold;
 	    double                  m_resolution;
 	    double                  m_maxExtent;
 	    

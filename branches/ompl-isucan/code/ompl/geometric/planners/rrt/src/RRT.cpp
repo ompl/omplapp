@@ -118,7 +118,7 @@ bool ompl::geometric::RRT::solve(double solveTime)
 	double d = m_si->distance(nmotion->state, rstate);
 	if (d > m_maxDistance)
 	{
-	    m_si->getManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
+	    m_si->getStateManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
 	    dstate = xstate;
 	}
 

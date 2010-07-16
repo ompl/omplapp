@@ -77,7 +77,7 @@ void ompl::geometric::pRRT::threadSolve(unsigned int tid, time::point endTime, S
 	double d = m_si->distance(nmotion->state, rstate);
 	if (d > m_maxDistance)
 	{
-	    m_si->getManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
+	    m_si->getStateManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
 	    dstate = xstate;
 	}
 	

@@ -34,13 +34,14 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_MANIFOLD_
-#define OMPL_BASE_MANIFOLD_
+#ifndef OMPL_BASE_STATE_MANIFOLD_
+#define OMPL_BASE_STATE_MANIFOLD_
 
 #include "ompl/base/State.h"
 #include "ompl/base/StateSampler.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/ClassForward.h"
+#include <boost/concept_check.hpp>
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -50,32 +51,38 @@ namespace ompl
     namespace base
     {
 	
-	ClassForward(Manifold);
+	ClassForward(StateManifold);
 	
 	/** \brief Representation of a space in which planning can be
 	    performed. Topology specific sampling and interpolation
 	    are defined. */
-	class Manifold
+	class StateManifold
 	{
 	public:
 	    
-	    Manifold(void)
+	    StateManifold(void)
 	    {
 	    }
 	    
-	    virtual ~Manifold(void);
+	    virtual ~StateManifold(void);
 
 	    /** \brief Cast this instance to a desired type. */
 	    template<class T>
 	    T* as(void)
 	    {
+		/** \brief Make sure the type we are allocating is indeed a manifold */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, StateManifold*>));
+		
 		return static_cast<T*>(this);
 	    }
 
 	    /** \brief Cast this instance to a desired type. */
 	    template<class T>
 	    const T* as(void) const
-	    {
+	    {	
+		/** \brief Make sure the type we are allocating is indeed a manifold */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, StateManifold*>));
+		
 		return static_cast<const T*>(this);
 	    }
 
@@ -101,9 +108,17 @@ namespace ompl
 		segment that connects the current state to the
 		destination state */
 	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const = 0;
+	    
+	    /** \brief Set the allocator to use for a state sampler */
+	    void setStateSamplerAllocator(const StateSamplerAllocator &ssa);
+	    
+	    /** \brief Allocate an instance of a uniform state sampler for this space */
+	    virtual StateSamplerPtr allocUniformStateSampler(void) const = 0;
 
-	    /** \brief Allocate an instance of a state sampler for this space */
-	    virtual StateSamplerPtr allocStateSampler(void) const = 0;
+	    /** \brief Allocate an instance of a state sampler for this space. If setStateSamplerAllocator() was called,
+		the specified allocator is used to produce the state sampler.  Otherwise, allocUniformStateSampler() is
+		called. */
+	    virtual StateSamplerPtr allocStateSampler(void) const;
 	    
 	    /** \brief Allocate a state that can store a point in the described space */
 	    virtual State* allocState(void) const = 0;
@@ -119,30 +134,34 @@ namespace ompl
 	    
 	protected:
 	    
-	    msg::Interface  m_msg;
+	    msg::Interface        m_msg;
+	    StateSamplerAllocator m_ssa;
 	    
 	};
 	
-    	class CompoundManifold : public Manifold
+    	class CompoundStateManifold : public StateManifold
 	{
 	public:
 	    
 	    /** \brief Define the type of state allocated by this manifold */
 	    typedef CompoundState StateType;
 	    
-	    CompoundManifold(void) : Manifold(), m_componentCount(0)
+	    CompoundStateManifold(void) : StateManifold(), m_componentCount(0), m_locked(false)
 	    {
 	    }
 	    
-	    virtual ~CompoundManifold(void)
+	    virtual ~CompoundStateManifold(void)
 	    {
 	    }
 
 	    /** \brief Cast a component of this instance to a desired type. */
 	    template<class T>
-	    T* as(const std::size_t index) const
+	    T* as(const unsigned int index) const
 	    {
-		return static_cast<T*>(getManifold(index).get());
+		/** \brief Make sure the type we are allocating is indeed a manifold */
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, StateManifold*>));
+		
+		return static_cast<T*>(getSubManifold(index).get());
 	    }
 	    
 	    /** \brief Adds the topology of a space as part of the
@@ -151,16 +170,16 @@ namespace ompl
 		to be specified. Ownership of the passed topology
 		instance is assumed and memory is freed upon
 		destruction. */
-	    virtual void addManifold(const ManifoldPtr &component, double weight);
+	    virtual void addSubManifold(const StateManifoldPtr &component, double weight);
 	    
 	    /** \brief Get the number of manifolds that make up the compound manifold */
-	    std::size_t getManifoldCount(void) const;
+	    unsigned int getSubManifoldCount(void) const;
 	    
 	    /** \brief Get a specific manifold from the compound manifold */
-	    const ManifoldPtr& getManifold(const std::size_t index) const;
+	    const StateManifoldPtr& getSubManifold(const unsigned int index) const;
 	    
 	    /** \brief Get a specific manifold's weight from the compound manifold (used in distance computation) */
-	    double getManifoldWeight(const std::size_t index) const;
+	    double getSubManifoldWeight(const unsigned int index) const;
 	    
 	    virtual unsigned int getDimension(void) const;
 
@@ -177,6 +196,8 @@ namespace ompl
 	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const;
 	    
 	    virtual StateSamplerPtr allocStateSampler(void) const;
+
+	    virtual StateSamplerPtr allocUniformStateSampler(void) const;
 	    
 	    virtual State* allocState(void) const;
 	    
@@ -188,9 +209,17 @@ namespace ompl
 
 	protected:
 	    
-	    std::vector<ManifoldPtr> m_components;
-	    std::size_t              m_componentCount;
-	    std::vector<double>      m_weights;
+	    /** \brief Lock this manifold. This means no further
+	     manifolds can be added as components.  This function can
+	     be for instance called from the constructor of a manifold
+	     that inherits from CompoundStateManifold to prevent the
+	     user to add further components. */
+	    void lock(void);
+	    
+	    std::vector<StateManifoldPtr> m_components;
+	    unsigned int                  m_componentCount;
+	    std::vector<double>           m_weights;
+	    bool                          m_locked;
 	    
 	};
     }

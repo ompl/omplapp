@@ -32,153 +32,187 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-#include "ompl/base/Manifold.h"
+#include "ompl/base/StateManifold.h"
 #include "ompl/util/Exception.h"
 #include <algorithm>
 #include <functional>
 
-ompl::base::Manifold::~Manifold(void)
+ompl::base::StateManifold::~StateManifold(void)
 { 
 }
 
-void ompl::base::Manifold::printState(const State *state, std::ostream &out) const
+void ompl::base::StateManifold::setStateSamplerAllocator(const StateSamplerAllocator &ssa)
+{
+    m_ssa = ssa;
+}
+
+ompl::base::StateSamplerPtr ompl::base::StateManifold::allocStateSampler(void) const
+{
+    if (m_ssa)
+	return m_ssa(this);
+    else
+	return allocUniformStateSampler();
+}
+
+void ompl::base::StateManifold::printState(const State *state, std::ostream &out) const
 {
     out << "State instance: " << state << std::endl;
 }
 
-void ompl::base::Manifold::printSettings(std::ostream &out) const
+void ompl::base::StateManifold::printSettings(std::ostream &out) const
 {
-    out << "Manifold instance: " << this << std::endl;
+    out << "StateManifold instance: " << this << std::endl;
 }
 
-void ompl::base::CompoundManifold::addManifold(const ManifoldPtr &component, double weight)
+void ompl::base::CompoundStateManifold::addSubManifold(const StateManifoldPtr &component, double weight)
 {
+    if (m_locked)
+	throw Exception("This manifold is locked. No further components can be added");
+    
     m_components.push_back(component);
     m_weights.push_back(weight);
     m_componentCount = m_components.size();
 }
 
-std::size_t ompl::base::CompoundManifold::getManifoldCount(void) const
+unsigned int ompl::base::CompoundStateManifold::getSubManifoldCount(void) const
 {
     return m_componentCount;
 }
 
-const ompl::base::ManifoldPtr& ompl::base::CompoundManifold::getManifold(const std::size_t index) const
+const ompl::base::StateManifoldPtr& ompl::base::CompoundStateManifold::getSubManifold(const unsigned int index) const
 {
     if (m_componentCount > index)
 	return m_components[index];
     else
-	throw Exception("Manifold index does not exist");
+	throw Exception("Submanifold index does not exist");
 }
 
-double ompl::base::CompoundManifold::getManifoldWeight(const std::size_t index) const
+double ompl::base::CompoundStateManifold::getSubManifoldWeight(const unsigned int index) const
 {
     if (m_componentCount > index)
 	return m_weights[index];
     else
-	throw Exception("Manifold index does not exist");
+	throw Exception("Submanifold index does not exist");
 }
 
-unsigned int ompl::base::CompoundManifold::getDimension(void) const
+unsigned int ompl::base::CompoundStateManifold::getDimension(void) const
 {
     unsigned int dim = 0;
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	dim += m_components[i]->getDimension();
     return dim;
 }
 
-void ompl::base::CompoundManifold::enforceBounds(State *state) const
+void ompl::base::CompoundStateManifold::enforceBounds(State *state) const
 {
     CompoundState *cstate = static_cast<CompoundState*>(state);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->enforceBounds(cstate->components[i]);
 }
 
-bool ompl::base::CompoundManifold::satisfiesBounds(const State *state) const
+bool ompl::base::CompoundStateManifold::satisfiesBounds(const State *state) const
 {   
     const CompoundState *cstate = static_cast<const CompoundState*>(state);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	if (!m_components[i]->satisfiesBounds(cstate->components[i]))
 	    return false;
     return true;
 }
 
-void ompl::base::CompoundManifold::copyState(State *destination, const State *source) const
+void ompl::base::CompoundStateManifold::copyState(State *destination, const State *source) const
 {   
     CompoundState      *cdest = static_cast<CompoundState*>(destination);
     const CompoundState *csrc = static_cast<const CompoundState*>(source);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->copyState(cdest->components[i], csrc->components[i]);
 }
 
-double ompl::base::CompoundManifold::distance(const State *state1, const State *state2) const
+double ompl::base::CompoundStateManifold::distance(const State *state1, const State *state2) const
 {
     const CompoundState *cstate1 = static_cast<const CompoundState*>(state1);
     const CompoundState *cstate2 = static_cast<const CompoundState*>(state2);
     double dist = 0.0;
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	dist += m_weights[i] * m_components[i]->distance(cstate1->components[i], cstate2->components[i]);
     return dist;
 }
 
-bool ompl::base::CompoundManifold::equalStates(const State *state1, const State *state2) const
+bool ompl::base::CompoundStateManifold::equalStates(const State *state1, const State *state2) const
 {	
     const CompoundState *cstate1 = static_cast<const CompoundState*>(state1);
     const CompoundState *cstate2 = static_cast<const CompoundState*>(state2);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	if (!m_components[i]->equalStates(cstate1->components[i], cstate2->components[i]))
 	    return false;
     return true;
 }
 
-void ompl::base::CompoundManifold::interpolate(const State *from, const State *to, const double t, State *state) const
+void ompl::base::CompoundStateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
 {
     const CompoundState *cfrom  = static_cast<const CompoundState*>(from);
     const CompoundState *cto    = static_cast<const CompoundState*>(to);
     CompoundState       *cstate = static_cast<CompoundState*>(state);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->interpolate(cfrom->components[i], cto->components[i], t, cstate->components[i]);
 }
 
-ompl::base::StateSamplerPtr ompl::base::CompoundManifold::allocStateSampler(void) const
+ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocUniformStateSampler(void) const
 {
     CompoundStateSampler *ss = new CompoundStateSampler(this);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
-	ss->addSampler(m_components[i]->allocStateSampler());
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
+	ss->addSampler(m_components[i]->allocUniformStateSampler());
     return StateSamplerPtr(ss);
 }
 
-ompl::base::State* ompl::base::CompoundManifold::allocState(void) const
+ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocStateSampler(void) const
+{
+    if (m_ssa)
+	return m_ssa(this);
+    else
+    {
+	CompoundStateSampler *ss = new CompoundStateSampler(this);
+	for (unsigned int i = 0 ; i < m_componentCount ; ++i)
+	    ss->addSampler(m_components[i]->allocStateSampler());
+	return StateSamplerPtr(ss);
+    }
+}
+
+ompl::base::State* ompl::base::CompoundStateManifold::allocState(void) const
 {
     CompoundState *state = new CompoundState();
     state->components = new State*[m_componentCount];
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	state->components[i] = m_components[i]->allocState();
     return static_cast<State*>(state);
 }
 
-void ompl::base::CompoundManifold::freeState(State *state) const 
+void ompl::base::CompoundStateManifold::freeState(State *state) const 
 {	
     CompoundState *cstate = static_cast<CompoundState*>(state);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->freeState(cstate->components[i]);
     delete[] cstate->components;
     delete cstate;
 }
 
-void ompl::base::CompoundManifold::printState(const State *state, std::ostream &out) const
+void ompl::base::CompoundStateManifold::lock(void)
+{
+    m_locked = true;
+}
+
+void ompl::base::CompoundStateManifold::printState(const State *state, std::ostream &out) const
 {
     out << "Compound state [" << std::endl;
     const CompoundState *cstate = static_cast<const CompoundState*>(state);
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->printState(cstate->components[i], out);
     out << "]" << std::endl;
 }
 
-void ompl::base::CompoundManifold::printSettings(std::ostream &out) const
+void ompl::base::CompoundStateManifold::printSettings(std::ostream &out) const
 {
     out << "Compound manifold [" << std::endl;
-    for (std::size_t i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->printSettings(out);
     out << "]" << std::endl;
 }
