@@ -41,7 +41,6 @@
 #include <limits>
 #include <cmath>
 #include <cassert>
-#include <cstdio>
 
 ompl::base::SpaceInformation::SpaceInformation(const ManifoldPtr &manifold) : m_manifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false)
 {
@@ -229,7 +228,7 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
     return result;
 }
 
-std::size_t ompl::base::SpaceInformation::getMotionStates(const State *s1, const State *s2, std::vector<base::State*> &states, double factor, bool endpoints, bool alloc) const
+unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const
 {
     int nd = (int)ceil(distance(s1, s2) / (m_resolution * factor));
     
@@ -266,6 +265,60 @@ std::size_t ompl::base::SpaceInformation::getMotionStates(const State *s1, const
     }
     
     return added;
+}
+
+
+bool ompl::base::SpaceInformation::checkMotion(const std::vector<State*> &states, unsigned int count, unsigned int *firstInvalidStateIndex) const
+{
+    assert(states.size() >= count);
+    for (unsigned int i = 0 ; i < count ; ++i)
+	if (!isValid(states[i]))
+	{
+	    if (firstInvalidStateIndex)
+		*firstInvalidStateIndex = i;
+	    return false;
+	}
+    return true;
+}
+
+bool ompl::base::SpaceInformation::checkMotion(const std::vector<State*> &states, unsigned int count) const
+{ 
+    assert(states.size() >= count);
+    if (count > 0)
+    {
+	if (count > 1)
+	{
+	    if (!isValid(states.front()))
+		return false;
+	    if (!isValid(states[count - 1]))
+		return false;
+	    
+	    // we have 2 or more states, and the first and last states are valid
+	    
+	    if (count > 2)
+	    {
+		std::queue< std::pair<int, int> > pos;
+		pos.push(std::make_pair(0, count - 1));
+	    
+		while (!pos.empty())
+		{
+		    std::pair<int, int> x = pos.front();
+		    
+		    int mid = (x.first + x.second) / 2;
+		    if (!isValid(states[mid]))
+			return false;
+
+		    if (x.first < mid - 1)
+			pos.push(std::make_pair(x.first, mid));
+		    if (x.second > mid + 1)
+			pos.push(std::make_pair(mid, x.second));
+		}
+	    }
+	}
+	else
+	    return isValid(states.front());
+    }
+    return true;
 }
 
 void ompl::base::SpaceInformation::printSettings(std::ostream &out) const

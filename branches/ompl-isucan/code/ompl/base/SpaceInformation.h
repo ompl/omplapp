@@ -197,18 +197,25 @@ namespace ompl
 	    
 	    /** \brief Incrementally check if the path between two motions is valid. Also compute the last state that was
 		valid and the time of that state. The time is used to parametrize the motion from s1 to s2, s1 being at t =
-		0 and s2 being at t = 1. */
+		0 and s2 being at t = 1. This function assumes s1 is valid. */
 	    virtual bool checkMotion(const State *s1, const State *s2, State *lastValidState, double *lastValidTime) const;
 	    
-	    /** \brief Check if the path between two motions is valid using subdivision.  */
+	    /** \brief Check if the path between two motions is valid using subdivision. This function assumes s1 is valid. */
 	    virtual bool checkMotion(const State *s1, const State *s2) const;
+	    
+	    /** \brief Incrementally check if a sequence of states is valid. Given a vector of states, this routine only
+		checks the first count elements and marks the index of the first invalid state */
+	    virtual bool checkMotion(const std::vector<State*> &states, unsigned int count, unsigned int *firstInvalidStateIndex) const;
+	    
+	    /** \brief Check if a sequence of states is valid using subdivision. */
+	    virtual bool checkMotion(const std::vector<State*> &states, unsigned int count) const;
 	    
 	    /** \brief Get the states that make up a motion. Returns the number of states that were added.
 
 		The states are added at the distance specified by the collision checking resolution times the factor
 		specified. A factor larger than 1 will result in fewer states per motion. The endpoints (s1 and s2) can 
 		optionally be part of the computed set of states. */
-	    virtual std::size_t getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const;
+	    virtual unsigned int getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const;
 
 	    /** \brief Print information about the current instance of the state space */
 	    virtual void printSettings(std::ostream &out = std::cout) const;
