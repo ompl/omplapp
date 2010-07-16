@@ -42,7 +42,7 @@
 #include <cmath>
 #include <cassert>
 
-ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : m_stateManifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false)
+ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : m_stateManifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false), m_msg("SpaceInformation")
 {
     if (!m_stateManifold)
 	throw Exception("Invalid manifold definition");
@@ -324,7 +324,7 @@ bool ompl::base::SpaceInformation::checkMotion(const std::vector<State*> &states
 void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
-    out << "  - manifold:" << std::endl;
+    out << "  - state manifold:" << std::endl;
     m_stateManifold->printSettings(out);
     out << "  - state validity check resolution: " << m_resolution << std::endl;
 }

@@ -34,10 +34,10 @@
 
 /* \author Ioan Sucan */
 
-#ifndef OMPL_BASE_STATE_SAMPLER_
-#define OMPL_BASE_STATE_SAMPLER_
+#ifndef OMPL_CONTROL_CONTROL_SAMPLER_
+#define OMPL_CONTROL_CONTROL_SAMPLER_
 
-#include "ompl/base/State.h"
+#include "ompl/control/Control.h"
 #include "ompl/util/RandomNumbers.h"
 #include "ompl/util/ClassForward.h"
 #include <vector>
@@ -45,30 +45,30 @@
 
 namespace ompl
 {
-    namespace base
+    namespace control
     {
 	
-	ClassForward(StateManifold);
-	ClassForward(StateSampler);
+	ClassForward(ControlManifold);
+	ClassForward(ControlSampler);
 	
-	/** \brief Abstract definition of a state sampler. */
-	class StateSampler
+	/** \brief Abstract definition of a control sampler. */
+	class ControlSampler
 	{	    
 	public:
 
-	    StateSampler(const StateManifold *manifold) : m_manifold(manifold)
+	    ControlSampler(const ControlManifold *manifold) : m_manifold(manifold)
+	    {
+	    }
+
+	    virtual ~ControlSampler(void)
 	    {
 	    }
 	    
-	    virtual ~StateSampler(void)
-	    {
-	    }
-	    
-	    /** \brief Sample a state */
-	    virtual void sample(State *state) = 0;
-	    
-	    /** \brief Sample a state near another, within specified distance */
-	    virtual void sampleNear(State *state, const State *near, const double distance) = 0;
+	    /** \brief Sample a control */
+	    virtual void sample(Control *control) = 0;
+
+	    /** \brief Sample a number of steps to execute a control for */
+	    virtual unsigned int sampleStepCount(unsigned int minSteps, unsigned int maxSteps);
 	    
 	    /** \brief Return a reference to the random number generator used */
 	    RNG& getRNG(void)
@@ -78,45 +78,42 @@ namespace ompl
 	    
 	protected:
 	    
-	    const StateManifold *m_manifold;
-	    RNG                  m_rng;
+	    const ControlManifold *m_manifold;
+	    RNG                    m_rng;
 	};
 
-	/** \brief Definition of a compound state sampler. This is useful to construct samplers for compound states. */
-	class CompoundStateSampler : public StateSampler
+	/** \brief Definition of a compound control sampler. This is useful to construct samplers for compound controls. */
+	class CompoundControlSampler : public ControlSampler
 	{	    
 	public:
 
 	    /** \brief Constructor */
-	    CompoundStateSampler(const StateManifold* manifold) : StateSampler(manifold) 
+	    CompoundControlSampler(const ControlManifold* manifold) : ControlSampler(manifold) 
 	    {
 	    }
 	    
 	    /** \brief Destructor. This frees the added samplers as well. */
-	    virtual ~CompoundStateSampler(void)
+	    virtual ~CompoundControlSampler(void)
 	    {
 	    }
 	    
 	    /** \brief Add a sampler as part of the new compound
 		sampler. This sampler is used to sample part of the
-		compound state. */
-	    virtual void addSampler(const StateSamplerPtr &sampler);
+		compound control.  */
+	    virtual void addSampler(const ControlSamplerPtr &sampler);
 	    
-	    /** \brief Sample a state. */
-	    virtual void sample(State *state);
-	    
-	    /** \brief Sample a state near another, within specified distance. */
-	    virtual void sampleNear(State *state, const State *near, const double distance);
+	    /** \brief Sample a control. */
+	    virtual void sample(Control *control);
 	    
 	protected:
 	    
-	    std::vector<StateSamplerPtr> m_samplers;
-	    unsigned int                 m_samplerCount;
+	    std::vector<ControlSamplerPtr> m_samplers;
+	    unsigned int                   m_samplerCount;
 	    
 	};
 
-	/** \brief Definition of a function that can allocate a state sampler */
-	typedef boost::function<StateSamplerPtr(const StateManifold*)> StateSamplerAllocator;
+	/** \brief Definition of a function that can allocate a control sampler */
+	typedef boost::function<ControlSamplerPtr(const ControlManifold*)> ControlSamplerAllocator;
     }
 }
 

@@ -34,26 +34,23 @@
 
 /** \author Ioan Sucan */
 
-#include "ompl/base/StateSampler.h"
-#include "ompl/base/StateManifold.h"
+#include "ompl/control/ControlSampler.h"
+#include "ompl/control/ControlManifold.h"
 
-void ompl::base::CompoundStateSampler::addSampler(const StateSamplerPtr &sampler)
+unsigned int ompl::control::ControlSampler::sampleStepCount(unsigned int minSteps, unsigned int maxSteps)
+{
+    return m_rng.uniformInt(minSteps, maxSteps);
+}
+
+void ompl::control::CompoundControlSampler::addSampler(const ControlSamplerPtr &sampler)
 {
     m_samplers.push_back(sampler);
     m_samplerCount = m_samplers.size();
 }
 
-void ompl::base::CompoundStateSampler::sample(State *state)
+void ompl::control::CompoundControlSampler::sample(Control *control)
 {
-    State **comps = static_cast<CompoundState*>(state)->components;
+    Control **comps = static_cast<CompoundControl*>(control)->components;
     for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
 	m_samplers[i]->sample(comps[i]);
-}
-
-void ompl::base::CompoundStateSampler::sampleNear(State *state, const State *near, const double distance)
-{    
-    State **comps = static_cast<CompoundState*>(state)->components;
-    State **nearComps = static_cast<const CompoundState*>(near)->components;
-    for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
-	m_samplers[i]->sampleNear(comps[i], nearComps[i], distance);
 }

@@ -42,9 +42,9 @@
 #include "ompl/util/Console.h"
 #include "ompl/util/ClassForward.h"
 #include <boost/concept_check.hpp>
+#include <boost/noncopyable.hpp>
 #include <iostream>
 #include <vector>
-#include <cstdlib>
 
 namespace ompl
 {
@@ -56,7 +56,7 @@ namespace ompl
 	/** \brief Representation of a space in which planning can be
 	    performed. Topology specific sampling and interpolation
 	    are defined. */
-	class StateManifold
+	class StateManifold : private boost::noncopyable
 	{
 	public:
 	    
@@ -64,13 +64,15 @@ namespace ompl
 	    {
 	    }
 	    
-	    virtual ~StateManifold(void);
-
+	    virtual ~StateManifold(void)
+	    {
+	    }
+	    
 	    /** \brief Cast this instance to a desired type. */
 	    template<class T>
 	    T* as(void)
 	    {
-		/** \brief Make sure the type we are allocating is indeed a manifold */
+		/** \brief Make sure the type we are casting to is indeed a state manifold */
 		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, StateManifold*>));
 		
 		return static_cast<T*>(this);
@@ -80,7 +82,7 @@ namespace ompl
 	    template<class T>
 	    const T* as(void) const
 	    {	
-		/** \brief Make sure the type we are allocating is indeed a manifold */
+		/** \brief Make sure the type we are casting to is indeed a state manifold */
 		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, StateManifold*>));
 		
 		return static_cast<const T*>(this);
@@ -158,18 +160,14 @@ namespace ompl
 	    template<class T>
 	    T* as(const unsigned int index) const
 	    {
-		/** \brief Make sure the type we are allocating is indeed a manifold */
+		/** \brief Make sure the type we are casting to is indeed a state manifold */
 		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, StateManifold*>));
 		
 		return static_cast<T*>(getSubManifold(index).get());
 	    }
 	    
-	    /** \brief Adds the topology of a space as part of the
-		compound space. For computing distances within the
-		compound space, the weight of the component also needs
-		to be specified. Ownership of the passed topology
-		instance is assumed and memory is freed upon
-		destruction. */
+	    /** \brief Adds a new manifold as part of the compound space. For computing distances within the compound
+		space, the weight of the component also needs to be specified. */
 	    virtual void addSubManifold(const StateManifoldPtr &component, double weight);
 	    
 	    /** \brief Get the number of manifolds that make up the compound manifold */

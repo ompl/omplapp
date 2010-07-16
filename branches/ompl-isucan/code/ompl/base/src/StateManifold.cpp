@@ -34,12 +34,6 @@
 
 #include "ompl/base/StateManifold.h"
 #include "ompl/util/Exception.h"
-#include <algorithm>
-#include <functional>
-
-ompl::base::StateManifold::~StateManifold(void)
-{ 
-}
 
 void ompl::base::StateManifold::setStateSamplerAllocator(const StateSamplerAllocator &ssa)
 {
@@ -211,7 +205,7 @@ void ompl::base::CompoundStateManifold::printState(const State *state, std::ostr
 
 void ompl::base::CompoundStateManifold::printSettings(std::ostream &out) const
 {
-    out << "Compound manifold [" << std::endl;
+    out << "Compound state manifold [" << std::endl;
     for (unsigned int i = 0 ; i < m_componentCount ; ++i)
 	m_components[i]->printSettings(out);
     out << "]" << std::endl;

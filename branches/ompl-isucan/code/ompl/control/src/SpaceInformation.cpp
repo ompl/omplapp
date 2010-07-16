@@ -34,26 +34,44 @@
 
 /** \author Ioan Sucan */
 
-#include "ompl/base/StateSampler.h"
-#include "ompl/base/StateManifold.h"
+#include "ompl/control/SpaceInformation.h"
+#include "ompl/util/Exception.h"
+#include <limits>
 
-void ompl::base::CompoundStateSampler::addSampler(const StateSamplerPtr &sampler)
+void ompl::control::SpaceInformation::setup(void)
 {
-    m_samplers.push_back(sampler);
-    m_samplerCount = m_samplers.size();
+    base::SpaceInformation::setup();
+    if (m_minSteps > m_maxSteps)
+	throw Exception("The minimum number of steps cannot be larger than the maximum number of steps");
+    if (m_minSteps == 0 && m_maxSteps == 0)
+    {
+	m_minSteps = 1;
+	m_maxSteps = 2;
+	m_msg.warn("Assuming propagation will always have 1 or 2 steps");
+    }
+    if (m_minSteps < 1)
+	throw Exception("The minimum number of steps must be at least 1");
+    if (m_stepSize < std::numeric_limits<double>::round_error())
+    {
+	m_stepSize = m_resolution;
+	m_msg.warn("The propagation step size is assumed to be the same as the state validity checking resolution: %f", m_stepSize);
+    }
 }
 
-void ompl::base::CompoundStateSampler::sample(State *state)
+unsigned int ompl::control::SpaceInformation::propagate(const base::State *state, const Control* control, unsigned int steps, base::State *result, bool stopBeforeInvalid) const
 {
-    State **comps = static_cast<CompoundState*>(state)->components;
-    for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
-	m_samplers[i]->sample(comps[i]);
 }
 
-void ompl::base::CompoundStateSampler::sampleNear(State *state, const State *near, const double distance)
-{    
-    State **comps = static_cast<CompoundState*>(state)->components;
-    State **nearComps = static_cast<const CompoundState*>(near)->components;
-    for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
-	m_samplers[i]->sampleNear(comps[i], nearComps[i], distance);
+unsigned int ompl::control::SpaceInformation::propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool stopBeforeInvalid, bool alloc) const
+{
 }
+
+void ompl::control::SpaceInformation::printSettings(std::ostream &out) const
+{
+    base::SpaceInformation::printSettings(out);
+    out << "  - control manifold:" << std::endl;
+    m_controlManifold->printSettings(out);
+    out << "  - propagation step size: " << m_stepSize << std::endl;
+    out << "  - propagation duration: [" << m_minSteps << ", " << m_maxSteps << "]" << std::endl;
+}
+

@@ -45,6 +45,8 @@
 #include "ompl/util/ClassForward.h"
 #include "ompl/util/Console.h"
 
+#include <boost/noncopyable.hpp>
+
 #include <cstdlib>
 #include <vector>
 #include <iostream>
@@ -65,7 +67,7 @@ namespace ompl
 	/** \brief The base class for space information. This contains
 	    all the information about the space planning is done in.
 	    setup() needs to be called as well, before use */
-	class SpaceInformation
+	class SpaceInformation : private boost::noncopyable
 	{
 	public:
 	    

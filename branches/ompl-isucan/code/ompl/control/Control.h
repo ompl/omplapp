@@ -34,37 +34,37 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_STATE_
-#define OMPL_BASE_STATE_
+#ifndef OMPL_CONTROL_CONTROL_
+#define OMPL_CONTROL_CONTROL_
 
 #include <boost/concept_check.hpp>
 
 namespace ompl
 {
-    namespace base
+    namespace control
     {
-	
-	/** \brief Definition of an abstract state */
-	class State
+
+	/** \brief Definition of an abstract control */
+	class Control
 	{
 	private:
 	    
 	    /** \brief Disable copy-constructor */
-	    State(const State&);
-	    
+	    Control(const Control&);
+
 	    /** \brief Disable copy operator */
-	    const State& operator=(const State&);
+	    const Control& operator=(const Control&);
 	    
 	protected:
 	    
-	    State(void)
+	    Control(void)
 	    {
 	    }
 	    
-	    virtual ~State(void)
+	    virtual ~Control(void)
 	    {
 	    }
-	    
+
 	public:
 
 	    /** \brief Cast this instance to a desired type. */
@@ -72,7 +72,7 @@ namespace ompl
 	    const T* as(void) const
 	    {
 		/** \brief Make sure the type we are allocating is indeed a state */
-		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, Control*>));
 
 		return static_cast<const T*>(this);
 	    }
@@ -82,23 +82,23 @@ namespace ompl
 	    T* as(void)
 	    {	
 		/** \brief Make sure the type we are allocating is indeed a state */
-		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, Control*>));
 		
 		return static_cast<T*>(this);
 	    }
 	    
 	};
 
-	/** \brief Definition of a compound state */
-	class CompoundState : public State
+	/** \brief Definition of a compound control */
+	class CompoundControl : public Control
 	{
 	public:
 	    
-	    CompoundState(void) : State()
+	    CompoundControl(void) : Control()
 	    {
 	    }
 	    
-	    virtual ~CompoundState(void)
+	    virtual ~CompoundControl(void)
 	    {
 	    }
 
@@ -107,7 +107,7 @@ namespace ompl
 	    const T* as(const unsigned int index) const
 	    {	    	
 		/** \brief Make sure the type we are allocating is indeed a state */
-		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, Control*>));
 
 		return static_cast<const T*>(components[index]);
 	    }
@@ -117,16 +117,14 @@ namespace ompl
 	    T* as(const unsigned int index)
 	    {
 		/** \brief Make sure the type we are allocating is indeed a state */
-		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, State*>));
+		BOOST_CONCEPT_ASSERT((boost::Convertible<T*, Control*>));
 		
 		return static_cast<T*>(components[index]);
 	    }
 	    
-	    /** \brief The components that make up a compound state */
-	    State **components;
+	    /** \brief The components that make up a compound control */
+	    Control **components;
 	};
-	
     }
 }
-
 #endif

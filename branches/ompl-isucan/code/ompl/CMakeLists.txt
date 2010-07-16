@@ -1,4 +1,4 @@
-file(GLOB_RECURSE OMPL_SOURCE_CODE base/*.cpp geometric/*.cpp util/*.cpp)
+file(GLOB_RECURSE OMPL_SOURCE_CODE base/*.cpp geometric/*.cpp util/*.cpp control/*.cpp)
 
 if(ROS)  
 	rosbuild_add_library(ompl ${OMPL_SOURCE_CODE})
