@@ -38,6 +38,7 @@
 #define OMPL_BASE_PATH_
 
 #include "ompl/util/ClassForward.h"
+#include <iostream>
 
 namespace ompl
 {
@@ -68,6 +69,9 @@ namespace ompl
 	    /** \brief Check if the path is valid */
 	    virtual bool check(void) const = 0;
 	    	    
+	    /** \brief Print the path to a stream */
+	    virtual void print(std::ostream &out) const = 0;
+	    
 	protected:
 	    
 	    SpaceInformationPtr m_si;

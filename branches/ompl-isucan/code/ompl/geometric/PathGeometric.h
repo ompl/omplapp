@@ -72,6 +72,9 @@ namespace ompl
 	    /** \brief Check if the path is valid */
 	    virtual bool check(void) const;	
 
+	    /** \brief Print the path to a stream */
+	    virtual void print(std::ostream &out) const;
+
 	    /** \brief Insert states in a path, at the collision checking resolution */
 	    void interpolate(double factor = 1.0);
 	    

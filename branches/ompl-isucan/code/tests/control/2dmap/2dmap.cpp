@@ -68,10 +68,11 @@ public:
 	/* planning is done in a continuous space, but our collision space representation is discrete */
 	int x = (int)(state->as<base::RealVectorState>()->values[0]);
 	int y = (int)(state->as<base::RealVectorState>()->values[1]);
-	std::cout << x << " " << y << std::endl;
 	
 	if (x < 0 || y < 0 || x >= m_w || y >= m_h)
 	    return false;
+
+	//	std::cout << x << " " << y << std::endl;
 	return m_grid[x][y] == 0; // 0 means valid state
     }
     
@@ -124,6 +125,8 @@ public:
 	result->as<base::RealVectorState>()->values[1] = state->as<base::RealVectorState>()->values[1] + duration * control->as<control::RealVectorControl>()->values[1];
 	result->as<base::RealVectorState>()->values[2] = control->as<control::RealVectorControl>()->values[0];
 	result->as<base::RealVectorState>()->values[3] = control->as<control::RealVectorControl>()->values[1];
+	m_stateManifold->printState(state, std::cout);
+	
 	m_stateManifold->enforceBounds(result);
 	return control::PROPAGATION_START_UNKNOWN;
     }

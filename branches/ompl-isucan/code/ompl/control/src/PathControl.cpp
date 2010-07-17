@@ -64,6 +64,23 @@ double ompl::control::PathControl::length(void) const
     return std::accumulate(controlDurations.begin(), controlDurations.end(), 0.0);
 }
 
+void ompl::control::PathControl::print(std::ostream &out) const
+{
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    out << "Control path with " << states.size() << " states" << std::endl;
+    for (unsigned int i = 0 ; i < controls.size() ; ++i)
+    {
+	out << "At state ";
+	m_si->printState(states[i], out);
+	out << "  apply control ";
+	si->printControl(controls[i], out);
+	out << "  for " << controlDurations[i] << " steps" << std::endl;
+    }
+    out << "Arrive at state ";
+    m_si->printState(states[controls.size()], out);
+    out << std::endl;
+}
+
 bool ompl::control::PathControl::check(void) const
 {
     bool valid = true;

@@ -72,6 +72,14 @@ bool ompl::geometric::PathGeometric::check(void) const
     return result;
 }
 
+void ompl::geometric::PathGeometric::print(std::ostream &out) const
+{
+    out << "Geometric path with " << states.size() << " states" << std::endl;
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+	m_si->printState(states[i], out);
+    out << std::endl;
+}
+
 void ompl::geometric::PathGeometric::interpolate(double factor) 
 {
     std::vector<base::State*> newStates;

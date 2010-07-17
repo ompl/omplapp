@@ -69,6 +69,9 @@ namespace ompl
 	    /** \brief Check if the path is valid */
 	    virtual bool check(void) const;
 
+	    /** \brief Print the path to a stream */
+	    virtual void print(std::ostream &out) const;
+	    
 	    /** \brief The list of states that make up the path */
 	    std::vector<base::State*>   states;
 
