@@ -124,6 +124,9 @@ namespace ompl
 	    void setPropagationStepSize(double stepSize)
 	    {
 		m_stepSize = stepSize;
+		// even if we need to do validation checking at a smaller resolution, we cannot go lower than the propagation step
+		if (m_resolution < m_stepSize)
+		    m_resolution = m_stepSize;
 	    }
 	    
 	    double getPropagationStepSize(void) const

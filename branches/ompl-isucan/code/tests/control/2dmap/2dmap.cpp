@@ -49,8 +49,8 @@
 
 using namespace ompl;
 
-static const double SOLUTION_TIME = 10.0;
-static const double MAX_VELOCITY = 30.0;
+static const double SOLUTION_TIME = 1.0;
+static const double MAX_VELOCITY = 3.0;
 
 /** Declare a class used in validating states. Such a class definition is needed for any use
  * of a kinematic planner */
@@ -68,6 +68,8 @@ public:
 	/* planning is done in a continuous space, but our collision space representation is discrete */
 	int x = (int)(state->as<base::RealVectorState>()->values[0]);
 	int y = (int)(state->as<base::RealVectorState>()->values[1]);
+	std::cout << x << " " << y << std::endl;
+	
 	if (x < 0 || y < 0 || x >= m_w || y >= m_h)
 	    return false;
 	return m_grid[x][y] == 0; // 0 means valid state
@@ -91,7 +93,7 @@ class myStateManifold : public base::RealVectorStateManifold
 {
 public:
     
-    myManifold() : base::RealVectorStateManifold(4)
+    myStateManifold() : base::RealVectorStateManifold(4)
     {
     }
     
@@ -118,63 +120,63 @@ public:
     
     virtual control::PropagationResult propagate(const base::State *state, const control::Control* control, const double duration, base::State *result) const
     {
-       	result->values[0] = state->values[0] + duration * control->values[0];
-	result->values[1] = state->values[1] + duration * control->values[1];
-	result->values[2] = control->values[0];
-	result->values[3] = control->values[1];
+       	result->as<base::RealVectorState>()->values[0] = state->as<base::RealVectorState>()->values[0] + duration * control->as<control::RealVectorControl>()->values[0];
+	result->as<base::RealVectorState>()->values[1] = state->as<base::RealVectorState>()->values[1] + duration * control->as<control::RealVectorControl>()->values[1];
+	result->as<base::RealVectorState>()->values[2] = control->as<control::RealVectorControl>()->values[0];
+	result->as<base::RealVectorState>()->values[3] = control->as<control::RealVectorControl>()->values[1];
 	m_stateManifold->enforceBounds(result);
+	return control::PROPAGATION_START_UNKNOWN;
     }
 };
 	
     
 /** Space information */
-class mySpaceInformation : public dynamic::SpaceInformationControlsIntegrator
+control::SpaceInformationPtr mySpaceInformation(Environment2D &env)
 {
-public:
-    mySpaceInformation(int width, int height) : dynamic::SpaceInformationControlsIntegrator()
-    {
-	// we have 2 dimensions : x, y
-	m_stateDimension = 4;
-	m_stateComponent.resize(4);
+    base::RealVectorStateManifold *sMan = new myStateManifold();
+    
+    base::RealVectorBounds sbounds(4);
+    
+    // dimension 0 (x) spans between [0, width) 
+    // dimension 1 (y) spans between [0, height) 
+    // since sampling is continuous and we round down, we allow values until just under the max limit
+    // the resolution is 1.0 since we check cells only
+    
+    sbounds.low[0] = 0.0;
+    sbounds.high[0] = (double)env.width - 0.000000001;
+    
+    sbounds.low[1] = 0.0;
+    sbounds.high[1] = (double)env.height - 0.000000001;
+    
+    sbounds.low[2] = -MAX_VELOCITY;
+    sbounds.high[2] = MAX_VELOCITY;
+    
+    sbounds.low[3] = -MAX_VELOCITY;
+    sbounds.high[3] = MAX_VELOCITY;
+    sMan->setBounds(sbounds);
+    
+    base::StateManifoldPtr sManPtr(sMan);
+    
+    control::RealVectorControlManifold *cMan = new myControlManifold(sManPtr);
+    control::RealVectorBounds cbounds(2);
+    
+    cbounds.low[0] = -MAX_VELOCITY;
+    cbounds.high[0] = MAX_VELOCITY;
+    cbounds.low[1] = -MAX_VELOCITY;
+    cbounds.high[1] = MAX_VELOCITY;
+    cMan->setBounds(cbounds);
+    
+    control::SpaceInformationPtr si(new control::SpaceInformation(sManPtr, control::ControlManifoldPtr(cMan)));
+    si->setMinMaxControlDuration(1, 5);
+    si->setPropagationStepSize(0.5);
+    
+    si->setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(si.get(), env.grid)));
+    
+    si->setup();
+    
+    return si;
+}
 
-	// dimension 0 (x) spans between [0, width) 
-	// dimension 1 (y) spans between [0, height) 
-	// since sampling is continuous and we round down, we allow values until just under the max limit
-	// the resolution is 1.0 since we check cells only
-
-	m_stateComponent[0].minValue = 0.0;
-	m_stateComponent[0].maxValue = (double)width - 0.000000001;
-	m_stateComponent[0].type = base::StateComponent::LINEAR;
-	
-	m_stateComponent[1].minValue = 0.0;
-	m_stateComponent[1].maxValue = (double)height - 0.000000001;
-	m_stateComponent[1].type = base::StateComponent::LINEAR;
-
-	m_stateComponent[2].minValue = -MAX_VELOCITY;
-	m_stateComponent[2].maxValue = MAX_VELOCITY;
-	m_stateComponent[2].type = base::StateComponent::DERIVATIVE;
-
-	m_stateComponent[3].minValue = -MAX_VELOCITY;
-	m_stateComponent[3].maxValue = MAX_VELOCITY;
-	m_stateComponent[3].type = base::StateComponent::DERIVATIVE;
-
-	m_minControlDuration = 1;
-	m_maxControlDuration = 5;
-	
-	m_controlDimension = 2;
-	m_controlComponent.resize(2);
-
-	m_controlComponent[0].type = dynamic::ControlComponent::LINEAR;
-	m_controlComponent[0].minValue = -MAX_VELOCITY;
-	m_controlComponent[0].maxValue = MAX_VELOCITY;
-
-	m_controlComponent[1].type = dynamic::ControlComponent::LINEAR;
-	m_controlComponent[1].minValue = -MAX_VELOCITY;
-	m_controlComponent[1].maxValue = MAX_VELOCITY;
-	
-	m_resolution = 0.05;
-    }
-};
 
 /** A base class for testing planners */
 class TestPlanner
@@ -193,33 +195,16 @@ public:
 	bool result = true;
 
 	/* instantiate space information */
-	mySpaceInformation *si = new mySpaceInformation(env.width, env.height);
-	
-
-	/* instantiate state validity checker */
-	myStateValidityChecker *svc = new myStateValidityChecker(si);
-	svc->setGrid(env.grid);
-	si->setStateValidityChecker(svc);
-
-	/* instantiate state distance evaluator  */
-	myStateDistanceEvaluator *sde = new myStateDistanceEvaluator(si);
-	si->setStateDistanceEvaluator(sde);
-
-	/* instantiate state distance evaluator  */
-	myStateForwardPropagator *sfp = new myStateForwardPropagator(si);
-	si->setStateForwardPropagator(sfp);
-	
-	base::ProblemDefinition *pdef = new base::ProblemDefinition(si);
-	
-	si->setup();
+	control::SpaceInformationPtr si = mySpaceInformation(env);
+	base::ProblemDefinitionPtr pdef(new base::ProblemDefinition(si));
 
 	/* instantiate motion planner */
-	base::Planner *planner = newPlanner(si);
+	base::PlannerPtr planner = newPlanner(si);
 	planner->setProblemDefinition(pdef);
 	planner->setup();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::State *state = new base::State(4);
+	base::ScopedState<base::RealVectorState> state(si);
 	state->values[0] = env.start.first;
 	state->values[1] = env.start.second;
 	state->values[2] = 0.0;
@@ -228,13 +213,14 @@ public:
 	
 	/* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
 	base::GoalState *goal = new base::GoalState(si);
-	goal->state = new base::State(4);
-	goal->state->values[0] = env.goal.first;
-	goal->state->values[1] = env.goal.second;
-	goal->state->values[2] = 0.0;
-	goal->state->values[3] = 0.0;
+	base::ScopedState<base::RealVectorState> gstate(si);
+	gstate->values[0] = env.goal.first;
+	gstate->values[1] = env.goal.second;
+	gstate->values[2] = 0.0;
+	gstate->values[3] = 0.0;
+	goal->setState(gstate);
 	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
-	pdef->setGoal(goal);
+	pdef->setGoal(base::GoalPtr(goal));
 	
 	/* start counting time */
 	ompl::time::point startTime = ompl::time::now();
@@ -248,7 +234,7 @@ public:
 	    if (show)
 		printf("Found solution in %f seconds!\n", ompl::time::seconds(elapsed));
 	    
-	    dynamic::PathDynamic *path = static_cast<dynamic::PathDynamic*>(goal->getSolutionPath());
+	    control::PathControl *path = static_cast<control::PathControl*>(goal->getSolutionPath().get());
 	    
 	    elapsed = ompl::time::now() - startTime;
 	    
@@ -268,8 +254,8 @@ public:
 	    /* display the solution */	    
 	    for (unsigned int i = 0 ; i < path->states.size() ; ++i)
 	    {
-		int x = (int)(path->states[i]->values[0]);
-		int y = (int)(path->states[i]->values[1]);
+		int x = (int)(path->states[i]->as<base::RealVectorState>()->values[0]);
+		int y = (int)(path->states[i]->as<base::RealVectorState>()->values[1]);
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else
@@ -285,25 +271,12 @@ public:
 	else
 	    result = false;
 	
-	// free memory for start states
-	pdef->clearStartStates();
-	
-	// free memory for goal
-	pdef->clearGoal();
-	
-	delete planner;
-	delete pdef;
-	delete svc;
-	delete sde;
-	delete sfp;
-	delete si;
-	
 	return result;
     }
     
 protected:
     
-    virtual base::Planner* newPlanner(dynamic::SpaceInformationControlsIntegrator *si) = 0;
+    virtual base::PlannerPtr newPlanner(const control::SpaceInformationPtr &si) = 0;
     
 };
 
@@ -311,10 +284,10 @@ class RRTTest : public TestPlanner
 {
 protected:
 
-    base::Planner* newPlanner(dynamic::SpaceInformationControlsIntegrator *si)
+    base::PlannerPtr newPlanner(const control::SpaceInformationPtr &si)
     {
-	dynamic::RRT *rrt = new dynamic::RRT(si);
-	return rrt;
+	control::RRT *rrt = new control::RRT(si);
+	return base::PlannerPtr(rrt);
     }    
 };
 
@@ -327,10 +300,10 @@ public:
 	double time   = 0.0;
 	double length = 0.0;
 	int    good   = 0;
-	int    N      = 100;
+	int    N      = 1;
 
 	for (int i = 0 ; i < N ; ++i)
-	    if (p->execute(env, false, &time, &length))
+	    if (p->execute(env, true, &time, &length))
 		good++;
 	
 	*success    = 100.0 * (double)good / (double)N;
@@ -375,7 +348,7 @@ protected:
 };
 
 
-TEST_F(PlanTest, dynamicRRT)
+TEST_F(PlanTest, controlRRT)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
