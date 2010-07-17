@@ -167,7 +167,7 @@ control::SpaceInformationPtr mySpaceInformation(Environment2D &env)
     cMan->setBounds(cbounds);
     
     control::SpaceInformationPtr si(new control::SpaceInformation(sManPtr, control::ControlManifoldPtr(cMan)));
-    si->setMinMaxControlDuration(1, 5);
+    si->setMinMaxControlDuration(2, 25);
     si->setPropagationStepSize(0.25);
     
     si->setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(si.get(), env.grid)));
@@ -360,8 +360,8 @@ TEST_F(PlanTest, controlRRT)
     delete p;
 
     EXPECT_TRUE(success >= 99.0);
-    EXPECT_TRUE(avgruntime < 0.5);
-    EXPECT_TRUE(avglength < 20.0);
+    EXPECT_TRUE(avgruntime < 0.05);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 int main(int argc, char **argv)
