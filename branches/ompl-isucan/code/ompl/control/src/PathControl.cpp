@@ -95,7 +95,7 @@ void ompl::control::PathControl::interpolate(void)
     {
 	int steps = (int)round(controlDurations[i] / res);
 	assert(steps >= 0);
-	if (steps == 0)
+	if (steps <= 1)
 	{
 	    newStates.push_back(states[i]);
 	    newControls.push_back(controls[i]);
@@ -104,6 +104,12 @@ void ompl::control::PathControl::interpolate(void)
 	}
 	std::vector<base::State*> istates;
 	si->propagate(states[i], controls[i], steps, istates, false, true);
+	// last state is already in the non-interpolated path
+	if (!istates.empty())
+	{
+	    m_si->freeState(istates.back());
+	    istates.pop_back();
+	}
 	newStates.push_back(states[i]);
 	newStates.insert(newStates.end(), istates.begin(), istates.end());
 	newControls.push_back(controls[i]);
@@ -124,13 +130,17 @@ bool ompl::control::PathControl::check(void) const
 {
     bool valid = true;
     const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    double res = si->getPropagationStepSize();
     base::State *dummy = m_si->allocState();
     for (unsigned int  i = 0 ; i < controls.size() ; ++i)
-	if (si->propagateWhileValid(states[i], controls[i], controlDurations[i], dummy) != controlDurations[i])
+    {
+	unsigned int steps = (unsigned int)round(controlDurations[i] / res);
+	if (si->propagateWhileValid(states[i], controls[i], steps, dummy) != steps)
 	{
 	    valid = false;
 	    break;
 	}
+    }
     m_si->freeState(dummy);
     return valid;
 }

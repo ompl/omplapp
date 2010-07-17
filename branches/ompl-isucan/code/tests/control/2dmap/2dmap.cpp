@@ -125,8 +125,12 @@ public:
 	result->as<base::RealVectorState>()->values[2] = control->as<control::RealVectorControl>()->values[0];
 	result->as<base::RealVectorState>()->values[3] = control->as<control::RealVectorControl>()->values[1];
 	m_stateManifold->enforceBounds(result);
+	//	return SVC->isValid(state) ? control::PROPAGATION_START_VALID : control::PROPAGATION_START_INVALID;
 	return control::PROPAGATION_START_UNKNOWN;
     }
+    
+    base::StateValidityChecker *SVC;
+    
 };
 	
     
@@ -157,7 +161,7 @@ control::SpaceInformationPtr mySpaceInformation(Environment2D &env)
     
     base::StateManifoldPtr sManPtr(sMan);
     
-    control::RealVectorControlManifold *cMan = new myControlManifold(sManPtr);
+    myControlManifold *cMan = new myControlManifold(sManPtr);
     control::RealVectorBounds cbounds(2);
     
     cbounds.low[0] = -MAX_VELOCITY;
@@ -171,6 +175,8 @@ control::SpaceInformationPtr mySpaceInformation(Environment2D &env)
     si->setPropagationStepSize(0.25);
     
     si->setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(si.get(), env.grid)));
+    cMan->SVC = si->getStateValidityChecker().get();
+    
     si->setup();
     
     return si;
@@ -234,8 +240,10 @@ public:
 		printf("Found solution in %f seconds!\n", ompl::time::seconds(elapsed));
 	    
 	    control::PathControl *path = static_cast<control::PathControl*>(goal->getSolutionPath().get());
-
 	    path->interpolate();
+	    
+	    if (!path->check())
+		exit(1);
 	    
 	    elapsed = ompl::time::now() - startTime;
 	    
