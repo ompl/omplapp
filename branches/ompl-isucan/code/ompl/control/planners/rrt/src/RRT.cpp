@@ -32,21 +32,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/dynamic/planners/rrt/RRT.h"
+#include "ompl/control/planners/rrt/RRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
-#include <limits>
-#include <cassert>
 
-bool ompl::dynamic::RRT::solve(double solveTime)
+bool ompl::control::RRT::solve(double solveTime)
 {
-    SpaceInformationControlsIntegrator *si = dynamic_cast<SpaceInformationControlsIntegrator*>(m_si); 
-    base::Goal                       *goal = m_pdef->getGoal(); 
+    base::Goal                       *goal = m_pdef->getGoal().get(); 
     base::GoalSampleableRegion     *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
-    unsigned int                      sdim = si->getStateDimension();
-    unsigned int                      cdim = si->getControlDimension();
-    
+
     if (!goal)
     {
 	m_msg.error("Goal undefined");
@@ -58,11 +53,11 @@ bool ompl::dynamic::RRT::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion *motion = new Motion(sdim, cdim);
-	    si->copyState(motion->state, st);
-	    si->nullControl(motion->control);
+	    Motion *motion = new Motion(m_siC);
+	    m_si->copyState(motion->state, st);
+	    m_siC->nullControl(motion->control);
 	    m_nn.add(motion);
 	}
 	else
@@ -78,58 +73,38 @@ bool ompl::dynamic::RRT::solve(double solveTime)
 
     m_msg.inform("Starting with %u states", m_nn.size());
     
-    std::vector<base::State*> hintStates;
-    if (si->getKinematicPath())
-	hintStates = si->getKinematicPath()->states;
-    
     Motion *solution  = NULL;
     Motion *approxsol = NULL;
     double  approxdif = std::numeric_limits<double>::infinity();
     
-    Motion      *rmotion = new Motion(sdim, cdim);
+    Motion      *rmotion = new Motion(m_siC);
     base::State  *rstate = rmotion->state;
     Control       *rctrl = rmotion->control;
-    
-    std::vector<base::State*> states(si->getMaxControlDuration() + 1);
-    for (unsigned int i = 0 ; i < states.size() ; ++i)
-	states[i] = new base::State(sdim);
+    base::State  *xstate = m_si->allocState();
     
     while (time::now() < endTime)
-    {
-	
-	if (hintStates.empty())
-	{
-	    /* sample random state (with goal biasing) */
-	    if (goal_s && m_rng.uniform01() < m_goalBias)
-		goal_s->sampleGoal(rstate);
-	    else
-		m_sCore().sample(rstate);
-	}
+    {	
+	/* sample random state (with goal biasing) */
+	if (goal_s && m_rng.uniform01() < m_goalBias)
+	    goal_s->sampleGoal(rstate);
 	else
-	{
-	    // pick a random state along the kinematic path, focusing on the end
-	    if (m_rng.uniform01() < m_hintBias)
-		si->copyState(rstate, hintStates[m_rng.halfNormalInt(0, hintStates.size() - 1)]);
-	    else
-		m_sCore().sample(rstate);
-	}
+	    m_sCore->sample(rstate);
 	
 	/* find closest state in the tree */
 	Motion *nmotion = m_nn.nearest(rmotion);
 
 	/* sample a random control */
-	m_cCore().sample(rctrl);
-	unsigned int cd = m_cCore().sampleStepCount();
+	m_cCore->sample(rctrl);
+	unsigned int cd = m_cCore->sampleStepCount(m_siC->getMinControlDuration(), m_siC->getMaxControlDuration());
 
-	unsigned int added = si->getMotionStates(nmotion->state, rctrl, cd, states, false);
-	assert(added == cd + 1);
+	cd = m_siC->propagateWhileValid(nmotion->state, rctrl, cd, xstate);
 	
-	if (si->checkStatesIncremental(states, added))
+	if (cd >= m_siC->getMinControlDuration())
 	{
 	    /* create a motion */
-	    Motion *motion = new Motion(sdim, cdim);
-	    si->copyState(motion->state, states[cd]);
-	    si->copyControl(motion->control, rctrl);
+	    Motion *motion = new Motion(m_siC);
+	    m_si->copyState(motion->state, xstate);
+	    m_siC->copyControl(motion->control, rctrl);
 	    motion->steps = cd;
 	    motion->parent = nmotion;
 	    
@@ -168,42 +143,40 @@ bool ompl::dynamic::RRT::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathDynamic *path = new PathDynamic(m_si);
+	PathControl *path = new PathControl(m_si);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
 	{   
-	    base::State *st = new base::State(sdim);
-	    si->copyState(st, mpath[i]->state);
-	    path->states.push_back(st);
+	    path->states.push_back(m_si->cloneState(mpath[i]->state));
 	    if (mpath[i]->parent)
 	    {
-		Control *ctrl = new Control(cdim);
-		si->copyControl(ctrl, mpath[i]->control);
-		path->controls.push_back(ctrl);
-		path->controlDurations.push_back(mpath[i]->steps * si->getResolution());
+		path->controls.push_back(m_siC->cloneControl(mpath[i]->control));
+		path->controlDurations.push_back(mpath[i]->steps * m_siC->getPropagationStepSize());
 	    }
 	}
 	goal->setDifference(approxdif);
-	goal->setSolutionPath(path, approximate);
+	goal->setSolutionPath(base::PathPtr(path), approximate);
 
 	if (approximate)
 	    m_msg.warn("Found approximate solution");
     }
-
+    
+    if (rmotion->state)
+	m_si->freeState(rmotion->state);
+    if (rmotion->control)
+	m_siC->freeControl(rmotion->control);
     delete rmotion;
-
-    for (unsigned int i = 0 ; i < states.size() ; ++i)
-	delete states[i];
-
+    m_si->freeState(xstate);
+    
     m_msg.inform("Created %u states", m_nn.size());
     
     return goal->isAchieved();
 }
 
-void ompl::dynamic::RRT::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::control::RRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
     m_nn.list(motions);
-    states.resize(motions.size());
+    data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
-	states[i] = motions[i]->state;
+	data.states[i] = motions[i]->state;
 }

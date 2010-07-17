@@ -38,9 +38,9 @@
 #include <boost/filesystem.hpp>
 
 #include "ompl/base/GoalState.h"
-#include "ompl/base/OrthogonalProjectionEvaluator.h"
-#include "ompl/dynamic/planners/rrt/RRT.h"
-#include "ompl/dynamic/planners/kpiece/KPIECE1.h"
+#include "ompl/base/manifolds/RealVectorStateManifold.h"
+#include "ompl/control/manifolds/RealVectorControlManifold.h"
+#include "ompl/control/planners/rrt/RRT.h"
 
 #include "../../resources/config.h"
 #include "environment2D.h"
@@ -58,15 +58,16 @@ class myStateValidityChecker : public base::StateValidityChecker
 {
 public:
 
-    myStateValidityChecker(base::SpaceInformation *si) : base::StateValidityChecker(si)
+    myStateValidityChecker(base::SpaceInformation *si, const std::vector< std::vector<int> > &grid) : base::StateValidityChecker(si)
     {
+	setGrid(grid);
     }
     
-    virtual bool operator()(const base::State *state) const
+    virtual bool isValid(const base::State *state) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(state->values[0]);
-	int y = (int)(state->values[1]);
+	int x = (int)(state->as<base::RealVectorState>()->values[0]);
+	int y = (int)(state->as<base::RealVectorState>()->values[1]);
 	if (x < 0 || y < 0 || x >= m_w || y >= m_h)
 	    return false;
 	return m_grid[x][y] == 0; // 0 means valid state
@@ -86,51 +87,42 @@ protected:
     
 };
 
-/** Declare a class used in evaluating distance between states (Manhattan distance) */
-class myStateDistanceEvaluator : public base::StateDistanceEvaluator
+class myStateManifold : public base::RealVectorStateManifold
 {
 public:
-
-    myStateDistanceEvaluator(base::SpaceInformation *si) : base::StateDistanceEvaluator(si)
+    
+    myManifold() : base::RealVectorStateManifold(4)
     {
     }
     
-    virtual double operator()(const base::State *state1, const base::State *state2) const
+    virtual double distance(const base::State *state1, const base::State *state2) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x1 = (int)(state1->values[0]);
-	int y1 = (int)(state1->values[1]);
-	
-	int x2 = (int)(state2->values[0]);
-	int y2 = (int)(state2->values[1]);
+	int x1 = (int)(state1->as<base::RealVectorState>()->values[0]);
+	int y1 = (int)(state1->as<base::RealVectorState>()->values[1]);
+
+	int x2 = (int)(state2->as<base::RealVectorState>()->values[0]);
+	int y2 = (int)(state2->as<base::RealVectorState>()->values[1]);
 
 	return abs(x1 - x2) + abs(y1 - y2);
     }
-    
 };
 
-class myStateForwardPropagator : public dynamic::StateForwardPropagator
+class myControlManifold : public control::RealVectorControlManifold
 {
 public:
     
-    myStateForwardPropagator(dynamic::SpaceInformationControls *si) : dynamic::StateForwardPropagator(si)
+    myControlManifold(const base::StateManifoldPtr &m) : control::RealVectorControlManifold(m, 2)
     {
     }
     
-    virtual void operator()(const base::State *begin, const dynamic::Control *ctrl, double resolution, base::State *end) const
+    virtual control::PropagationResult propagate(const base::State *state, const control::Control* control, const double duration, base::State *result) const
     {
-	end->values[0] = begin->values[0] + resolution * ctrl->values[0];
-	end->values[1] = begin->values[1] + resolution * ctrl->values[1];
-	if (end->values[0] > m_si->getStateComponent(2).maxValue)
-	    end->values[0] = m_si->getStateComponent(2).maxValue;
-	if (end->values[1] > m_si->getStateComponent(3).maxValue)
-	    end->values[1] = m_si->getStateComponent(3).maxValue;
-	if (end->values[0] < m_si->getStateComponent(2).minValue)
-	    end->values[0] = m_si->getStateComponent(2).minValue;
-	if (end->values[1] < m_si->getStateComponent(3).minValue)
-	    end->values[1] = m_si->getStateComponent(3).minValue;	
-	end->values[2] = ctrl->values[0];
-	end->values[3] = ctrl->values[1];
+       	result->values[0] = state->values[0] + duration * control->values[0];
+	result->values[1] = state->values[1] + duration * control->values[1];
+	result->values[2] = control->values[0];
+	result->values[3] = control->values[1];
+	m_stateManifold->enforceBounds(result);
     }
 };
 	
@@ -326,50 +318,6 @@ protected:
     }    
 };
 
-class KPIECETest : public TestPlanner 
-{
-public:
-
-    KPIECETest(void)
-    {
-	ope = NULL;
-    }
-
-    virtual bool execute(Environment2D &env, bool show = false, double *time = NULL, double *pathLength = NULL)
-    {
-	bool result = TestPlanner::execute(env, show, time, pathLength);	
-	if (ope)
-	{
-	    delete ope;	
-	    ope = NULL;
-	}
-	return result;
-    }
-    
-protected:
-
-    base::Planner* newPlanner(dynamic::SpaceInformationControlsIntegrator *si)
-    {
-	dynamic::KPIECE1 *kpiece = new dynamic::KPIECE1(si);
-	
-	std::vector<unsigned int> projection;
-	projection.push_back(0);
-	projection.push_back(1);
-	ope = new base::OrthogonalProjectionEvaluator(si, projection);
-
-	std::vector<double> cdim;
-	cdim.push_back(1);
-	cdim.push_back(1);
-	ope->setCellDimensions(cdim);	
-
-	kpiece->setProjectionEvaluator(ope);
-
-	return kpiece;
-    } 
-
-    base::OrthogonalProjectionEvaluator *ope;   
-};
-
 class PlanTest : public testing::Test
 {
 public:
@@ -434,21 +382,6 @@ TEST_F(PlanTest, dynamicRRT)
     double avglength  = 0.0;
     
     TestPlanner *p = new RRTTest();
-    runPlanTest(p, &success, &avgruntime, &avglength);
-    delete p;
-
-    EXPECT_TRUE(success >= 99.0);
-    EXPECT_TRUE(avgruntime < 0.05);
-    EXPECT_TRUE(avglength < 5.0);
-}
-
-TEST_F(PlanTest, dynamicKPIECE)
-{
-    double success    = 0.0;
-    double avgruntime = 0.0;
-    double avglength  = 0.0;
-    
-    TestPlanner *p = new KPIECETest();
     runPlanTest(p, &success, &avgruntime, &avglength);
     delete p;
 

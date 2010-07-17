@@ -32,23 +32,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_DYNAMIC_PLANNERS_RRT_RRT_
-#define OMPL_DYNAMIC_PLANNERS_RRT_RRT_
+#ifndef OMPL_CONTROL_PLANNERS_RRT_RRT_
+#define OMPL_CONTROL_PLANNERS_RRT_RRT_
 
-#include "ompl/base/Planner.h"
-#include "ompl/dynamic/SpaceInformationControlsIntegrator.h"
+#include "ompl/control/planners/PlannerIncludes.h"
 #include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 
 namespace ompl
 {
     
-    namespace dynamic
+    namespace control
     {
 	
 	/**
-	   @anchor dRRT
+	   @anchor cRRT
 	   
 	   @par Short description
 	   
@@ -73,16 +72,16 @@ namespace ompl
 	{
 	public:
 	    
-	    RRT(SpaceInformationControlsIntegrator *si) : base::Planner(si),
-							  m_sCore(si),
-							  m_cCore(si)
+	    RRT(const SpaceInformationPtr &si) : base::Planner(si),
+						 m_sCore(si->allocStateSampler()),
+						 m_cCore(si->allocControlSampler())
 	    {
 		m_type = base::PLAN_TO_GOAL_ANY;
 		m_msg.setPrefix("RRT");
+		m_siC = si.get();
 		
 		m_nn.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
 		m_goalBias = 0.05;
-		m_hintBias = 0.75;
 		m_addedStartStates = 0;
 	    }
 	    
@@ -122,21 +121,7 @@ namespace ompl
 		return m_goalBias;
 	    }
 
-	    /** \brief If a kinematic path is given as hint, this
-		function sets the percentage of how often this path is
-		used as hint */
-	    void setHintBias(double hintBias)
-	    {
-		m_hintBias = hintBias;
-	    }
-	    
-	    /** \brief Get the hint bias */
-	    double getHintBias(void) const
-	    {
-		return m_hintBias;
-	    }	    
-	    
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void getPlannerData(base::PlannerData &data) const;
 	    
 	protected:
 	    
@@ -148,23 +133,18 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int sdim, unsigned int cdim) : state(new base::State(sdim)), control(new Control(cdim)), steps(0), parent(NULL)
+		Motion(const SpaceInformation *si) : state(si->allocState()), control(si->allocControl()), steps(0), parent(NULL)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
-		    if (control)
-			delete control;
 		}
 		
 		base::State       *state;
 		Control           *control;
 		unsigned int       steps;
-		Motion            *parent;
-		
+		Motion            *parent;		
 	    };
 	    
 	    void freeMemory(void)
@@ -172,7 +152,13 @@ namespace ompl
 		std::vector<Motion*> motions;
 		m_nn.list(motions);
 		for (unsigned int i = 0 ; i < motions.size() ; ++i)
+		{
+		    if (motions[i]->state)
+			m_si->freeState(motions[i]->state);
+		    if (motions[i]->control)
+			m_siC->freeControl(motions[i]->control);
 		    delete motions[i];
+		}
 	    }
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
@@ -180,14 +166,14 @@ namespace ompl
 		return m_si->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerInstance          m_sCore;
-	    ControlSamplerInstance              m_cCore;
- 
+	    base::StateSamplerPtr               m_sCore;
+	    ControlSamplerPtr                   m_cCore;
+	    const SpaceInformation             *m_siC;
+	    
 	    NearestNeighborsSqrtApprox<Motion*> m_nn;
 	    unsigned int                        m_addedStartStates;
 	    
 	    double                              m_goalBias;
-	    double                              m_hintBias;
 	    RNG                                 m_rng;	
 	};
 	

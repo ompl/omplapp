@@ -37,7 +37,7 @@
 #ifndef OMPL_CONTROL_MANIFOLDS_REAL_VECTOR_CONTROL_MANIFOLD_
 #define OMPL_CONTROL_MANIFOLDS_REAL_VECTOR_CONTROL_MANIFOLD_
 
-#include "ompl/base/ControlManifold.h"
+#include "ompl/control/ControlManifold.h"
 #include <vector>
 
 namespace ompl
@@ -131,7 +131,8 @@ namespace ompl
 	    
 	    unsigned int     m_dimension;
 	    std::size_t      m_controlBytes;
-
+	    RealVectorBounds m_bounds;
+	    
 	};
     }
 }

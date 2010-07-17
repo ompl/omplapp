@@ -32,43 +32,58 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
+#include "ompl/control/PathControl.h"
+#include "ompl/util/Exception.h"
 #include <numeric>
-#include "ompl/dynamic/PathDynamic.h"
-#include "ompl/dynamic/SpaceInformationControls.h"
-#include <cassert>
 
-ompl::dynamic::PathDynamic::PathDynamic(const PathDynamic &path) : base::Path(path.getSpaceInformation())
+ompl::control::PathControl::PathControl(const base::SpaceInformationPtr &si) : base::Path(si)
+{
+    if (!dynamic_cast<const SpaceInformation*>(m_si.get()))
+	throw Exception("Cannot create a path with controls from a space that does not support controls");
+}
+
+ompl::control::PathControl::PathControl(const PathControl &path) : base::Path(path.m_si)
 {
     states.resize(path.states.size());
     controls.resize(path.controls.size());
-    unsigned int sdim = m_si->getStateDimension();
+
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-    {
-	states[i] = new base::State(sdim);
-	m_si->copyState(states[i], path.states[i]);
-    }
-    const SpaceInformationControls *si = dynamic_cast<const SpaceInformationControls*>(m_si);
-    assert(si);
-    unsigned int cdim = si->getControlDimension();
+	states[i] = m_si->cloneState(path.states[i]);
+    
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
-    {
-	controls[i] = new Control(cdim);
-	si->copyControl(controls[i], path.controls[i]);
-    }
+	controls[i] = si->cloneControl(path.controls[i]);
+    
     controlDurations = path.controlDurations;
 }
 
-double ompl::dynamic::PathDynamic::length(void) const
+double ompl::control::PathControl::length(void) const
 {
-    return std::accumulate(controlDurations.begin(),controlDurations.end(),0.0);
+    return std::accumulate(controlDurations.begin(), controlDurations.end(), 0.0);
 }
 
-void ompl::dynamic::PathDynamic::freeMemory(void)
+bool ompl::control::PathControl::check(void) const
+{
+    bool valid = true;
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    base::State *dummy = m_si->allocState();
+    for (unsigned int  i = 0 ; i < controls.size() ; ++i)
+	if (si->propagateWhileValid(states[i], controls[i], controlDurations[i], dummy) != controlDurations[i])
+	{
+	    valid = false;
+	    break;
+	}
+    m_si->freeState(dummy);
+    return valid;
+}
+
+void ompl::control::PathControl::freeMemory(void)
 {
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	delete states[i];
+	m_si->freeState(states[i]);
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
-	delete controls[i];
+	si->freeControl(controls[i]);
 }

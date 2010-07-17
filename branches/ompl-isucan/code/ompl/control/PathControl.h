@@ -32,43 +32,43 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_DYNAMIC_PATH_DYNAMIC_
-#define OMPL_DYNAMIC_PATH_DYNAMIC_
+#ifndef OMPL_CONTROL_PATH_CONTROL_
+#define OMPL_CONTROL_PATH_CONTROL_
 
-#include "ompl/base/SpaceInformation.h"
+#include "ompl/control/SpaceInformation.h"
 #include "ompl/base/Path.h"
-#include "ompl/dynamic/Control.h"
 #include <vector>
 
 namespace ompl
 {
-    namespace dynamic
+    namespace control
     {
 	
 	/** \brief Definition of a control path.
 
 	 This is the type of path produced when planning with
 	 differential constraints. */
-	class PathDynamic : public base::Path
+	class PathControl : public base::Path
 	{
 	public:
 	    
-	    PathDynamic(base::SpaceInformation *si) : base::Path(si)
-	    {
-	    }
+	    PathControl(const base::SpaceInformationPtr &si);
 	    
-	    PathDynamic(const PathDynamic &path);
+	    PathControl(const PathControl &path);
 	    
-	    virtual ~PathDynamic(void)
+	    virtual ~PathControl(void)
 	    {
 		freeMemory();
 	    }
 	    
 	    /** \brief The path length (sum of control durations) */
 	    virtual double length(void) const;
-	    
+
+	    /** \brief Check if the path is valid */
+	    virtual bool check(void) const;
+
 	    /** \brief The list of states that make up the path */
 	    std::vector<base::State*>   states;
 
