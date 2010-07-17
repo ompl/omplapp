@@ -262,5 +262,8 @@
    
    - @ref dRRT "Rapidly-exploring Random Trees (RRT)"
 
+@section howto How To's
+
+   @ref implementStateManifold How to implement a new state manifold
 
 */

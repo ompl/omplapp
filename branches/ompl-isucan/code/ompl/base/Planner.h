@@ -43,6 +43,7 @@
 #include "ompl/util/Time.h"
 #include "ompl/util/ClassForward.h"
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 #include <vector>
 
 namespace ompl
@@ -92,7 +93,7 @@ namespace ompl
 	};
 	
 	/** \brief Base class for a planner */
-	class Planner
+	class Planner : private boost::noncopyable
 	{
 	    
 	public:

@@ -49,6 +49,7 @@ namespace ompl
 	class RealVectorState : public State
 	{
 	public:
+	    /** \brief The value of the actual vector in R^n */
 	    double *values;
 	};
 	
@@ -61,8 +62,11 @@ namespace ompl
 		low.resize(dim, 0.0);
 		high.resize(dim, 0.0);
 	    }
-
+	    
+	    /** \brief Lower bound */
 	    std::vector<double> low;
+
+	    /** \brief Upper bound */
 	    std::vector<double> high;
 	};
 	
@@ -75,7 +79,7 @@ namespace ompl
 	    {
 	    }
 	    
-	    virtual void sample(State *state);
+	    virtual void sample(State *state);	    
 	    virtual void sampleNear(State *state, const State *near, const double distance);
 	    
 	};
@@ -140,6 +144,9 @@ namespace ompl
 	    
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
+	    
+	    /** \brief Check if the manifold is configured correctly */
+	    virtual void setup(void);
 	    
 	protected:
 	    

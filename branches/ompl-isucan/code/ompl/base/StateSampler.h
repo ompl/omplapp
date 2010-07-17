@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_BASE_STATE_SAMPLER_
 #define OMPL_BASE_STATE_SAMPLER_

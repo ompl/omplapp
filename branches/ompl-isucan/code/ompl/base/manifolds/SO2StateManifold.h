@@ -48,6 +48,7 @@ namespace ompl
 	class SO2State : public State
 	{
 	public:
+	    /** \brief The value of the angle (between -PI and PI) */
 	    double value;
 	};
 	

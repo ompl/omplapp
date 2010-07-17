@@ -54,8 +54,33 @@ namespace ompl
 	ClassForward(StateManifold);
 	
 	/** \brief Representation of a space in which planning can be
-	    performed. Topology specific sampling and interpolation
-	    are defined. */
+	    performed. Topology specific sampling, interpolation and distance
+	    are defined. 
+
+	   @anchor implementStateManifold
+
+	   @par Inheriting from existing manifolds
+	   
+	   In order to implement a new state manifold it is necessary
+	   to define a class that inherits from an existing manifold
+	   class. All manifold specific functions (pure virtual in the
+	   StateManifold class) need to be implemented accordingly. If
+	   the implementation of the new manifold defines an
+	   allocState() function, it should also provide a freeState()
+	   function and define (typedef) StateType to the type of the
+	   state that is allocated/freed.
+	   
+	   @par Inheriting from CompoundStateManifold
+
+	   Another option is to inherit from a CompoundStateManifold
+	   and call addSubManifold() in the constructor of the new
+	   class for other existing manifolds. This is the easiest way
+	   to create new manifolds -- only the constructor needs to be
+	   provided. For example, see SE2StateManifold. Optionally,
+	   the CompoundStateManifold::lock() function can be called
+	   after the components have been set in order to prevent the
+	   user of the manifold from adding further components.
+	*/
 	class StateManifold : private boost::noncopyable
 	{
 	public:
@@ -117,7 +142,7 @@ namespace ompl
 	    /** \brief Allocate an instance of a uniform state sampler for this space */
 	    virtual StateSamplerPtr allocUniformStateSampler(void) const = 0;
 
-	    /** \brief Allocate an instance of a state sampler for this space. If setStateSamplerAllocator() was called,
+	    /** \brief Allocate an instance of a state sampler for this space. If setStateSamplerAllocator() was previously called,
 		the specified allocator is used to produce the state sampler.  Otherwise, allocUniformStateSampler() is
 		called. */
 	    virtual StateSamplerPtr allocStateSampler(void) const;
@@ -139,7 +164,10 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief Interface used for console output */
 	    msg::Interface        m_msg;
+	    
+	    /** \brief The optional state sampler allocator */
 	    StateSamplerAllocator m_ssa;
 	    
 	};
