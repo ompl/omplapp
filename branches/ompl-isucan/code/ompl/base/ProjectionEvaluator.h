@@ -37,7 +37,7 @@
 #ifndef OMPL_BASE_PROJECTION_EVALUATOR_
 #define OMPL_BASE_PROJECTION_EVALUATOR_
 
-#include "ompl/base/Manifold.h"
+#include "ompl/base/StateManifold.h"
 #include "ompl/util/ClassForward.h"
 #include <vector>
 
@@ -51,7 +51,7 @@ namespace ompl
 	typedef std::vector<int> ProjectionCoordinates;
 
 	/** \brief The datatype for state projections. */
-	typedef double* EuclideanProjection;
+	typedef double EuclideanProjection;
 	
 	ClassForward(ProjectionEvaluator);
 	
@@ -63,9 +63,8 @@ namespace ompl
 	{
 	public:
 	    
-	    ProjectionEvaluator(const ManifoldPtr &manifold, const std::vector<double> &cellDimensions) : m_manifold(manifold)
+	    ProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) : m_manifold(manifold), m_cellDimensions(cellDimensions)
 	    {
-		setCellDimensions(cellDimensions);
 	    }
 	    
 	    virtual ~ProjectionEvaluator(void)
@@ -76,7 +75,7 @@ namespace ompl
 	    virtual unsigned int getDimension(void) const = 0;
 	    
 	    /** \brief Compute the projection as an array of double values */
-	    virtual void project(const State *state, EuclideanProjection projection) const = 0;
+	    virtual void project(const State *state, EuclideanProjection *projection) const = 0;
 	    	    
 	    /** \brief Define the dimension (each component) of a grid cell. The
 		number of dimensions set here must be the same as the
@@ -91,7 +90,7 @@ namespace ompl
 	    }
 	    
 	    /** \brief Compute integer coordinates for a projection */
-	    void computeCoordinates(const EuclideanProjection projection, ProjectionCoordinates &coord) const;
+	    void computeCoordinates(const EuclideanProjection *projection, ProjectionCoordinates &coord) const;
 	    
 	    /** \brief Compute integer coordinates for a state */
 	    void computeCoordinates(const State *state, ProjectionCoordinates &coord) const
@@ -103,7 +102,7 @@ namespace ompl
 	    
 	protected:
 	    
-	    ManifoldPtr          m_manifold;
+	    StateManifoldPtr     m_manifold;
 	    std::vector<double>  m_cellDimensions;
 	    
 	};

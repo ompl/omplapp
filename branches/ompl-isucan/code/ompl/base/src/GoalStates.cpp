@@ -32,11 +32,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #include "ompl/base/GoalStates.h"
 #include "ompl/base/SpaceInformation.h"
-#include <cassert>
+#include "ompl/util/Exception.h"
 #include <limits>
 
 ompl::base::GoalStates::~GoalStates(void)
@@ -75,7 +75,8 @@ void ompl::base::GoalStates::print(std::ostream &out) const
 
 void ompl::base::GoalStates::sampleGoal(base::State *st) const
 {
-    assert(states.size() > 0);
+    if (states.empty())
+	throw Exception("There are no goals to sample");
     m_si->copyState(st, states[samplePosition]);
     samplePosition = (samplePosition + 1) % states.size();
 }

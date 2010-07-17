@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #include "ompl/base/GoalRegion.h"
 #include "ompl/base/SpaceInformation.h"
@@ -47,5 +47,5 @@ bool ompl::base::GoalRegion::isSatisfied(const State *st, double *distance) cons
 
 void ompl::base::GoalRegion::print(std::ostream &out) const
 {
-    out << "Goal region, threshold = " << threshold << ", memory address = " << reinterpret_cast<const void*>(this) << std::endl;
+    out << "Goal region, threshold = " << threshold << ", memory address = " << this << std::endl;
 }

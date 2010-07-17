@@ -35,6 +35,10 @@
 #include "ompl/base/StateManifold.h"
 #include "ompl/util/Exception.h"
 
+void ompl::base::StateManifold::setup(void)
+{
+}
+
 void ompl::base::StateManifold::setStateSamplerAllocator(const StateSamplerAllocator &ssa)
 {
     m_ssa = ssa;

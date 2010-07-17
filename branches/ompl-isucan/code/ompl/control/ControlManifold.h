@@ -140,6 +140,9 @@ namespace ompl
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
 
+	    /** \brief Perform final setup steps. This function is automatically called by the SpaceInformation */
+	    virtual void setup(void);
+
 	protected:
 	    
 	    /** \brief The state manifold controls can be applied to */

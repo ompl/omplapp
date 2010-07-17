@@ -166,8 +166,8 @@ namespace ompl
 	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, base::State *result) const;
 	    
 	    /** \brief Same as above except that all intermediate states are returned (and optionally, memory for them is allocated) */
-	    void propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool includeStart, bool alloc) const;
-	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool includeStart, bool alloc) const;
+	    void propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const;
+	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const;
 	    
 	    /** \brief Print information about the current instance of the state space */
 	    virtual void printSettings(std::ostream &out = std::cout) const;

@@ -56,15 +56,16 @@ void ompl::base::SpaceInformation::setup(void)
     if (!m_stateValidityChecker)
 	throw Exception("State validity checker not set!");
     
-    if (m_stateManifold->getDimension() <= 0)
-	throw Exception("The dimension of the state manifold we plan in must be > 0");
-    
     if (m_resolution < std::numeric_limits<double>::epsilon())
     {
-	m_resolution = estimateExtent(10000) / 50.0;
+	m_resolution = estimateExtent(1000) / 50.0;
 	m_msg.warn("The resolution at which states need to be checked for collision is detected to be %f", m_resolution);
     }
     
+    m_stateManifold->setup();
+    if (m_stateManifold->getDimension() <= 0)
+	throw Exception("The dimension of the state manifold we plan in must be > 0");
+
     m_setup = true;
 }
 

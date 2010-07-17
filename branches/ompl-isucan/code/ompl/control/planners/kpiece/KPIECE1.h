@@ -32,26 +32,24 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_DYNAMIC_PLANNERS_KPIECE_KPIECE1_
-#define OMPL_DYNAMIC_PLANNERS_KPIECE_KPIECE1_
+#ifndef OMPL_CONTROL_PLANNERS_KPIECE_KPIECE1_
+#define OMPL_CONTROL_PLANNERS_KPIECE_KPIECE1_
 
-#include "ompl/base/Planner.h"
+#include "ompl/control/planners/PlannerIncludes.h"
 #include "ompl/base/ProjectionEvaluator.h"
 #include "ompl/datastructures/GridB.h"
-#include "ompl/dynamic/SpaceInformationControlsIntegrator.h"
 #include <vector>
 
 namespace ompl
 {
     
-    namespace dynamic
+    namespace control
     {
-	
-	
+		
 	/**
-	   @anchor dKPIECE1
+	   @anchor cKPIECE1
 	   
 	   @par Short description
 	   
@@ -75,21 +73,20 @@ namespace ompl
 	{
 	public:
 	    
-	    KPIECE1(SpaceInformationControlsIntegrator *si) : base::Planner(si),
-							      m_sCore(si),
-							      m_cCore(si)
+	    KPIECE1(const SpaceInformationPtr &si) : base::Planner(si),
+						     m_sCore(si->allocStateSampler()),
+						     m_cCore(si->allocControlSampler())
 	    {
 		m_type = base::PLAN_TO_GOAL_ANY;
 		m_msg.setPrefix("KPIECE1");
 		
+		m_siC = si.get();
 		m_addedStartStates = 0;		
-		m_projectionEvaluator = NULL;
 		m_projectionDimension = 0;
 		m_goalBias = 0.05;
 		m_selectBorderPercentage = 0.7;
 		m_badScoreFactor = 0.3;
 		m_goodScoreFactor = 0.9;
-		m_minValidPathStates = 3;
 		m_tree.grid.onCellUpdate(computeImportance, NULL);
 	    }
 	    
@@ -100,14 +97,7 @@ namespace ompl
 	    
 	    virtual bool solve(double solveTime);
 	    
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		m_tree.grid.clear();
-		m_tree.size = 0;
-		m_tree.iteration = 1;
-		m_addedStartStates = 0;
-	    }
+	    virtual void clear(void);
 	    
 	    /** In the process of randomly selecting states in the state
 		space to attempt to go towards, the algorithm may in fact
@@ -131,28 +121,18 @@ namespace ompl
 		compute the projection of a given state. The simplest
 		option is to use an orthogonal projection; see
 		OrthogonalProjectionEvaluator */
-	    void setProjectionEvaluator(base::ProjectionEvaluator *projectionEvaluator)
+	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
 		m_projectionEvaluator = projectionEvaluator;
 	    }
 	    
-	    base::ProjectionEvaluator* getProjectionEvaluator(void) const
+	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
 		return m_projectionEvaluator;
 	    }
 	    
-	    virtual void setup(void)
-	    {
-		assert(m_projectionEvaluator);
-		m_projectionDimension = m_projectionEvaluator->getDimension();
-		assert(m_projectionDimension > 0);
-		m_projectionEvaluator->getCellDimensions(m_cellDimensions);
-		assert(m_cellDimensions.size() == m_projectionDimension);
-		m_tree.grid.setDimension(m_projectionDimension);
-		Planner::setup();
-	    }
-
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void setup(void);
+	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	protected:
 	    
@@ -164,16 +144,12 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int sdim, unsigned int cdim) : state(new base::State(sdim)), control(new Control(cdim)), steps(0), parent(NULL)
+		Motion(const SpaceInformation *si) : state(si->allocState()), control(si->allocControl()), steps(0), parent(NULL)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
-		    if (control)
-			delete control;
 		}
 		
 		base::State       *state;
@@ -191,8 +167,6 @@ namespace ompl
 		
 		~CellData(void)
 		{
-		    for (unsigned int i = 0 ; i < motions.size() ; ++i)
-			delete motions[i];
 		}
 		
 		std::vector<Motion*> motions;
@@ -230,31 +204,27 @@ namespace ompl
 		cd.importance =  cd.score / ((cell->neighbors + 1) * cd.coverage * cd.selections);
 	    }
 	    
-	    void freeMemory(void)
-	    {
-		freeGridMotions(m_tree.grid);
-	    }
-	    
-	    void freeGridMotions(Grid &grid)
-	    {
-		for (Grid::iterator it = grid.begin(); it != grid.end() ; ++it)
-		    delete it->second->data;
-	    }
-	    
+	    void freeMemory(void);
+	    void freeGridMotions(Grid &grid);
+	    void freeCellData(CellData *cdata);
+	    void freeMotion(Motion *motion);
+
 	    unsigned int addMotion(Motion* motion, double dist);
 	    bool selectMotion(Motion* &smotion, Grid::Cell* &scell);
+	    unsigned int findNextMotion(const Grid::Coord &origin, const std::vector<Grid::Coord> &coords, unsigned int index, unsigned int last);
 	    
-	    base::StateSamplerInstance m_sCore;
-	    ControlSamplerInstance     m_cCore;
-
+	    base::StateSamplerPtr      m_sCore;
+	    ControlSamplerPtr          m_cCore;
+	    
 	    TreeData                   m_tree;
 	    unsigned int               m_addedStartStates;
 	    
-	    base::ProjectionEvaluator *m_projectionEvaluator;
-	    unsigned int               m_projectionDimension;
-	    std::vector<double>        m_cellDimensions;
+	    const SpaceInformation    *m_siC;
 	    
-	    unsigned int               m_minValidPathStates;
+	    base::ProjectionEvaluatorPtr m_projectionEvaluator;
+	    unsigned int                 m_projectionDimension;
+	    std::vector<double>          m_cellDimensions;
+	    
 	    double                     m_goodScoreFactor;
 	    double                     m_badScoreFactor;
 	    double                     m_selectBorderPercentage;

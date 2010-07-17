@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #ifndef OMPL_BASE_STATE_MANIFOLD_
 #define OMPL_BASE_STATE_MANIFOLD_
@@ -133,6 +133,9 @@ namespace ompl
 	    
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
+	    
+	    /** \brief Perform final setup steps. This function is automatically called by the SpaceInformation */
+	    virtual void setup(void);
 	    
 	protected:
 	    

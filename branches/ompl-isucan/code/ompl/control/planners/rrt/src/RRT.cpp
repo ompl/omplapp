@@ -36,11 +36,12 @@
 
 #include "ompl/control/planners/rrt/RRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
+#include <limits>
 
 bool ompl::control::RRT::solve(double solveTime)
 {
-    base::Goal                       *goal = m_pdef->getGoal().get(); 
-    base::GoalSampleableRegion     *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
+    base::Goal                   *goal = m_pdef->getGoal().get(); 
+    base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
 
     if (!goal)
     {

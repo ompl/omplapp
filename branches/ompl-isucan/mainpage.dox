@@ -48,14 +48,14 @@
 
 
    - @ref gRRT "Rapidly-exploring Random Trees (RRT)"
-   - @ref kLazyRRT "Lazy RRT (LazyRRT)"
-   - @ref kRRTC "RRT Connect (RRTConnect)"
-   - @ref kpRRT "Parallel Rapidly-exploring Random Trees (pRRT)"
-   - @ref kSBL "Single-query Bi-directional Lazy collision checking planner (SBL)"
-   - @ref kpSBL "Parallel Single-query Bi-directional Lazy collision checking planner (pSBL)"
-   - @ref kEST "Expansive Space Trees (EST)"
-   - @ref kKPIECE1 "Geometric Planning by Interior-Exterior Cell Exploration (KPIECE)"
-   - @ref kLBKPIECE1 "Lazy Bi-directional KPIECE (LBKPIECE)"	
+   - @ref gLazyRRT "Lazy RRT (LazyRRT)"
+   - @ref gRRTC "RRT Connect (RRTConnect)"
+   - @ref gpRRT "Parallel Rapidly-exploring Random Trees (pRRT)"
+   - @ref gSBL "Single-query Bi-directional Lazy collision checking planner (SBL)"
+   - @ref gpSBL "Parallel Single-query Bi-directional Lazy collision checking planner (pSBL)"
+   - @ref gEST "Expansive Space Trees (EST)"
+   - @ref gKPIECE1 "Geometric Planning by Interior-Exterior Cell Exploration (KPIECE)"
+   - @ref gLBKPIECE1 "Lazy Bi-directional KPIECE (LBKPIECE)"	
 
    Other tools:
 

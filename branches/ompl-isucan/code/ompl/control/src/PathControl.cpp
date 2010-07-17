@@ -103,7 +103,7 @@ void ompl::control::PathControl::interpolate(void)
 	    continue;
 	}
 	std::vector<base::State*> istates;
-	si->propagate(states[i], controls[i], steps, istates, false, true);
+	si->propagate(states[i], controls[i], steps, istates, true);
 	// last state is already in the non-interpolated path
 	if (!istates.empty())
 	{

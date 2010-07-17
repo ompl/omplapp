@@ -45,7 +45,7 @@ void ompl::base::ProjectionEvaluator::setCellDimensions(const std::vector<double
     m_cellDimensions = cellDimensions;
 }
 
-void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjection projection, ProjectionCoordinates &coord) const
+void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjection *projection, ProjectionCoordinates &coord) const
 {
     unsigned int dim = getDimension();
     coord.resize(dim);

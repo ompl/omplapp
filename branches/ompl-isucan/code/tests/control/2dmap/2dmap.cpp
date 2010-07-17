@@ -41,6 +41,7 @@
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
 #include "ompl/control/manifolds/RealVectorControlManifold.h"
 #include "ompl/control/planners/rrt/RRT.h"
+#include "ompl/control/planners/kpiece/KPIECE1.h"
 
 #include "../../resources/config.h"
 #include "environment2D.h"
@@ -49,7 +50,7 @@
 
 using namespace ompl;
 
-static const double SOLUTION_TIME = 5.0;
+static const double SOLUTION_TIME = 1.0;
 static const double MAX_VELOCITY = 3.0;
 
 /** Declare a class used in validating states. Such a class definition is needed for any use
@@ -300,6 +301,44 @@ protected:
     }    
 };
 
+class myProjectionEvaluator : public base::ProjectionEvaluator
+{
+public:
+    myProjectionEvaluator(const base::StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) : base::ProjectionEvaluator(manifold, cellDimensions)
+    {
+    }
+
+    virtual unsigned int getDimension(void) const
+    {
+	return 2;
+    }
+        
+    virtual void project(const base::State *state, base::EuclideanProjection *projection) const
+    {
+	projection[0] = state->as<base::RealVectorState>()->values[0];
+	projection[1] = state->as<base::RealVectorState>()->values[1];
+    }
+};
+    
+class KPIECETest : public TestPlanner 
+{
+protected:
+
+    base::PlannerPtr newPlanner(const control::SpaceInformationPtr &si)
+    {
+	control::KPIECE1 *kpiece = new control::KPIECE1(si);
+	
+	std::vector<double> cdim;
+	cdim.push_back(1);
+	cdim.push_back(1);
+	base::ProjectionEvaluatorPtr ope(new myProjectionEvaluator(si->getStateManifold(), cdim));
+	
+	kpiece->setProjectionEvaluator(ope);
+	
+	return base::PlannerPtr(kpiece);
+    }
+};
+
 class PlanTest : public testing::Test
 {
 public:
@@ -356,7 +395,6 @@ protected:
     bool          verbose;
 };
 
-
 TEST_F(PlanTest, controlRRT)
 {
     double success    = 0.0;
@@ -370,6 +408,21 @@ TEST_F(PlanTest, controlRRT)
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.05);
     EXPECT_TRUE(avglength < 100.0);
+}
+
+TEST_F(PlanTest, controlKPIECE)
+{
+    double success    = 0.0;
+    double avgruntime = 0.0;
+    double avglength  = 0.0;
+    
+    TestPlanner *p = new KPIECETest();
+    runPlanTest(p, &success, &avgruntime, &avglength);
+    delete p;
+
+    EXPECT_TRUE(success >= 99.0);
+    EXPECT_TRUE(avgruntime < 0.05);
+    EXPECT_TRUE(avglength < 5.0);
 }
 
 int main(int argc, char **argv)

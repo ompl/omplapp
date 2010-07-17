@@ -54,14 +54,15 @@ void ompl::control::SpaceInformation::setup(void)
     if (m_minSteps < 1)
 	throw Exception("The minimum number of steps must be at least 1");
     
-    if (m_controlManifold->getDimension() <= 0)
-	throw Exception("The dimension of the control manifold we plan in must be > 0");
-    
     if (m_stepSize < std::numeric_limits<double>::epsilon())
     {
 	m_stepSize = m_resolution;
 	m_msg.warn("The propagation step size is assumed to be the same as the state validity checking resolution: %f", m_stepSize);
     }
+
+    m_controlManifold->setup();    
+    if (m_controlManifold->getDimension() <= 0)
+	throw Exception("The dimension of the control manifold we plan in must be > 0");
 }
 
 void ompl::control::SpaceInformation::propagate(const base::State *state, const Control* control, unsigned int steps, base::State *result) const
@@ -195,11 +196,11 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
     }
 }
 
-void ompl::control::SpaceInformation::propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool includeStart, bool alloc) const
+void ompl::control::SpaceInformation::propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const
 {
     if (alloc)
     {
-	result.resize(steps + (includeStart ? 1 : 0));
+	result.resize(steps);
 	for (unsigned int i = 0 ; i < result.size() ; ++i)
 	    result[i] = allocState();
     }
@@ -207,16 +208,10 @@ void ompl::control::SpaceInformation::propagate(const base::State *state, const 
     {
 	if (result.empty())
 	    return;
-	steps = std::min(steps, (unsigned int)result.size() - (includeStart ? 1 : 0));
+	steps = std::min(steps, (unsigned int)result.size());
     }
     
     unsigned int st = 0;
-    if (includeStart)
-    {
-	st++;
-	steps++;
-	copyState(result[0], state);
-    }
     
     if (st < steps)
     { 
@@ -231,28 +226,18 @@ void ompl::control::SpaceInformation::propagate(const base::State *state, const 
     }
 }
 
-unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool includeStart, bool alloc) const
+unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const
 {   
     if (alloc)
-    {
-	result.resize(steps + (includeStart ? 1 : 0));
-	if (includeStart)
-	    result[0] = allocState();
-    }
+	result.resize(steps);
     else
     {
 	if (result.empty())
 	    return 0;
-	steps = std::min(steps, (unsigned int)result.size() - (includeStart ? 1 : 0));
+	steps = std::min(steps, (unsigned int)result.size());
     }
     
     unsigned int st = 0;
-    if (includeStart)
-    {
-	st++;
-	steps++;
-	copyState(result[0], state);
-    }
 	
     if (st < steps)
     {

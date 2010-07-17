@@ -37,6 +37,10 @@
 #include "ompl/control/ControlManifold.h"
 #include "ompl/util/Exception.h"
 
+void ompl::control::ControlManifold::setup(void)
+{
+}
+
 const ompl::base::StateManifoldPtr& ompl::control::ControlManifold::getStateManifold(void) const
 {
     return m_stateManifold;

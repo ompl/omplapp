@@ -32,19 +32,84 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/dynamic/planners/kpiece/KPIECE1.h"
-#include "ompl/base/GoalState.h"
+#include "ompl/control/planners/kpiece/KPIECE1.h"
+#include "ompl/base/GoalSampleableRegion.h"
+#include "ompl/util/Exception.h"
 #include <limits>
+#include <cassert>
 
-bool ompl::dynamic::KPIECE1::solve(double solveTime)
+void ompl::control::KPIECE1::setup(void)
 {
-    SpaceInformationControlsIntegrator *si = dynamic_cast<SpaceInformationControlsIntegrator*>(m_si); 
-    base::Goal                       *goal = m_pdef->getGoal();
-    base::GoalState                *goal_s = dynamic_cast<base::GoalState*>(goal);
-    unsigned int                      sdim = si->getStateDimension();
-    unsigned int                      cdim = si->getControlDimension();
+    Planner::setup();
+    if (!m_projectionEvaluator)
+	throw Exception("No projection evaluator specified");
+    m_projectionDimension = m_projectionEvaluator->getDimension();
+    if (m_projectionDimension <= 0)
+	throw Exception("Dimension of projection needs to be larger than 0");
+    m_tree.grid.setDimension(m_projectionDimension);
+}
+
+void ompl::control::KPIECE1::clear(void)
+{
+    freeMemory();
+    m_tree.grid.clear();
+    m_tree.size = 0;
+    m_tree.iteration = 1;
+    m_addedStartStates = 0;
+}
+
+void ompl::control::KPIECE1::freeMemory(void)
+{
+    freeGridMotions(m_tree.grid);
+}
+
+void ompl::control::KPIECE1::freeGridMotions(Grid &grid)
+{
+    for (Grid::iterator it = grid.begin(); it != grid.end() ; ++it)
+	freeCellData(it->second->data);
+}
+
+void ompl::control::KPIECE1::freeCellData(CellData *cdata)
+{
+    for (unsigned int i = 0 ; i < cdata->motions.size() ; ++i)
+	freeMotion(cdata->motions[i]);
+    delete cdata;
+}
+
+void ompl::control::KPIECE1::freeMotion(Motion *motion)
+{
+    if (motion->state)
+	m_si->freeState(motion->state);
+    if (motion->control)
+	m_siC->freeControl(motion->control);
+    delete motion;
+}
+
+// return the index of the state to be used in the next motion (the reached state of the motion)
+unsigned int ompl::control::KPIECE1::findNextMotion(const Grid::Coord &origin, const std::vector<Grid::Coord> &coords, unsigned int index, unsigned int last)
+{
+    // if the first state is already out of the origin cell, then most of the motion is in that cell
+    if (coords[index] != origin)
+    {
+	for (unsigned int i = index + 1 ; i <= last ; ++i)
+	    if (coords[i] != coords[index])
+		return i - 1;
+    }
+    else
+    {
+	for (unsigned int i = index + 1 ; i <= last ; ++i)
+	    if (coords[i] != origin)
+		return i - 1;
+    }
+    return last;
+}
+
+bool ompl::control::KPIECE1::solve(double solveTime)
+{
+    base::Goal                       *goal = m_pdef->getGoal().get();
+    base::GoalSampleableRegion     *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
     
     if (!goal)
     {
@@ -57,11 +122,11 @@ bool ompl::dynamic::KPIECE1::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion *motion = new Motion(sdim, cdim);
-	    si->copyState(motion->state, st);
-	    si->nullControl(motion->control);
+	    Motion *motion = new Motion(m_siC);
+	    m_si->copyState(motion->state, st);
+	    m_siC->nullControl(motion->control);
 	    addMotion(motion, 1.0);
 	}
 	else
@@ -80,11 +145,12 @@ bool ompl::dynamic::KPIECE1::solve(double solveTime)
     Motion *approxsol = NULL;
     double  approxdif = std::numeric_limits<double>::infinity();
 
-    Control *rctrl = new Control(cdim);
-    std::vector<Grid::Coord> coords(si->getMaxControlDuration() + 1);
-    std::vector<base::State*> states(si->getMaxControlDuration() + 1);
+    Control *rctrl = m_siC->allocControl();
+    Grid::Coord origin;
+    std::vector<Grid::Coord> coords(m_siC->getMaxControlDuration() + 1);
+    std::vector<base::State*> states(m_siC->getMaxControlDuration() + 1);
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	states[i] = new base::State(sdim);
+	states[i] = m_si->allocState();
     
     // coordinates of the goal state and the best state seen so far
     Grid::Coord best_coord, better_coord;
@@ -92,7 +158,8 @@ bool ompl::dynamic::KPIECE1::solve(double solveTime)
     bool haveBetterCoord = false;
     if (goal_s)
     {
-	m_projectionEvaluator->computeCoordinates(goal_s->state, best_coord);
+	goal_s->sampleGoal(states[0]);
+	m_projectionEvaluator->computeCoordinates(states[0], best_coord);
 	haveBestCoord = true;
     }
     
@@ -121,93 +188,59 @@ bool ompl::dynamic::KPIECE1::solve(double solveTime)
 
 
 	/* sample a random control */
-	m_cCore().sample(rctrl);
-	unsigned int cd = m_cCore().sampleStepCount();
+	m_cCore->sample(rctrl);
 
-	unsigned int added = si->getMotionStates(existing->state, rctrl, cd, states, false);
-	assert(added == cd + 1);
-	
-	/* check the motion */
-	if (!si->checkStatesIncremental(states, added, &added))
-	{
-	    if (added >= 2)
-		cd = added - 2;
-	    else
-		cd = 0;
-	}
+	/* propagate */
+	unsigned int cd = m_cCore->sampleStepCount(m_siC->getMinControlDuration(), m_siC->getMaxControlDuration());
+	cd = m_siC->propagateWhileValid(existing->state, rctrl, cd, states, false);
 
 	/* if we have enough steps */
-	if (cd >= m_minValidPathStates)
+	if (cd >= m_siC->getMinControlDuration())
 	{
 
 	    // split the motion into smaller ones, so we do not cross cell boundaries
-	    for (unsigned int i = 0 ; i <= cd ; ++i)
+	    m_projectionEvaluator->computeCoordinates(existing->state, origin);
+	    for (unsigned int i = 0 ; i < cd ; ++i)
 		m_projectionEvaluator->computeCoordinates(states[i], coords[i]);
 	    
-	    unsigned int start = 0;
-	    unsigned int curr  = 1;
-	    while (curr < cd)
+	    unsigned int last = cd - 1;
+	    unsigned int index = 0;
+	    while (index < last)
 	    {
-		// we have reached into a new cell
-		if (coords[start] != coords[curr])
-		{		    
-		    /* create a motion */
-		    Motion *motion = new Motion(sdim, cdim);
-		    si->copyState(motion->state, states[curr - 1]);
-		    si->copyControl(motion->control, rctrl);
-		    motion->steps = curr - start;
-		    motion->parent = existing;
+		unsigned int nextIndex = findNextMotion(origin, coords, index, last);
+		Motion *motion = new Motion(m_siC);
+		m_si->copyState(motion->state, states[nextIndex]);
+		m_siC->copyControl(motion->control, rctrl);
+		motion->steps = nextIndex - index + 1;
+		motion->parent = existing;
 
-		    double dist = 0.0;
-		    bool solved = goal->isSatisfied(motion->state, &dist);
-		    addMotion(motion, dist);
-		    
-		    if (solved)
-		    {
-			approxdif = dist;
-			solution = motion;    
-			break;
-		    }
-		    if (dist < approxdif)
-		    {
-			approxdif = dist;
-			approxsol = motion;
-			better_coord = coords[start];
-			haveBetterCoord = true;
-		    }
-		    
-		    // new parent will be the newly created motion
-		    existing = motion;
-		    start = curr;
+		double dist = 0.0;
+		bool solved = goal->isSatisfied(motion->state, &dist);
+		addMotion(motion, dist);
+		
+		if (solved)
+		{
+		    approxdif = dist;
+		    solution = motion;    
+		    break;
 		}
-		curr++;		
+		if (dist < approxdif)
+		{
+		    approxdif = dist;
+		    approxsol = motion;
+		    better_coord = coords[nextIndex];
+		    haveBetterCoord = true;
+		}
+		
+		// new parent will be the newly created motion
+		existing = motion;
+		
+		origin = coords[nextIndex];
+		index = nextIndex;
 	    }
 	    
 	    if (solution)
 		break;
-
-	    /* create the last segment of the motion */
-	    Motion *motion = new Motion(sdim, cdim);
-	    si->copyState(motion->state, states[cd]);
-	    si->copyControl(motion->control, rctrl);
-	    motion->steps = cd - start;
-	    motion->parent = existing;
-	    
-	    double dist = 0.0;
-	    bool solved = goal->isSatisfied(motion->state, &dist);
-	    addMotion(motion, dist);
-	    
-	    if (solved)
-	    {
-		approxdif = dist;
-		solution = motion;    
-		break;
-	    }
-	    if (dist < approxdif)
-	    {
-		approxdif = dist;
-		approxsol = motion;
-	    }
 	    
 	    // update cell score 
 	    ecell->data->score *= m_goodScoreFactor;
@@ -236,39 +269,35 @@ bool ompl::dynamic::KPIECE1::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathDynamic *path = new PathDynamic(m_si);
+	PathControl *path = new PathControl(m_si);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
 	{   
-	    base::State *st = new base::State(sdim);
-	    si->copyState(st, mpath[i]->state);
-	    path->states.push_back(st);
+	    path->states.push_back(m_si->cloneState(mpath[i]->state));
 	    if (mpath[i]->parent)
 	    {
-		Control *ctrl = new Control(cdim);
-		si->copyControl(ctrl, mpath[i]->control);
-		path->controls.push_back(ctrl);
-		path->controlDurations.push_back(mpath[i]->steps * si->getResolution());
+		path->controls.push_back(m_siC->cloneControl(mpath[i]->control));
+		path->controlDurations.push_back(mpath[i]->steps * m_siC->getPropagationStepSize());
 	    }
 	}
 	
 	goal->setDifference(approxdif);
-	goal->setSolutionPath(path, approximate);
-
+	goal->setSolutionPath(base::PathPtr(path), approximate);
+	
 	if (approximate)
 	    m_msg.warn("Found approximate solution");
     }
 
-    delete rctrl;
+    m_siC->freeControl(rctrl);
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	delete states[i];
-
+	m_si->freeState(states[i]);
+    
     m_msg.inform("Created %u states in %u cells (%u internal + %u external)", m_tree.size, m_tree.grid.size(),
 		 m_tree.grid.countInternal(), m_tree.grid.countExternal());
     
     return goal->isAchieved();
 }
 
-bool ompl::dynamic::KPIECE1::selectMotion(Motion* &smotion, Grid::Cell* &scell)
+bool ompl::control::KPIECE1::selectMotion(Motion* &smotion, Grid::Cell* &scell)
 {
     scell = m_rng.uniform01() < std::max(m_selectBorderPercentage, m_tree.grid.fracExternal()) ?
 	m_tree.grid.topExternal() : m_tree.grid.topInternal();
@@ -282,7 +311,7 @@ bool ompl::dynamic::KPIECE1::selectMotion(Motion* &smotion, Grid::Cell* &scell)
 	return false;
 }
 
-unsigned int ompl::dynamic::KPIECE1::addMotion(Motion *motion, double dist)
+unsigned int ompl::control::KPIECE1::addMotion(Motion *motion, double dist)
 {
     Grid::Coord coord;
     m_projectionEvaluator->computeCoordinates(motion->state, coord);
@@ -310,14 +339,14 @@ unsigned int ompl::dynamic::KPIECE1::addMotion(Motion *motion, double dist)
     return created;
 }
 
-void ompl::dynamic::KPIECE1::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::control::KPIECE1::getPlannerData(base::PlannerData &data) const
 {
-    states.resize(0);
-    states.reserve(m_tree.size);
+    data.states.resize(0);
+    data.states.reserve(m_tree.size);
     
     std::vector<CellData*> cdata;
     m_tree.grid.getContent(cdata);
     for (unsigned int i = 0 ; i < cdata.size() ; ++i)
 	for (unsigned int j = 0 ; j < cdata[i]->motions.size() ; ++j)
-	    states.push_back(cdata[i]->motions[j]->state); 
+	    data.states.push_back(cdata[i]->motions[j]->state); 
 }
