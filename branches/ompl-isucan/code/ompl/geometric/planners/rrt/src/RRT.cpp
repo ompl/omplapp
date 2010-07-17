@@ -41,7 +41,7 @@
 void ompl::geometric::RRT::setup(void)
 {
     Planner::setup();
-    if (m_maxDistance < std::numeric_limits<double>::round_error())
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
     {
 	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
 	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);

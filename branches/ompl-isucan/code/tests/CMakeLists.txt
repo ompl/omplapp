@@ -36,7 +36,7 @@ if(BUILD_TESTS)
 
 	# Test kinematic motion planners on a 2D map
 #	add_ompl_test(test_2dmap_kinematic kinematic/2dmap/2dmap.cpp)
-	add_ompl_test(test_2dmap_kinematic_setup geometric/2dmap/2dmap_simple.cpp)
+	add_ompl_test(test_2dmap_geometric_simple geometric/2dmap/2dmap_simple.cpp)
 
 	# Test planning with controls on a 2D map
 	add_ompl_test(test_2dmap_control control/2dmap/2dmap.cpp)

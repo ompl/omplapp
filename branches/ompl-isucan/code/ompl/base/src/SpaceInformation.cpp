@@ -59,7 +59,7 @@ void ompl::base::SpaceInformation::setup(void)
     if (m_stateManifold->getDimension() <= 0)
 	throw Exception("The dimension of the state manifold we plan in must be > 0");
     
-    if (m_resolution < std::numeric_limits<double>::round_error())
+    if (m_resolution < std::numeric_limits<double>::epsilon())
     {
 	m_resolution = estimateExtent(10000) / 50.0;
 	m_msg.warn("The resolution at which states need to be checked for collision is detected to be %f", m_resolution);
@@ -75,7 +75,7 @@ bool ompl::base::SpaceInformation::isSetup(void) const
 
 double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
 {
-    if (m_maxExtent > std::numeric_limits<double>::round_error())
+    if (m_maxExtent > std::numeric_limits<double>::epsilon())
 	return m_maxExtent;
     
     if (samples < 2)

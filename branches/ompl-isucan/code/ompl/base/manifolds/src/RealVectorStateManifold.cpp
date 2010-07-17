@@ -94,8 +94,8 @@ bool ompl::base::RealVectorStateManifold::satisfiesBounds(const State *state) co
 {
     const RealVectorState *rstate = static_cast<const RealVectorState*>(state);    
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
-	if (rstate->values[i] - std::numeric_limits<double>::round_error() > m_bounds.high[i] ||
-	    rstate->values[i] + std::numeric_limits<double>::round_error() < m_bounds.low[i])
+	if (rstate->values[i] - std::numeric_limits<double>::epsilon() > m_bounds.high[i] ||
+	    rstate->values[i] + std::numeric_limits<double>::epsilon() < m_bounds.low[i])
 	    return false;
     return true;
 }
@@ -127,7 +127,7 @@ bool ompl::base::RealVectorStateManifold::equalStates(const State *state1, const
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
     {	 
 	double diff = (*s1++) - (*s2++);
-	if (fabs(diff) > std::numeric_limits<double>::round_error())
+	if (fabs(diff) > std::numeric_limits<double>::epsilon())
 	    return false;
     }
     return true;

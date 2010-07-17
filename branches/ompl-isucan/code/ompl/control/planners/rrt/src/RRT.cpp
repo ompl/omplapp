@@ -92,13 +92,12 @@ bool ompl::control::RRT::solve(double solveTime)
 	
 	/* find closest state in the tree */
 	Motion *nmotion = m_nn.nearest(rmotion);
-
+	
 	/* sample a random control */
 	m_cCore->sample(rctrl);
 	unsigned int cd = m_cCore->sampleStepCount(m_siC->getMinControlDuration(), m_siC->getMaxControlDuration());
-
 	cd = m_siC->propagateWhileValid(nmotion->state, rctrl, cd, xstate);
-	
+
 	if (cd >= m_siC->getMinControlDuration())
 	{
 	    /* create a motion */

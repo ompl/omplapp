@@ -49,7 +49,7 @@
 
 using namespace ompl;
 
-static const double SOLUTION_TIME = 1.0;
+static const double SOLUTION_TIME = 5.0;
 static const double MAX_VELOCITY = 3.0;
 
 /** Declare a class used in validating states. Such a class definition is needed for any use
@@ -72,7 +72,6 @@ public:
 	if (x < 0 || y < 0 || x >= m_w || y >= m_h)
 	    return false;
 
-	//	std::cout << x << " " << y << std::endl;
 	return m_grid[x][y] == 0; // 0 means valid state
     }
     
@@ -125,8 +124,6 @@ public:
 	result->as<base::RealVectorState>()->values[1] = state->as<base::RealVectorState>()->values[1] + duration * control->as<control::RealVectorControl>()->values[1];
 	result->as<base::RealVectorState>()->values[2] = control->as<control::RealVectorControl>()->values[0];
 	result->as<base::RealVectorState>()->values[3] = control->as<control::RealVectorControl>()->values[1];
-	m_stateManifold->printState(state, std::cout);
-	
 	m_stateManifold->enforceBounds(result);
 	return control::PROPAGATION_START_UNKNOWN;
     }
@@ -171,10 +168,9 @@ control::SpaceInformationPtr mySpaceInformation(Environment2D &env)
     
     control::SpaceInformationPtr si(new control::SpaceInformation(sManPtr, control::ControlManifoldPtr(cMan)));
     si->setMinMaxControlDuration(1, 5);
-    si->setPropagationStepSize(0.5);
+    si->setPropagationStepSize(0.25);
     
     si->setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(si.get(), env.grid)));
-    
     si->setup();
     
     return si;
@@ -213,7 +209,7 @@ public:
 	state->values[2] = 0.0;
 	state->values[3] = 0.0;
 	pdef->addStartState(state);
-	
+		
 	/* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
 	base::GoalState *goal = new base::GoalState(si);
 	base::ScopedState<base::RealVectorState> gstate(si);
@@ -224,7 +220,7 @@ public:
 	goal->setState(gstate);
 	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
 	pdef->setGoal(base::GoalPtr(goal));
-	
+
 	/* start counting time */
 	ompl::time::point startTime = ompl::time::now();
 	
@@ -238,6 +234,8 @@ public:
 		printf("Found solution in %f seconds!\n", ompl::time::seconds(elapsed));
 	    
 	    control::PathControl *path = static_cast<control::PathControl*>(goal->getSolutionPath().get());
+
+	    path->interpolate();
 	    
 	    elapsed = ompl::time::now() - startTime;
 	    
@@ -303,10 +301,10 @@ public:
 	double time   = 0.0;
 	double length = 0.0;
 	int    good   = 0;
-	int    N      = 1;
+	int    N      = 100;
 
 	for (int i = 0 ; i < N ; ++i)
-	    if (p->execute(env, true, &time, &length))
+	    if (p->execute(env, false, &time, &length))
 		good++;
 	
 	*success    = 100.0 * (double)good / (double)N;
@@ -362,8 +360,8 @@ TEST_F(PlanTest, controlRRT)
     delete p;
 
     EXPECT_TRUE(success >= 99.0);
-    EXPECT_TRUE(avgruntime < 0.05);
-    EXPECT_TRUE(avglength < 5.0);
+    EXPECT_TRUE(avgruntime < 0.5);
+    EXPECT_TRUE(avglength < 20.0);
 }
 
 int main(int argc, char **argv)

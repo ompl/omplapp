@@ -76,7 +76,7 @@ bool ompl::control::RealVectorControlManifold::equalControls(const Control *cont
     for (unsigned int i = 0 ; i < m_dimension ; ++i)
     {	 
 	double diff = (*s1++) - (*s2++);
-	if (fabs(diff) > std::numeric_limits<double>::round_error())
+	if (fabs(diff) > std::numeric_limits<double>::epsilon())
 	    return false;
     }
     return true;

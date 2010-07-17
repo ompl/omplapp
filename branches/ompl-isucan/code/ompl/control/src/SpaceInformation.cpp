@@ -57,7 +57,7 @@ void ompl::control::SpaceInformation::setup(void)
     if (m_controlManifold->getDimension() <= 0)
 	throw Exception("The dimension of the control manifold we plan in must be > 0");
     
-    if (m_stepSize < std::numeric_limits<double>::round_error())
+    if (m_stepSize < std::numeric_limits<double>::epsilon())
     {
 	m_stepSize = m_resolution;
 	m_msg.warn("The propagation step size is assumed to be the same as the state validity checking resolution: %f", m_stepSize);
@@ -106,18 +106,16 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
 		    std::swap(temp1, temp2);
 		else
 		{
-		    // the last valid state is temp1; make sure result contains that state
-		    if (temp1 != result)
-			copyState(result, temp1);
+		    // the last valid state is temp1;
 		    r = i;
 		    break;
 		}
 	    }
 	    
-	    // if we finished the for-loop without finding an invalid state, the last valid state is temp2
+	    // if we finished the for-loop without finding an invalid state, the last valid state is temp1
 	    // make sure result contains that information
-	    if (r == steps && result != temp2)
-		copyState(result, temp2);
+	    if (result != temp1)
+		copyState(result, temp1);
 	    
 	    // free the temporary memory
 	    freeState(toDelete);

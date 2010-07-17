@@ -72,6 +72,9 @@ namespace ompl
 	    /** \brief Print the path to a stream */
 	    virtual void print(std::ostream &out) const;
 	    
+	    /** \brief Make the path such that all controls are applied for a single time step (computes intermediate states) */
+	    void interpolate(void);
+	    
 	    /** \brief The list of states that make up the path */
 	    std::vector<base::State*>   states;
 

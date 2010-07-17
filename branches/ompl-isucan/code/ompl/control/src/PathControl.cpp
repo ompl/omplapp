@@ -37,6 +37,7 @@
 #include "ompl/control/PathControl.h"
 #include "ompl/util/Exception.h"
 #include <numeric>
+#include <cmath>
 
 ompl::control::PathControl::PathControl(const base::SpaceInformationPtr &si) : base::Path(si)
 {
@@ -67,6 +68,7 @@ double ompl::control::PathControl::length(void) const
 void ompl::control::PathControl::print(std::ostream &out) const
 {
     const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    double res = si->getPropagationStepSize();
     out << "Control path with " << states.size() << " states" << std::endl;
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
     {
@@ -74,11 +76,48 @@ void ompl::control::PathControl::print(std::ostream &out) const
 	m_si->printState(states[i], out);
 	out << "  apply control ";
 	si->printControl(controls[i], out);
-	out << "  for " << controlDurations[i] << " steps" << std::endl;
+	out << "  for " << (int)round(controlDurations[i]/res) << " steps" << std::endl;
     }
     out << "Arrive at state ";
     m_si->printState(states[controls.size()], out);
     out << std::endl;
+}
+
+void ompl::control::PathControl::interpolate(void) 
+{
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    std::vector<base::State*> newStates;
+    std::vector<Control*> newControls;
+    std::vector<double> newControlDurations;
+    
+    double res = si->getPropagationStepSize();
+    for (unsigned int  i = 0 ; i < controls.size() ; ++i)
+    {
+	int steps = (int)round(controlDurations[i] / res);
+	assert(steps >= 0);
+	if (steps == 0)
+	{
+	    newStates.push_back(states[i]);
+	    newControls.push_back(controls[i]);
+	    newControlDurations.push_back(controlDurations[i]);
+	    continue;
+	}
+	std::vector<base::State*> istates;
+	si->propagate(states[i], controls[i], steps, istates, false, true);
+	newStates.push_back(states[i]);
+	newStates.insert(newStates.end(), istates.begin(), istates.end());
+	newControls.push_back(controls[i]);
+	newControlDurations.push_back(res);
+	for (int j = 1 ; j < steps; ++j)
+	{
+	    newControls.push_back(si->cloneControl(controls[i]));
+	    newControlDurations.push_back(res);
+	}
+    }
+    newStates.push_back(states[controls.size()]);
+    states.swap(newStates);
+    controls.swap(newControls);
+    controlDurations.swap(newControlDurations);
 }
 
 bool ompl::control::PathControl::check(void) const
