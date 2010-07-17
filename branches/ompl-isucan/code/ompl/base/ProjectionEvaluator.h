@@ -89,6 +89,9 @@ namespace ompl
 		return m_cellDimensions;
 	    }
 	    
+	    /** \brief Check if cell dimensions match projection dimension */
+	    void checkCellDimensions(void) const;
+	    
 	    /** \brief Compute integer coordinates for a projection */
 	    void computeCoordinates(const EuclideanProjection *projection, ProjectionCoordinates &coord) const;
 	    

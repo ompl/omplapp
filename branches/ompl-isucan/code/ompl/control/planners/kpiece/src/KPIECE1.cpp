@@ -45,6 +45,7 @@ void ompl::control::KPIECE1::setup(void)
     Planner::setup();
     if (!m_projectionEvaluator)
 	throw Exception("No projection evaluator specified");
+    m_projectionEvaluator->checkCellDimensions();
     m_projectionDimension = m_projectionEvaluator->getDimension();
     if (m_projectionDimension <= 0)
 	throw Exception("Dimension of projection needs to be larger than 0");
@@ -186,10 +187,9 @@ bool ompl::control::KPIECE1::solve(double solveTime)
 	    selectMotion(existing, ecell);
 	assert(existing);
 
-
 	/* sample a random control */
 	m_cCore->sample(rctrl);
-
+	
 	/* propagate */
 	unsigned int cd = m_cCore->sampleStepCount(m_siC->getMinControlDuration(), m_siC->getMaxControlDuration());
 	cd = m_siC->propagateWhileValid(existing->state, rctrl, cd, states, false);
@@ -206,7 +206,7 @@ bool ompl::control::KPIECE1::solve(double solveTime)
 	    unsigned int last = cd - 1;
 	    unsigned int index = 0;
 	    while (index < last)
-	    {
+	    {		
 		unsigned int nextIndex = findNextMotion(origin, coords, index, last);
 		Motion *motion = new Motion(m_siC);
 		m_si->copyState(motion->state, states[nextIndex]);
@@ -236,7 +236,7 @@ bool ompl::control::KPIECE1::solve(double solveTime)
 		existing = motion;
 		
 		origin = coords[nextIndex];
-		index = nextIndex;
+		index = nextIndex + 1;
 	    }
 	    
 	    if (solution)

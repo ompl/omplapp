@@ -422,7 +422,7 @@ TEST_F(PlanTest, controlKPIECE)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.05);
-    EXPECT_TRUE(avglength < 5.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 int main(int argc, char **argv)
