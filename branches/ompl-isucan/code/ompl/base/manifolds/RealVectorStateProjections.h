@@ -32,12 +32,60 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/base/OrthogonalProjectionEvaluator.h"
+#ifndef OMPL_BASE_MANIFOLDS_REAL_VECTOR_STATE_PROJECTIONS_
+#define OMPL_BASE_MANIFOLDS_REAL_VECTOR_STATE_PROJECTIONS_
 
-void ompl::base::OrthogonalProjectionEvaluator::operator()(const State *state, double *projection) const
+#include "ompl/base/ProjectionEvaluator.h"
+#include "ompl/base/manifolds/RealVectorStateManifold.h"
+#include <valarray>
+
+namespace ompl
 {
-    for (unsigned int i = 0 ; i < m_components.size() ; ++i)
-	projection[i] = state->values[m_components[i]];
+    namespace base
+    {
+	
+        /** \brief Definition for a class computing linear projections */
+	class RealVectorLinearProjectionEvaluator : public ProjectionEvaluator
+	{
+	public:
+	    
+	    RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
+						const std::vector< std::valarray<double> > &projection);
+	    
+	    virtual unsigned int getDimension(void) const
+	    {
+		return m_projection.size();
+	    }
+	    
+	    virtual void project(const base::State *state, EuclideanProjection *projection) const;
+	    
+	protected:
+	    
+	    std::vector< std::valarray<double> > m_projection;
+	    
+	};
+
+	/** \brief Definition for a class computing orthogonal projections */
+	class RealVectorOrthogonalProjectionEvaluator : public ProjectionEvaluator
+	{
+	public:
+	    
+	    RealVectorOrthogonalProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions, const std::vector<unsigned int> &components);
+	    
+	    virtual unsigned int getDimension(void) const
+	    {
+		return m_components.size();
+	    }
+	    
+	    virtual void project(const base::State *state, double *projection) const;
+	    
+	protected:
+	    
+	    std::vector<unsigned int> m_components;
+	    
+	};	
+    }
 }
+#endif

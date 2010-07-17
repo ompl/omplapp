@@ -32,40 +32,40 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_LINEAR_PROJECTION_EVALUATOR_
-#define OMPL_BASE_LINEAR_PROJECTION_EVALUATOR_
+#include "ompl/base/manifolds/RealVectorStateProjections.h"
+#include "ompl/util/Exception.h"
 
-#include "ompl/base/ProjectionEvaluator.h"
-
-namespace ompl
+ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
+										     const std::vector< std::valarray<double> > &projection) : ProjectionEvaluator(manifold, cellDimensions), m_projection(projection)
 {
-    namespace base
+    if (!dynamic_cast<const RealVectorStateManifold*>(m_manifold.get()))
+	throw Exception("Expected real vector manifold for projection");
+}
+
+ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
+											     const std::vector<unsigned int> &components) : ProjectionEvaluator(manifold, cellDimensions), m_components(components)
+{
+    if (!dynamic_cast<const RealVectorStateManifold*>(m_manifold.get()))
+	throw Exception("Expected real vector manifold for projection");
+}
+
+void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
+{
+    for (unsigned int i = 0 ; i < m_projection.size() ; ++i)
     {
-	
-        /** \brief Definition for a class computing linear projections */
-	class LinearProjectionEvaluator : public ProjectionEvaluator
-	{
-	public:
-	    
-	    LinearProjectionEvaluator(const SpaceInformation *si, const std::vector< std::valarray<double> > &projection) : ProjectionEvaluator(si)
-	    {
-		m_projection = projection;
-	    }
-	    
-	    virtual unsigned int getDimension(void) const
-	    {
-		return m_projection.size();
-	    }
-	    
-	    virtual void operator()(const base::State *state, double *projection) const;
-	    
-	protected:
-	    
-	    std::vector< std::valarray<double> > m_projection;
-	    
-	};	
+	const std::valarray<double> &vec = m_projection[i];
+	const unsigned int dim = vec.size();
+	double *pos = projection + i;
+	*pos = 0.0;
+	for (unsigned int j = 0 ; j < dim ; ++j)
+	    *pos += state->as<RealVectorState>()->values[j] * vec[j];
     }
 }
-#endif
+
+void ompl::base::RealVectorOrthogonalProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
+{
+    for (unsigned int i = 0 ; i < m_components.size() ; ++i)
+	projection[i] = state->as<RealVectorState>()->values[m_components[i]];
+}
