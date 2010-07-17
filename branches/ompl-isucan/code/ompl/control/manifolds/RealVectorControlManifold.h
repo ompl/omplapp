@@ -34,25 +34,24 @@
 
 /** \author Ioan Sucan */
 
-#ifndef OMPL_BASE_MANIFOLDS_REAL_VECTOR_STATE_MANIFOLD_
-#define OMPL_BASE_MANIFOLDS_REAL_VECTOR_STATE_MANIFOLD_
+#ifndef OMPL_CONTROL_MANIFOLDS_REAL_VECTOR_CONTROL_MANIFOLD_
+#define OMPL_CONTROL_MANIFOLDS_REAL_VECTOR_CONTROL_MANIFOLD_
 
-#include "ompl/base/StateManifold.h"
+#include "ompl/base/ControlManifold.h"
 #include <vector>
 
 namespace ompl
 {
-    namespace base
+    namespace control
     {
 	
-	/** \brief The definition of a state in R^n */
-	class RealVectorState : public State
+	/** \brief The definition of a control in R^n */
+	class RealVectorControl : public Control
 	{
 	public:
 	    double *values;
 	};
 	
-	/** \brief The lower and upper bounds for an R^n manifold */
 	class RealVectorBounds
 	{
 	public:
@@ -67,32 +66,30 @@ namespace ompl
 	};
 	
 	/** \brief Uniform sampler for the R^n manifold */
-	class RealVectorStateUniformSampler : public StateSampler
+	class RealVectorControlUniformSampler : public ControlSampler
 	{
 	public:
 	    
-	    RealVectorStateUniformSampler(const StateManifold *manifold) : StateSampler(manifold)
+	    RealVectorControlUniformSampler(const ControlManifold *manifold) : ControlSampler(manifold)
 	    {
 	    }
 	    
-	    virtual void sample(State *state);
-	    virtual void sampleNear(State *state, const State *near, const double distance);
-	    
+	    virtual void sample(Control *control);	    
 	};
 	
 	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
-	class RealVectorStateManifold : public StateManifold
+	class RealVectorControlManifold : public ControlManifold
 	{
 	public:
 
-	    /** \brief Define the type of state allocated by this manifold */
-	    typedef RealVectorState StateType;
+	    /** \brief Define the type of control allocated by this manifold */
+	    typedef RealVectorControl ControlType;
 
-	    RealVectorStateManifold(unsigned int dim) : StateManifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double)), m_bounds(dim)
+	    RealVectorControlManifold(const base::StateManifoldPtr &stateManifold, unsigned int dim) : ControlManifold(stateManifold), m_dimension(dim), m_controlBytes(dim * sizeof(double)), m_bounds(dim)
 	    {
 	    }
 	    
-	    virtual ~RealVectorStateManifold(void)
+	    virtual ~RealVectorControlManifold(void)
 	    {	
 	    }
 	    
@@ -106,37 +103,26 @@ namespace ompl
 	    /** \brief Get the dimension of the space */
 	    virtual unsigned int getDimension(void) const;
 	    
-	    /** \brief Bring the state within the bounds of the state space */
-	    virtual void enforceBounds(State *state) const;
-	    	    
-	    /** \brief Check if a state is inside the bounding box */
-	    virtual bool satisfiesBounds(const State *state) const;
+	    /** \brief Copy a control to another */
+	    virtual void copyControl(Control *destination, const Control *source) const;
 	    
-	    /** \brief Copy a state to another */
-	    virtual void copyState(State *destination, const State *source) const;
-	    
-	    /** \brief Computes distance to between two states */
-	    virtual double distance(const State *state1, const State *state2) const;
-	    
-	    /** \brief Checks whether two states are equal */
-	    virtual bool equalStates(const State *state1, const State *state2) const;
+	    /** \brief Checks whether two controls are equal */
+	    virtual bool equalControls(const Control *control1, const Control *control2) const;
 
-	    /** \brief Computes the state that lies at time t \in [0, 1] on the
-		segment that connects the current state to the
-		destination state */
-	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const;
-
-	    /** \brief Allocate an instance of a uniform state sampler for this space */
-	    virtual StateSamplerPtr allocUniformStateSampler(void) const;
+	    /** \brief Allocate an instance of a uniform control sampler for this space */
+	    virtual ControlSamplerPtr allocControlSampler(void) const;
 	    
-	    /** \brief Allocate a state that can store a point in the described space */
-	    virtual State* allocState(void) const;
+	    /** \brief Allocate a control that can store a point in the described space */
+	    virtual Control* allocControl(void) const;
 	    
-	    /** \brief Free the memory of the allocated state */
-	    virtual void freeState(State *state) const;
+	    /** \brief Free the memory of the allocated control */
+	    virtual void freeControl(Control *control) const;
 
-	    /** \brief Print a state to screen */
-	    virtual void printState(const State *state, std::ostream &out) const;
+	    /** \brief Make the control have no effect if it were to be applied to a state for any amount of time. */
+	    virtual void nullControl(Control *control) const;
+	    
+	    /** \brief Print a control to screen */
+	    virtual void printControl(const Control *control, std::ostream &out) const;
 	    
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
@@ -144,8 +130,7 @@ namespace ompl
 	protected:
 	    
 	    unsigned int     m_dimension;
-	    std::size_t      m_stateBytes;
-	    RealVectorBounds m_bounds;
+	    std::size_t      m_controlBytes;
 
 	};
     }

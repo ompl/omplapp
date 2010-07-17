@@ -159,10 +159,12 @@ namespace ompl
 		\param result the state at the end of the propagation
 		\param stopBeforeInvalid if this is true, every state is checked for validity. If an invalid state is found, propagation is stopped and result is filled with the last valid state. It is assumed that the starting state is valid if stopBeforeInvalid is true
 		The function returns the number of propagation steps it performed. If stopBeforeInvalid is false, this is always equal to steps. Otherwise, the return value may be less.*/
-	    unsigned int propagate(const base::State *state, const Control* control, unsigned int steps, base::State *result, bool stopBeforeInvalid) const;
+	    void propagate(const base::State *state, const Control* control, unsigned int steps, base::State *result) const;
+	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, base::State *result) const;
 	    
 	    /** \brief Same as above except that all intermediate states are returned (and optionally, memory for them is allocated) */
-	    unsigned int propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool stopBeforeInvalid, bool includeStart, bool alloc) const;	    
+	    void propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool includeStart, bool alloc) const;
+	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool includeStart, bool alloc) const;
 	    
 	    /** \brief Print information about the current instance of the state space */
 	    virtual void printSettings(std::ostream &out = std::cout) const;
