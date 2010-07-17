@@ -57,7 +57,7 @@ void ompl::base::SpaceInformation::setup(void)
 	throw Exception("State validity checker not set!");
     
     if (m_stateManifold->getDimension() <= 0)
-	throw Exception("The dimension of the manifold we plan in must be > 0");
+	throw Exception("The dimension of the state manifold we plan in must be > 0");
     
     if (m_resolution < std::numeric_limits<double>::round_error())
     {

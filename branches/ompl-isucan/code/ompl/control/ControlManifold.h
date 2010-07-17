@@ -131,7 +131,7 @@ namespace ompl
 		state is valid, the return value of the function is PROPAGATION_START_VALID. If the state is not valid,
 		the return value is PROPAGATION_START_INVALID. If no such check is performed, the return value is
 		PROPAGATION_START_UNKNOWN. Returning PROPAGATION_START_UNKNOWN always leads to a correct
-		implementation but may not be the most efficient one. */
+		implementation but may not be the most efficient one. The pointer to the starting state and the result state may be the same. */
 	    virtual PropagationResult propagate(const base::State *state, const Control* control, const double duration, base::State *result) const = 0;
 	    
 	    /** \brief Print a control to a stream */
