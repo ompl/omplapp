@@ -66,7 +66,8 @@ void ompl::base::CompoundStateManifold::addSubManifold(const StateManifoldPtr &c
 {
     if (m_locked)
 	throw Exception("This manifold is locked. No further components can be added");
-    
+    if (weight < 0.0)
+	throw Exception("Submanifold weight cannot be negative");    
     m_components.push_back(component);
     m_weights.push_back(weight);
     m_componentCount = m_components.size();
@@ -89,6 +90,16 @@ double ompl::base::CompoundStateManifold::getSubManifoldWeight(const unsigned in
 {
     if (m_componentCount > index)
 	return m_weights[index];
+    else
+	throw Exception("Submanifold index does not exist");
+}
+
+void ompl::base::CompoundStateManifold::setSubManifoldWeight(const unsigned int index, double weight)
+{
+    if (weight < 0.0)
+	throw Exception("Submanifold weight cannot be negative");
+    if (m_componentCount > index)
+	m_weights[index] = weight;
     else
 	throw Exception("Submanifold index does not exist");
 }

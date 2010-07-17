@@ -181,6 +181,9 @@ namespace ompl
 	    
 	    /** \brief Get a specific manifold's weight from the compound manifold (used in distance computation) */
 	    double getSubManifoldWeight(const unsigned int index) const;
+
+	    /** \brief Set a specific manifold's weight in the compound manifold (used in distance computation) */
+	    void setSubManifoldWeight(const unsigned int index, double weight);
 	    
 	    virtual unsigned int getDimension(void) const;
 
