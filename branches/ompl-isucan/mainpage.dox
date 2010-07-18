@@ -13,22 +13,12 @@
    constraints.
 
    The overall structure can be observed by looking at the @b base/
-   directory. There are two main components: 
-   - the space information
-      - state validity checker
-      - state distance evaluator
-      - state sampler
-      - start states
-      - goal specification
-   - the planner
+   directory. There are four main components: 
+   - the state manifold (ompl::base::StateManifold) we are planning in, and a control manifold (ompl::control::ControlManifold), if planning with controls
+   - the space information (ompl::base::SpaceInformation), which is contructed from the state manifold (and the control manifold, if planning with controls - ompl::control::SpaceInformation)
+   - the problem definition (ompl::base::ProblemDefinition)
+   - the planner (ompl::base::Planner)
 
-   The base space information class (ompl::base::SpaceInformation)
-   contains only basic definitions of states, paths and goals. It also
-   has pointers to instances of classes used for distance evaluation,
-   state validation and sampling. This class is not meant to be used
-   directly. Specializations such as
-   ompl::geometric::SpaceInformationGeometric are intended for the
-   user.
 
    <hr> 
 
@@ -79,8 +69,8 @@
 
    Creating an actual instance of a space information class
    (ompl::base::SpaceInformation) is trivial as the constructor
-   requires no parameters. However, this class needs to be configured
-   before use:
+   requires only a state manifold to be specified. However, this class
+   needs to be configured before use:
 
      - a std::vector < ompl::base::StateComponent > must be supplied to
        the space information class by calling @b
@@ -149,11 +139,12 @@
 
    @code
 
-   #include <ompl/geometric/SpaceInformationGeometric.h>
+   #include <ompl/base/SpaceInformation.h>
    #include <ompl/geometric/planners/rrt/RRT.h>
    #include <ompl/base/GoalState.h>
+   #include <ompl/base/manifolds/RealVectorStateManifold.h>
 
-   #include <ompl/geometric/PathSmootherGeometric.h>
+   #include <ompl/geometric/PathSimplifier.h>
 
    ...
 
@@ -164,95 +155,53 @@
       {
       }
       
-      virtual bool operator()(const ompl::base::State *state) const
+      virtual bool isValid(const ompl::base::State *state) const
       {
             // provide implementation here
       }
    };
 
-   ompl::base::StateSampler* myAllocStateSampler(const ompl::base::SpaceInformation *si)
-   {
-	return new ompl::base::UniformStateSampler(si);
-   }
-
    ...
 
-   ompl::geometric::SpaceInformationGeometric *si = new ompl::geometric::SpaceInformationGeometric();
+   ompl::base::StateManifoldPtr manifold(new ompl::base::RealVectorStateManifold(2));
+   // set bounds for manifold 
+
+   ompl::base::SpaceInformationPtr si(new ompl::base::SpaceInformation(manifold));
    
-   std::vector<ompl::base::StateComponent> stateSpec;
-   // fill stateSpec
-   si->setStateComponents(stateSpec);
-   
-   ompl::base::State *start = new ompl::base::State(stateSpec.size()); // the state needs to have the correct dimension
+   ompl::base::ProblemDefinitionPtr pdef(new ompl::base::ProblemDefinition(si));
+
+   ompl::base::ScopedState<ompl::base::RealVectorStateManifold::StateType> start;
    // fill start state
 
-   si->addStartState(state); // memory for state will not be freed unless we call clearStartStates()
+   pdef->addStartState(start); 
 
-
-   ompl::base::GoalState *gs = new ompl::base::GoalState(si);
+   ompl::base::GoalPtr gs(new ompl::base::GoalState(si));
    // fill goal
 
-   si->setGoal(gs);
+   pdef->setGoal(gs);
 
-   myStateValidityChecker *svc = new myStateValidityChecker(si);
+   ompl::base::StateValidityCheckerPtr svc(new myStateValidityChecker(si));
    si->setStateValidityChecker(svc);
-
-   // this is only to show the API. The default is assumed anyway, we don't need to set it
-   ompl::base::StateDistanceEvaluator *sde = new ompl::base::L2SquareStateDistanceEvaluator(si);
-   si->setStateDistanceEvaluator(sde);
-
-   // this is only to show the API. The default is assumed anyway, we don't need to set it
-   si->setStateSamplerAllocator(boost::bind(myAllocStateSampler, _1));
-
-   // this is only to show the API. The default is assumed anyway, we don't need to set it
-   ompl::geometric::StateInterpolatorGeometric *sik = new ompl::geometric::LinearStateInterpolatorGeometric(si);
-   si->setStateInterpolator(sik);
-
 
    si->setup();
 
-   ompl::base::Planner *p = new ompl::geometric::RRT(si);
+   ompl::base::PlannerPtr p(new ompl::geometric::RRT(si));
    p->setup();
+
+   p->setProblemDefinition(pdef);
    p->solve(0.5);
    
-   // the goal contains a pointer to an abstract path, but we know it is actually a geometric one
-   // since we used a geometric planner
-   ompl::geometric::PathGeometric *solution = static_cast<ompl::geometric::PathGeometric*>(si->getGoal()->getSolutionPath());
+   ompl::geometric::PathGeometric *solution = static_cast<ompl::geometric::PathGeometric*>(si->getGoal()->getSolutionPath().get());
    
 
-   // make the goal region forget about the solution it found; if
-   // we don't, the memory associated to the solution path will be
-   // deleted when the goal instance is deleted
-   gs->forgetSolutionPath();
-
    // create an instance if a geometric smoother 
-   ompl::geometric::PathSmootherGeometric *smoother = new ompl::geometric::PathSmootherGeometric(si);
-   smoother->smoothMax(solution); // the smoothing is done in place
+   ompl::geometric::PathSimplifierPtr sm(new ompl::geometric::PathSimplifier(si));
+   sm->simplifyMax(*solution); // this is done in place
    
    // output solution somehow 
    ...
 
-   // clear memory for the solution path
-   delete solution;
-
-   // free memory for the smoother
-   delete smoother;
-
-   // frees start states; not done by default
-   si->clearStartStates();
-
-   // frees memory for the goal; not done by default
-   // since forgetSolutionPath() was called, this does not free the solution path
-   si->clearGoal();
-
-   // delete state validity checker; space information does not take ownership of this
-   delete svc;
-
-   // delete state interpolator; space information does not take ownership of this
-   delete sik;
-   
-   // delete space information; all memory is freed now
-   delete si;
+   // all memory automatically deleted by smart pointers
 
    @endcode
 
