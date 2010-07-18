@@ -32,28 +32,26 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_SBL_pSBL_
-#define OMPL_KINEMATIC_PLANNERS_SBL_pSBL_
+#ifndef OMPL_GEOMETRIC_PLANNERS_SBL_pSBL_
+#define OMPL_GEOMETRIC_PLANNERS_SBL_pSBL_
 
-#include "ompl/base/Planner.h"
+#include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/base/ProjectionEvaluator.h"
 #include "ompl/base/StateSamplerArray.h"
 #include "ompl/datastructures/Grid.h"
-#include "ompl/kinematic/SpaceInformationKinematic.h"
 #include <boost/thread/mutex.hpp>
 #include <vector>
-
 
 namespace ompl
 {
 
-    namespace kinematic
+    namespace geometric
     {
 	
 	/**
-	   @anchor kpSBL
+	   @anchor gpSBL
 	   
 	   @par Short description
 	   
@@ -89,14 +87,12 @@ namespace ompl
 	{
 	public:
 	    
-	    pSBL(SpaceInformationKinematic *si) : base::Planner(si),
-		                                  m_sCoreArray(si)
+	    pSBL(const base::SpaceInformationPtr &si) : base::Planner(si),
+							m_sCoreArray(si)
 	    {
 		m_type = base::PLAN_TO_GOAL_STATE;
 		m_msg.setPrefix("pSBL");
-		m_projectionEvaluator = NULL;
-		m_projectionDimension = 0;
-		m_rho = 0.5;
+		m_maxDistance = 0.0;
 		m_addedStartStates = 0;
 		setThreadCount(2);
 	    }
@@ -112,13 +108,13 @@ namespace ompl
 		given state. The simplest option is to use an
 		orthogonal projection; see
 		OrthogonalProjectionEvaluator */
-	    void setProjectionEvaluator(base::ProjectionEvaluator *projectionEvaluator)
+	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
 		m_projectionEvaluator = projectionEvaluator;
 	    }
 	    
 	    /** \brief Get the projection evaluator. */
-	    base::ProjectionEvaluator* getProjectionEvaluator(void) const
+	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
 		return m_projectionEvaluator;
 	    }
@@ -126,22 +122,17 @@ namespace ompl
 	    /** \brief Set the range the planner is supposed to use.
 
 		This parameter greatly influences the runtime of the
-		algorithm. It is probably a good idea to find what a
-		good value is for each model the planner is used
-		for. The basic idea of SBL is that it samples a random
-		state around a state that was already added to the
-		tree. The distance withing which this new state is
-		sampled is controled by the range. This should be a
-		value larger than 0.0 and less than 1.0 */
-	    void setRange(double rho)
+		algorithm. It represents the maximum length of a
+		motion to be added in the tree of motions. */
+	    void setRange(double distance)
 	    {
-		m_rho = rho;
+		m_maxDistance = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_rho;
+		return m_maxDistance;
 	    }
 
 	    /** \brief Set the number of threads the planner should use. Default is 2. */
@@ -153,36 +144,13 @@ namespace ompl
 		return m_threadCount;
 	    }
 	    	   
-	    virtual void setup(void)
-	    {
-		assert(m_projectionEvaluator);
-		m_projectionDimension = m_projectionEvaluator->getDimension();
-		assert(m_projectionDimension > 0);
-		m_projectionEvaluator->getCellDimensions(m_cellDimensions);
-		assert(m_cellDimensions.size() == m_projectionDimension);
-		m_tStart.grid.setDimension(m_projectionDimension);
-		m_tGoal.grid.setDimension(m_projectionDimension);
-		Planner::setup();
-	    }
+	    virtual void setup(void);
 	    
 	    virtual bool solve(double solveTime);
 	    
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		
-		m_tStart.grid.clear();
-		m_tStart.size = 0;
-		
-		m_tGoal.grid.clear();
-		m_tGoal.size = 0;
-		
-		m_removeList.motions.clear();
-		
-		m_addedStartStates = 0;
-	    }
+	    virtual void clear(void);
 
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void getPlannerData(base::PlannerData &data) const;
 	    
 	protected:
 	    
@@ -197,14 +165,12 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int dimension) : root(NULL), state(new base::State(dimension)), parent(NULL), valid(false)
+		Motion(const base::SpaceInformationPtr &si) : root(NULL), state(si->allocState()), parent(NULL), valid(false)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
 		}
 		
 		const base::State *root;
@@ -253,12 +219,7 @@ namespace ompl
 		freeGridMotions(m_tGoal.grid);
 	    }
 	    
-	    void freeGridMotions(Grid<MotionSet> &grid)
-	    {
-		for (Grid<MotionSet>::iterator it = grid.begin(); it != grid.end() ; ++it)
-		    for (unsigned int i = 0 ; i < it->second->data.size() ; ++i)
-			delete it->second->data[i];
-	    }
+	    void freeGridMotions(Grid<MotionSet> &grid);
 	    
 	    void addMotion(TreeData &tree, Motion *motion);
 	    Motion* selectMotion(RNG &rng, TreeData &tree);	
@@ -268,9 +229,7 @@ namespace ompl
 	    
 	    
 	    base::StateSamplerArray                    m_sCoreArray;
-	    base::ProjectionEvaluator                 *m_projectionEvaluator;
-	    unsigned int                               m_projectionDimension;
-	    std::vector<double>                        m_cellDimensions;
+	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
 	    
 	    TreeData                                   m_tStart;
 	    TreeData                                   m_tGoal;
@@ -282,7 +241,7 @@ namespace ompl
 	    boost::mutex                               m_loopLockCounter;
 	    unsigned int                               m_loopCounter;
 	    
-	    double                                     m_rho;	
+	    double                                     m_maxDistance;	
 
 	    unsigned int                               m_threadCount;
 	};

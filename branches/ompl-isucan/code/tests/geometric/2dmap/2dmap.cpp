@@ -49,7 +49,7 @@
 #include "ompl/geometric/planners/sbl/SBL.h"
 #include "ompl/geometric/planners/rrt/RRT.h"
 #include "ompl/geometric/planners/rrt/RRTConnect.h"
-//#include "ompl/geometric/planners/sbl/pSBL.h"
+#include "ompl/geometric/planners/sbl/pSBL.h"
 #include "ompl/geometric/planners/rrt/pRRT.h"
 #include "ompl/geometric/planners/rrt/LazyRRT.h"
 #include "ompl/geometric/planners/est/EST.h"
@@ -326,53 +326,34 @@ protected:
     }    
 };
 
-/*
+
 class pSBLTest : public TestPlanner 
 {
-public:
-    pSBLTest(void)
-    {
-	ope = NULL;
-    }
-
-    virtual bool execute(Environment2D &env, bool show = false, double *time = NULL, double *pathLength = NULL)
-    {
-	bool result = TestPlanner::execute(env, show, time, pathLength);	
-	if (ope)
-	{
-	    delete ope;	
-	    ope = NULL;
-	}
-	return result;
-    }
     
 protected:
     
-    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
     {
 	geometric::pSBL *sbl = new geometric::pSBL(si);
-	sbl->setRange(0.95);
+	sbl->setRange(10.0);
 	sbl->setThreadCount(4);
 	
 	std::vector<unsigned int> projection;
 	projection.push_back(0);
 	projection.push_back(1);
-	ope = new base::OrthogonalProjectionEvaluator(si, projection);
-	
+
 	std::vector<double> cdim;
 	cdim.push_back(1);
 	cdim.push_back(1);
-	ope->setCellDimensions(cdim);
 	
-	sbl->setProjectionEvaluator(ope);
+	sbl->setProjectionEvaluator(base::ProjectionEvaluatorPtr(new base::RealVectorOrthogonalProjectionEvaluator(si->getStateManifold(), cdim, projection)));
 
-	return sbl;
+	return base::PlannerPtr(sbl);
     }
-    
-    base::OrthogonalProjectionEvaluator *ope;
     
 };
 
+/*
 class KPIECE1Test : public TestPlanner 
 {
 public:
@@ -606,7 +587,7 @@ TEST_F(PlanTest, geometric_SBL)
     EXPECT_TRUE(avglength < 100.0);
 }
 
-/*
+
 TEST_F(PlanTest, geometric_pSBL)
 {
     double success    = 0.0;
@@ -619,9 +600,10 @@ TEST_F(PlanTest, geometric_pSBL)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.2);
-    EXPECT_TRUE(avglength < 65.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
+/*
 TEST_F(PlanTest, geometric_KPIECE1)
 {
     double success    = 0.0;

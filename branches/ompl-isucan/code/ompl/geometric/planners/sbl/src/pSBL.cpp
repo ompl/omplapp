@@ -32,25 +32,64 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/sbl/pSBL.h"
+#include "ompl/geometric/planners/sbl/pSBL.h"
 #include "ompl/base/GoalState.h"
 #include <boost/thread.hpp>
+#include <limits>
+#include <cassert>
 
-void ompl::kinematic::pSBL::threadSolve(unsigned int tid, time::point endTime, SolutionInfo *sol)
+void ompl::geometric::pSBL::setup(void)
+{
+    Planner::setup();
+    if (!m_projectionEvaluator)
+	throw Exception("No projection evaluator specified");
+    m_projectionEvaluator->checkCellDimensions();
+    if (m_projectionEvaluator->getDimension() <= 0)
+	throw Exception("Dimension of projection needs to be larger than 0");
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
+    m_tStart.grid.setDimension(m_projectionEvaluator->getDimension());
+    m_tGoal.grid.setDimension(m_projectionEvaluator->getDimension());
+}
+
+void ompl::geometric::pSBL::clear(void)
+{
+    freeMemory();
+    
+    m_tStart.grid.clear();
+    m_tStart.size = 0;
+    
+    m_tGoal.grid.clear();
+    m_tGoal.size = 0;
+    
+    m_removeList.motions.clear();
+    
+    m_addedStartStates = 0;
+}
+
+void ompl::geometric::pSBL::freeGridMotions(Grid<MotionSet> &grid)
+{
+    for (Grid<MotionSet>::iterator it = grid.begin(); it != grid.end() ; ++it)
+	for (unsigned int i = 0 ; i < it->second->data.size() ; ++i)
+	{
+	    if (it->second->data[i]->state)
+		m_si->freeState(it->second->data[i]->state);
+	    delete it->second->data[i];
+	}
+}
+
+void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, SolutionInfo *sol)
 {   
-    SpaceInformationKinematic *si   = dynamic_cast<SpaceInformationKinematic*>(m_si); 
-    base::GoalState           *goal = dynamic_cast<base::GoalState*>(m_pdef->getGoal());
-    unsigned int               dim  = si->getStateDimension();
+    base::GoalState *goal = static_cast<base::GoalState*>(m_pdef->getGoal().get());
     
     std::vector<Motion*> solution;
-    base::State *xstate = new base::State(dim);
+    base::State *xstate = m_si->allocState();
     bool      startTree = m_sCoreArray[tid]->getRNG().uniformBool();
-    
-    std::vector<double> range(dim);
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	range[i] = m_rho * (si->getStateComponent(i).maxValue - si->getStateComponent(i).minValue);
     
     while (!sol->found && time::now() < endTime)
     {
@@ -91,11 +130,11 @@ void ompl::kinematic::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	TreeData &otherTree = startTree ? m_tStart : m_tGoal;
 	
 	Motion *existing = selectMotion(m_sCoreArray[tid]->getRNG(), tree);
-	m_sCoreArray[tid]->sampleNear(xstate, existing->state, range);
+	m_sCoreArray[tid]->sampleNear(xstate, existing->state, m_maxDistance);
 	
 	/* create a motion */
-	Motion *motion = new Motion(dim);
-	si->copyState(motion->state, xstate);
+	Motion *motion = new Motion(m_si);
+	m_si->copyState(motion->state, xstate);
 	motion->parent = existing;
 	motion->root = existing->root;
 	
@@ -111,15 +150,11 @@ void ompl::kinematic::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	    if (!sol->found)
 	    {
 		sol->found = true;
-		PathKinematic *path = new PathKinematic(m_si);
+		PathGeometric *path = new PathGeometric(m_si);
 		for (unsigned int i = 0 ; i < solution.size() ; ++i)
-		{
-		    base::State *st = new base::State(dim);
-		    si->copyState(st, solution[i]->state);
-		    path->states.push_back(st);
-		}
+		    path->states.push_back(m_si->cloneState(solution[i]->state));
 		goal->setDifference(0.0);
-		goal->setSolutionPath(path);
+		goal->setSolutionPath(base::PathPtr(path));
 	    }
 	    sol->lock.unlock();
 	}
@@ -132,15 +167,12 @@ void ompl::kinematic::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	m_loopLockCounter.unlock();
     }
     
-    delete xstate;
-    
+    m_si->freeState(xstate);    
 }
 
-bool ompl::kinematic::pSBL::solve(double solveTime)
+bool ompl::geometric::pSBL::solve(double solveTime)
 {
-    SpaceInformationKinematic *si   = dynamic_cast<SpaceInformationKinematic*>(m_si); 
-    base::GoalState           *goal = dynamic_cast<base::GoalState*>(m_pdef->getGoal());
-    unsigned int               dim  = si->getStateDimension();
+    base::GoalState *goal = dynamic_cast<base::GoalState*>(m_pdef->getGoal().get());
     
     if (!goal)
     {
@@ -153,10 +185,10 @@ bool ompl::kinematic::pSBL::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, st);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, st);
 	    motion->valid = true;
 	    motion->root = st;
 	    addMotion(m_tStart, motion);
@@ -167,19 +199,16 @@ bool ompl::kinematic::pSBL::solve(double solveTime)
     
     if (m_tGoal.size == 0)
     {	   
-	Motion *motion = new Motion(dim);
-	si->copyState(motion->state, goal->state);
-	if (si->satisfiesBounds(motion->state) && si->isValid(motion->state))
+	if (m_si->satisfiesBounds(goal->state) && m_si->isValid(goal->state))
 	{
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, goal->state);
 	    motion->valid = true;
 	    motion->root = goal->state;
 	    addMotion(m_tGoal, motion);
 	}
 	else
-	{
 	    m_msg.error("Goal state is invalid!");
-	    delete motion;
-	}
     }
     
     if (m_tStart.size == 0 || m_tGoal.size == 0)
@@ -209,7 +238,7 @@ bool ompl::kinematic::pSBL::solve(double solveTime)
     return goal->isAchieved();
 }
 
-bool ompl::kinematic::pSBL::checkSolution(RNG &rng, bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution)
+bool ompl::geometric::pSBL::checkSolution(RNG &rng, bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution)
 {
     Grid<MotionSet>::Coord coord;
     m_projectionEvaluator->computeCoordinates(motion->state, coord);
@@ -219,15 +248,14 @@ bool ompl::kinematic::pSBL::checkSolution(RNG &rng, bool start, TreeData &tree, 
     
     if (cell && !cell->data.empty())
     {
-	Motion *connectOther          = cell->data[rng.uniformInt(0, cell->data.size() - 1)];
+	Motion *connectOther = cell->data[rng.uniformInt(0, cell->data.size() - 1)];
 	otherTree.lock.unlock();    
 	
 	if (m_pdef->getGoal()->isStartGoalPairValid(start ? motion->root : connectOther->root, start ? connectOther->root : motion->root))
 	{
-	    SpaceInformationKinematic *si = static_cast<SpaceInformationKinematic*>(m_si);
-	    Motion *connect               = new Motion(si->getStateDimension());
+	    Motion *connect = new Motion(m_si);
 	    
-	    si->copyState(connect->state, connectOther->state);
+	    m_si->copyState(connect->state, connectOther->state);
 	    connect->parent = motion;
 	    connect->root = motion->root;
 	    
@@ -272,10 +300,9 @@ bool ompl::kinematic::pSBL::checkSolution(RNG &rng, bool start, TreeData &tree, 
     return false;
 }
 
-bool ompl::kinematic::pSBL::isPathValid(TreeData &tree, Motion *motion)
+bool ompl::geometric::pSBL::isPathValid(TreeData &tree, Motion *motion)
 {
-    std::vector<Motion*>       mpath;
-    SpaceInformationKinematic *si = static_cast<SpaceInformationKinematic*>(m_si);
+    std::vector<Motion*> mpath;
     
     /* construct the solution path */
     while (motion != NULL)
@@ -292,7 +319,7 @@ bool ompl::kinematic::pSBL::isPathValid(TreeData &tree, Motion *motion)
 	mpath[i]->lock.lock();
 	if (!mpath[i]->valid)
 	{
-	    if (si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
+	    if (m_si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
 		mpath[i]->valid = true;
 	    else
 	    {
@@ -312,7 +339,7 @@ bool ompl::kinematic::pSBL::isPathValid(TreeData &tree, Motion *motion)
     return result;
 }
 
-ompl::kinematic::pSBL::Motion* ompl::kinematic::pSBL::selectMotion(RNG &rng, TreeData &tree)
+ompl::geometric::pSBL::Motion* ompl::geometric::pSBL::selectMotion(RNG &rng, TreeData &tree)
 {
     double sum  = 0.0;
     Grid<MotionSet>::Cell* cell = NULL;
@@ -329,12 +356,12 @@ ompl::kinematic::pSBL::Motion* ompl::kinematic::pSBL::selectMotion(RNG &rng, Tre
     }
     if (!cell && tree.grid.size() > 0)
 	cell = tree.grid.begin()->second;
-    ompl::kinematic::pSBL::Motion* result = cell->data[rng.uniformInt(0, cell->data.size() - 1)];
+    ompl::geometric::pSBL::Motion* result = cell->data[rng.uniformInt(0, cell->data.size() - 1)];
     tree.lock.unlock();
     return result;
 }
 
-void ompl::kinematic::pSBL::removeMotion(TreeData &tree, Motion *motion, std::map<Motion*, bool> &seen)
+void ompl::geometric::pSBL::removeMotion(TreeData &tree, Motion *motion, std::map<Motion*, bool> &seen)
 {
     /* remove from grid */
     seen[motion] = true;
@@ -376,11 +403,13 @@ void ompl::kinematic::pSBL::removeMotion(TreeData &tree, Motion *motion, std::ma
 	motion->children[i]->parent = NULL;
 	removeMotion(tree, motion->children[i], seen);
     }
-    
+
+    if (motion->state)
+	m_si->freeState(motion->state);
     delete motion;
 }
 
-void ompl::kinematic::pSBL::addMotion(TreeData &tree, Motion *motion)
+void ompl::geometric::pSBL::addMotion(TreeData &tree, Motion *motion)
 {
     Grid<MotionSet>::Coord coord;
     m_projectionEvaluator->computeCoordinates(motion->state, coord);
@@ -398,25 +427,25 @@ void ompl::kinematic::pSBL::addMotion(TreeData &tree, Motion *motion)
     tree.lock.unlock();
 }
 
-void ompl::kinematic::pSBL::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::geometric::pSBL::getPlannerData(base::PlannerData &data) const
 {
-    states.resize(0);
-    states.reserve(m_tStart.size + m_tGoal.size);
+    data.states.resize(0);
+    data.states.reserve(m_tStart.size + m_tGoal.size);
     
     std::vector<MotionSet> motions;
     m_tStart.grid.getContent(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	for (unsigned int j = 0 ; j < motions[i].size() ; ++j)
-	    states.push_back(motions[i][j]->state);    
+	    data.states.push_back(motions[i][j]->state);    
 
     motions.clear();
     m_tGoal.grid.getContent(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	for (unsigned int j = 0 ; j < motions[i].size() ; ++j)
-	    states.push_back(motions[i][j]->state);    
+	    data.states.push_back(motions[i][j]->state);    
 }
 
-void ompl::kinematic::pSBL::setThreadCount(unsigned int nthreads)
+void ompl::geometric::pSBL::setThreadCount(unsigned int nthreads)
 {
     assert(nthreads > 0);		
     m_threadCount = nthreads;
