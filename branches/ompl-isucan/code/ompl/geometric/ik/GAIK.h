@@ -32,19 +32,20 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_IK_GAIK_
-#define OMPL_KINEMATIC_PLANNERS_IK_GAIK_
+#ifndef OMPL_GEOMETRIC_PLANNERS_IK_GAIK_
+#define OMPL_GEOMETRIC_PLANNERS_IK_GAIK_
 
-#include "ompl/kinematic/SpaceInformationKinematic.h"
-#include "ompl/kinematic/planners/ik/HCIK.h"
+#include "ompl/base/SpaceInformation.h"
+#include "ompl/base/GoalRegion.h"
+#include "ompl/geometric/ik/HCIK.h"
 #include "ompl/util/Console.h"
 
 namespace ompl
 {
     
-    namespace kinematic
+    namespace geometric
     {
 	
 	/**
@@ -63,24 +64,23 @@ namespace ompl
 	{
 	public:
 	    
-	    GAIK(SpaceInformationKinematic *si) : m_hcik(si), m_msg("GAIK")
+	    GAIK(const base::SpaceInformationPtr &si) : m_hcik(si), m_msg("GAIK")
 	    {
 		m_si = si;
-		m_rho = 0.04;
+		m_maxDistance = m_si->getStateValidityCheckingResolution() * 100.0;
 		m_poolSize = 80;
 		m_poolExpansion = 100;
 		m_hcik.setMaxImproveSteps(3);
 		setValidityCheck(true);
-		m_sCore = m_si->allocNewStateSampler();
+		m_sCore = m_si->allocStateSampler();
 	    }
 	    
 	    virtual ~GAIK(void)
 	    {
-		delete m_sCore;
 	    }
 
 	    /** \brief Find a state that fits the request */
-	    virtual bool solve(double solveTime, const base::GoalRegion *goal, base::State *result, const std::vector<base::State*> &hint = std::vector<base::State*>());
+	    virtual bool solve(double solveTime, const base::GoalRegion &goal, base::State *result, const std::vector<base::State*> &hint = std::vector<base::State*>());
 	    
 	    /** \brief Set the number of steps to perform when using hill climbing to improve an individual in the population */
 	    void setMaxImproveSteps(unsigned int maxSteps)
@@ -131,21 +131,22 @@ namespace ompl
 		return m_poolExpansion;
 	    }
 	    
-	    /** \brief Set the range (percentage of each dimension's extent) to be used when sampling around a state */
-	    void setRange(double rho)
+	    /** \brief Set the range (distance) to be used when sampling around a state */
+	    void setRange(double distance)
 	    {
-		m_rho = rho;
+		m_maxDistance = distance;
 	    }
 	    
-	    /** \brief Get the range the planner is using */
+	    /** \brief Get the range GAIK is using */
 	    double getRange(void) const
 	    {
-		return m_rho;
+		return m_maxDistance;
 	    }
 	    
 	protected:
 	    
-	    bool tryToImprove(const base::GoalRegion* goal, base::State *state, double distance);
+	    bool tryToImprove(const base::GoalRegion &goal, base::State *state, double distance);
+
 	    bool valid(const base::State *state) const
 	    {
 		return m_checkValidity ? m_si->isValid(state) : true;
@@ -170,13 +171,13 @@ namespace ompl
 	    };
 	    
 	    HCIK                                         m_hcik;
-	    base::StateSampler                          *m_sCore;
-	    SpaceInformationKinematic                   *m_si;	
+	    base::StateSamplerPtr                        m_sCore;
+	    base::SpaceInformationPtr                    m_si;	
 	    unsigned int                                 m_poolSize;
 	    unsigned int                                 m_poolExpansion;
 	    bool                                         m_checkValidity;	
 	    
-	    double                                       m_rho;	
+	    double                                       m_maxDistance;	
 
 	    msg::Interface                               m_msg;
 	};

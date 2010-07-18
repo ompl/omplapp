@@ -34,16 +34,17 @@
 
 /* \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/ik/GAIK.h"
-#include "ompl/base/GoalRegion.h"
-
+#include "ompl/geometric/ik/GAIK.h"
 #include "ompl/util/Time.h"
-
+#include "ompl/util/Exception.h"
 #include <algorithm>
+#include <limits>
 
-bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal, base::State *result, const std::vector<base::State*> &hint)
+bool ompl::geometric::GAIK::solve(double solveTime, const base::GoalRegion &goal, base::State *result, const std::vector<base::State*> &hint)
 {
-    unsigned int            dim = m_si->getStateDimension();
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+	throw Exception("The maximu distance for sampling around states needs to be positive");
+    
     time::point             endTime = time::now() + time::seconds(solveTime);
     
     unsigned int            maxPoolSize = m_poolSize + m_poolExpansion;
@@ -58,20 +59,14 @@ bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal
 	return false;	
     }
     
-    std::vector<double> range(dim);    
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	range[i] = m_rho * (m_si->getStateComponent(i).maxValue - m_si->getStateComponent(i).minValue);
-    
     // add hint states
     unsigned int nh = std::min<unsigned int>(maxPoolSize, hint.size());
     for (unsigned int i = 0 ; i < nh ; ++i)
     {
-	pool[i].state = new base::State(dim);
-	m_si->copyState(pool[i].state, hint[i]);
-	if (!m_si->satisfiesBounds(pool[i].state))
-	    m_si->enforceBounds(pool[i].state);
+	pool[i].state = m_si->cloneState(hint[i]);
+	m_si->enforceBounds(pool[i].state);
 	pool[i].valid = valid(pool[i].state);
-	if (goal->isSatisfied(pool[i].state, &(pool[i].distance)))
+	if (goal.isSatisfied(pool[i].state, &(pool[i].distance)))
 	{
 	    if (pool[i].valid)
 	    {
@@ -87,10 +82,10 @@ bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal
     {
 	for (unsigned int i = nh ; i < nh2 ; ++i)
 	{
-	    pool[i].state = new base::State(dim);
-	    m_sCore->sampleNear(pool[i].state, pool[i % nh].state, range);
+	    pool[i].state = m_si->allocState();
+	    m_sCore->sampleNear(pool[i].state, pool[i % nh].state, m_maxDistance);
 	    pool[i].valid = valid(pool[i].state);
-	    if (goal->isSatisfied(pool[i].state, &(pool[i].distance)))
+	    if (goal.isSatisfied(pool[i].state, &(pool[i].distance)))
 	    {
 		if (pool[i].valid)
 		{
@@ -105,10 +100,10 @@ bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal
     // add random states
     for (unsigned int i = nh ; i < maxPoolSize ; ++i)
     {
-	pool[i].state = new base::State(dim);
+	pool[i].state = m_si->allocState();
 	m_sCore->sample(pool[i].state);
 	pool[i].valid = valid(pool[i].state);
-	if (goal->isSatisfied(pool[i].state, &(pool[i].distance)))
+	if (goal.isSatisfied(pool[i].state, &(pool[i].distance)))
 	{
 	    if (pool[i].valid)
 	    {
@@ -134,9 +129,9 @@ bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal
 	// add mutations
 	for (unsigned int i = m_poolSize ; i < mutationsSize ; ++i)
 	{
-	    m_sCore->sampleNear(pool[i].state, pool[i % m_poolSize].state, range);
+	    m_sCore->sampleNear(pool[i].state, pool[i % m_poolSize].state, m_maxDistance);
 	    pool[i].valid = valid(pool[i].state);
-	    if (goal->isSatisfied(pool[i].state, &(pool[i].distance)))
+	    if (goal.isSatisfied(pool[i].state, &(pool[i].distance)))
 	    {
 		if (pool[i].valid)
 		{
@@ -153,7 +148,7 @@ bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal
 	    {
 		m_sCore->sample(pool[i].state);
 		pool[i].valid = valid(pool[i].state);
-		if (goal->isSatisfied(pool[i].state, &(pool[i].distance)))
+		if (goal.isSatisfied(pool[i].state, &(pool[i].distance)))
 		{
 		    if (pool[i].valid)
 		    {
@@ -206,25 +201,18 @@ bool ompl::kinematic::GAIK::solve(double solveTime, const base::GoalRegion *goal
     }
     
     for (unsigned int i = 0 ; i < maxPoolSize ; ++i)
-	delete pool[i].state;
+	m_si->freeState(pool[i].state);
     
     return solved;
 }
 
-bool ompl::kinematic::GAIK::tryToImprove(const base::GoalRegion *goal, base::State *state, double distance)
+bool ompl::geometric::GAIK::tryToImprove(const base::GoalRegion &goal, base::State *state, double distance)
 {
     m_msg.debug("GAIK: Distance to goal before improvement: %g", distance);    
     time::point start = time::now();
-    m_hcik.tryToImprove(goal, state, 0.1, &distance);
-    m_hcik.tryToImprove(goal, state, 0.05, &distance);
-    m_hcik.tryToImprove(goal, state, 0.01, &distance);
-    m_hcik.tryToImprove(goal, state, 0.005, &distance);
-    m_hcik.tryToImprove(goal, state, 0.001, &distance);
-    m_hcik.tryToImprove(goal, state, 0.005, &distance);
-    m_hcik.tryToImprove(goal, state, 0.0001, &distance);
-    m_hcik.tryToImprove(goal, state, 0.00005, &distance);
-    m_hcik.tryToImprove(goal, state, 0.000025, &distance);
-    m_hcik.tryToImprove(goal, state, 0.000005, &distance);
+    m_hcik.tryToImprove(goal, state, m_si->getStateValidityCheckingResolution() * 100.0, &distance);
+    m_hcik.tryToImprove(goal, state, m_si->getStateValidityCheckingResolution() * 10.0, &distance);
+    m_hcik.tryToImprove(goal, state, m_si->getStateValidityCheckingResolution(), &distance);
     m_msg.debug("GAIK: Improvement took  %g ms", (time::now() - start).total_milliseconds());
     m_msg.debug("GAIK: Distance to goal after improvement: %g", distance);
     return true;

@@ -32,10 +32,10 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_IK_HCIK_
-#define OMPL_KINEMATIC_PLANNERS_IK_HCIK_
+#ifndef OMPL_GEOMETRIC_IK_HCIK_
+#define OMPL_GEOMETRIC_IK_HCIK_
 
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/base/GoalRegion.h"
@@ -43,7 +43,7 @@
 namespace ompl
 {
 
-    namespace kinematic
+    namespace geometric
     {
 	    
 	/**
@@ -61,19 +61,18 @@ namespace ompl
 	{
 	public:
 	    
-	    HCIK(base::SpaceInformation *si)
+	    HCIK(const base::SpaceInformationPtr &si) : m_si(si), m_maxImproveSteps(2), m_checkValidity(true)
 	    {
-		m_si = si;
-		m_maxImproveSteps = 2;
-		m_checkValidity = true;
 	    }
 	    
 	    virtual ~HCIK(void)
 	    {
 	    }
 	    
-	    /** \brief Try to improve a state (reduce distance to goal). The step size to add is also specified */
-	    bool tryToImprove(const base::GoalRegion *goal, base::State *state, double add, double *distance = NULL) const;
+	    /** \brief Try to improve a state (reduce distance to goal). The updates are performed by sampling near the
+		state, within the specified distance. If improvements were found, the function returns true and the better
+		goal distance is opionally returned */
+	    bool tryToImprove(const base::GoalRegion &goal, base::State *state, double nearDistance, double *betterGoalDistance = NULL) const;
 	    
 	    /** \brief Set the number of steps to perform */
 	    void setMaxImproveSteps(unsigned int steps)
@@ -106,9 +105,9 @@ namespace ompl
 		return m_checkValidity ? m_si->isValid(state) : true;
 	    }
 	    
-	    base::SpaceInformation *m_si;
-	    unsigned int            m_maxImproveSteps;
-	    bool                    m_checkValidity;	
+	    base::SpaceInformationPtr m_si;
+	    unsigned int              m_maxImproveSteps;
+	    bool                      m_checkValidity;	
 	};
 	
     }
