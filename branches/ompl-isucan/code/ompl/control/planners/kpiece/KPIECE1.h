@@ -82,7 +82,6 @@ namespace ompl
 		
 		m_siC = si.get();
 		m_addedStartStates = 0;		
-		m_projectionDimension = 0;
 		m_goalBias = 0.05;
 		m_selectBorderPercentage = 0.7;
 		m_badScoreFactor = 0.3;
@@ -222,8 +221,6 @@ namespace ompl
 	    const SpaceInformation    *m_siC;
 	    
 	    base::ProjectionEvaluatorPtr m_projectionEvaluator;
-	    unsigned int                 m_projectionDimension;
-	    std::vector<double>          m_cellDimensions;
 	    
 	    double                     m_goodScoreFactor;
 	    double                     m_badScoreFactor;

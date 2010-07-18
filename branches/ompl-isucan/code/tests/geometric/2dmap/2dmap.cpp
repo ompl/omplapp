@@ -52,7 +52,7 @@
 //#include "ompl/geometric/planners/sbl/pSBL.h"
 #include "ompl/geometric/planners/rrt/pRRT.h"
 #include "ompl/geometric/planners/rrt/LazyRRT.h"
-//#include "ompl/geometric/planners/est/EST.h"
+#include "ompl/geometric/planners/est/EST.h"
 
 #include "../../resources/config.h"
 #include "../../resources/environment2D.h"
@@ -393,51 +393,6 @@ protected:
     
 };
 
-class ESTTest : public TestPlanner 
-{
-public:
-    ESTTest(void)
-    {
-	ope = NULL;
-    }
-
-    virtual bool execute(Environment2D &env, bool show = false, double *time = NULL, double *pathLength = NULL)
-    {
-	bool result = TestPlanner::execute(env, show, time, pathLength);	
-	if (ope)
-	{
-	    delete ope;	
-	    ope = NULL;
-	}
-	return result;
-    }
-    
-protected:
-    
-    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
-    {
-	geometric::EST *est = new geometric::EST(si);
-	est->setRange(0.75);
-	
-	std::vector<unsigned int> projection;
-	projection.push_back(0);
-	projection.push_back(1);
-	ope = new base::OrthogonalProjectionEvaluator(si, projection);
-		
-	std::vector<double> cdim;
-	cdim.push_back(1);
-	cdim.push_back(1);
-	ope->setCellDimensions(cdim);
-
-	est->setProjectionEvaluator(ope);
-
-	return est;
-    }
-    
-    base::OrthogonalProjectionEvaluator *ope;
-    
-};
-
 class KPIECE1Test : public TestPlanner 
 {
 public:
@@ -529,6 +484,31 @@ protected:
 };
 */
 
+
+class ESTTest : public TestPlanner 
+{    
+protected:
+    
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
+    {
+	geometric::EST *est = new geometric::EST(si);
+	est->setRange(10.0);
+
+	std::vector<double> cdim;
+	cdim.push_back(1);
+	cdim.push_back(1);
+	
+	std::vector<unsigned int> projection;
+	projection.push_back(0);
+	projection.push_back(1);
+
+	est->setProjectionEvaluator(base::ProjectionEvaluatorPtr(new base::RealVectorOrthogonalProjectionEvaluator(si->getStateManifold(), cdim, projection)));
+	
+	return base::PlannerPtr(est);
+    }
+    
+};
+
 class PlanTest : public testing::Test
 {
 public:
@@ -598,7 +578,7 @@ TEST_F(PlanTest, geometric_RRT)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.01);
-    EXPECT_TRUE(avglength < 70.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 TEST_F(PlanTest, geometric_RRTConnect)
@@ -613,7 +593,7 @@ TEST_F(PlanTest, geometric_RRTConnect)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.01);
-    EXPECT_TRUE(avglength < 70.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 TEST_F(PlanTest, geometric_pRRT)
@@ -628,7 +608,7 @@ TEST_F(PlanTest, geometric_pRRT)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.02);
-    EXPECT_TRUE(avglength < 70.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 /*
@@ -674,7 +654,7 @@ TEST_F(PlanTest, geometric_KPIECE1)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.1);
-    EXPECT_TRUE(avglength < 70.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 TEST_F(PlanTest, geometric_LBKPIECE1)
@@ -689,8 +669,9 @@ TEST_F(PlanTest, geometric_LBKPIECE1)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.1);
-    EXPECT_TRUE(avglength < 70.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
+*/
 
 TEST_F(PlanTest, geometric_EST)
 {
@@ -704,9 +685,8 @@ TEST_F(PlanTest, geometric_EST)
 
     EXPECT_TRUE(success >= 99.0);
     EXPECT_TRUE(avgruntime < 0.1);
-    EXPECT_TRUE(avglength < 65.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
-*/
 
 TEST_F(PlanTest, geometric_LazyRRT)
 {
@@ -720,7 +700,7 @@ TEST_F(PlanTest, geometric_LazyRRT)
     
     EXPECT_TRUE(success >= 70.0);
     EXPECT_TRUE(avgruntime < 1.0);
-    EXPECT_TRUE(avglength < 65.0);
+    EXPECT_TRUE(avglength < 100.0);
 }
 
 int main(int argc, char **argv)

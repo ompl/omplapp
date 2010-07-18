@@ -46,10 +46,9 @@ void ompl::control::KPIECE1::setup(void)
     if (!m_projectionEvaluator)
 	throw Exception("No projection evaluator specified");
     m_projectionEvaluator->checkCellDimensions();
-    m_projectionDimension = m_projectionEvaluator->getDimension();
-    if (m_projectionDimension <= 0)
+    if (m_projectionEvaluator->getDimension() <= 0)
 	throw Exception("Dimension of projection needs to be larger than 0");
-    m_tree.grid.setDimension(m_projectionDimension);
+    m_tree.grid.setDimension(m_projectionEvaluator->getDimension());
 }
 
 void ompl::control::KPIECE1::clear(void)
