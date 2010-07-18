@@ -32,12 +32,51 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/rrt/RRTConnect.h"
+#include "ompl/geometric/planners/rrt/RRTConnect.h"
 #include "ompl/base/GoalSampleableRegion.h"
 
-ompl::kinematic::RRTConnect::GrowState ompl::kinematic::RRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion)
+void ompl::geometric::RRTConnect::setup(void)
+{
+    Planner::setup();
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
+}
+
+void ompl::geometric::RRTConnect::freeMemory(void)
+{
+    std::vector<Motion*> motions;
+    m_tStart.list(motions);
+    for (unsigned int i = 0 ; i < motions.size() ; ++i)
+    {
+	if (motions[i]->state)
+	    m_si->freeState(motions[i]->state);
+	delete motions[i];
+    }
+    
+    m_tGoal.list(motions);
+    for (unsigned int i = 0 ; i < motions.size() ; ++i)
+    {
+	if (motions[i]->state)
+	    m_si->freeState(motions[i]->state);
+	delete motions[i];
+    }
+}
+
+void ompl::geometric::RRTConnect::clear(void)
+{
+    freeMemory();
+    m_tStart.clear();
+    m_tGoal.clear();
+    m_addedStartStates = 0;
+    m_sampledGoalsCount = 0;
+}
+
+ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion)
 {
     /* find closest state in the tree */
     Motion *nmotion = tree.nearest(rmotion);
@@ -46,23 +85,20 @@ ompl::kinematic::RRTConnect::GrowState ompl::kinematic::RRTConnect::growTree(Tre
     bool reach = true;
     
     /* find state to add */
-    for (unsigned int i = 0 ; i < tgi.dim ; ++i)
+    base::State *dstate = rmotion->state;
+    double d = m_si->distance(nmotion->state, rmotion->state);
+    if (d > m_maxDistance)
     {
-	double diff = rmotion->state->values[i] - nmotion->state->values[i];
-	if (fabs(diff) < tgi.range[i])
-	    tgi.xstate->values[i] = rmotion->state->values[i];
-	else
-	{
-	    tgi.xstate->values[i] = nmotion->state->values[i] + diff * m_rho;
-	    reach = false;
-	}
+	m_si->getStateManifold()->interpolate(nmotion->state, rmotion->state, m_maxDistance / d, tgi.xstate);
+	dstate = tgi.xstate;
+	reach = false;
     }
-    
-    if (static_cast<SpaceInformationKinematic*>(m_si)->checkMotion(nmotion->state, tgi.xstate))
+
+    if (m_si->checkMotion(nmotion->state, dstate))
     {
 	/* create a motion */
-	Motion *motion = new Motion(tgi.dim);
-	static_cast<SpaceInformationKinematic*>(m_si)->copyState(motion->state, tgi.xstate);
+	Motion *motion = new Motion(m_si);
+	m_si->copyState(motion->state, dstate);
 	motion->parent = nmotion;
 	motion->root = nmotion->root;
 	tgi.xmotion = motion;
@@ -71,17 +107,15 @@ ompl::kinematic::RRTConnect::GrowState ompl::kinematic::RRTConnect::growTree(Tre
 	if (reach)
 	    return REACHED;
 	else
-	    return ADVANCED;	
+	    return ADVANCED;
     }
     else
-	return TRAPPED;    
+	return TRAPPED;
 }
 
-bool ompl::kinematic::RRTConnect::solve(double solveTime)
+bool ompl::geometric::RRTConnect::solve(double solveTime)
 {
-    SpaceInformationKinematic  *si   = dynamic_cast<SpaceInformationKinematic*>(m_si); 
-    base::GoalSampleableRegion *goal = dynamic_cast<base::GoalSampleableRegion*>(m_pdef->getGoal());
-    unsigned int                 dim = si->getStateDimension();
+    base::GoalSampleableRegion *goal = dynamic_cast<base::GoalSampleableRegion*>(m_pdef->getGoal().get());
     
     if (!goal)
     {
@@ -94,10 +128,10 @@ bool ompl::kinematic::RRTConnect::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, st);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, st);
 	    motion->root = st;
 	    m_tStart.add(motion);
 	}
@@ -120,15 +154,11 @@ bool ompl::kinematic::RRTConnect::solve(double solveTime)
     m_msg.inform("Starting with %d states", (int)(m_tStart.size() + m_tGoal.size()));
 
     TreeGrowingInfo tgi;
-    tgi.range.resize(dim);
-    tgi.dim = dim;
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	tgi.range[i] = m_rho * (si->getStateComponent(i).maxValue - si->getStateComponent(i).minValue);
-    tgi.xstate = new base::State(dim);
+    tgi.xstate = m_si->allocState();
     
-    Motion   *rmotion   = new Motion(dim);
+    Motion   *rmotion   = new Motion(m_si);
     base::State *rstate = rmotion->state;
-    base::State *gstate = new base::State(dim);
+    base::State *gstate = m_si->allocState();
     bool   startTree    = true;
 
     while (time::now() < endTime)
@@ -150,10 +180,10 @@ bool ompl::kinematic::RRTConnect::solve(double solveTime)
 		    firstAttempt = false;
 		    goal->sampleGoal(gstate);
 		    m_sampledGoalsCount++;
-		    if (si->satisfiesBounds(gstate) && si->isValid(gstate))
+		    if (m_si->satisfiesBounds(gstate) && m_si->isValid(gstate))
 		    {
-			Motion* motion = new Motion(dim);
-			si->copyState(motion->state, gstate);
+			Motion* motion = new Motion(m_si);
+			m_si->copyState(motion->state, gstate);
 			motion->root = motion->state;
 			m_tGoal.add(motion);
 		    }
@@ -168,7 +198,7 @@ bool ompl::kinematic::RRTConnect::solve(double solveTime)
 	}
 	
 	/* sample random state */
-	m_sCore().sample(rstate);
+	m_sCore->sample(rstate);
 	
 	GrowState gs = growTree(tree, tgi, rmotion);
 	
@@ -178,7 +208,11 @@ bool ompl::kinematic::RRTConnect::solve(double solveTime)
 	    Motion *addedMotion = tgi.xmotion;
 	    
 	    /* attempt to connect trees */
-	    si->copyState(rstate, tgi.xstate);
+	    
+	    /* if reached, it means we used rstate directly, no need top copy again */
+	    if (gs != REACHED)
+		m_si->copyState(rstate, tgi.xstate);
+
 	    GrowState gsc = ADVANCED;
 	    while (gsc == ADVANCED)
 		gsc = growTree(otherTree, tgi, rmotion);
@@ -212,40 +246,37 @@ bool ompl::kinematic::RRTConnect::solve(double solveTime)
 		    sol.push_back(mpath1[i]);
 		sol.insert(sol.end(), mpath2.begin(), mpath2.end());
 
-		PathKinematic *path = new PathKinematic(m_si);
+		PathGeometric *path = new PathGeometric(m_si);
 		for (unsigned int i = 0 ; i < sol.size() ; ++i)
-		{
-		    base::State *st = new base::State(dim);
-		    si->copyState(st, sol[i]->state);
-		    path->states.push_back(st);
-		}
+		    path->states.push_back(m_si->cloneState(sol[i]->state));
 		
 		goal->setDifference(0.0);
-		goal->setSolutionPath(path);
+		goal->setSolutionPath(base::PathPtr(path));
 		break;
 	    }
 	}
     }
     
-    delete tgi.xstate;
+    m_si->freeState(tgi.xstate);
+    m_si->freeState(rstate);
     delete rmotion;
-    delete gstate;
+    m_si->freeState(gstate);
     
     m_msg.inform("Created %u states (%u start + %u goal)", m_tStart.size() + m_tGoal.size(), m_tStart.size(), m_tGoal.size());
     
     return goal->isAchieved();
 }
 
-void ompl::kinematic::RRTConnect::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::geometric::RRTConnect::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
     m_tStart.list(motions);
-    states.resize(motions.size());
+    data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
-	states[i] = motions[i]->state;
+	data.states[i] = motions[i]->state;
     m_tGoal.list(motions);
-    unsigned int s = states.size();
-    states.resize(s + motions.size());
+    unsigned int s = data.states.size();
+    data.states.resize(s + motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
-	states[s + i] = motions[i]->state;
+	data.states[s + i] = motions[i]->state;
 }

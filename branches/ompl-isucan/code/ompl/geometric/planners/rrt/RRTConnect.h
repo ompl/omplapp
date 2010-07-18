@@ -32,23 +32,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_RRT_RRT_CONNECT_
-#define OMPL_KINEMATIC_PLANNERS_RRT_RRT_CONNECT_
+#ifndef OMPL_GEOMETRIC_PLANNERS_RRT_RRT_CONNECT_
+#define OMPL_GEOMETRIC_PLANNERS_RRT_RRT_CONNECT_
 
-#include "ompl/base/Planner.h"
-#include "ompl/kinematic/SpaceInformationKinematic.h"
+#include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 
 namespace ompl
 {
     
-    namespace kinematic
+    namespace geometric
     {
 	
 	/**
-	   @anchor kRRTC
+	   @anchor gRRTC
 	   
 	   @par Short description
 	   
@@ -69,8 +68,8 @@ namespace ompl
 	{
 	public:
 	    
-	    RRTConnect(SpaceInformationKinematic *si) : base::Planner(si),
-							m_sCore(si)
+	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si),
+							      m_sCore(si->allocStateSampler())
 	    {
 		m_type = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		m_msg.setPrefix("RRTConnect");
@@ -80,7 +79,7 @@ namespace ompl
 		
 		m_tStart.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
 		m_tGoal.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
-		m_rho = 0.5;
+		m_maxDistance = 0.0;
 	    }
 	    
 	    virtual ~RRTConnect(void)
@@ -88,45 +87,30 @@ namespace ompl
 		freeMemory();
 	    }
 
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	    virtual bool solve(double solveTime);
 	    
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		m_tStart.clear();
-		m_tGoal.clear();
-		m_addedStartStates = 0;
-		m_sampledGoalsCount = 0;
-	    }
+	    virtual void clear(void);
 	    
 	    /** \brief Set the range the planner is supposed to use.
 
 		This parameter greatly influences the runtime of the
-		algorithm. It is probably a good idea to find what a
-		good value is for each model the planner is used
-		for. The range parameter influences how this @b qm
-		along the path between @b qc and @b qr is chosen. @b
-		qr may be too far, and it may not be best to have @b
-		qm = @b qr all the time (range = 1.0 implies @b qm =
-		@b qr. range should be less than 1.0). However, in a
-		large space, it is also good to leave the neighborhood
-		of @b qc (range = 0.0 implies @b qm = @b qc and no
-		progress is made. rande should be larger than
-		0.0). Multiple values of this range parameter should
-		be tried until a suitable one is found. */
-	    void setRange(double rho)
+		algorithm. It represents the maximum length of a
+		motion to be added in the tree of motions. */
+	    void setRange(double distance)
 	    {
-		m_rho = rho;
+		m_maxDistance = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_rho;
+		return m_maxDistance;
 	    }
-	    
+
+	    virtual void setup(void);
+
 	protected:
 	    
 	    class Motion
@@ -139,14 +123,12 @@ namespace ompl
 		    state  = NULL;
 		}
 		
-		Motion(unsigned int dimension) : root(NULL), state(new base::State(dimension)), parent(NULL)
+		Motion(const base::SpaceInformationPtr &si) : root(NULL), state(si->allocState()), parent(NULL)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
 		}
 		
 		const base::State *root;
@@ -159,10 +141,8 @@ namespace ompl
 
 	    struct TreeGrowingInfo
 	    {
-		std::vector<double>  range;
 		base::State         *xstate;
 		Motion              *xmotion;
-		unsigned int         dim;
 	    };
 	    
 	    enum GrowState 
@@ -170,17 +150,7 @@ namespace ompl
 		    TRAPPED, ADVANCED, REACHED
 		};
 	    
-	    void freeMemory(void)
-	    {
-		std::vector<Motion*> motions;
-		m_tStart.list(motions);
-		for (unsigned int i = 0 ; i < motions.size() ; ++i)
-		    delete motions[i];
-		
-		m_tGoal.list(motions);
-		for (unsigned int i = 0 ; i < motions.size() ; ++i)
-		    delete motions[i];
-	    }
+	    void freeMemory(void);
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
@@ -189,14 +159,14 @@ namespace ompl
 
 	    GrowState growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion);
 	    
-	    base::StateSamplerInstance m_sCore;
+	    base::StateSamplerPtr      m_sCore;
 	    
 	    TreeData                   m_tStart;
 	    TreeData                   m_tGoal;
 	    unsigned int               m_addedStartStates;
 	    unsigned int               m_sampledGoalsCount;
-
-	    double                     m_rho;
+	    
+	    double                     m_maxDistance;
 	    RNG                        m_rng;
 	};
 	
