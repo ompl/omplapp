@@ -233,6 +233,32 @@ unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, cons
 {
     int nd = (int)ceil(distance(s1, s2) / (m_resolution * factor));
     
+    if (nd < 2)
+    {
+	unsigned int added = 0;
+	if (endpoints)
+	{
+	    if (alloc)
+	    {
+		states.resize(2);
+		states[0] = allocState();
+		states[1] = allocState();
+	    }
+	    if (states.size() > 0)
+	    {
+		copyState(states[0], s1);
+		added++;
+	    }
+	    
+	    if (states.size() > 1)
+	    {
+		copyState(states[1], s2);
+		added++;
+	    }
+	}
+	return added;
+    }
+    
     if (alloc)
     {
 	states.resize(nd + (endpoints ? 1 : -1));
@@ -240,7 +266,7 @@ unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, cons
 	    states[0] = allocState();
     }
     
-    std::size_t added = 0;
+    unsigned int added = 0;
     
     if (endpoints && states.size() > 0)
     {

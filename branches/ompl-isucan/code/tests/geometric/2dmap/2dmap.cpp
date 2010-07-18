@@ -36,53 +36,48 @@
 
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
+#include <libgen.h>
+#include <iostream>
 
-#include "ompl/kinematic/PathSimplifierKinematic.h"
-#include "ompl/base/OrthogonalProjectionEvaluator.h"
+#include "ompl/geometric/PathSimplifier.h"
+#include "ompl/base/manifolds/RealVectorStateManifold.h"
+#include "ompl/base/manifolds/RealVectorStateProjections.h"
 #include "ompl/base/GoalState.h"
 
-#include "ompl/kinematic/planners/kpiece/LBKPIECE1.h"
-#include "ompl/kinematic/planners/kpiece/KPIECE1.h"
-#include "ompl/kinematic/planners/sbl/SBL.h"
-#include "ompl/kinematic/planners/rrt/RRT.h"
-#include "ompl/kinematic/planners/rrt/RRTConnect.h"
-#include "ompl/kinematic/planners/sbl/pSBL.h"
-#include "ompl/kinematic/planners/rrt/pRRT.h"
-#include "ompl/kinematic/planners/rrt/LazyRRT.h"
-#include "ompl/kinematic/planners/est/EST.h"
+//#include "ompl/geometric/planners/kpiece/LBKPIECE1.h"
+//#include "ompl/geometric/planners/kpiece/KPIECE1.h"
+//#include "ompl/geometric/planners/sbl/SBL.h"
+#include "ompl/geometric/planners/rrt/RRT.h"
+#include "ompl/geometric/planners/rrt/RRTConnect.h"
+//#include "ompl/geometric/planners/sbl/pSBL.h"
+#include "ompl/geometric/planners/rrt/pRRT.h"
+#include "ompl/geometric/planners/rrt/LazyRRT.h"
+//#include "ompl/geometric/planners/est/EST.h"
 
 #include "../../resources/config.h"
-#include "environment2D.h"
-#include <iostream>
-#include <libgen.h>
-
+#include "../../resources/environment2D.h"
 
 using namespace ompl;
 
 static const double SOLUTION_TIME = 1.0;
 
-
-/** Declare a class used in validating states. Such a class definition is needed for any use
- * of a kinematic planner */
+/** \brief Declare a class used in validating states. Such a class
+    definition is needed for any use of a kinematic planner */
 class myStateValidityChecker : public base::StateValidityChecker
 {
 public:
 
-    myStateValidityChecker(base::SpaceInformation *si) : base::StateValidityChecker(si)
+    myStateValidityChecker(base::SpaceInformation *si, const std::vector< std::vector<int> > &grid) :
+	base::StateValidityChecker(si), m_grid(grid)
     {
     }
     
-    virtual bool operator()(const base::State *state) const
+    virtual bool isValid(const base::State *state) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(state->values[0]);
-	int y = (int)(state->values[1]);
+	int x = (int)(state->as<base::RealVectorState>()->values[0]);
+	int y = (int)(state->as<base::RealVectorState>()->values[1]);
 	return m_grid[x][y] == 0; // 0 means valid state
-    }
-    
-    void setGrid(const std::vector< std::vector<int> > &grid)
-    {
-	m_grid = grid;
     }
     
 protected:
@@ -91,58 +86,60 @@ protected:
 
 };
 
-/** Declare a class used in evaluating distance between states (Manhattan distance) */
-class myStateDistanceEvaluator : public base::StateDistanceEvaluator
+class myManifold : public base::RealVectorStateManifold
 {
 public:
-
-    myStateDistanceEvaluator(base::SpaceInformation *si) : base::StateDistanceEvaluator(si)
+    
+    myManifold() : base::RealVectorStateManifold(2)
     {
     }
     
-    virtual double operator()(const base::State *state1, const base::State *state2) const
+    virtual double distance(const base::State *state1, const base::State *state2) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x1 = (int)(state1->values[0]);
-	int y1 = (int)(state1->values[1]);
-	
-	int x2 = (int)(state2->values[0]);
-	int y2 = (int)(state2->values[1]);
+	int x1 = (int)(state1->as<base::RealVectorState>()->values[0]);
+	int y1 = (int)(state1->as<base::RealVectorState>()->values[1]);
+
+	int x2 = (int)(state2->as<base::RealVectorState>()->values[0]);
+	int y2 = (int)(state2->as<base::RealVectorState>()->values[1]);
 
 	return abs(x1 - x2) + abs(y1 - y2);
     }
-    
 };
-
     
-/** Space information */
-class mySpaceInformation : public kinematic::SpaceInformationKinematic
+/** \brief Space information */
+base::SpaceInformationPtr mySpaceInformation(Environment2D &env)
 {
-public:
-    mySpaceInformation(int width, int height) : kinematic::SpaceInformationKinematic()
-    {
-	// we have 2 dimensions : x, y
-	m_stateDimension = 2;
-	m_stateComponent.resize(2);
+    base::RealVectorStateManifold *sMan = new myManifold();
+    
+    base::RealVectorBounds sbounds(2);
+    
+    // dimension 0 (x) spans between [0, width) 
+    // dimension 1 (y) spans between [0, height) 
+    // since sampling is continuous and we round down, we allow values until just under the max limit
+    // the resolution is 1.0 since we check cells only
+    
+    sbounds.low[0] = 0.0;
+    sbounds.high[0] = (double)env.width - 0.000000001;
+    
+    sbounds.low[1] = 0.0;
+    sbounds.high[1] = (double)env.height - 0.000000001;
 
-	// dimension 0 (x) spans between [0, width) 
-	// dimension 1 (y) spans between [0, height) 
-	// since sampling is continuous and we round down, we allow values until just under the max limit
-	// the resolution is 1.0 since we check cells only
+    sMan->setBounds(sbounds);
+    
+    base::StateManifoldPtr sManPtr(sMan);
+    
+    base::SpaceInformationPtr si(new base::SpaceInformation(sManPtr));
+    si->setStateValidityCheckingResolution(0.5);
+    
+    si->setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(si.get(), env.grid)));
+    
+    si->setup();
+    
+    return si;
+}
 
-	m_stateComponent[0].minValue = 0.0;
-	m_stateComponent[0].maxValue = (double)width - 0.000000001;
-	m_stateComponent[0].resolution = 0.5;
-	m_stateComponent[0].type = base::StateComponent::LINEAR;
-	
-	m_stateComponent[1].minValue = 0.0;
-	m_stateComponent[1].maxValue = (double)height - 0.000000001;
-	m_stateComponent[1].resolution = 0.5;
-	m_stateComponent[1].type = base::StateComponent::LINEAR;
-    }
-};
-
-/** A base class for testing planners */
+/** \brief A base class for testing planners */
 class TestPlanner
 {
 public:
@@ -159,40 +156,30 @@ public:
 	bool result = true;
 	
 	/* instantiate space information */
-	mySpaceInformation *si = new mySpaceInformation(env.width, env.height);
-	
-	/* instantiate state validity checker */
-	myStateValidityChecker *svc = new myStateValidityChecker(si);
-	svc->setGrid(env.grid);
-	
-	/* instantiate state distance evaluator  */
-	myStateDistanceEvaluator *sde = new myStateDistanceEvaluator(si);
+	base::SpaceInformationPtr si = mySpaceInformation(env);
 	
 	/* instantiate problem definition */
-	base::ProblemDefinition *pdef = new base::ProblemDefinition(si);
+	base::ProblemDefinitionPtr pdef(new base::ProblemDefinition(si));
 	
-	si->setStateValidityChecker(svc);
-	si->setStateDistanceEvaluator(sde);
-	si->setup();
-
 	/* instantiate motion planner */
-	base::Planner *planner = newPlanner(si);
+	base::PlannerPtr planner = newPlanner(si);
 	planner->setProblemDefinition(pdef);
 	planner->setup();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::State *state = new base::State(2);
+	base::ScopedState<base::RealVectorState> state(si);
 	state->values[0] = env.start.first;
 	state->values[1] = env.start.second;
 	pdef->addStartState(state);
 	
 	/* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
 	base::GoalState *goal = new base::GoalState(si);
-	goal->state = new base::State(2);
-	goal->state->values[0] = env.goal.first;
-	goal->state->values[1] = env.goal.second;
+	base::ScopedState<base::RealVectorState> gstate(si);
+	gstate->values[0] = env.goal.first;
+	gstate->values[1] = env.goal.second;
+	goal->setState(gstate);
 	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
-	pdef->setGoal(goal);
+	pdef->setGoal(base::GoalPtr(goal));
 	
 	/* start counting time */
 	ompl::time::point startTime = ompl::time::now();	
@@ -206,18 +193,18 @@ public:
 	    if (show)
 		printf("Found solution in %f seconds!\n", ompl::time::seconds(elapsed));
 	    
-	    kinematic::PathKinematic *path = static_cast<kinematic::PathKinematic*>(goal->getSolutionPath());
+	    geometric::PathGeometric *path = static_cast<geometric::PathGeometric*>(goal->getSolutionPath().get());
 	    
 	    
 	    /* make the solution more smooth */
-	    kinematic::PathSimplifierKinematic *smoother = new kinematic::PathSimplifierKinematic(si);
-	    smoother->setMaxSteps(50);
-	    smoother->setMaxEmptySteps(10);
+	    geometric::PathSimplifierPtr sm(new geometric::PathSimplifier(si));
+	    sm->setMaxSteps(50);
+	    sm->setMaxEmptySteps(10);
 
 	    startTime = ompl::time::now();
-	    smoother->reduceVertices(path);
+	    sm->reduceVertices(*path);
 	    elapsed = ompl::time::now() - startTime;
-	    delete smoother;
+
 	    if (time)
 		*time += ompl::time::seconds(elapsed);
 	    
@@ -225,10 +212,10 @@ public:
 		printf("Simplified solution in %f seconds!\n", ompl::time::seconds(elapsed));
 
 	    /* fill in values that were linearly interpolated */
-	    si->interpolatePath(path);
+	    path->interpolate();
 	    
 	    if (pathLength)
-		*pathLength += path->states.size();
+		*pathLength += path->length();
 
 	    if (show)
 	    {
@@ -240,8 +227,8 @@ public:
 	    /* display the solution */	    
 	    for (unsigned int i = 0 ; i < path->states.size() ; ++i)
 	    {
-		int x = (int)(path->states[i]->values[0]);
-		int y = (int)(path->states[i]->values[1]);
+		int x = (int)(path->states[i]->as<base::RealVectorState>()->values[0]);
+		int y = (int)(path->states[i]->as<base::RealVectorState>()->values[1]);
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else
@@ -257,23 +244,12 @@ public:
 	else
 	    result = false;
 	
-	// free memory for start states
-	pdef->clearStartStates();
-	
-	// free memory for goal
-	pdef->clearGoal();
-	
-	delete planner;
-	delete pdef;
-	delete svc;
-	delete sde;
-	delete si;
 	return result;
     }
     
 protected:
     
-    virtual base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si) = 0;
+    virtual base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si) = 0;
     
 };
 
@@ -281,11 +257,11 @@ class RRTTest : public TestPlanner
 {
 protected:
 
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
     {
-	kinematic::RRT *rrt = new kinematic::RRT(si);
-	rrt->setRange(0.95);
-	return rrt;
+	geometric::RRT *rrt = new geometric::RRT(si);
+	rrt->setRange(10.0);
+	return base::PlannerPtr(rrt);
     }    
 };
 
@@ -293,11 +269,11 @@ class RRTConnectTest : public TestPlanner
 {
 protected:
 
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
     {
-	kinematic::RRTConnect *rrt = new kinematic::RRTConnect(si);
-	rrt->setRange(0.95);
-	return rrt;
+	geometric::RRTConnect *rrt = new geometric::RRTConnect(si);
+	rrt->setRange(10.0);
+	return base::PlannerPtr(rrt);
     }    
 };
 
@@ -305,12 +281,12 @@ class pRRTTest : public TestPlanner
 {
 protected:
 
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
     {
-	kinematic::pRRT *rrt = new kinematic::pRRT(si);
-	rrt->setRange(0.95);
+	geometric::pRRT *rrt = new geometric::pRRT(si);
+	rrt->setRange(10.0);
 	rrt->setThreadCount(4);
-	return rrt;
+	return base::PlannerPtr(rrt);
     }    
 };
 
@@ -318,14 +294,14 @@ class LazyRRTTest : public TestPlanner
 {
 protected:
 
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
     {
-	kinematic::LazyRRT *rrt = new kinematic::LazyRRT(si);
-	rrt->setRange(0.95);
-	return rrt;
+	geometric::LazyRRT *rrt = new geometric::LazyRRT(si);
+	rrt->setRange(10.0);
+	return base::PlannerPtr(rrt);
     }    
 };
-
+/*
 class SBLTest : public TestPlanner 
 {
 public:
@@ -347,9 +323,9 @@ public:
     
 protected:
     
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
     {
-	kinematic::SBL *sbl = new kinematic::SBL(si);
+	geometric::SBL *sbl = new geometric::SBL(si);
 	sbl->setRange(0.95);
 	
 	std::vector<unsigned int> projection;
@@ -392,9 +368,9 @@ public:
     
 protected:
     
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
     {
-	kinematic::pSBL *sbl = new kinematic::pSBL(si);
+	geometric::pSBL *sbl = new geometric::pSBL(si);
 	sbl->setRange(0.95);
 	sbl->setThreadCount(4);
 	
@@ -438,9 +414,9 @@ public:
     
 protected:
     
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
     {
-	kinematic::EST *est = new kinematic::EST(si);
+	geometric::EST *est = new geometric::EST(si);
 	est->setRange(0.75);
 	
 	std::vector<unsigned int> projection;
@@ -483,9 +459,9 @@ public:
     
 protected:
     
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
     {
-	kinematic::KPIECE1 *kpiece = new kinematic::KPIECE1(si);
+	geometric::KPIECE1 *kpiece = new geometric::KPIECE1(si);
 	kpiece->setRange(0.95);
 	
 	std::vector<unsigned int> projection;
@@ -528,9 +504,9 @@ public:
     
 protected:
     
-    base::Planner* newPlanner(kinematic::SpaceInformationKinematic *si)
+    base::Planner* newPlanner(base::SpaceInformationGeometric *si)
     {
-	kinematic::LBKPIECE1 *kpiece = new kinematic::LBKPIECE1(si);
+	geometric::LBKPIECE1 *kpiece = new geometric::LBKPIECE1(si);
 	kpiece->setRange(0.95);
 	
 	std::vector<unsigned int> projection;
@@ -551,6 +527,7 @@ protected:
     base::OrthogonalProjectionEvaluator *ope;
     
 };
+*/
 
 class PlanTest : public testing::Test
 {
@@ -609,7 +586,7 @@ protected:
 };
 
 
-TEST_F(PlanTest, kinematic_RRT)
+TEST_F(PlanTest, geometric_RRT)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -624,7 +601,7 @@ TEST_F(PlanTest, kinematic_RRT)
     EXPECT_TRUE(avglength < 70.0);
 }
 
-TEST_F(PlanTest, kinematic_RRTConnect)
+TEST_F(PlanTest, geometric_RRTConnect)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -639,7 +616,7 @@ TEST_F(PlanTest, kinematic_RRTConnect)
     EXPECT_TRUE(avglength < 70.0);
 }
 
-TEST_F(PlanTest, kinematic_pRRT)
+TEST_F(PlanTest, geometric_pRRT)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -654,7 +631,8 @@ TEST_F(PlanTest, kinematic_pRRT)
     EXPECT_TRUE(avglength < 70.0);
 }
 
-TEST_F(PlanTest, kinematic_SBL)
+/*
+TEST_F(PlanTest, geometric_SBL)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -669,7 +647,7 @@ TEST_F(PlanTest, kinematic_SBL)
     EXPECT_TRUE(avglength < 65.0);
 }
 
-TEST_F(PlanTest, kinematic_pSBL)
+TEST_F(PlanTest, geometric_pSBL)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -684,7 +662,7 @@ TEST_F(PlanTest, kinematic_pSBL)
     EXPECT_TRUE(avglength < 65.0);
 }
 
-TEST_F(PlanTest, kinematic_KPIECE1)
+TEST_F(PlanTest, geometric_KPIECE1)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -699,7 +677,7 @@ TEST_F(PlanTest, kinematic_KPIECE1)
     EXPECT_TRUE(avglength < 70.0);
 }
 
-TEST_F(PlanTest, kinematic_LBKPIECE1)
+TEST_F(PlanTest, geometric_LBKPIECE1)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -714,7 +692,7 @@ TEST_F(PlanTest, kinematic_LBKPIECE1)
     EXPECT_TRUE(avglength < 70.0);
 }
 
-TEST_F(PlanTest, kinematic_EST)
+TEST_F(PlanTest, geometric_EST)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -728,8 +706,9 @@ TEST_F(PlanTest, kinematic_EST)
     EXPECT_TRUE(avgruntime < 0.1);
     EXPECT_TRUE(avglength < 65.0);
 }
+*/
 
-TEST_F(PlanTest, kinematic_LazyRRT)
+TEST_F(PlanTest, geometric_LazyRRT)
 {
     double success    = 0.0;
     double avgruntime = 0.0;

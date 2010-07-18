@@ -36,6 +36,8 @@
 
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
+#include <libgen.h>
+#include <iostream>
 
 #include "ompl/base/GoalState.h"
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
@@ -43,9 +45,7 @@
 #include "ompl/geometric/SimpleSetup.h"
 
 #include "../../resources/config.h"
-#include "environment2D.h"
-#include <iostream>
-#include <libgen.h>
+#include "../../resources/environment2D.h"
 
 using namespace ompl;
 
