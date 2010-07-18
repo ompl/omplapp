@@ -122,7 +122,7 @@ namespace ompl
 	    /** \brief Check if a state is inside the bounding box */
 	    virtual bool satisfiesBounds(const State *state) const = 0;
 
-	    /** \brief Copy a state to another */
+	    /** \brief Copy a state to another. The memory of source and destination should not overlap. */
 	    virtual void copyState(State *destination, const State *source) const = 0;
 	    
 	    /** \brief Computes distance to between two states */
@@ -131,9 +131,9 @@ namespace ompl
 	    /** \brief Checks whether two states are equal */
 	    virtual bool equalStates(const State *state1, const State *state2) const = 0;
 
-	    /** \brief Computes the state that lies at time t \in [0, 1] on the
-		segment that connects the current state to the
-		destination state */
+	    /** \brief Computes the state that lies at time t \in [0, 1] on the segment that connects the current state to
+		the destination state. The memory location of state is not required to be different from the memory of either
+		from or to. */
 	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const = 0;
 	    
 	    /** \brief Set the allocator to use for a state sampler */

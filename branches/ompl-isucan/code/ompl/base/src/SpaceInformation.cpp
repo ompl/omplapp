@@ -128,9 +128,8 @@ double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
 
 bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const
 {
-    assert(near != state);
-    
-    copyState(state, near);
+    if (state != near)
+	copyState(state, near);
     
     // fix bounds, if needed
     if (!satisfiesBounds(state))
@@ -197,34 +196,36 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
     /* initialize the queue of test positions */
     std::queue< std::pair<int, int> > pos;
     if (nd >= 2)
+    {
 	pos.push(std::make_pair(1, nd - 1));
     
-    /* temporary storage for the checked state */
-    State *test = allocState();
-    
-    /* repeatedly subdivide the path segment in the middle (and check the middle) */
-    while (!pos.empty())
-    {
-	std::pair<int, int> x = pos.front();
+	/* temporary storage for the checked state */
+	State *test = allocState();
 	
-	int mid = (x.first + x.second) / 2;
-	m_stateManifold->interpolate(s1, s2, (double)mid / (double)nd, test);
-	
-	if (!isValid(test))
+	/* repeatedly subdivide the path segment in the middle (and check the middle) */
+	while (!pos.empty())
 	{
-	    result = false;
-	    break;
+	    std::pair<int, int> x = pos.front();
+	    
+	    int mid = (x.first + x.second) / 2;
+	    m_stateManifold->interpolate(s1, s2, (double)mid / (double)nd, test);
+	    
+	    if (!isValid(test))
+	    {
+		result = false;
+		break;
+	    }
+	    
+	    pos.pop();
+	    
+	    if (x.first < mid)
+		pos.push(std::make_pair(x.first, mid - 1));
+	    if (x.second > mid)
+		pos.push(std::make_pair(mid + 1, x.second));
 	}
-		
-	pos.pop();
 	
-	if (x.first < mid)
-	    pos.push(std::make_pair(x.first, mid - 1));
-	if (x.second > mid)
-	    pos.push(std::make_pair(mid + 1, x.second));
+	freeState(test);
     }
-    
-    freeState(test);
     
     return result;
 }

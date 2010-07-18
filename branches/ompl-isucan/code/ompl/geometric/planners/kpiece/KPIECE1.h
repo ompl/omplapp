@@ -32,27 +32,26 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_KPIECE_KPIECE1_
-#define OMPL_KINEMATIC_PLANNERS_KPIECE_KPIECE1_
+#ifndef OMPL_GEOMETRIC_PLANNERS_KPIECE_KPIECE1_
+#define OMPL_GEOMETRIC_PLANNERS_KPIECE_KPIECE1_
 
-#include "ompl/base/Planner.h"
+#include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/base/ProjectionEvaluator.h"
 #include "ompl/datastructures/GridB.h"
-#include "ompl/kinematic/SpaceInformationKinematic.h"
-#include "ompl/kinematic/planners/ik/HCIK.h"
+#include "ompl/geometric/ik/HCIK.h"
 #include <vector>
 
 namespace ompl
 {
     
-    namespace kinematic
+    namespace geometric
     {
 	
 	
 	/**
-	   @anchor kKPIECE1
+	   @anchor gKPIECE1
 	   
 	   @par Short description
 	   
@@ -72,26 +71,24 @@ namespace ompl
 	   
 	*/
 	
-	/** \brief Kinematic Planning by Interior-Exterior Cell Exploration */
+	/** \brief Geometric Planning by Interior-Exterior Cell Exploration */
 	class KPIECE1 : public base::Planner
 	{
 	public:
 	    
-	    KPIECE1(SpaceInformationKinematic *si) : base::Planner(si),
-					             m_sCore(si),
-				                     m_hcik(si)
+	    KPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
+							   m_sCore(si->allocStateSampler()),
+							   m_hcik(si)
 	    {
 		m_type = base::PLAN_TO_GOAL_ANY;
 		m_msg.setPrefix("KPIECE1");
 		
-		m_projectionEvaluator = NULL;
-		m_projectionDimension = 0;
 		m_goalBias = 0.05;
 		m_selectBorderPercentage = 0.9;
 		m_badScoreFactor = 0.5;
 		m_goodScoreFactor = 0.9;
 		m_minValidPathPercentage = 0.2;
-		m_rho = 0.5;
+		m_maxDistance = 0.0;
 		m_tree.grid.onCellUpdate(computeImportance, NULL);
 		m_hcik.setMaxImproveSteps(50);
 		m_addedStartStates = 0;
@@ -104,14 +101,7 @@ namespace ompl
 	    
 	    virtual bool solve(double solveTime);
 	    
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		m_tree.grid.clear();
-		m_tree.size = 0;
-		m_tree.iteration = 1;
-		m_addedStartStates = 0;
-	    }
+	    virtual void clear(void);
 	    
 	    /** \brief Set the goal bias.
 
@@ -133,59 +123,40 @@ namespace ompl
 		return m_goalBias;
 	    }
 	    
-	    /** \brief Set the range the planner is supposed to use. 
-		
+	    /** \brief Set the range the planner is supposed to use.
+
 		This parameter greatly influences the runtime of the
-		algorithm. It is probably a good idea to find what a
-		good value is for each model the planner is used
-		for. The range parameter influences how this @b qm
-		along the path between @b qc and @b qr is chosen. @b
-		qr may be too far, and it may not be best to have @b
-		qm = @b qr all the time (range = 1.0 implies @b qm =
-		@b qr. range should be less than 1.0). However, in a
-		large space, it is also good to leave the neighborhood
-		of @b qc (range = 0.0 implies @b qm = @b qc and no
-		progress is made. rande should be larger than
-		0.0). Multiple values of this range parameter should
-		be tried until a suitable one is found. */
-	    void setRange(double rho)
+		algorithm. It represents the maximum length of a
+		motion to be added in the tree of motions. */
+	    void setRange(double distance)
 	    {
-		m_rho = rho;
+		m_maxDistance = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_rho;
+		return m_maxDistance;
 	    }
 	    
 	    /** \brief Set the projection evaluator. This class is able to
 		compute the projection of a given state. The simplest
 		option is to use an orthogonal projection; see
 		OrthogonalProjectionEvaluator */
-	    void setProjectionEvaluator(base::ProjectionEvaluator *projectionEvaluator)
+	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
 		m_projectionEvaluator = projectionEvaluator;
 	    }
 	    
 	    /** \brief Get the projection evaluator */
-	    base::ProjectionEvaluator* getProjectionEvaluator(void) const
+	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
 		return m_projectionEvaluator;
 	    }
 	    
-	    virtual void setup(void)
-	    {
-		assert(m_projectionEvaluator);
-		m_projectionDimension = m_projectionEvaluator->getDimension();
-		assert(m_projectionDimension > 0);
-		m_projectionEvaluator->getCellDimensions(m_cellDimensions);
-		assert(m_cellDimensions.size() == m_projectionDimension);
-		m_tree.grid.setDimension(m_projectionDimension);
-		Planner::setup();
-	    }
-
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void setup(void);
+	    
+	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	protected:
 	    
@@ -197,14 +168,12 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int dimension) : state(new base::State(dimension)), parent(NULL)
+		Motion(const base::SpaceInformationPtr &si) : state(si->allocState()), parent(NULL)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
 		}
 		
 		base::State       *state;
@@ -220,8 +189,6 @@ namespace ompl
 		
 		~CellData(void)
 		{
-		    for (unsigned int i = 0 ; i < motions.size() ; ++i)
-			delete motions[i];
 		}
 		
 		std::vector<Motion*> motions;
@@ -259,36 +226,28 @@ namespace ompl
 		cd.importance =  cd.score / ((cell->neighbors + 1) * cd.coverage * cd.selections);
 	    }
 	    
-	    void freeMemory(void)
-	    {
-		freeGridMotions(m_tree.grid);
-	    }
-	    
-	    void freeGridMotions(Grid &grid)
-	    {
-		for (Grid::iterator it = grid.begin(); it != grid.end() ; ++it)
-		    delete it->second->data;
-	    }
+	    void freeMemory(void);
+	    void freeGridMotions(Grid &grid);
+	    void freeCellData(CellData *cdata);
+	    void freeMotion(Motion *motion);
 	    
 	    unsigned int addMotion(Motion* motion, double dist);
 	    bool selectMotion(Motion* &smotion, Grid::Cell* &scell);
 	    
-	    base::StateSamplerInstance                 m_sCore;
+	    base::StateSamplerPtr                      m_sCore;
 	    
 	    HCIK                                       m_hcik;
 	    TreeData                                   m_tree;
 	    unsigned int                               m_addedStartStates;
 	    
-	    base::ProjectionEvaluator                 *m_projectionEvaluator;
-	    unsigned int                               m_projectionDimension;
-	    std::vector<double>                        m_cellDimensions;
+	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
 	    
 	    double                                     m_minValidPathPercentage;
 	    double                                     m_goodScoreFactor;
 	    double                                     m_badScoreFactor;
 	    double                                     m_selectBorderPercentage;
 	    double                                     m_goalBias;
-	    double                                     m_rho;	
+	    double                                     m_maxDistance;
 	    RNG                                        m_rng;	
 	};
 	

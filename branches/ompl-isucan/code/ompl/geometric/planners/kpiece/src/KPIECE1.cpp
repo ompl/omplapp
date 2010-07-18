@@ -32,19 +32,68 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/kpiece/KPIECE1.h"
+#include "ompl/geometric/planners/kpiece/KPIECE1.h"
 #include "ompl/base/GoalSampleableRegion.h"
 #include <limits>
+#include <cassert>
 
-bool ompl::kinematic::KPIECE1::solve(double solveTime)
+void ompl::geometric::KPIECE1::setup(void)
 {
-    SpaceInformationKinematic      *si = dynamic_cast<SpaceInformationKinematic*>(m_si); 
-    base::Goal                   *goal = m_pdef->getGoal();
+    Planner::setup();
+    if (!m_projectionEvaluator)
+	throw Exception("No projection evaluator specified");
+    m_projectionEvaluator->checkCellDimensions();
+    if (m_projectionEvaluator->getDimension() <= 0)
+	throw Exception("Dimension of projection needs to be larger than 0");
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
+    m_tree.grid.setDimension(m_projectionEvaluator->getDimension());
+}
+
+void ompl::geometric::KPIECE1::clear(void)
+{
+    freeMemory();
+    m_tree.grid.clear();
+    m_tree.size = 0;
+    m_tree.iteration = 1;
+    m_addedStartStates = 0;
+}
+
+void ompl::geometric::KPIECE1::freeMemory(void)
+{
+    freeGridMotions(m_tree.grid);
+}
+
+void ompl::geometric::KPIECE1::freeGridMotions(Grid &grid)
+{
+    for (Grid::iterator it = grid.begin(); it != grid.end() ; ++it)
+	freeCellData(it->second->data);
+}
+
+void ompl::geometric::KPIECE1::freeCellData(CellData *cdata)
+{
+    for (unsigned int i = 0 ; i < cdata->motions.size() ; ++i)
+	freeMotion(cdata->motions[i]);
+    delete cdata;
+}
+
+void ompl::geometric::KPIECE1::freeMotion(Motion *motion)
+{
+    if (motion->state)
+	m_si->freeState(motion->state);
+    delete motion;
+}
+
+bool ompl::geometric::KPIECE1::solve(double solveTime)
+{
+    base::Goal                   *goal = m_pdef->getGoal().get();
     base::GoalRegion           *goal_r = dynamic_cast<base::GoalRegion*>(goal);
     base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
-    unsigned int                   dim = si->getStateDimension();
     
     if (!goal)
     {
@@ -57,10 +106,10 @@ bool ompl::kinematic::KPIECE1::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, st);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, st);
 	    addMotion(motion, 1.0);
 	}
 	else
@@ -75,16 +124,12 @@ bool ompl::kinematic::KPIECE1::solve(double solveTime)
 
     m_msg.inform("Starting with %u states", m_tree.size);
     
-    std::vector<double> range(dim);
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	range[i] = m_rho * (si->getStateComponent(i).maxValue - si->getStateComponent(i).minValue);
-    
     Motion *solution  = NULL;
     Motion *approxsol = NULL;
     double  approxdif = std::numeric_limits<double>::infinity();
-    base::State *xstate = new base::State(dim);
-
-    double improveValue = 0.01;
+    base::State *xstate = m_si->allocState();
+    
+    double improveValue = m_maxDistance;
 
     while (time::now() < endTime)
     {
@@ -105,32 +150,31 @@ bool ompl::kinematic::KPIECE1::solve(double solveTime)
 	    {
 		if (approxsol && goal_r)
 		{
-		    si->copyState(xstate, approxsol->state);
+		    m_si->copyState(xstate, approxsol->state);
 		    m_msg.debug("Start Running HCIK (%f)...", improveValue);			
-		    if (!m_hcik.tryToImprove(goal_r, xstate, improveValue))
-		    {
-			m_sCore().sampleNear(xstate, existing->state, range);
+		    if (m_hcik.tryToImprove(*goal_r, xstate, improveValue))
 			improveValue /= 2.0;
-		    }
+		    else
+			m_sCore->sampleNear(xstate, existing->state, m_maxDistance);
 		    m_msg.debug("End Running HCIK");			
 		}
 		else
-		    m_sCore().sampleNear(xstate, existing->state, range);
+		    m_sCore->sampleNear(xstate, existing->state, m_maxDistance);
 	    }
 	}
 	else
-	    m_sCore().sampleNear(xstate, existing->state, range);
+	    m_sCore->sampleNear(xstate, existing->state, m_maxDistance);
 	
 	double failTime = 0.0;
-	bool keep = si->checkMotion(existing->state, xstate, xstate, &failTime);
+	bool keep = m_si->checkMotion(existing->state, xstate, xstate, &failTime);
 	if (!keep && failTime > m_minValidPathPercentage)
 	    keep = true;
 	
 	if (keep)
 	{
 	    /* create a motion */
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, xstate);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, xstate);
 	    motion->parent = existing;
 	    
 	    double dist = 0.0;
@@ -140,7 +184,7 @@ bool ompl::kinematic::KPIECE1::solve(double solveTime)
 	    if (solved)
 	    {
 		approxdif = dist;
-		solution = motion;    
+		solution = motion;
 		break;
 	    }
 	    if (dist < approxdif)
@@ -174,21 +218,17 @@ bool ompl::kinematic::KPIECE1::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathKinematic *path = new PathKinematic(m_si);
+	PathGeometric *path = new PathGeometric(m_si);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
-	{   
-	    base::State *st = new base::State(dim);
-	    si->copyState(st, mpath[i]->state);
-	    path->states.push_back(st);
-	}
+	    path->states.push_back(m_si->cloneState(mpath[i]->state));
 	goal->setDifference(approxdif);
-	goal->setSolutionPath(path, approximate);
+	goal->setSolutionPath(base::PathPtr(path), approximate);
 
 	if (approximate)
 	    m_msg.warn("Found approximate solution");
     }
 
-    delete xstate;
+    m_si->freeState(xstate);
     
     m_msg.inform("Created %u states in %u cells (%u internal + %u external)", m_tree.size, m_tree.grid.size(),
 		 m_tree.grid.countInternal(), m_tree.grid.countExternal());
@@ -196,7 +236,7 @@ bool ompl::kinematic::KPIECE1::solve(double solveTime)
     return goal->isAchieved();
 }
 
-bool ompl::kinematic::KPIECE1::selectMotion(Motion* &smotion, Grid::Cell* &scell)
+bool ompl::geometric::KPIECE1::selectMotion(Motion* &smotion, Grid::Cell* &scell)
 {
     scell = m_rng.uniform01() < std::max(m_selectBorderPercentage, m_tree.grid.fracExternal()) ?
 	m_tree.grid.topExternal() : m_tree.grid.topInternal();
@@ -210,7 +250,7 @@ bool ompl::kinematic::KPIECE1::selectMotion(Motion* &smotion, Grid::Cell* &scell
 	return false;
 }
 
-unsigned int ompl::kinematic::KPIECE1::addMotion(Motion *motion, double dist)
+unsigned int ompl::geometric::KPIECE1::addMotion(Motion *motion, double dist)
 {
     Grid::Coord coord;
     m_projectionEvaluator->computeCoordinates(motion->state, coord);
@@ -238,14 +278,14 @@ unsigned int ompl::kinematic::KPIECE1::addMotion(Motion *motion, double dist)
     return created;
 }
 
-void ompl::kinematic::KPIECE1::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::geometric::KPIECE1::getPlannerData(base::PlannerData &data) const
 {
-    states.resize(0);
-    states.reserve(m_tree.size);
+    data.states.resize(0);
+    data.states.reserve(m_tree.size);
     
     std::vector<CellData*> cdata;
     m_tree.grid.getContent(cdata);
     for (unsigned int i = 0 ; i < cdata.size() ; ++i)
 	for (unsigned int j = 0 ; j < cdata[i]->motions.size() ; ++j)
-	    states.push_back(cdata[i]->motions[j]->state); 
+	    data.states.push_back(cdata[i]->motions[j]->state); 
 }

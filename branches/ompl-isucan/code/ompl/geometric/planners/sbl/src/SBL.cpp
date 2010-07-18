@@ -325,6 +325,8 @@ void ompl::geometric::SBL::removeMotion(TreeData &tree, Motion *motion)
 	removeMotion(tree, motion->children[i]);
     }
     
+    if (motion->state)
+	m_si->freeState(motion->state);
     delete motion;
 }
 
