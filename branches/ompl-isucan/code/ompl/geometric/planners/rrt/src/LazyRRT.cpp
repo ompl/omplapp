@@ -32,18 +32,46 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/rrt/LazyRRT.h"
+#include "ompl/geometric/planners/rrt/LazyRRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
+#include <limits>
 #include <cassert>
 
-bool ompl::kinematic::LazyRRT::solve(double solveTime)
+void ompl::geometric::LazyRRT::setup(void)
 {
-    SpaceInformationKinematic  *si     = dynamic_cast<SpaceInformationKinematic*>(m_si); 
-    base::Goal                 *goal   = m_pdef->getGoal();
+    Planner::setup();
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
+}
+
+void ompl::geometric::LazyRRT::clear(void)
+{
+    freeMemory();
+    m_nn.clear();
+    m_addedStartStates = 0;
+}
+
+void ompl::geometric::LazyRRT::freeMemory(void)
+{
+    std::vector<Motion*> motions;
+    m_nn.list(motions);
+    for (unsigned int i = 0 ; i < motions.size() ; ++i)
+    {
+	if (motions[i]->state)
+	    m_si->freeState(motions[i]->state);		    
+	delete motions[i];
+    }
+}
+
+bool ompl::geometric::LazyRRT::solve(double solveTime)
+{
+    base::Goal                 *goal   = m_pdef->getGoal().get();
     base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
-    unsigned int                   dim = si->getStateDimension();
     
     if (!goal)
     {
@@ -56,10 +84,10 @@ bool ompl::kinematic::LazyRRT::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{ 
-	    Motion *motion = new Motion(dim);
-	    si->copyState(motion->state, st);
+	    Motion *motion = new Motion(m_si);
+	    m_si->copyState(motion->state, st);
 	    motion->valid = true;
 	    m_nn.add(motion);
 	}	
@@ -75,16 +103,12 @@ bool ompl::kinematic::LazyRRT::solve(double solveTime)
 
     m_msg.inform("Starting with %u states", m_nn.size());
 
-    std::vector<double> range(dim);
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	range[i] = m_rho * (si->getStateComponent(i).maxValue - si->getStateComponent(i).minValue);
-    
     Motion *solution = NULL;
     double  distsol  = -1.0;
-    Motion *rmotion  = new Motion(dim);
+    Motion *rmotion  = new Motion(m_si);
     base::State *rstate = rmotion->state;
-    base::State *xstate = new base::State(dim);
-
+    base::State *xstate = m_si->allocState();
+    
  RETRY:
 
     while (time::now() < endTime)
@@ -93,22 +117,24 @@ bool ompl::kinematic::LazyRRT::solve(double solveTime)
 	if (goal_s && m_rng.uniform01() < m_goalBias)
 	    goal_s->sampleGoal(rstate);
 	else
-	    m_sCore().sample(rstate);
+	    m_sCore->sample(rstate);
 
 	/* find closest state in the tree */
 	Motion *nmotion = m_nn.nearest(rmotion);
 	assert(nmotion != rmotion);
+	base::State *dstate = rstate;
 	
 	/* find state to add */
-	for (unsigned int i = 0 ; i < dim ; ++i)
+	double d = m_si->distance(nmotion->state, rstate);
+	if (d > m_maxDistance)
 	{
-	    double diff = rmotion->state->values[i] - nmotion->state->values[i];
-	    xstate->values[i] = fabs(diff) < range[i] ? rmotion->state->values[i] : nmotion->state->values[i] + diff * m_rho;
+	    m_si->getStateManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
+	    dstate = xstate;
 	}
-	
+
 	/* create a motion */
-	Motion *motion = new Motion(dim);
-	si->copyState(motion->state, xstate);
+	Motion *motion = new Motion(m_si);
+	m_si->copyState(motion->state, dstate);
 	motion->parent = nmotion;
 	nmotion->children.push_back(motion);
 	m_nn.add(motion);
@@ -136,7 +162,7 @@ bool ompl::kinematic::LazyRRT::solve(double solveTime)
 	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
 	    if (!mpath[i]->valid)
 	    {
-		if (si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
+		if (m_si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
 		    mpath[i]->valid = true;
 		else
 		{
@@ -146,20 +172,17 @@ bool ompl::kinematic::LazyRRT::solve(double solveTime)
 	    }
 	
 	/* set the solution path */
-	PathKinematic *path = new PathKinematic(m_si);
+	PathGeometric *path = new PathGeometric(m_si);
 	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
-	{
-	    base::State *st = new base::State(dim);
-	    si->copyState(st, mpath[i]->state);
-	    path->states.push_back(st);
-	}
+	    path->states.push_back(m_si->cloneState(mpath[i]->state));
 	
 	goal->setDifference(distsol);
-	goal->setSolutionPath(path);	
+	goal->setSolutionPath(base::PathPtr(path));
 	
     }
     
-    delete xstate;
+    m_si->freeState(xstate);
+    m_si->freeState(rstate);
     delete rmotion;
     
     m_msg.inform("Created %u states", m_nn.size());
@@ -167,7 +190,7 @@ bool ompl::kinematic::LazyRRT::solve(double solveTime)
     return goal->isAchieved();
 }
 
-void ompl::kinematic::LazyRRT::removeMotion(Motion *motion)
+void ompl::geometric::LazyRRT::removeMotion(Motion *motion)
 {
     m_nn.remove(motion);
     
@@ -191,11 +214,11 @@ void ompl::kinematic::LazyRRT::removeMotion(Motion *motion)
     }
 }
 
-void ompl::kinematic::LazyRRT::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::geometric::LazyRRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
     m_nn.list(motions);
-    states.resize(motions.size());
+    data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
-	states[i] = motions[i]->state;
+	data.states[i] = motions[i]->state;
 }
