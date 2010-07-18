@@ -47,7 +47,20 @@ void ompl::geometric::EST::setup(void)
     m_projectionEvaluator->checkCellDimensions();
     if (m_projectionEvaluator->getDimension() <= 0)
 	throw Exception("Dimension of projection needs to be larger than 0");
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
     m_tree.grid.setDimension(m_projectionEvaluator->getDimension());
+}
+
+void ompl::geometric::EST::clear(void)
+{
+    freeMemory();
+    m_tree.grid.clear();
+    m_tree.size = 0;
+    m_addedStartStates = 0;
 }
 
 void ompl::geometric::EST::freeMemory(void)

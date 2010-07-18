@@ -89,13 +89,7 @@ namespace ompl
 	    
 	    virtual bool solve(double solveTime);
 	    
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		m_tree.grid.clear();
-		m_tree.size = 0;
-		m_addedStartStates = 0;
-	    }
+	    virtual void clear(void);
 	    
 	    /** In the process of randomly selecting states in the state
 		space to attempt to go towards, the algorithm may in fact

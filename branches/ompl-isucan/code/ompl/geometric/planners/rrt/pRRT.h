@@ -96,12 +96,7 @@ namespace ompl
 
 	    virtual bool solve(double solveTime);
 	    
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		m_nn.clear();
-		m_addedStartStates = 0;
-	    }
+	    virtual void clear(void);
 	    
 	    /** \brief Set the goal bias.
 
@@ -146,7 +141,9 @@ namespace ompl
 	    {
 		return m_threadCount;
 	    }
-	    	    
+	    
+	    virtual void setup(void);
+	    
 	protected:
 	    
 	    class Motion

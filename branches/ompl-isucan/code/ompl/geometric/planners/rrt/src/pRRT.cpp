@@ -39,6 +39,23 @@
 #include <boost/thread/thread.hpp>
 #include <limits>
 
+void ompl::geometric::pRRT::setup(void)
+{
+    Planner::setup();
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
+}
+
+void ompl::geometric::pRRT::clear(void)
+{
+    freeMemory();
+    m_nn.clear();
+    m_addedStartStates = 0;
+}
+
 void ompl::geometric::pRRT::freeMemory(void)
 {
     std::vector<Motion*> motions;
