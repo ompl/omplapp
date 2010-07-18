@@ -32,26 +32,24 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#ifndef OMPL_KINEMATIC_PLANNERS_KPIECE_LBKPIECE1_
-#define OMPL_KINEMATIC_PLANNERS_KPIECE_LBKPIECE1_
+#ifndef OMPL_GEOMETRIC_PLANNERS_KPIECE_LBKPIECE1_
+#define OMPL_GEOMETRIC_PLANNERS_KPIECE_LBKPIECE1_
 
-#include "ompl/base/Planner.h"
+#include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/base/ProjectionEvaluator.h"
 #include "ompl/datastructures/GridB.h"
-#include "ompl/kinematic/SpaceInformationKinematic.h"
 #include <vector>
-
 
 namespace ompl
 {
     
-    namespace kinematic
+    namespace geometric
     {
 	
 	/**
-	   @anchor kLBKPIECE1
+	   @anchor gLBKPIECE1
 	   with one level of discretization
 	   
 	   @par Short description
@@ -76,16 +74,14 @@ namespace ompl
 	{
 	public:
 	    
-	    LBKPIECE1(SpaceInformationKinematic *si) : base::Planner(si),
-					               m_sCore(si)
+	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
+							     m_sCore(si->allocStateSampler())
 	    {
 		m_type = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		m_msg.setPrefix("LBKPIECE1");
 		
-		m_projectionEvaluator = NULL;
-		m_projectionDimension = 0;
 		m_selectBorderPercentage = 0.9;
-		m_rho = 0.5;
+		m_maxDistance = 0.0;
 		m_sampledGoalsCount = 0;
 		m_addedStartStates = 0;
 		m_tStart.grid.onCellUpdate(computeImportance, NULL);
@@ -101,37 +97,33 @@ namespace ompl
 		compute the projection of a given state. The simplest
 		option is to use an orthogonal projection; see
 		OrthogonalProjectionEvaluator */
-	    void setProjectionEvaluator(base::ProjectionEvaluator *projectionEvaluator)
+	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
 		m_projectionEvaluator = projectionEvaluator;
 	    }
 	    
-	    base::ProjectionEvaluator* getProjectionEvaluator(void) const
+	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
 		return m_projectionEvaluator;
 	    }
 	    
-	    /** Set the range the planner is supposed to use. This
-		parameter greatly influences the runtime of the
-		algorithm. It is probably a good idea to find what a good
-		value is for each model the planner is used for. The basic
-		idea of KPIECE is that it samples a random state around a
-		state that was already added to the tree. The distance
-		withing which this new state is sampled is controled by
-		the range. This should be a value larger than 0.0 and less
-		than 1.0 */
-	    void setRange(double rho)
+	    /** \brief Set the range the planner is supposed to use.
+
+		This parameter greatly influences the runtime of the
+		algorithm. It represents the maximum length of a
+		motion to be added in the tree of motions. */
+	    void setRange(double distance)
 	    {
-		m_rho = rho;
+		m_maxDistance = distance;
 	    }
 	    
-	    /** Get the range the planner is using */
+	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_rho;
+		return m_maxDistance;
 	    }
 	    
-	    /** Set the percentage of time for focusing on the
+	    /** \brief Set the percentage of time for focusing on the
 		border. This is the minimum percentage used to select
 		cells that are exterior (minimum because if 95% of cells
 		are on the border, they will be selected with 95%
@@ -146,22 +138,12 @@ namespace ompl
 		return m_selectBorderPercentage;
 	    }
 	    
-	    virtual void setup(void)
-	    {
-		assert(m_projectionEvaluator);
-		m_projectionDimension = m_projectionEvaluator->getDimension();
-		assert(m_projectionDimension > 0);
-		m_projectionEvaluator->getCellDimensions(m_cellDimensions);
-		assert(m_cellDimensions.size() == m_projectionDimension);
-		m_tStart.grid.setDimension(m_projectionDimension);
-		m_tGoal.grid.setDimension(m_projectionDimension);
-		Planner::setup();
-	    }
+	    virtual void setup(void);
 	    
 	    virtual bool solve(double solveTime);
 	    virtual void clear(void);
 
-	    virtual void getStates(std::vector</*const*/ base::State*> &states) const;
+	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	protected:
 	    
@@ -173,14 +155,12 @@ namespace ompl
 		{
 		}
 		
-		Motion(unsigned int dimension) : root(NULL), state(new base::State(dimension)), parent(NULL), valid(false)
+		Motion(const base::SpaceInformationPtr &si) : root(NULL), state(si->allocState()), parent(NULL), valid(false)
 		{
 		}
 		
 		~Motion(void)
 		{
-		    if (state)
-			delete state;
 		}
 		
 		const base::State   *root;
@@ -198,8 +178,6 @@ namespace ompl
 		
 		~CellData(void)
 		{
-		    for (unsigned int i = 0 ; i < motions.size() ; ++i)
-			delete motions[i];
 		}
 		
 		std::vector<Motion*> motions;
@@ -239,6 +217,8 @@ namespace ompl
 	    
 	    void freeMemory(void);
 	    void freeGridMotions(Grid &grid);
+	    void freeCellData(CellData *cdata);
+	    void freeMotion(Motion *motion);
 	    
 	    void addMotion(TreeData &tree, Motion* motion);
 	    Motion* selectMotion(TreeData &tree);	
@@ -246,11 +226,9 @@ namespace ompl
 	    bool isPathValid(TreeData &tree, Motion* motion);
 	    bool checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion* motion, std::vector<Motion*> &solution);
 	    
-	    base::StateSamplerInstance                 m_sCore;
+	    base::StateSamplerPtr                      m_sCore;
 
-	    base::ProjectionEvaluator                 *m_projectionEvaluator;
-	    unsigned int                               m_projectionDimension;
-	    std::vector<double>                        m_cellDimensions;
+	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
 	    
 	    TreeData                                   m_tStart;
 	    TreeData                                   m_tGoal;
@@ -267,7 +245,7 @@ namespace ompl
 	    unsigned int                               m_addedStartStates;
 	    
 	    double                                     m_selectBorderPercentage;
-	    double                                     m_rho;	
+	    double                                     m_maxDistance;
 	    RNG                                        m_rng;	
 	};
 	

@@ -32,16 +32,33 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
-#include "ompl/kinematic/planners/kpiece/LBKPIECE1.h"
+#include "ompl/geometric/planners/kpiece/LBKPIECE1.h"
 #include "ompl/base/GoalSampleableRegion.h"
+#include <limits>
+#include <cassert>
 
-bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
+void ompl::geometric::LBKPIECE1::setup(void)
 {
-    SpaceInformationKinematic    *si = dynamic_cast<SpaceInformationKinematic*>(m_si); 
-    base::GoalSampleableRegion *goal = dynamic_cast<base::GoalSampleableRegion*>(m_pdef->getGoal());
-    unsigned int                 dim = si->getStateDimension();
+    Planner::setup();
+    if (!m_projectionEvaluator)
+	throw Exception("No projection evaluator specified");
+    m_projectionEvaluator->checkCellDimensions();
+    if (m_projectionEvaluator->getDimension() <= 0)
+	throw Exception("Dimension of projection needs to be larger than 0");
+    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    {
+	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
+	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+    }
+    m_tStart.grid.setDimension(m_projectionEvaluator->getDimension());
+    m_tGoal.grid.setDimension(m_projectionEvaluator->getDimension());
+}
+
+bool ompl::geometric::LBKPIECE1::solve(double solveTime)
+{
+    base::GoalSampleableRegion *goal = dynamic_cast<base::GoalSampleableRegion*>(m_pdef->getGoal().get());
     
     if (!goal)
     {
@@ -54,10 +71,10 @@ bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
     for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
     {
 	const base::State *st = m_pdef->getStartState(i);
-	if (si->satisfiesBounds(st) && si->isValid(st))
+	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
 	{
-	    Motion* motion = new Motion(dim);
-	    si->copyState(motion->state, st);
+	    Motion* motion = new Motion(m_si);
+	    m_si->copyState(motion->state, st);
 	    motion->root = st;
 	    motion->valid = true;
 	    addMotion(m_tStart, motion);
@@ -82,14 +99,10 @@ bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
     m_msg.inform("Starting with %d states", (int)(m_tStart.size + m_tGoal.size));
     
     std::vector<Motion*> solution;
-    base::State *xstate = new base::State(dim);
-    base::State *gstate = new base::State(dim);
+    base::State *xstate = m_si->allocState();
+    base::State *gstate = m_si->allocState();
     bool      startTree = true;
-    
-    std::vector<double> range(dim);
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	range[i] = m_rho * (si->getStateComponent(i).maxValue - si->getStateComponent(i).minValue);
-    
+        
     while (time::now() < endTime)
     {
 	TreeData &tree      = startTree ? m_tStart : m_tGoal;
@@ -110,10 +123,10 @@ bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
 		    firstAttempt = false;
 		    goal->sampleGoal(gstate);
 		    m_sampledGoalsCount++;
-		    if (si->satisfiesBounds(gstate) && si->isValid(gstate))
+		    if (m_si->satisfiesBounds(gstate) && m_si->isValid(gstate))
 		    {
-			Motion* motion = new Motion(dim);
-			si->copyState(motion->state, gstate);
+			Motion* motion = new Motion(m_si);
+			m_si->copyState(motion->state, gstate);
 			motion->root = motion->state;
 			motion->valid = true;
 			addMotion(m_tGoal, motion);
@@ -131,11 +144,11 @@ bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
 	
 	Motion* existing = selectMotion(tree);
 	assert(existing);
-	m_sCore().sampleNear(xstate, existing->state, range);
+	m_sCore->sampleNear(xstate, existing->state, m_maxDistance);
 	
 	/* create a motion */
-	Motion* motion = new Motion(dim);
-	si->copyState(motion->state, xstate);
+	Motion* motion = new Motion(m_si);
+	m_si->copyState(motion->state, xstate);
 	motion->parent = existing;
 	motion->root = existing->root;
 	existing->children.push_back(motion);
@@ -144,22 +157,18 @@ bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
 	
 	if (checkSolution(!startTree, tree, otherTree, motion, solution))
 	{
-	    PathKinematic *path = new PathKinematic(m_si);
+	    PathGeometric *path = new PathGeometric(m_si);
 	    for (unsigned int i = 0 ; i < solution.size() ; ++i)
-	    {
-		base::State *st = new base::State(dim);
-		si->copyState(st, solution[i]->state);
-		path->states.push_back(st);
-	    }
+		path->states.push_back(m_si->cloneState(solution[i]->state));
 	    
 	    goal->setDifference(0.0);
-	    goal->setSolutionPath(path);
+	    goal->setSolutionPath(base::PathPtr(path));
 	    break;
 	}
     }
     
-    delete gstate;
-    delete xstate;
+    m_si->freeState(gstate);
+    m_si->freeState(xstate);
     
     m_msg.inform("Created %u (%u start + %u goal) states in %u cells (%u start + %u goal)", 
 		 m_tStart.size + m_tGoal.size, m_tStart.size, m_tGoal.size,
@@ -168,7 +177,7 @@ bool ompl::kinematic::LBKPIECE1::solve(double solveTime)
     return goal->isAchieved();
 }
 
-bool ompl::kinematic::LBKPIECE1::checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion* motion, std::vector<Motion*> &solution)
+bool ompl::geometric::LBKPIECE1::checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion* motion, std::vector<Motion*> &solution)
 {
     Grid::Coord coord;
     m_projectionEvaluator->computeCoordinates(motion->state, coord);
@@ -180,10 +189,9 @@ bool ompl::kinematic::LBKPIECE1::checkSolution(bool start, TreeData &tree, TreeD
 	
 	if (m_pdef->getGoal()->isStartGoalPairValid(start ? motion->root : connectOther->root, start ? connectOther->root : motion->root))
 	{
-	    SpaceInformationKinematic *si = static_cast<SpaceInformationKinematic*>(m_si);
-	    Motion* connect               = new Motion(si->getStateDimension());
+	    Motion* connect = new Motion(m_si);
 	    
-	    si->copyState(connect->state, connectOther->state);
+	    m_si->copyState(connect->state, connectOther->state);
 	    connect->parent = motion;
 	    connect->root = motion->root;
 	    motion->children.push_back(connect);
@@ -221,10 +229,9 @@ bool ompl::kinematic::LBKPIECE1::checkSolution(bool start, TreeData &tree, TreeD
     return false;
 }
 
-bool ompl::kinematic::LBKPIECE1::isPathValid(TreeData &tree, Motion* motion)
+bool ompl::geometric::LBKPIECE1::isPathValid(TreeData &tree, Motion *motion)
 {
-    std::vector<Motion*>       mpath;
-    SpaceInformationKinematic *si = static_cast<SpaceInformationKinematic*>(m_si);
+    std::vector<Motion*> mpath;
     
     /* construct the solution path */
     while (motion != NULL)
@@ -237,7 +244,7 @@ bool ompl::kinematic::LBKPIECE1::isPathValid(TreeData &tree, Motion* motion)
     for (int i = mpath.size() - 1 ; i >= 0 ; --i)
 	if (!mpath[i]->valid)
 	{
-	    if (si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
+	    if (m_si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
 		mpath[i]->valid = true;
 	    else
 	    {
@@ -248,7 +255,7 @@ bool ompl::kinematic::LBKPIECE1::isPathValid(TreeData &tree, Motion* motion)
     return true;
 }
 
-ompl::kinematic::LBKPIECE1::Motion* ompl::kinematic::LBKPIECE1::selectMotion(TreeData &tree)
+ompl::geometric::LBKPIECE1::Motion* ompl::geometric::LBKPIECE1::selectMotion(TreeData &tree)
 {
     Grid::Cell* cell = m_rng.uniform01() < std::max(m_selectBorderPercentage, tree.grid.fracExternal()) ?
 	tree.grid.topExternal() : tree.grid.topInternal();
@@ -262,7 +269,7 @@ ompl::kinematic::LBKPIECE1::Motion* ompl::kinematic::LBKPIECE1::selectMotion(Tre
 	return NULL;
 }
 
-void ompl::kinematic::LBKPIECE1::removeMotion(TreeData &tree, Motion* motion)
+void ompl::geometric::LBKPIECE1::removeMotion(TreeData &tree, Motion *motion)
 {
     /* remove from grid */
     
@@ -281,7 +288,7 @@ void ompl::kinematic::LBKPIECE1::removeMotion(TreeData &tree, Motion* motion)
 	if (cell->data->motions.empty())
 	{
 	    tree.grid.remove(cell);
-	    delete cell->data;
+	    freeCellData(cell->data);
 	    tree.grid.destroyCell(cell);
 	}
     }
@@ -305,14 +312,14 @@ void ompl::kinematic::LBKPIECE1::removeMotion(TreeData &tree, Motion* motion)
 	removeMotion(tree, motion->children[i]);
     }
     
-    delete motion;
+    freeMotion(motion);
 }
 
-void ompl::kinematic::LBKPIECE1::addMotion(TreeData &tree, Motion* motion)
+void ompl::geometric::LBKPIECE1::addMotion(TreeData &tree, Motion *motion)
 {
     Grid::Coord coord;
     m_projectionEvaluator->computeCoordinates(motion->state, coord);
-    Grid::Cell* cell = tree.grid.getCell(coord);
+    Grid::Cell *cell = tree.grid.getCell(coord);
     if (cell)
     {
 	cell->data->motions.push_back(motion);
@@ -332,19 +339,33 @@ void ompl::kinematic::LBKPIECE1::addMotion(TreeData &tree, Motion* motion)
     tree.size++;
 }
 
-void ompl::kinematic::LBKPIECE1::freeMemory(void)
+void ompl::geometric::LBKPIECE1::freeMemory(void)
 {
     freeGridMotions(m_tStart.grid);
     freeGridMotions(m_tGoal.grid);
 }
 
-void ompl::kinematic::LBKPIECE1::freeGridMotions(Grid &grid)
+void ompl::geometric::LBKPIECE1::freeGridMotions(Grid &grid)
 {
     for (Grid::iterator it = grid.begin(); it != grid.end() ; ++it)
-	delete it->second->data;
+	freeCellData(it->second->data);
 }
 
-void ompl::kinematic::LBKPIECE1::clear(void)
+void ompl::geometric::LBKPIECE1::freeCellData(CellData *cdata)
+{
+    for (unsigned int i = 0 ; i < cdata->motions.size() ; ++i)
+	freeMotion(cdata->motions[i]);
+    delete cdata;
+}
+
+void ompl::geometric::LBKPIECE1::freeMotion(Motion *motion)
+{
+    if (motion->state)
+	m_si->freeState(motion->state);
+    delete motion;
+}
+
+void ompl::geometric::LBKPIECE1::clear(void)
 {
     freeMemory();
     
@@ -360,20 +381,20 @@ void ompl::kinematic::LBKPIECE1::clear(void)
     m_addedStartStates = 0;
 }
 
-void ompl::kinematic::LBKPIECE1::getStates(std::vector</*const*/ base::State*> &states) const
+void ompl::geometric::LBKPIECE1::getPlannerData(base::PlannerData &data) const
 {
-    states.resize(0);
-    states.reserve(m_tStart.size + m_tGoal.size);
+    data.states.resize(0);
+    data.states.reserve(m_tStart.size + m_tGoal.size);
     
     std::vector<CellData*> cdata;
     m_tStart.grid.getContent(cdata);
     for (unsigned int i = 0 ; i < cdata.size() ; ++i)
 	for (unsigned int j = 0 ; j < cdata[i]->motions.size() ; ++j)
-	    states.push_back(cdata[i]->motions[j]->state); 
+	    data.states.push_back(cdata[i]->motions[j]->state); 
     
     cdata.clear();
     m_tGoal.grid.getContent(cdata);
     for (unsigned int i = 0 ; i < cdata.size() ; ++i)
 	for (unsigned int j = 0 ; j < cdata[i]->motions.size() ; ++j)
-	    states.push_back(cdata[i]->motions[j]->state); 
+	    data.states.push_back(cdata[i]->motions[j]->state); 
 }
