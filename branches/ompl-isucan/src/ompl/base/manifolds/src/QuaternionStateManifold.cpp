@@ -173,5 +173,5 @@ void ompl::base::QuaternionStateManifold::printState(const State *state, std::os
 
 void ompl::base::QuaternionStateManifold::printSettings(std::ostream &out) const
 {
-    out << "Quaternion state manifold" << std::endl;
+    out << "SO(3) state manifold (represented using quaternions)" << std::endl;
 }

@@ -93,7 +93,7 @@ namespace ompl
 	double halfNormalReal(double r_min, double r_max, double focus = 3.0);
 	int    halfNormalInt(int r_min, int r_max, double focus = 3.0);
 	
-	/** \brief Random quaternion generator. The returned value has the order (x,y,z,w) */	
+	/** \brief Uniform random unit quaternion sampling. The returned value has the order (x,y,z,w) */	
 	void   quaternion(double value[4]);
 	
     private:

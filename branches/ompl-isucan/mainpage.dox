@@ -98,6 +98,7 @@
    ompl::base::StateManifold. To change the definition of the employed
    sampler or distance function, it is possible to provide a further
    specialization of such a manifold. See @ref implementStateManifold
+   "implementing a new manifold".
 
    @subsubsection pdef Instantiating a problem definition
 
@@ -191,6 +192,6 @@
 
 @section howto How To's
 
-   @ref implementStateManifold How to implement a new state manifold
+   @ref implementStateManifold "How to implement a new state manifold"
 
 */
