@@ -36,6 +36,7 @@
 
 #include "ompl/base/manifolds/SO2StateManifold.h"
 #include <algorithm>
+#include <limits>
 #include <cmath>
 
 void ompl::base::SO2StateUniformSampler::sample(State *state)
