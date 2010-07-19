@@ -71,7 +71,7 @@ namespace ompl
 	   
 	*/
 	
-	/** \brief Geometric Planning by Interior-Exterior Cell Exploration */
+	/** \brief Kinematic Planning by Interior-Exterior Cell Exploration */
 	class KPIECE1 : public base::Planner
 	{
 	public:

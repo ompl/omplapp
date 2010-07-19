@@ -15,7 +15,7 @@
    The overall structure can be observed by looking at the @b base/
    directory. There are four main components: 
    - the state manifold (ompl::base::StateManifold) we are planning in, and a control manifold (ompl::control::ControlManifold), if planning with controls
-   - the space information (ompl::base::SpaceInformation), which is contructed from the state manifold (and the control manifold, if planning with controls - ompl::control::SpaceInformation)
+   - the space information (ompl::base::SpaceInformation), which is constructed from the state manifold (and the control manifold, if planning with controls - ompl::control::SpaceInformation)
    - the problem definition (ompl::base::ProblemDefinition)
    - the planner (ompl::base::Planner)
 
@@ -51,19 +51,19 @@
 
    - @ref HCIK "Inverse Kinematics with Hill Climbing"
    - @ref GAIK "Inverse Kinematics with Genetic Algorithms"
-   - @ref IKPlanner "Inverse Kinematics Planner"
 
    @subsection kusage Usage
 
    @subsubsection plannerinstance Instantiating a planner
 
    In order to use a motion planner (ompl::geometric::XXX, from @b
-   ompl/geometric/planners), an instance of a geometric space
-   information must be available. This instance is supplied to the
-   planner's constructor.  After creation, a call to the planner's @b
-   setup() method must be made and the planner instance is ready for
-   use: the @b solve() method can be called repeatedly with different
-   allowed time durations until a solution is found.
+   ompl/geometric/planners), an instance of
+   ompl::base::SpaceInformation must be available. This instance is
+   supplied to the planner's constructor.  After creation, a call to
+   the planner's @b setup() method must be made and the planner
+   instance is ready for use: the @b solve() method can be called
+   repeatedly with different allowed time durations until a solution
+   is found.
 
    @subsubsection spaceinfo Instantiating a space information class
 
@@ -72,68 +72,45 @@
    requires only a state manifold to be specified. However, this class
    needs to be configured before use:
 
-     - a std::vector < ompl::base::StateComponent > must be supplied to
-       the space information class by calling @b
-       setStateComponents. This specification describes a bounding
-       box for the state space. Random samples will only be generated
-       within this box.
-
-     - instances of ompl::base::State need to be supplied as starting
-       states for the system (at least one), using @b addStartState.
-
-     - an ompl::base::Goal specification must be set using @b
-       setGoal. For simplicity, specifications of this class are
-       available: ompl::base::GoalRegion,
-       ompl::base::GoalSampleableRegion, ompl::base::GoalState,
-       ompl::base::GoalStates.
-
      - ompl::base::StateValidityChecker is an abstract class that
        provides functionality for determining whether a state is valid
        or not. This class is assumed to be thread safe. The user must
        provide an implementation of this class and supply it to the
-       space information instance by calling @b
-       setStateValidityChecker.
-       
-     - ompl::base::StateDistanceEvaluator is an abstract class that
-       provides functionality for computing distances between
-       functions. This class is assumed to be thread safe. The user
-       can specify which implementation of this class is to be used by
-       calling @b setStateDistanceEvaluator. If no distane evaluator
-       is specified, the default
-       ompl::base::L2SquareStateDistanceEvaluator is used (square of
-       L2 norm).
+       space information instance by calling
+       ompl::base::SpaceInformation::setStateValidityChecker().
 
-     - ompl::base::StateSampler is an abstract class that provides
-       functionality for sampling states. This class is NOT assumed to
-       be thread safe because of issues of generating random samples
-       in parallel, using the same seed. For this reason, state samplers are
-       instantiated as needed. In order for proper instantiation to
-       occur, the user should supply a boost::function that takes a
-       const ompl::base::SpaceInformation as argument and returns an
-       instance of the desired sampler (which inherits from
-       ompl::base::StateSampler). This function can be supplied to the
-       space information instance using @b
-       setStateSamplerAllocator. If no state sampler allocator is
-       specified, a default allocator that instantiates
-       ompl::base::UniformStateSampler is assumed.
-
-     - ompl::geometric::StateInterpolatorGeometric is an abstract
-       class that provides functionality for interpolating between
-       states. This class is assumed to be thread safe. Users can set
-       which instance of this class to use by calling @b
-       setStateInterpolator. If no state interpolator is provided, a
-       linear one is assumed
-       (ompl::geometric::LinearStateInterpolatorGeometric).
-
-
-   Some of these parameters can als be set if the user provides a
-   space information class that inherits from
-   ompl::geometric::SpaceInformationGeometric. This use is encouraged
-   if it simplifies the code.
+     - a call needs to be made to
+       ompl::base::SpaceInformation::setStateValidityCheckingResolution()
+       in order to specify the maximu distance between states to be
+       checked for validity along a path segment. If this call is not
+       made, the extents of the space are estimated and this distance
+       is computed. This functionality however is NOT SAFE. It is
+       meant to be used as last resort, as this parameter needs to be
+       specified for planning to work.
 
    Once the class is instantiated and all parameters have been set,
-   the @b setup() function needs to be called and the instance is
-   ready for use.
+   the ompl::base::SpaceInformation::setup() function needs to be
+   called and the instance is ready for use.
+
+   @subsubsection manifold Instantiating a state manifold
+
+   Simply create an instance of a class that iherits from
+   ompl::base::StateManifold. To change the definition of the employed
+   sampler or distance function, it is possible to provide a further
+   specialization of such a manifold. See @ref implementStateManifold
+
+   @subsubsection pdef Instantiating a problem definition
+
+     - instances of ompl::base::State or ompl::base::ScopedState need
+       to be supplied as starting states for the system (at least
+       one), using ompl::base::ProblemDefinition::addStartState().
+
+     - an ompl::base::Goal specification must be set using
+       ompl::base::ProblemDefinition::setGoal(). For simplicity,
+       specifications of this class are available:
+       ompl::base::GoalRegion, ompl::base::GoalSampleableRegion,
+       ompl::base::GoalState, ompl::base::GoalStates.
+       
 
    @subsubsection kinstexample Example
 
@@ -209,7 +186,8 @@
 
    This part of the library is not considered ready for use.
    
-   - @ref dRRT "Rapidly-exploring Random Trees (RRT)"
+   - @ref cRRT "Rapidly-exploring Random Trees (RRT)"
+   - @ref cKPIECE1 "Kinodynamic Planning by Interior-Exterior Cell Exploration (KPIECE)"
 
 @section howto How To's
 
