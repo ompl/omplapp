@@ -34,14 +34,6 @@ if(BUILD_TESTS)
 
 	endif(ROS)
 
-	# Test kinematic motion planners on a 2D map
-	add_ompl_test(test_2dmap_geometric geometric/2dmap/2dmap.cpp)
-	add_ompl_test(test_2dmap_geometric_simple geometric/2dmap/2dmap_simple.cpp)
-	add_ompl_test(test_2dmap_ik geometric/2dmap/2dmap_ik.cpp)
-
-	# Test planning with controls on a 2D map
-	add_ompl_test(test_2dmap_control control/2dmap/2dmap.cpp)
-
 	# Test datastructures implementation
 	add_ompl_test(test_heap datastructures/heap/heap.cpp)
 	add_ompl_test(test_grid datastructures/grid/grid.cpp)
@@ -49,6 +41,17 @@ if(BUILD_TESTS)
 
 	# Test utilities
 	add_ompl_test(test_random util/random/random.cpp)
+
+	# Test manifolds
+	add_ompl_test(test_manifold_SO2 manifolds/SO2/test_SO2.cpp)
+
+	# Test kinematic motion planners on a 2D map
+	add_ompl_test(test_2dmap_geometric geometric/2dmap/2dmap.cpp)
+	add_ompl_test(test_2dmap_geometric_simple geometric/2dmap/2dmap_simple.cpp)
+	add_ompl_test(test_2dmap_ik geometric/2dmap/2dmap_ik.cpp)
+
+	# Test planning with controls on a 2D map
+	add_ompl_test(test_2dmap_control control/2dmap/2dmap.cpp)
 
 	# Test compilation
 #	add_ompl_test(test_compile compile/compile.cpp)
