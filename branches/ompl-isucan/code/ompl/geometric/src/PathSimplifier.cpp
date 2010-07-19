@@ -44,14 +44,14 @@ void ompl::geometric::PathSimplifier::reduceVertices(PathGeometric &path)
     
     unsigned int nochange = 0;
     
-    for (unsigned int i = 0 ; i < m_maxSteps && nochange < m_maxEmptySteps ; ++i, ++nochange)
+    for (unsigned int i = 0 ; i < maxSteps_ && nochange < maxEmptySteps_ ; ++i, ++nochange)
     {
 	int count = path.states.size();
 	int maxN  = count - 1;
-	int range = 1 + (int)((double)count * m_rangeRatio);
+	int range = 1 + (int)((double)count * rangeRatio_);
 	
-	int p1 = m_rng.uniformInt(0, maxN);
-	int p2 = m_rng.uniformInt(std::max(p1 - range, 0), std::min(maxN, p1 + range));
+	int p1 = rng_.uniformInt(0, maxN);
+	int p2 = rng_.uniformInt(std::max(p1 - range, 0), std::min(maxN, p1 + range));
 	if (abs(p1 - p2) < 2)
 	{
 	    if (p1 < maxN - 1)
@@ -66,10 +66,10 @@ void ompl::geometric::PathSimplifier::reduceVertices(PathGeometric &path)
 	if (p1 > p2)
 	    std::swap(p1, p2);
 	
-	if (m_si->checkMotion(path.states[p1], path.states[p2]))
+	if (si_->checkMotion(path.states[p1], path.states[p2]))
 	{
 	    for (int i = p1 + 1 ; i < p2 ; ++i)
-		m_si->freeState(path.states[i]);
+		si_->freeState(path.states[i]);
 	    path.states.erase(path.states.begin() + p1 + 1, path.states.begin() + p2);
 	    nochange = 0;
 	}

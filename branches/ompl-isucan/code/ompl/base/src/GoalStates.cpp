@@ -47,7 +47,7 @@ ompl::base::GoalStates::~GoalStates(void)
 void ompl::base::GoalStates::clear(void)
 {
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	m_si->freeState(states[i]);
+	si_->freeState(states[i]);
     states.clear();
 }
 
@@ -56,7 +56,7 @@ double ompl::base::GoalStates::distanceGoal(const State *st) const
     double dist = std::numeric_limits<double>::infinity();
     for (unsigned int i = 0 ; i < states.size() ; ++i)
     {
-	double d = m_si->distance(st, states[i]);
+	double d = si_->distance(st, states[i]);
 	if (d < dist)
 	    dist = d;
     }
@@ -68,7 +68,7 @@ void ompl::base::GoalStates::print(std::ostream &out) const
     out << states.size() << " goal states, threshold = " << threshold << ", memory address = " << this << std::endl;
     for (unsigned int i = 0 ; i < states.size() ; ++i)
     {
-	m_si->printState(states[i], out);
+	si_->printState(states[i], out);
 	out << std::endl;
     }
 }
@@ -77,7 +77,7 @@ void ompl::base::GoalStates::sampleGoal(base::State *st) const
 {
     if (states.empty())
 	throw Exception("There are no goals to sample");
-    m_si->copyState(st, states[samplePosition]);
+    si_->copyState(st, states[samplePosition]);
     samplePosition = (samplePosition + 1) % states.size();
 }
 
@@ -88,7 +88,7 @@ unsigned int ompl::base::GoalStates::maxSampleCount(void) const
 
 void ompl::base::GoalStates::addState(const State* st)
 {
-    states.push_back(m_si->cloneState(st));
+    states.push_back(si_->cloneState(st));
 }
 
 void ompl::base::GoalStates::addState(const ScopedState<> &st)

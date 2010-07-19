@@ -56,12 +56,12 @@ namespace ompl
 	class SimpleSetup
 	{
 	public:
-	    SimpleSetup(const base::StateManifoldPtr &manifold, const base::PlannerAllocator &pa) : m_configured(false)
+	    SimpleSetup(const base::StateManifoldPtr &manifold, const base::PlannerAllocator &pa) : configured_(false)
 	    {
-		m_si.reset(new base::SpaceInformation(manifold));
-		m_pdef.reset(new base::ProblemDefinition(m_si));
-		m_psk.reset(new PathSimplifier(m_si));
-		m_pa = pa;
+		si_.reset(new base::SpaceInformation(manifold));
+		pdef_.reset(new base::ProblemDefinition(si_));
+		psk_.reset(new PathSimplifier(si_));
+		pa_ = pa;
 	    }
 	    
 	    ~SimpleSetup(void)
@@ -70,90 +70,90 @@ namespace ompl
 	    
 	    const base::SpaceInformationPtr& getSpaceInformation(void) const
 	    {
-		return m_si;
+		return si_;
 	    }
 	    
 	    const base::StateManifoldPtr& getStateManifold(void) const
 	    {
-		return m_si->getStateManifold();
+		return si_->getStateManifold();
 	    }
 	    
 	    const base::ProblemDefinitionPtr& getProblemDefinition(void) const
 	    {
-		return m_pdef;
+		return pdef_;
 	    }
 	    
 	    const base::StateValidityCheckerPtr& getStateValidityChecker(void) const
 	    {
-		return m_si->getStateValidityChecker();
+		return si_->getStateValidityChecker();
 	    }
 
 	    void setStateValidityChecker(const base::StateValidityCheckerPtr &svc) const
 	    {
-		return m_si->setStateValidityChecker(svc);
+		return si_->setStateValidityChecker(svc);
 	    }
 
 	    const base::GoalPtr& getGoal(void) const
 	    {
-		return m_pdef->getGoal();
+		return pdef_->getGoal();
 	    }
 
 	    void setGoal(const base::GoalPtr &goal)
 	    {
-		m_pdef->setGoal(goal);
+		pdef_->setGoal(goal);
 	    }
 
 	    const base::PlannerPtr& getPlanner(void) const
 	    {
-		return m_planner;
+		return planner_;
 	    }
 
 	    const PathSimplifierPtr& getPathSimplifier(void) const
 	    {
-		return m_psk;
+		return psk_;
 	    }
 	    
 	    void setup(void)
 	    {
-		if (!m_configured)
+		if (!configured_)
 		{
-		    m_si->setup();
-		    m_planner = m_pa(m_si);
-		    m_planner->setProblemDefinition(m_pdef);
-		    m_planner->setup();
-		    m_configured = true;
+		    si_->setup();
+		    planner_ = pa_(si_);
+		    planner_->setProblemDefinition(pdef_);
+		    planner_->setup();
+		    configured_ = true;
 		}
 	    }
 	    
 	    bool solve(double time)
 	    {
 		setup();
-		return m_planner->solve(time);
+		return planner_->solve(time);
 	    }
 	    
 	    void clear(void)
 	    {
-		if (m_planner)
-		    m_planner->clear();
-		if (m_pdef->getGoal())
-		    m_pdef->getGoal()->clearSolutionPath();
-		m_pdef->clearStartStates();
+		if (planner_)
+		    planner_->clear();
+		if (pdef_->getGoal())
+		    pdef_->getGoal()->clearSolutionPath();
+		pdef_->clearStartStates();
 	    }
 	    	    
 	    void simplifySolution(void)
 	    {
-		const base::PathPtr &p =  m_pdef->getGoal()->getSolutionPath();
+		const base::PathPtr &p =  pdef_->getGoal()->getSolutionPath();
 		if (p)
-		    m_psk->simplifyMax(static_cast<PathGeometric&>(*p));
+		    psk_->simplifyMax(static_cast<PathGeometric&>(*p));
 		else
-		    m_msg.warn("No solution to simplify");
+		    msg_.warn("No solution to simplify");
 	    }
 	    
 	    const PathGeometric& getSolutionPath(void) const
 	    {
-		if (m_pdef->getGoal())
+		if (pdef_->getGoal())
 		{
-		    const base::PathPtr &p = m_pdef->getGoal()->getSolutionPath();
+		    const base::PathPtr &p = pdef_->getGoal()->getSolutionPath();
 		    if (p)
 			return static_cast<const PathGeometric&>(*p);
 		}
@@ -162,9 +162,9 @@ namespace ompl
 	    
 	    PathGeometric& getSolutionPath(void)
 	    {
-		if (m_pdef->getGoal())
+		if (pdef_->getGoal())
 		{
-		    const base::PathPtr &p = m_pdef->getGoal()->getSolutionPath();
+		    const base::PathPtr &p = pdef_->getGoal()->getSolutionPath();
 		    if (p)
 			return static_cast<PathGeometric&>(*p);
 		}
@@ -173,14 +173,14 @@ namespace ompl
 	    
 	protected:
 	    
-	    base::SpaceInformationPtr     m_si;
-	    base::ProblemDefinitionPtr    m_pdef;
-	    base::PlannerPtr              m_planner;
-	    base::PlannerAllocator        m_pa;
+	    base::SpaceInformationPtr     si_;
+	    base::ProblemDefinitionPtr    pdef_;
+	    base::PlannerPtr              planner_;
+	    base::PlannerAllocator        pa_;
 	    
-	    PathSimplifierPtr             m_psk;
-	    bool                          m_configured;
-	    msg::Interface                m_msg;
+	    PathSimplifierPtr             psk_;
+	    bool                          configured_;
+	    msg::Interface                msg_;
 	    
 	};
     }

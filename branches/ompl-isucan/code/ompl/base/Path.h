@@ -54,7 +54,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. A path must always know the space information it is part of */
-	    Path(const SpaceInformationPtr &si) : m_si(si)
+	    Path(const SpaceInformationPtr &si) : si_(si)
 	    {
 	    }
 	    
@@ -74,7 +74,7 @@ namespace ompl
 	    
 	protected:
 	    
-	    SpaceInformationPtr m_si;
+	    SpaceInformationPtr si_;
 	};
 
     }

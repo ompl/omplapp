@@ -40,29 +40,29 @@
 void ompl::geometric::RRTConnect::setup(void)
 {
     Planner::setup();
-    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    if (maxDistance_ < std::numeric_limits<double>::epsilon())
     {
-	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
-	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+	maxDistance_ = si_->getStateValidityCheckingResolution() * 10.0;
+	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
 }
 
 void ompl::geometric::RRTConnect::freeMemory(void)
 {
     std::vector<Motion*> motions;
-    m_tStart.list(motions);
+    tStart_.list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
 	if (motions[i]->state)
-	    m_si->freeState(motions[i]->state);
+	    si_->freeState(motions[i]->state);
 	delete motions[i];
     }
     
-    m_tGoal.list(motions);
+    tGoal_.list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
 	if (motions[i]->state)
-	    m_si->freeState(motions[i]->state);
+	    si_->freeState(motions[i]->state);
 	delete motions[i];
     }
 }
@@ -70,10 +70,10 @@ void ompl::geometric::RRTConnect::freeMemory(void)
 void ompl::geometric::RRTConnect::clear(void)
 {
     freeMemory();
-    m_tStart.clear();
-    m_tGoal.clear();
-    m_addedStartStates = 0;
-    m_sampledGoalsCount = 0;
+    tStart_.clear();
+    tGoal_.clear();
+    addedStartStates_ = 0;
+    sampledGoalsCount_ = 0;
 }
 
 ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion)
@@ -86,19 +86,19 @@ ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(Tre
     
     /* find state to add */
     base::State *dstate = rmotion->state;
-    double d = m_si->distance(nmotion->state, rmotion->state);
-    if (d > m_maxDistance)
+    double d = si_->distance(nmotion->state, rmotion->state);
+    if (d > maxDistance_)
     {
-	m_si->getStateManifold()->interpolate(nmotion->state, rmotion->state, m_maxDistance / d, tgi.xstate);
+	si_->getStateManifold()->interpolate(nmotion->state, rmotion->state, maxDistance_ / d, tgi.xstate);
 	dstate = tgi.xstate;
 	reach = false;
     }
 
-    if (m_si->checkMotion(nmotion->state, dstate))
+    if (si_->checkMotion(nmotion->state, dstate))
     {
 	/* create a motion */
-	Motion *motion = new Motion(m_si);
-	m_si->copyState(motion->state, dstate);
+	Motion *motion = new Motion(si_);
+	si_->copyState(motion->state, dstate);
 	motion->parent = nmotion;
 	motion->root = nmotion->root;
 	tgi.xmotion = motion;
@@ -115,90 +115,90 @@ ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(Tre
 
 bool ompl::geometric::RRTConnect::solve(double solveTime)
 {
-    base::GoalSampleableRegion *goal = dynamic_cast<base::GoalSampleableRegion*>(m_pdef->getGoal().get());
+    base::GoalSampleableRegion *goal = dynamic_cast<base::GoalSampleableRegion*>(pdef_->getGoal().get());
     
     if (!goal)
     {
-	m_msg.error("Unknown type of goal (or goal undefined)");
+	msg_.error("Unknown type of goal (or goal undefined)");
 	return false;
     }
 
     time::point endTime = time::now() + time::seconds(solveTime);
 
-    for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
+    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
     {
-	const base::State *st = m_pdef->getStartState(i);
-	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
+	const base::State *st = pdef_->getStartState(i);
+	if (si_->satisfiesBounds(st) && si_->isValid(st))
 	{
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, st);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, st);
 	    motion->root = st;
-	    m_tStart.add(motion);
+	    tStart_.add(motion);
 	}
 	else
-	    m_msg.error("Initial state is invalid!");
+	    msg_.error("Initial state is invalid!");
     }    
     
-    if (m_tStart.size() == 0)
+    if (tStart_.size() == 0)
     {
-	m_msg.error("Motion planning start tree could not be initialized!");
+	msg_.error("Motion planning start tree could not be initialized!");
 	return false;
     }
 
     if (goal->maxSampleCount() <= 0)
     {
-	m_msg.error("Insufficient states in sampleable goal region");
+	msg_.error("Insufficient states in sampleable goal region");
 	return false;
     }
     
-    m_msg.inform("Starting with %d states", (int)(m_tStart.size() + m_tGoal.size()));
+    msg_.inform("Starting with %d states", (int)(tStart_.size() + tGoal_.size()));
 
     TreeGrowingInfo tgi;
-    tgi.xstate = m_si->allocState();
+    tgi.xstate = si_->allocState();
     
-    Motion   *rmotion   = new Motion(m_si);
+    Motion   *rmotion   = new Motion(si_);
     base::State *rstate = rmotion->state;
-    base::State *gstate = m_si->allocState();
+    base::State *gstate = si_->allocState();
     bool   startTree    = true;
 
     while (time::now() < endTime)
     {
-	TreeData &tree      = startTree ? m_tStart : m_tGoal;
+	TreeData &tree      = startTree ? tStart_ : tGoal_;
 	startTree = !startTree;
-	TreeData &otherTree = startTree ? m_tStart : m_tGoal;
+	TreeData &otherTree = startTree ? tStart_ : tGoal_;
 		
 	// if there are any goals left to sample
-	if (m_sampledGoalsCount < goal->maxSampleCount())
+	if (sampledGoalsCount_ < goal->maxSampleCount())
 	{
 	    // if we have not sampled too many goals already
-	    if (m_tGoal.size() == 0 || m_sampledGoalsCount < m_tGoal.size() / 2)
+	    if (tGoal_.size() == 0 || sampledGoalsCount_ < tGoal_.size() / 2)
 	    {
 		bool firstAttempt = true;
 		
-		while ((m_tGoal.size() == 0 || firstAttempt) && m_sampledGoalsCount < goal->maxSampleCount() && time::now() < endTime)
+		while ((tGoal_.size() == 0 || firstAttempt) && sampledGoalsCount_ < goal->maxSampleCount() && time::now() < endTime)
 		{
 		    firstAttempt = false;
 		    goal->sampleGoal(gstate);
-		    m_sampledGoalsCount++;
-		    if (m_si->satisfiesBounds(gstate) && m_si->isValid(gstate))
+		    sampledGoalsCount_++;
+		    if (si_->satisfiesBounds(gstate) && si_->isValid(gstate))
 		    {
-			Motion* motion = new Motion(m_si);
-			m_si->copyState(motion->state, gstate);
+			Motion* motion = new Motion(si_);
+			si_->copyState(motion->state, gstate);
 			motion->root = motion->state;
-			m_tGoal.add(motion);
+			tGoal_.add(motion);
 		    }
 		}
 		
-		if (m_tGoal.size() == 0)
+		if (tGoal_.size() == 0)
 		{
-		    m_msg.error("Unable to sample any valid states for goal tree");
+		    msg_.error("Unable to sample any valid states for goal tree");
 		    break;
 		}
 	    }
 	}
 	
 	/* sample random state */
-	m_sCore->sample(rstate);
+	sCore_->sample(rstate);
 	
 	GrowState gs = growTree(tree, tgi, rmotion);
 	
@@ -211,7 +211,7 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	    
 	    /* if reached, it means we used rstate directly, no need top copy again */
 	    if (gs != REACHED)
-		m_si->copyState(rstate, tgi.xstate);
+		si_->copyState(rstate, tgi.xstate);
 
 	    GrowState gsc = ADVANCED;
 	    while (gsc == ADVANCED)
@@ -246,9 +246,9 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 		    sol.push_back(mpath1[i]);
 		sol.insert(sol.end(), mpath2.begin(), mpath2.end());
 
-		PathGeometric *path = new PathGeometric(m_si);
+		PathGeometric *path = new PathGeometric(si_);
 		for (unsigned int i = 0 ; i < sol.size() ; ++i)
-		    path->states.push_back(m_si->cloneState(sol[i]->state));
+		    path->states.push_back(si_->cloneState(sol[i]->state));
 		
 		goal->setDifference(0.0);
 		goal->setSolutionPath(base::PathPtr(path));
@@ -257,12 +257,12 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	}
     }
     
-    m_si->freeState(tgi.xstate);
-    m_si->freeState(rstate);
+    si_->freeState(tgi.xstate);
+    si_->freeState(rstate);
     delete rmotion;
-    m_si->freeState(gstate);
+    si_->freeState(gstate);
     
-    m_msg.inform("Created %u states (%u start + %u goal)", m_tStart.size() + m_tGoal.size(), m_tStart.size(), m_tGoal.size());
+    msg_.inform("Created %u states (%u start + %u goal)", tStart_.size() + tGoal_.size(), tStart_.size(), tGoal_.size());
     
     return goal->isAchieved();
 }
@@ -270,11 +270,11 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 void ompl::geometric::RRTConnect::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    m_tStart.list(motions);
+    tStart_.list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;
-    m_tGoal.list(motions);
+    tGoal_.list(motions);
     unsigned int s = data.states.size();
     data.states.resize(s + motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)

@@ -42,72 +42,72 @@
 void ompl::geometric::pRRT::setup(void)
 {
     Planner::setup();
-    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    if (maxDistance_ < std::numeric_limits<double>::epsilon())
     {
-	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
-	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+	maxDistance_ = si_->getStateValidityCheckingResolution() * 10.0;
+	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
 }
 
 void ompl::geometric::pRRT::clear(void)
 {
     freeMemory();
-    m_nn.clear();
-    m_addedStartStates = 0;
+    nn_.clear();
+    addedStartStates_ = 0;
 }
 
 void ompl::geometric::pRRT::freeMemory(void)
 {
     std::vector<Motion*> motions;
-    m_nn.list(motions);
+    nn_.list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
-	m_si->freeState(motions[i]->state);
+	si_->freeState(motions[i]->state);
 	delete motions[i];
     }
 }
 
 void ompl::geometric::pRRT::threadSolve(unsigned int tid, time::point endTime, SolutionInfo *sol)
 {
-    base::Goal                 *goal   = m_pdef->getGoal().get();
+    base::Goal                 *goal   = pdef_->getGoal().get();
     base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
 
-    Motion *rmotion   = new Motion(m_si);
+    Motion *rmotion   = new Motion(si_);
     base::State *rstate = rmotion->state;
-    base::State *xstate = m_si->allocState();
+    base::State *xstate = si_->allocState();
     
     while (sol->solution == NULL && time::now() < endTime)
     {
 	/* sample random state (with goal biasing) */
-	if (goal_s && m_sCoreArray[tid]->getRNG().uniform01() < m_goalBias)
+	if (goal_s && sCoreArray_[tid]->getRNG().uniform01() < goalBias_)
 	    goal_s->sampleGoal(rstate);
 	else
-	    m_sCoreArray[tid]->sample(rstate);
+	    sCoreArray_[tid]->sample(rstate);
 	
 	/* find closest state in the tree */
-	m_nnLock.lock();
-	Motion *nmotion = m_nn.nearest(rmotion);
-	m_nnLock.unlock();
+	nnLock_.lock();
+	Motion *nmotion = nn_.nearest(rmotion);
+	nnLock_.unlock();
 	base::State *dstate = rstate;
 
 	/* find state to add */
-	double d = m_si->distance(nmotion->state, rstate);
-	if (d > m_maxDistance)
+	double d = si_->distance(nmotion->state, rstate);
+	if (d > maxDistance_)
 	{
-	    m_si->getStateManifold()->interpolate(nmotion->state, rstate, m_maxDistance / d, xstate);
+	    si_->getStateManifold()->interpolate(nmotion->state, rstate, maxDistance_ / d, xstate);
 	    dstate = xstate;
 	}
 	
-	if (m_si->checkMotion(nmotion->state, dstate))
+	if (si_->checkMotion(nmotion->state, dstate))
 	{
 	    /* create a motion */
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, dstate);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, dstate);
 	    motion->parent = nmotion;
 	    
-	    m_nnLock.lock();
-	    m_nn.add(motion);
-	    m_nnLock.unlock();
+	    nnLock_.lock();
+	    nn_.add(motion);
+	    nnLock_.unlock();
 	    
 	    double dist = 0.0;
 	    bool solved = goal->isSatisfied(motion->state, &dist);
@@ -132,54 +132,54 @@ void ompl::geometric::pRRT::threadSolve(unsigned int tid, time::point endTime, S
 	}
     }
     
-    m_si->freeState(xstate);
+    si_->freeState(xstate);
     if (rmotion->state)
-	m_si->freeState(rmotion->state);
+	si_->freeState(rmotion->state);
     delete rmotion;
 }
 
 bool ompl::geometric::pRRT::solve(double solveTime)
 {
-    base::GoalRegion *goal = dynamic_cast<base::GoalRegion*>(m_pdef->getGoal().get());
+    base::GoalRegion *goal = dynamic_cast<base::GoalRegion*>(pdef_->getGoal().get());
     
     if (!goal)
     {
-	m_msg.error("Goal undefined");
+	msg_.error("Goal undefined");
 	return false;
     }
     
     time::point endTime = time::now() + time::seconds(solveTime);
 
-    for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
+    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
     {
-	const base::State *st = m_pdef->getStartState(i);
-	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
+	const base::State *st = pdef_->getStartState(i);
+	if (si_->satisfiesBounds(st) && si_->isValid(st))
 	{
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, st);
-	    m_nn.add(motion);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, st);
+	    nn_.add(motion);
 	}
 	else
-	    m_msg.error("Initial state is invalid!");
+	    msg_.error("Initial state is invalid!");
     }
     
-    if (m_nn.size() == 0)
+    if (nn_.size() == 0)
     {
-	m_msg.error("There are no valid initial states!");
+	msg_.error("There are no valid initial states!");
 	return false;	
     }    
 
-    m_msg.inform("Starting with %u states", m_nn.size());
+    msg_.inform("Starting with %u states", nn_.size());
     
     SolutionInfo sol;
     sol.solution = NULL;
     sol.approxsol = NULL;
     sol.approxdif = std::numeric_limits<double>::infinity();
     
-    std::vector<boost::thread*> th(m_threadCount);
-    for (unsigned int i = 0 ; i < m_threadCount ; ++i)
+    std::vector<boost::thread*> th(threadCount_);
+    for (unsigned int i = 0 ; i < threadCount_ ; ++i)
 	th[i] = new boost::thread(boost::bind(&pRRT::threadSolve, this, i, endTime, &sol));
-    for (unsigned int i = 0 ; i < m_threadCount ; ++i)
+    for (unsigned int i = 0 ; i < threadCount_ ; ++i)
     {
 	th[i]->join();
 	delete th[i];
@@ -203,18 +203,18 @@ bool ompl::geometric::pRRT::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathGeometric *path = new PathGeometric(m_si);
+	PathGeometric *path = new PathGeometric(si_);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
-	    path->states.push_back(m_si->cloneState(mpath[i]->state));
+	    path->states.push_back(si_->cloneState(mpath[i]->state));
 	
 	goal->setDifference(sol.approxdif);
 	goal->setSolutionPath(base::PathPtr(path), approximate);
 
 	if (approximate)
-	    m_msg.warn("Found approximate solution");
+	    msg_.warn("Found approximate solution");
     }
 
-    m_msg.inform("Created %u states", m_nn.size());
+    msg_.inform("Created %u states", nn_.size());
     
     return goal->isAchieved();
 }
@@ -222,7 +222,7 @@ bool ompl::geometric::pRRT::solve(double solveTime)
 void ompl::geometric::pRRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    m_nn.list(motions);
+    nn_.list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;
@@ -231,6 +231,6 @@ void ompl::geometric::pRRT::getPlannerData(base::PlannerData &data) const
 void ompl::geometric::pRRT::setThreadCount(unsigned int nthreads)
 {
     assert(nthreads > 0);		
-    m_threadCount = nthreads;
-    m_sCoreArray.resize(m_threadCount);
+    threadCount_ = nthreads;
+    sCoreArray_.resize(threadCount_);
 }

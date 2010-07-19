@@ -74,15 +74,15 @@ namespace ompl
 	public:
 	    
 	    RRT(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       m_sCore(si->allocStateSampler())
+						       sCore_(si->allocStateSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_ANY;
-		m_msg.setPrefix("RRT");
+		type_ = base::PLAN_TO_GOAL_ANY;
+		msg_.setPrefix("RRT");
 		
-		m_addedStartStates = 0;
-		m_nn.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
-		m_goalBias = 0.05;
-		m_maxDistance = 0.0;
+		addedStartStates_ = 0;
+		nn_.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
+		goalBias_ = 0.05;
+		maxDistance_ = 0.0;
 	    }
 	    
 	    virtual ~RRT(void)
@@ -97,8 +97,8 @@ namespace ompl
 	    virtual void clear(void)
 	    {
 		freeMemory();
-		m_nn.clear();
-		m_addedStartStates = 0;
+		nn_.clear();
+		addedStartStates_ = 0;
 	    }
 	    
 	    /** \brief Set the goal bias
@@ -112,13 +112,13 @@ namespace ompl
 		is probably a good idea to use the default value. */
 	    void setGoalBias(double goalBias)
 	    {
-		m_goalBias = goalBias;
+		goalBias_ = goalBias;
 	    }
 	    
 	    /** \brief Get the goal bias the planner is using */
 	    double getGoalBias(void) const
 	    {
-		return m_goalBias;
+		return goalBias_;
 	    }
 	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -128,13 +128,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 	    
 	    virtual void setup(void);
@@ -171,17 +171,17 @@ namespace ompl
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
-		return m_si->distance(a->state, b->state);
+		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr                m_sCore;
+	    base::StateSamplerPtr                sCore_;
 
-	    NearestNeighborsSqrtApprox<Motion*>  m_nn;
-	    unsigned int                         m_addedStartStates;
+	    NearestNeighborsSqrtApprox<Motion*>  nn_;
+	    unsigned int                         addedStartStates_;
 	    
-	    double                               m_goalBias;
-	    double                               m_maxDistance;
-	    RNG                                  m_rng;	
+	    double                               goalBias_;
+	    double                               maxDistance_;
+	    RNG                                  rng_;	
 	};
 	
     }

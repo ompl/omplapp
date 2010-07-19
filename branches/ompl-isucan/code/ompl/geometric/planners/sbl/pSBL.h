@@ -88,12 +88,12 @@ namespace ompl
 	public:
 	    
 	    pSBL(const base::SpaceInformationPtr &si) : base::Planner(si),
-							m_sCoreArray(si)
+							sCoreArray_(si)
 	    {
-		m_type = base::PLAN_TO_GOAL_STATE;
-		m_msg.setPrefix("pSBL");
-		m_maxDistance = 0.0;
-		m_addedStartStates = 0;
+		type_ = base::PLAN_TO_GOAL_STATE;
+		msg_.setPrefix("pSBL");
+		maxDistance_ = 0.0;
+		addedStartStates_ = 0;
 		setThreadCount(2);
 	    }
 	    
@@ -110,13 +110,13 @@ namespace ompl
 		OrthogonalProjectionEvaluator */
 	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
-		m_projectionEvaluator = projectionEvaluator;
+		projectionEvaluator_ = projectionEvaluator;
 	    }
 	    
 	    /** \brief Get the projection evaluator. */
 	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
-		return m_projectionEvaluator;
+		return projectionEvaluator_;
 	    }
 	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -126,13 +126,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 
 	    /** \brief Set the number of threads the planner should use. Default is 2. */
@@ -141,7 +141,7 @@ namespace ompl
 	    /** \brief Get the thread count */
 	    unsigned int getThreadCount(void) const
 	    {
-		return m_threadCount;
+		return threadCount_;
 	    }
 	    	   
 	    virtual void setup(void);
@@ -215,8 +215,8 @@ namespace ompl
 	    
 	    void freeMemory(void)
 	    {
-		freeGridMotions(m_tStart.grid);
-		freeGridMotions(m_tGoal.grid);
+		freeGridMotions(tStart_.grid);
+		freeGridMotions(tGoal_.grid);
 	    }
 	    
 	    void freeGridMotions(Grid<MotionSet> &grid);
@@ -228,22 +228,22 @@ namespace ompl
 	    bool checkSolution(RNG &rng, bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution);
 	    
 	    
-	    base::StateSamplerArray                    m_sCoreArray;
-	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
+	    base::StateSamplerArray                    sCoreArray_;
+	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
-	    TreeData                                   m_tStart;
-	    TreeData                                   m_tGoal;
+	    TreeData                                   tStart_;
+	    TreeData                                   tGoal_;
 	    
-	    unsigned int                               m_addedStartStates;
+	    unsigned int                               addedStartStates_;
 
-	    MotionsToBeRemoved                         m_removeList;
-	    boost::mutex                               m_loopLock;
-	    boost::mutex                               m_loopLockCounter;
-	    unsigned int                               m_loopCounter;
+	    MotionsToBeRemoved                         removeList_;
+	    boost::mutex                               loopLock_;
+	    boost::mutex                               loopLockCounter_;
+	    unsigned int                               loopCounter_;
 	    
-	    double                                     m_maxDistance;	
+	    double                                     maxDistance_;	
 
-	    unsigned int                               m_threadCount;
+	    unsigned int                               threadCount_;
 	};
 	
     }

@@ -71,15 +71,15 @@ namespace ompl
 	public:
 	    
 	    EST(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       m_sCore(si->allocStateSampler())
+						       sCore_(si->allocStateSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_ANY;
-		m_msg.setPrefix("EST");
+		type_ = base::PLAN_TO_GOAL_ANY;
+		msg_.setPrefix("EST");
 		
-		m_addedStartStates = 0;
+		addedStartStates_ = 0;
 
-		m_goalBias = 0.05;
-		m_maxDistance = 0.0;
+		goalBias_ = 0.05;
+		maxDistance_ = 0.0;
 	    }
 	    
 	    virtual ~EST(void)
@@ -100,13 +100,13 @@ namespace ompl
 		the default value. */
 	    void setGoalBias(double goalBias)
 	    {
-		m_goalBias = goalBias;
+		goalBias_ = goalBias;
 	    }
 	    
 	    /** Get the goal bias the planner is using */
 	    double getGoalBias(void) const
 	    {
-		return m_goalBias;
+		return goalBias_;
 	    }
 	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -116,13 +116,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 	    	    
 	    /** Set the projection evaluator. This class is able to
@@ -131,12 +131,12 @@ namespace ompl
 		OrthogonalProjectionEvaluator */
 	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
-		m_projectionEvaluator = projectionEvaluator;
+		projectionEvaluator_ = projectionEvaluator;
 	    }
 	    
 	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
-		return m_projectionEvaluator;
+		return projectionEvaluator_;
 	    }
 	    
 	    virtual void setup(void);
@@ -182,16 +182,16 @@ namespace ompl
 	    void addMotion(Motion *motion);
 	    Motion* selectMotion(void);
 	    
-	    base::StateSamplerPtr        m_sCore;
+	    base::StateSamplerPtr        sCore_;
 	    
-	    TreeData                     m_tree;
-	    unsigned int                 m_addedStartStates;
+	    TreeData                     tree_;
+	    unsigned int                 addedStartStates_;
 	    
-	    base::ProjectionEvaluatorPtr m_projectionEvaluator;
+	    base::ProjectionEvaluatorPtr projectionEvaluator_;
 	    
-	    double                       m_goalBias;
-	    double                       m_maxDistance;	
-	    RNG                          m_rng;	
+	    double                       goalBias_;
+	    double                       maxDistance_;	
+	    RNG                          rng_;	
 	};
 	
     }

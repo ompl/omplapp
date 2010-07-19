@@ -41,13 +41,13 @@ void ompl::base::StateManifold::setup(void)
 
 void ompl::base::StateManifold::setStateSamplerAllocator(const StateSamplerAllocator &ssa)
 {
-    m_ssa = ssa;
+    ssa_ = ssa;
 }
 
 ompl::base::StateSamplerPtr ompl::base::StateManifold::allocStateSampler(void) const
 {
-    if (m_ssa)
-	return m_ssa(this);
+    if (ssa_)
+	return ssa_(this);
     else
 	return allocUniformStateSampler();
 }
@@ -64,32 +64,32 @@ void ompl::base::StateManifold::printSettings(std::ostream &out) const
 
 void ompl::base::CompoundStateManifold::addSubManifold(const StateManifoldPtr &component, double weight)
 {
-    if (m_locked)
+    if (locked_)
 	throw Exception("This manifold is locked. No further components can be added");
     if (weight < 0.0)
 	throw Exception("Submanifold weight cannot be negative");    
-    m_components.push_back(component);
-    m_weights.push_back(weight);
-    m_componentCount = m_components.size();
+    components_.push_back(component);
+    weights_.push_back(weight);
+    componentCount_ = components_.size();
 }
 
 unsigned int ompl::base::CompoundStateManifold::getSubManifoldCount(void) const
 {
-    return m_componentCount;
+    return componentCount_;
 }
 
 const ompl::base::StateManifoldPtr& ompl::base::CompoundStateManifold::getSubManifold(const unsigned int index) const
 {
-    if (m_componentCount > index)
-	return m_components[index];
+    if (componentCount_ > index)
+	return components_[index];
     else
 	throw Exception("Submanifold index does not exist");
 }
 
 double ompl::base::CompoundStateManifold::getSubManifoldWeight(const unsigned int index) const
 {
-    if (m_componentCount > index)
-	return m_weights[index];
+    if (componentCount_ > index)
+	return weights_[index];
     else
 	throw Exception("Submanifold index does not exist");
 }
@@ -98,8 +98,8 @@ void ompl::base::CompoundStateManifold::setSubManifoldWeight(const unsigned int 
 {
     if (weight < 0.0)
 	throw Exception("Submanifold weight cannot be negative");
-    if (m_componentCount > index)
-	m_weights[index] = weight;
+    if (componentCount_ > index)
+	weights_[index] = weight;
     else
 	throw Exception("Submanifold index does not exist");
 }
@@ -107,23 +107,23 @@ void ompl::base::CompoundStateManifold::setSubManifoldWeight(const unsigned int 
 unsigned int ompl::base::CompoundStateManifold::getDimension(void) const
 {
     unsigned int dim = 0;
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	dim += m_components[i]->getDimension();
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	dim += components_[i]->getDimension();
     return dim;
 }
 
 void ompl::base::CompoundStateManifold::enforceBounds(State *state) const
 {
     CompoundState *cstate = static_cast<CompoundState*>(state);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->enforceBounds(cstate->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->enforceBounds(cstate->components[i]);
 }
 
 bool ompl::base::CompoundStateManifold::satisfiesBounds(const State *state) const
 {   
     const CompoundState *cstate = static_cast<const CompoundState*>(state);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	if (!m_components[i]->satisfiesBounds(cstate->components[i]))
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	if (!components_[i]->satisfiesBounds(cstate->components[i]))
 	    return false;
     return true;
 }
@@ -132,8 +132,8 @@ void ompl::base::CompoundStateManifold::copyState(State *destination, const Stat
 {   
     CompoundState      *cdest = static_cast<CompoundState*>(destination);
     const CompoundState *csrc = static_cast<const CompoundState*>(source);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->copyState(cdest->components[i], csrc->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->copyState(cdest->components[i], csrc->components[i]);
 }
 
 double ompl::base::CompoundStateManifold::distance(const State *state1, const State *state2) const
@@ -141,8 +141,8 @@ double ompl::base::CompoundStateManifold::distance(const State *state1, const St
     const CompoundState *cstate1 = static_cast<const CompoundState*>(state1);
     const CompoundState *cstate2 = static_cast<const CompoundState*>(state2);
     double dist = 0.0;
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	dist += m_weights[i] * m_components[i]->distance(cstate1->components[i], cstate2->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	dist += weights_[i] * components_[i]->distance(cstate1->components[i], cstate2->components[i]);
     return dist;
 }
 
@@ -150,8 +150,8 @@ bool ompl::base::CompoundStateManifold::equalStates(const State *state1, const S
 {	
     const CompoundState *cstate1 = static_cast<const CompoundState*>(state1);
     const CompoundState *cstate2 = static_cast<const CompoundState*>(state2);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	if (!m_components[i]->equalStates(cstate1->components[i], cstate2->components[i]))
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	if (!components_[i]->equalStates(cstate1->components[i], cstate2->components[i]))
 	    return false;
     return true;
 }
@@ -161,27 +161,27 @@ void ompl::base::CompoundStateManifold::interpolate(const State *from, const Sta
     const CompoundState *cfrom  = static_cast<const CompoundState*>(from);
     const CompoundState *cto    = static_cast<const CompoundState*>(to);
     CompoundState       *cstate = static_cast<CompoundState*>(state);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->interpolate(cfrom->components[i], cto->components[i], t, cstate->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->interpolate(cfrom->components[i], cto->components[i], t, cstate->components[i]);
 }
 
 ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocUniformStateSampler(void) const
 {
     CompoundStateSampler *ss = new CompoundStateSampler(this);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	ss->addSampler(m_components[i]->allocUniformStateSampler());
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	ss->addSampler(components_[i]->allocUniformStateSampler());
     return StateSamplerPtr(ss);
 }
 
 ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocStateSampler(void) const
 {
-    if (m_ssa)
-	return m_ssa(this);
+    if (ssa_)
+	return ssa_(this);
     else
     {
 	CompoundStateSampler *ss = new CompoundStateSampler(this);
-	for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	    ss->addSampler(m_components[i]->allocStateSampler());
+	for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	    ss->addSampler(components_[i]->allocStateSampler());
 	return StateSamplerPtr(ss);
     }
 }
@@ -189,39 +189,39 @@ ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocStateSampler
 ompl::base::State* ompl::base::CompoundStateManifold::allocState(void) const
 {
     CompoundState *state = new CompoundState();
-    state->components = new State*[m_componentCount];
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	state->components[i] = m_components[i]->allocState();
+    state->components = new State*[componentCount_];
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	state->components[i] = components_[i]->allocState();
     return static_cast<State*>(state);
 }
 
 void ompl::base::CompoundStateManifold::freeState(State *state) const 
 {	
     CompoundState *cstate = static_cast<CompoundState*>(state);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->freeState(cstate->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->freeState(cstate->components[i]);
     delete[] cstate->components;
     delete cstate;
 }
 
 void ompl::base::CompoundStateManifold::lock(void)
 {
-    m_locked = true;
+    locked_ = true;
 }
 
 void ompl::base::CompoundStateManifold::printState(const State *state, std::ostream &out) const
 {
     out << "Compound state [" << std::endl;
     const CompoundState *cstate = static_cast<const CompoundState*>(state);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->printState(cstate->components[i], out);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->printState(cstate->components[i], out);
     out << "]" << std::endl;
 }
 
 void ompl::base::CompoundStateManifold::printSettings(std::ostream &out) const
 {
     out << "Compound state manifold [" << std::endl;
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->printSettings(out);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->printSettings(out);
     out << "]" << std::endl;
 }

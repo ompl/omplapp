@@ -143,11 +143,11 @@ namespace ompl
 	    
 	protected:
 	    
-	    SpaceInformationPtr  m_si;
-	    ProblemDefinitionPtr m_pdef;
-	    PlannerType          m_type;	
-	    bool                 m_setup;
-	    msg::Interface       m_msg;
+	    SpaceInformationPtr  si_;
+	    ProblemDefinitionPtr pdef_;
+	    PlannerType          type_;	
+	    bool                 setup_;
+	    msg::Interface       msg_;
 	};
 
 	/** \brief Definition of a function that can allocate a planner */

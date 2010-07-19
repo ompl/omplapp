@@ -61,12 +61,12 @@ namespace ompl
 
 	void setDistanceFunction(const DistanceFunction &distFun)
 	{
-	    m_distFun = distFun;
+	    distFun_ = distFun;
 	}
 
 	DistanceFunction& getDistanceFunction(void) const
 	{
-	    return m_distFun;
+	    return distFun_;
 	}
 	
 	virtual void clear(void) = 0;
@@ -78,7 +78,7 @@ namespace ompl
 		
     protected:
 	
-	DistanceFunction m_distFun;
+	DistanceFunction distFun_;
 	
     };
     

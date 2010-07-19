@@ -61,7 +61,7 @@ namespace ompl
 	{
 	public:
 	    
-	    HCIK(const base::SpaceInformationPtr &si) : m_si(si), m_maxImproveSteps(2), m_checkValidity(true)
+	    HCIK(const base::SpaceInformationPtr &si) : si_(si), maxImproveSteps_(2), checkValidity_(true)
 	    {
 	    }
 	    
@@ -77,37 +77,37 @@ namespace ompl
 	    /** \brief Set the number of steps to perform */
 	    void setMaxImproveSteps(unsigned int steps)
 	    {
-		m_maxImproveSteps = steps;
+		maxImproveSteps_ = steps;
 	    }
 
 	    /** \brief Get the number of steps to perform */
 	    unsigned int getMaxImproveSteps(void) const
 	    {
-		return m_maxImproveSteps;
+		return maxImproveSteps_;
 	    }
 	    
 	    /** \brief Set the state validity flag; if this is false, states are not checked for validity */
 	    void setValidityCheck(bool valid)
 	    {
-		m_checkValidity = valid;
+		checkValidity_ = valid;
 	    }
 
 	    /** \brief Get the state validity flag; if this is false, states are not checked for validity */
 	    bool getValidityCheck(void) const
 	    {
-		return m_checkValidity;
+		return checkValidity_;
 	    }
 	    
 	protected:	
 
 	    bool valid(const base::State *state) const
 	    {
-		return m_checkValidity ? m_si->isValid(state) : true;
+		return checkValidity_ ? si_->isValid(state) : true;
 	    }
 	    
-	    base::SpaceInformationPtr m_si;
-	    unsigned int              m_maxImproveSteps;
-	    bool                      m_checkValidity;	
+	    base::SpaceInformationPtr si_;
+	    unsigned int              maxImproveSteps_;
+	    bool                      checkValidity_;	
 	};
 	
     }

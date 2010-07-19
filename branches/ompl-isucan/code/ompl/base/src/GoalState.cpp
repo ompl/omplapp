@@ -40,23 +40,23 @@
 ompl::base::GoalState::~GoalState(void)
 {
     if (state)
-	m_si->freeState(state);
+	si_->freeState(state);
 }	    
 
 double ompl::base::GoalState::distanceGoal(const State *st) const
 {
-    return m_si->distance(st, state);
+    return si_->distance(st, state);
 }
 
 void ompl::base::GoalState::print(std::ostream &out) const
 {
     out << "Goal state, threshold = " << threshold << ", memory address = " << reinterpret_cast<const void*>(this) << ", state = ";
-    m_si->printState(state, out);
+    si_->printState(state, out);
 }
 
 void ompl::base::GoalState::sampleGoal(base::State *st) const
 {
-    m_si->copyState(st, state);
+    si_->copyState(st, state);
 }
 
 unsigned int ompl::base::GoalState::maxSampleCount(void) const
@@ -67,8 +67,8 @@ unsigned int ompl::base::GoalState::maxSampleCount(void) const
 void ompl::base::GoalState::setState(const State* st)
 {
     if (state)
-	m_si->freeState(state);
-    state = m_si->cloneState(st);
+	si_->freeState(state);
+    state = si_->cloneState(st);
 }
 
 void ompl::base::GoalState::setState(const ScopedState<> &st)

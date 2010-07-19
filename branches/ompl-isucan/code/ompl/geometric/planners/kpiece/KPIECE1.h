@@ -77,21 +77,21 @@ namespace ompl
 	public:
 	    
 	    KPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
-							   m_sCore(si->allocStateSampler()),
-							   m_hcik(si)
+							   sCore_(si->allocStateSampler()),
+							   hcik_(si)
 	    {
-		m_type = base::PLAN_TO_GOAL_ANY;
-		m_msg.setPrefix("KPIECE1");
+		type_ = base::PLAN_TO_GOAL_ANY;
+		msg_.setPrefix("KPIECE1");
 		
-		m_goalBias = 0.05;
-		m_selectBorderPercentage = 0.9;
-		m_badScoreFactor = 0.5;
-		m_goodScoreFactor = 0.9;
-		m_minValidPathPercentage = 0.2;
-		m_maxDistance = 0.0;
-		m_tree.grid.onCellUpdate(computeImportance, NULL);
-		m_hcik.setMaxImproveSteps(50);
-		m_addedStartStates = 0;
+		goalBias_ = 0.05;
+		selectBorderPercentage_ = 0.9;
+		badScoreFactor_ = 0.5;
+		goodScoreFactor_ = 0.9;
+		minValidPathPercentage_ = 0.2;
+		maxDistance_ = 0.0;
+		tree_.grid.onCellUpdate(computeImportance, NULL);
+		hcik_.setMaxImproveSteps(50);
+		addedStartStates_ = 0;
 	    }
 	    
 	    virtual ~KPIECE1(void)
@@ -114,13 +114,13 @@ namespace ompl
 		the default value. */
 	    void setGoalBias(double goalBias)
 	    {
-		m_goalBias = goalBias;
+		goalBias_ = goalBias;
 	    }
 	    
 	    /** \brief Get the goal bias the planner is using */
 	    double getGoalBias(void) const
 	    {
-		return m_goalBias;
+		return goalBias_;
 	    }
 	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -130,13 +130,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 	    
 	    /** \brief Set the projection evaluator. This class is able to
@@ -145,13 +145,13 @@ namespace ompl
 		OrthogonalProjectionEvaluator */
 	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
-		m_projectionEvaluator = projectionEvaluator;
+		projectionEvaluator_ = projectionEvaluator;
 	    }
 	    
 	    /** \brief Get the projection evaluator */
 	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
-		return m_projectionEvaluator;
+		return projectionEvaluator_;
 	    }
 	    
 	    virtual void setup(void);
@@ -234,21 +234,21 @@ namespace ompl
 	    unsigned int addMotion(Motion* motion, double dist);
 	    bool selectMotion(Motion* &smotion, Grid::Cell* &scell);
 	    
-	    base::StateSamplerPtr                      m_sCore;
+	    base::StateSamplerPtr                      sCore_;
 	    
-	    HCIK                                       m_hcik;
-	    TreeData                                   m_tree;
-	    unsigned int                               m_addedStartStates;
+	    HCIK                                       hcik_;
+	    TreeData                                   tree_;
+	    unsigned int                               addedStartStates_;
 	    
-	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
+	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
-	    double                                     m_minValidPathPercentage;
-	    double                                     m_goodScoreFactor;
-	    double                                     m_badScoreFactor;
-	    double                                     m_selectBorderPercentage;
-	    double                                     m_goalBias;
-	    double                                     m_maxDistance;
-	    RNG                                        m_rng;	
+	    double                                     minValidPathPercentage_;
+	    double                                     goodScoreFactor_;
+	    double                                     badScoreFactor_;
+	    double                                     selectBorderPercentage_;
+	    double                                     goalBias_;
+	    double                                     maxDistance_;
+	    RNG                                        rng_;	
 	};
 	
     }

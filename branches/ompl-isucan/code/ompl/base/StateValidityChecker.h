@@ -57,11 +57,11 @@ namespace ompl
 	public:
 
 	    /** \brief Constructor */
-	    StateValidityChecker(SpaceInformation* si) : m_si(si)
+	    StateValidityChecker(SpaceInformation* si) : si_(si)
 	    {
 	    }	
 	    
-	    StateValidityChecker(const SpaceInformationPtr &si) : m_si(si.get())
+	    StateValidityChecker(const SpaceInformationPtr &si) : si_(si.get())
 	    {
 	    }
 	    
@@ -75,7 +75,7 @@ namespace ompl
 	    
 	protected:
 	    
-	    SpaceInformation *m_si;
+	    SpaceInformation *si_;
 	    
 	};
 	

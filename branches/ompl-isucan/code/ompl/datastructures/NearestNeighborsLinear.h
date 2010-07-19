@@ -56,22 +56,22 @@ namespace ompl
 	
 	virtual void clear(void)
 	{
-	    m_data.clear();
-	    m_active.clear();
+	    data_.clear();
+	    active_.clear();
 	}
 
 	virtual void add(_T &data)
 	{
-	    m_data.push_back(data);
-	    m_active.push_back(true);
+	    data_.push_back(data);
+	    active_.push_back(true);
 	}
 
 	virtual bool remove(_T &data)
 	{
-	    for (int i = m_data.size() - 1 ; i >= 0 ; --i)
-		if (m_data[i] == data)
+	    for (int i = data_.size() - 1 ; i >= 0 ; --i)
+		if (data_[i] == data)
 		{
-		    m_active[i] = false;
+		    active_[i] = false;
 		    return true;
 		}
 	    return false;
@@ -81,11 +81,11 @@ namespace ompl
 	{
 	    int pos = -1;
 	    double dmin = 0.0;
-	    for (unsigned int i = 0 ; i < m_data.size() ; ++i)
+	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
 	    {
-		if (m_active[i])
+		if (active_[i])
 		{
-		    double distance = NearestNeighbors<_T>::m_distFun(m_data[i], data);
+		    double distance = NearestNeighbors<_T>::distFun_(data_[i], data);
 		    if (pos < 0 || dmin > distance)
 		    {
 			pos = i;
@@ -93,23 +93,23 @@ namespace ompl
 		    }
 		}
 	    }
-	    return pos >= 0 ? m_data[pos] : data;
+	    return pos >= 0 ? data_[pos] : data;
 	}
 	
 	virtual unsigned int size(void) const
 	{
-	    return m_data.size();
+	    return data_.size();
 	}
 	
 	virtual void list(std::vector<_T> &data) const
 	{
-	    data = m_data;
+	    data = data_;
 	}
 	
     protected:
 	
-	std::vector<_T>   m_data;
-	std::vector<bool> m_active;
+	std::vector<_T>   data_;
+	std::vector<bool> active_;
 	
     };
     

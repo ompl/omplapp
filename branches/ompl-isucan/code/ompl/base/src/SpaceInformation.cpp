@@ -42,42 +42,42 @@
 #include <cmath>
 #include <cassert>
 
-ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : m_stateManifold(manifold), m_resolution(0.0), m_maxExtent(0.0), m_setup(false), m_msg("SpaceInformation")
+ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : stateManifold_(manifold), resolution_(0.0), maxExtent_(0.0), setup_(false), msg_("SpaceInformation")
 {
-    if (!m_stateManifold)
+    if (!stateManifold_)
 	throw Exception("Invalid manifold definition");
 }
 
 void ompl::base::SpaceInformation::setup(void)
 {
-    if (m_setup)
-	m_msg.warn("Space information setup called multiple times");
+    if (setup_)
+	msg_.warn("Space information setup called multiple times");
     
-    if (!m_stateValidityChecker)
+    if (!stateValidityChecker_)
 	throw Exception("State validity checker not set!");
     
-    if (m_resolution < std::numeric_limits<double>::epsilon())
+    if (resolution_ < std::numeric_limits<double>::epsilon())
     {
-	m_resolution = estimateExtent(1000) / 50.0;
-	m_msg.warn("The resolution at which states need to be checked for collision is detected to be %f", m_resolution);
+	resolution_ = estimateExtent(1000) / 50.0;
+	msg_.warn("The resolution at which states need to be checked for collision is detected to be %f", resolution_);
     }
     
-    m_stateManifold->setup();
-    if (m_stateManifold->getDimension() <= 0)
+    stateManifold_->setup();
+    if (stateManifold_->getDimension() <= 0)
 	throw Exception("The dimension of the state manifold we plan in must be > 0");
 
-    m_setup = true;
+    setup_ = true;
 }
 
 bool ompl::base::SpaceInformation::isSetup(void) const
 {
-    return m_setup;
+    return setup_;
 }
 
 double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
 {
-    if (m_maxExtent > std::numeric_limits<double>::epsilon())
-	return m_maxExtent;
+    if (maxExtent_ > std::numeric_limits<double>::epsilon())
+	return maxExtent_;
     
     if (samples < 2)
 	samples = 2;
@@ -119,9 +119,9 @@ double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
     // free memory
     for (unsigned int i = 0 ; i  < samples ; ++i)
 	freeState(states[i]);
-    m_maxExtent = maxD;
+    maxExtent_ = maxD;
     
-    m_msg.inform("Estimated extent of space to plan in is %f", maxD);
+    msg_.inform("Estimated extent of space to plan in is %f", maxD);
     
     return maxD;
 }
@@ -141,14 +141,14 @@ bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *
     {
 	// try to find a valid state nearby
 	StateSamplerPtr ss = allocStateSampler();
-	State        *temp = m_stateManifold->allocState();
+	State        *temp = stateManifold_->allocState();
 	copyState(temp, state);	
 	for (unsigned int i = 0 ; i < attempts && !result ; ++i)
 	{
 	    ss->sampleNear(state, temp, distance);
 	    result = isValid(state);
 	}
-	m_stateManifold->freeState(temp);
+	stateManifold_->freeState(temp);
     }
     
     return result;
@@ -161,18 +161,18 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2,
 	return false;
 
     bool result = true;
-    int nd = (int)ceil(distance(s1, s2) / m_resolution);
+    int nd = (int)ceil(distance(s1, s2) / resolution_);
     
     /* temporary storage for the checked state */
     State *test = allocState();
     
     for (int j = 1 ; j < nd ; ++j)
     {
-	m_stateManifold->interpolate(s1, s2, (double)j / (double)nd, test);
+	stateManifold_->interpolate(s1, s2, (double)j / (double)nd, test);
 	if (!isValid(test))
 	{
 	    if (lastValidState)
-		m_stateManifold->interpolate(s1, s2, (double)(j - 1) / (double)nd, lastValidState);
+		stateManifold_->interpolate(s1, s2, (double)(j - 1) / (double)nd, lastValidState);
 	    if (lastValidTime)
 		*lastValidTime = (double)(j - 1) / (double)nd;
 	    result = false;
@@ -191,7 +191,7 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
 	return false;
     
     bool result = true;
-    int nd = (int)ceil(distance(s1, s2) / m_resolution);
+    int nd = (int)ceil(distance(s1, s2) / resolution_);
     
     /* initialize the queue of test positions */
     std::queue< std::pair<int, int> > pos;
@@ -208,7 +208,7 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
 	    std::pair<int, int> x = pos.front();
 	    
 	    int mid = (x.first + x.second) / 2;
-	    m_stateManifold->interpolate(s1, s2, (double)mid / (double)nd, test);
+	    stateManifold_->interpolate(s1, s2, (double)mid / (double)nd, test);
 	    
 	    if (!isValid(test))
 	    {
@@ -232,7 +232,7 @@ bool ompl::base::SpaceInformation::checkMotion(const State *s1, const State *s2)
 
 unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const
 {
-    int nd = (int)ceil(distance(s1, s2) / (m_resolution * factor));
+    int nd = (int)ceil(distance(s1, s2) / (resolution_ * factor));
     
     if (nd < 2)
     {
@@ -280,7 +280,7 @@ unsigned int ompl::base::SpaceInformation::getMotionStates(const State *s1, cons
     {
 	if (alloc)
 	    states[added] = allocState();
-	m_stateManifold->interpolate(s1, s2, (double)j / (double)nd, states[added]);
+	stateManifold_->interpolate(s1, s2, (double)j / (double)nd, states[added]);
 	added++;
     }
     
@@ -353,6 +353,6 @@ void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
     out << "  - state manifold:" << std::endl;
-    m_stateManifold->printSettings(out);
-    out << "  - state validity check resolution: " << m_resolution << std::endl;
+    stateManifold_->printSettings(out);
+    out << "  - state validity check resolution: " << resolution_ << std::endl;
 }

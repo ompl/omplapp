@@ -56,14 +56,14 @@ namespace ompl
 	    
 	    virtual unsigned int getDimension(void) const
 	    {
-		return m_projection.size();
+		return projection_.size();
 	    }
 	    
 	    virtual void project(const base::State *state, EuclideanProjection *projection) const;
 	    
 	protected:
 	    
-	    std::vector< std::valarray<double> > m_projection;
+	    std::vector< std::valarray<double> > projection_;
 	    
 	};
 
@@ -76,14 +76,14 @@ namespace ompl
 	    
 	    virtual unsigned int getDimension(void) const
 	    {
-		return m_components.size();
+		return components_.size();
 	    }
 	    
 	    virtual void project(const base::State *state, double *projection) const;
 	    
 	protected:
 	    
-	    std::vector<unsigned int> m_components;
+	    std::vector<unsigned int> components_;
 	    
 	};	
     }

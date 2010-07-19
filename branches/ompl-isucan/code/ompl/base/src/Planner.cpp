@@ -37,37 +37,37 @@
 #include "ompl/base/Planner.h"
 #include "ompl/util/Exception.h"
 
-ompl::base::Planner::Planner(const SpaceInformationPtr &si) : m_si(si), m_type(PLAN_UNKNOWN), m_setup(false)
+ompl::base::Planner::Planner(const SpaceInformationPtr &si) : si_(si), type_(PLAN_UNKNOWN), setup_(false)
 {
-    if (!m_si)
+    if (!si_)
 	throw Exception("Invalid space information instance");
-    if (!m_si->isSetup())
-	m_msg.warn("It is best if space information setup has been called before a planner is instantiated");
+    if (!si_->isSetup())
+	msg_.warn("It is best if space information setup has been called before a planner is instantiated");
 }
 
 ompl::base::PlannerType ompl::base::Planner::getType(void) const
 {
-    return m_type;
+    return type_;
 }
 
 const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinition(void) const
 {
-    return m_pdef;
+    return pdef_;
 }
 
 void ompl::base::Planner::setProblemDefinition(const ProblemDefinitionPtr &pdef)
 {
     clear();
-    m_pdef = pdef;
+    pdef_ = pdef;
 }
 
 void ompl::base::Planner::setup(void)
 {
-    if (!m_si->isSetup())
+    if (!si_->isSetup())
 	throw Exception("Space information setup should have been called before planner setup was called");
-    if (m_setup)
-	m_msg.warn("Planner setup called multiple times");
+    if (setup_)
+	msg_.warn("Planner setup called multiple times");
     else
-	m_setup = true;
+	setup_ = true;
 }
 

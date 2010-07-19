@@ -40,13 +40,13 @@
 
 void ompl::base::ProjectionEvaluator::setCellDimensions(const std::vector<double> &cellDimensions)
 {
-    m_cellDimensions = cellDimensions;
+    cellDimensions_ = cellDimensions;
     checkCellDimensions();
 }
 
 void ompl::base::ProjectionEvaluator::checkCellDimensions(void) const
 {
-    if (m_cellDimensions.size() != getDimension())
+    if (cellDimensions_.size() != getDimension())
 	throw Exception("Number of dimensions in projection space does not match number of cell dimensions");
 }
 
@@ -55,5 +55,5 @@ void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjecti
     unsigned int dim = getDimension();
     coord.resize(dim);
     for (unsigned int i = 0 ; i < dim ; ++i)
-	coord[i] = (int)trunc(projection[i]/m_cellDimensions[i]);
+	coord[i] = (int)trunc(projection[i]/cellDimensions_[i]);
 }

@@ -57,8 +57,8 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor. The goal must always know the space information it is part of */
-	    Goal(const SpaceInformationPtr &si) : m_si(si), m_maximumPathLength(std::numeric_limits<double>::max()),
-						  m_difference(-1.0), m_approximate(false)
+	    Goal(const SpaceInformationPtr &si) : si_(si), maximumPathLength_(std::numeric_limits<double>::max()),
+						  difference_(-1.0), approximate_(false)
 	    {
 	    }
 	    
@@ -82,7 +82,7 @@ namespace ompl
 	     *  goal. */
 	    bool isSatisfied(const State *st, double pathLength, double *distance) const
 	    {
-		if (pathLength > m_maximumPathLength)
+		if (pathLength > maximumPathLength_)
 		{
 		    if (distance != NULL)
 			isSatisfied(st, distance);
@@ -106,13 +106,13 @@ namespace ompl
 	    /** \brief Returns true if a solution path has been found (could be approximate) */
 	    bool isAchieved(void) const
 	    {
-		return m_path;
+		return path_;
 	    }
 
 	    /** \brief Get the maximum length allowed for a solution path */
 	    double getMaximumPathLength(void) const
 	    {
-		return m_maximumPathLength;
+		return maximumPathLength_;
 	    }
 
 	    /** \brief Set the maximum length allowed for a solution
@@ -121,7 +121,7 @@ namespace ompl
 		argument */
 	    void setMaximumPathLength(double maximumPathLength)
 	    {
-		m_maximumPathLength = maximumPathLength;
+		maximumPathLength_ = maximumPathLength;
 	    }
 	    
 	    /** \brief Return the found solution path. 
@@ -130,20 +130,20 @@ namespace ompl
 		computed by the planner */
 	    const PathPtr& getSolutionPath(void) const
 	    {
-		return m_path;
+		return path_;
 	    }	    
 	    
 	    /** \brief Update the solution path. If a previous solution path exists, it is deleted. */
 	    void setSolutionPath(const PathPtr &path, bool approximate = false)
 	    {
-		m_path = path;
-		m_approximate = approximate;
+		path_ = path;
+		approximate_ = approximate;
 	    }
 
 	    /** \brief Forget the solution path. Memory is freed. */
 	    void clearSolutionPath(void)
 	    {
-		m_path.reset();
+		path_.reset();
 	    }
 	    
 	    /** \brief If a difference between the desired solution and the
@@ -151,14 +151,14 @@ namespace ompl
 		returns it */
 	    double getDifference(void) const
 	    {
-		return m_difference;
+		return difference_;
 	    }
 	    
 	    /** \brief Set the difference between the found solution
 		path and the desired solution path */
 	    void setDifference(double difference)
 	    {
-		m_difference = difference;
+		difference_ = difference;
 	    }
 	    
 	    /** \brief Return true if the found solution is
@@ -166,7 +166,7 @@ namespace ompl
 		but hopefully is closer to it) */
 	    bool isApproximate(void) const
 	    {
-		return m_approximate;
+		return approximate_;
 	    }
 	    
 	    /** \brief Print information about the goal */
@@ -178,19 +178,19 @@ namespace ompl
 	protected:
 	    
 	    /** \brief The space information for this goal */
-	    SpaceInformationPtr      m_si;
+	    SpaceInformationPtr      si_;
 	    
 	    /** \brief The maximum length allowed for the solution path */
-	    double                   m_maximumPathLength;
+	    double                   maximumPathLength_;
 	    
 	    /** \brief Solution path, if found */
-	    PathPtr                  m_path;
+	    PathPtr                  path_;
 	    	    
 	    /** \brief The achieved difference between the found solution and the desired goal */
-	    double                   m_difference;
+	    double                   difference_;
 	    
 	    /** \brief True if goal was not achieved, but an approximate solution was found */
-	    bool                     m_approximate;
+	    bool                     approximate_;
 
 	};
 		

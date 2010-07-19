@@ -40,75 +40,75 @@
 
 bool ompl::control::RRT::solve(double solveTime)
 {
-    base::Goal                   *goal = m_pdef->getGoal().get(); 
+    base::Goal                   *goal = pdef_->getGoal().get(); 
     base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
 
     if (!goal)
     {
-	m_msg.error("Goal undefined");
+	msg_.error("Goal undefined");
 	return false;
     }
 
     time::point endTime = time::now() + time::seconds(solveTime);
     
-    for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
+    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
     {
-	const base::State *st = m_pdef->getStartState(i);
-	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
+	const base::State *st = pdef_->getStartState(i);
+	if (si_->satisfiesBounds(st) && si_->isValid(st))
 	{
-	    Motion *motion = new Motion(m_siC);
-	    m_si->copyState(motion->state, st);
-	    m_siC->nullControl(motion->control);
-	    m_nn.add(motion);
+	    Motion *motion = new Motion(siC_);
+	    si_->copyState(motion->state, st);
+	    siC_->nullControl(motion->control);
+	    nn_.add(motion);
 	}
 	else
-	    m_msg.error("Initial state is invalid!");
+	    msg_.error("Initial state is invalid!");
     }
 
     
-    if (m_nn.size() == 0)
+    if (nn_.size() == 0)
     {
-	m_msg.error("There are no valid initial states!");
+	msg_.error("There are no valid initial states!");
 	return false;	
     }    
 
-    m_msg.inform("Starting with %u states", m_nn.size());
+    msg_.inform("Starting with %u states", nn_.size());
     
     Motion *solution  = NULL;
     Motion *approxsol = NULL;
     double  approxdif = std::numeric_limits<double>::infinity();
     
-    Motion      *rmotion = new Motion(m_siC);
+    Motion      *rmotion = new Motion(siC_);
     base::State  *rstate = rmotion->state;
     Control       *rctrl = rmotion->control;
-    base::State  *xstate = m_si->allocState();
+    base::State  *xstate = si_->allocState();
     
     while (time::now() < endTime)
     {	
 	/* sample random state (with goal biasing) */
-	if (goal_s && m_rng.uniform01() < m_goalBias)
+	if (goal_s && rng_.uniform01() < goalBias_)
 	    goal_s->sampleGoal(rstate);
 	else
-	    m_sCore->sample(rstate);
+	    sCore_->sample(rstate);
 	
 	/* find closest state in the tree */
-	Motion *nmotion = m_nn.nearest(rmotion);
+	Motion *nmotion = nn_.nearest(rmotion);
 	
 	/* sample a random control */
-	m_cCore->sample(rctrl);
-	unsigned int cd = m_cCore->sampleStepCount(m_siC->getMinControlDuration(), m_siC->getMaxControlDuration());
-	cd = m_siC->propagateWhileValid(nmotion->state, rctrl, cd, xstate);
+	cCore_->sample(rctrl);
+	unsigned int cd = cCore_->sampleStepCount(siC_->getMinControlDuration(), siC_->getMaxControlDuration());
+	cd = siC_->propagateWhileValid(nmotion->state, rctrl, cd, xstate);
 
-	if (cd >= m_siC->getMinControlDuration())
+	if (cd >= siC_->getMinControlDuration())
 	{
 	    /* create a motion */
-	    Motion *motion = new Motion(m_siC);
-	    m_si->copyState(motion->state, xstate);
-	    m_siC->copyControl(motion->control, rctrl);
+	    Motion *motion = new Motion(siC_);
+	    si_->copyState(motion->state, xstate);
+	    siC_->copyControl(motion->control, rctrl);
 	    motion->steps = cd;
 	    motion->parent = nmotion;
 	    
-	    m_nn.add(motion);
+	    nn_.add(motion);
 	    double dist = 0.0;
 	    bool solved = goal->isSatisfied(motion->state, &dist);
 	    if (solved)
@@ -143,31 +143,31 @@ bool ompl::control::RRT::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathControl *path = new PathControl(m_si);
+	PathControl *path = new PathControl(si_);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
 	{   
-	    path->states.push_back(m_si->cloneState(mpath[i]->state));
+	    path->states.push_back(si_->cloneState(mpath[i]->state));
 	    if (mpath[i]->parent)
 	    {
-		path->controls.push_back(m_siC->cloneControl(mpath[i]->control));
-		path->controlDurations.push_back(mpath[i]->steps * m_siC->getPropagationStepSize());
+		path->controls.push_back(siC_->cloneControl(mpath[i]->control));
+		path->controlDurations.push_back(mpath[i]->steps * siC_->getPropagationStepSize());
 	    }
 	}
 	goal->setDifference(approxdif);
 	goal->setSolutionPath(base::PathPtr(path), approximate);
 
 	if (approximate)
-	    m_msg.warn("Found approximate solution");
+	    msg_.warn("Found approximate solution");
     }
     
     if (rmotion->state)
-	m_si->freeState(rmotion->state);
+	si_->freeState(rmotion->state);
     if (rmotion->control)
-	m_siC->freeControl(rmotion->control);
+	siC_->freeControl(rmotion->control);
     delete rmotion;
-    m_si->freeState(xstate);
+    si_->freeState(xstate);
     
-    m_msg.inform("Created %u states", m_nn.size());
+    msg_.inform("Created %u states", nn_.size());
     
     return goal->isAchieved();
 }
@@ -175,7 +175,7 @@ bool ompl::control::RRT::solve(double solveTime)
 void ompl::control::RRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    m_nn.list(motions);
+    nn_.list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;

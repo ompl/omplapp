@@ -59,10 +59,10 @@ namespace ompl
 	public:
 	    PathSimplifier(const base::SpaceInformationPtr &si)
 	    {
-		m_si = si;
-		m_rangeRatio = 0.2;
-		m_maxSteps = 10;
-		m_maxEmptySteps = 3;
+		si_ = si;
+		rangeRatio_ = 0.2;
+		maxSteps_ = 10;
+		maxEmptySteps_ = 3;
 	    }
 	    
 	    virtual ~PathSimplifier(void)
@@ -71,32 +71,32 @@ namespace ompl
 	    
 	    double getRangeRatio(void) const
 	    {
-		return m_rangeRatio;
+		return rangeRatio_;
 	    }
 	    
 	    void setRangeRatio(double rangeRatio)
 	    {
-		m_rangeRatio = rangeRatio;
+		rangeRatio_ = rangeRatio;
 	    }
 	    
 	    unsigned int getMaxSteps(void) const
 	    {
-		return m_maxSteps;
+		return maxSteps_;
 	    }
 	    
 	    void setMaxSteps(unsigned int maxSteps)
 	    {
-		m_maxSteps = maxSteps;
+		maxSteps_ = maxSteps;
 	    }
 	    
 	    unsigned int getMaxEmptySteps(void) const
 	    {
-		return m_maxEmptySteps;
+		return maxEmptySteps_;
 	    }
 	    
 	    void setMaxEmptySteps(unsigned int maxEmptySteps)
 	    {
-		m_maxEmptySteps = maxEmptySteps;
+		maxEmptySteps_ = maxEmptySteps;
 	    }
 	    
 	    /** \brief Given a path, attempt to remove vertices from it while keeping the path valid */
@@ -111,11 +111,11 @@ namespace ompl
 	    
 	protected:
 	    
-	    base::SpaceInformationPtr m_si;
-	    RNG                       m_rng;
-	    double                    m_rangeRatio;
-	    unsigned int              m_maxSteps;
-	    unsigned int              m_maxEmptySteps;
+	    base::SpaceInformationPtr si_;
+	    RNG                       rng_;
+	    double                    rangeRatio_;
+	    unsigned int              maxSteps_;
+	    unsigned int              maxEmptySteps_;
 	};    
     }
 }

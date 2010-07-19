@@ -97,7 +97,7 @@ namespace ompl
 	    std::string combine(const char *msg, va_list ap) const;
 
 	    /** \brief The string that appears in front of very forwarded message. */
-	    std::string m_prefix;	    
+	    std::string prefix_;	    
 	};
 	
 	/** \brief Generic class to handle output from a piece of

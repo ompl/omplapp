@@ -52,7 +52,7 @@ namespace ompl
 	{
 	public:
 	    
-	    StateSamplerArray(const SpaceInformationConstPtr &si) : m_si(si)
+	    StateSamplerArray(const SpaceInformationConstPtr &si) : si_(si)
 	    {
 	    }
 	    
@@ -62,20 +62,20 @@ namespace ompl
 	    
 	    StateSampler* operator[](std::size_t index)
 	    {
-		return m_samplers[index].get();
+		return samplers_[index].get();
 	    }
 
 	    void resize(std::size_t count);
 	    
 	    std::size_t size(void) const
 	    {
-		return m_samplers.size();
+		return samplers_.size();
 	    }
 	    
 	private:
 	    
-	    std::vector<StateSamplerPtr> m_samplers;
-	    SpaceInformationConstPtr     m_si;
+	    std::vector<StateSamplerPtr> samplers_;
+	    SpaceInformationConstPtr     si_;
 	};
     }
 }

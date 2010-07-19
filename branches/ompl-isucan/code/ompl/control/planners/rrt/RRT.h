@@ -73,16 +73,16 @@ namespace ompl
 	public:
 	    
 	    RRT(const SpaceInformationPtr &si) : base::Planner(si),
-						 m_sCore(si->allocStateSampler()),
-						 m_cCore(si->allocControlSampler())
+						 sCore_(si->allocStateSampler()),
+						 cCore_(si->allocControlSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_ANY;
-		m_msg.setPrefix("RRT");
-		m_siC = si.get();
+		type_ = base::PLAN_TO_GOAL_ANY;
+		msg_.setPrefix("RRT");
+		siC_ = si.get();
 		
-		m_nn.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
-		m_goalBias = 0.05;
-		m_addedStartStates = 0;
+		nn_.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
+		goalBias_ = 0.05;
+		addedStartStates_ = 0;
 	    }
 	    
 	    virtual ~RRT(void)
@@ -99,8 +99,8 @@ namespace ompl
 	    virtual void clear(void)
 	    {
 		freeMemory();
-		m_nn.clear();
-		m_addedStartStates = 0;
+		nn_.clear();
+		addedStartStates_ = 0;
 	    }
 	    
 	    /** In the process of randomly selecting states in the state
@@ -112,13 +112,13 @@ namespace ompl
 		the default value. */
 	    void setGoalBias(double goalBias)
 	    {
-		m_goalBias = goalBias;
+		goalBias_ = goalBias;
 	    }
 	    
 	    /** \brief Get the goal bias the planner is using */
 	    double getGoalBias(void) const
 	    {
-		return m_goalBias;
+		return goalBias_;
 	    }
 
 	    virtual void getPlannerData(base::PlannerData &data) const;
@@ -150,31 +150,31 @@ namespace ompl
 	    void freeMemory(void)
 	    {
 		std::vector<Motion*> motions;
-		m_nn.list(motions);
+		nn_.list(motions);
 		for (unsigned int i = 0 ; i < motions.size() ; ++i)
 		{
 		    if (motions[i]->state)
-			m_si->freeState(motions[i]->state);
+			si_->freeState(motions[i]->state);
 		    if (motions[i]->control)
-			m_siC->freeControl(motions[i]->control);
+			siC_->freeControl(motions[i]->control);
 		    delete motions[i];
 		}
 	    }
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
-		return m_si->distance(a->state, b->state);
+		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr               m_sCore;
-	    ControlSamplerPtr                   m_cCore;
-	    const SpaceInformation             *m_siC;
+	    base::StateSamplerPtr               sCore_;
+	    ControlSamplerPtr                   cCore_;
+	    const SpaceInformation             *siC_;
 	    
-	    NearestNeighborsSqrtApprox<Motion*> m_nn;
-	    unsigned int                        m_addedStartStates;
+	    NearestNeighborsSqrtApprox<Motion*> nn_;
+	    unsigned int                        addedStartStates_;
 	    
-	    double                              m_goalBias;
-	    RNG                                 m_rng;	
+	    double                              goalBias_;
+	    RNG                                 rng_;	
 	};
 	
     }

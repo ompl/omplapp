@@ -74,19 +74,19 @@ namespace ompl
 	public:
 	    
 	    KPIECE1(const SpaceInformationPtr &si) : base::Planner(si),
-						     m_sCore(si->allocStateSampler()),
-						     m_cCore(si->allocControlSampler())
+						     sCore_(si->allocStateSampler()),
+						     cCore_(si->allocControlSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_ANY;
-		m_msg.setPrefix("KPIECE1");
+		type_ = base::PLAN_TO_GOAL_ANY;
+		msg_.setPrefix("KPIECE1");
 		
-		m_siC = si.get();
-		m_addedStartStates = 0;		
-		m_goalBias = 0.05;
-		m_selectBorderPercentage = 0.7;
-		m_badScoreFactor = 0.3;
-		m_goodScoreFactor = 0.9;
-		m_tree.grid.onCellUpdate(computeImportance, NULL);
+		siC_ = si.get();
+		addedStartStates_ = 0;		
+		goalBias_ = 0.05;
+		selectBorderPercentage_ = 0.7;
+		badScoreFactor_ = 0.3;
+		goodScoreFactor_ = 0.9;
+		tree_.grid.onCellUpdate(computeImportance, NULL);
 	    }
 	    
 	    virtual ~KPIECE1(void)
@@ -107,13 +107,13 @@ namespace ompl
 		the default value. */
 	    void setGoalBias(double goalBias)
 	    {
-		m_goalBias = goalBias;
+		goalBias_ = goalBias;
 	    }
 	    
 	    /** Get the goal bias the planner is using */
 	    double getGoalBias(void) const
 	    {
-		return m_goalBias;
+		return goalBias_;
 	    }
 	    
 	    /** \brief Set the projection evaluator. This class is able to
@@ -122,12 +122,12 @@ namespace ompl
 		OrthogonalProjectionEvaluator */
 	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
-		m_projectionEvaluator = projectionEvaluator;
+		projectionEvaluator_ = projectionEvaluator;
 	    }
 	    
 	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
-		return m_projectionEvaluator;
+		return projectionEvaluator_;
 	    }
 	    
 	    virtual void setup(void);
@@ -212,21 +212,21 @@ namespace ompl
 	    bool selectMotion(Motion* &smotion, Grid::Cell* &scell);
 	    unsigned int findNextMotion(const Grid::Coord &origin, const std::vector<Grid::Coord> &coords, unsigned int index, unsigned int last);
 	    
-	    base::StateSamplerPtr      m_sCore;
-	    ControlSamplerPtr          m_cCore;
+	    base::StateSamplerPtr      sCore_;
+	    ControlSamplerPtr          cCore_;
 	    
-	    TreeData                   m_tree;
-	    unsigned int               m_addedStartStates;
+	    TreeData                   tree_;
+	    unsigned int               addedStartStates_;
 	    
-	    const SpaceInformation    *m_siC;
+	    const SpaceInformation    *siC_;
 	    
-	    base::ProjectionEvaluatorPtr m_projectionEvaluator;
+	    base::ProjectionEvaluatorPtr projectionEvaluator_;
 	    
-	    double                     m_goodScoreFactor;
-	    double                     m_badScoreFactor;
-	    double                     m_selectBorderPercentage;
-	    double                     m_goalBias;
-	    RNG                        m_rng;	
+	    double                     goodScoreFactor_;
+	    double                     badScoreFactor_;
+	    double                     selectBorderPercentage_;
+	    double                     goalBias_;
+	    RNG                        rng_;	
 	};
 	
     }

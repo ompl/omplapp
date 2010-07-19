@@ -43,7 +43,7 @@ void ompl::control::ControlManifold::setup(void)
 
 const ompl::base::StateManifoldPtr& ompl::control::ControlManifold::getStateManifold(void) const
 {
-    return m_stateManifold;
+    return stateManifold_;
 }
 
 void ompl::control::ControlManifold::printControl(const Control *control, std::ostream &out) const
@@ -58,22 +58,22 @@ void ompl::control::ControlManifold::printSettings(std::ostream &out) const
 
 void ompl::control::CompoundControlManifold::addSubManifold(const ControlManifoldPtr &component)
 {
-    if (m_locked)
+    if (locked_)
 	throw Exception("This manifold is locked. No further components can be added");
     
-    m_components.push_back(component);
-    m_componentCount = m_components.size();
+    components_.push_back(component);
+    componentCount_ = components_.size();
 }
 
 unsigned int ompl::control::CompoundControlManifold::getSubManifoldCount(void) const
 {
-    return m_componentCount;
+    return componentCount_;
 }
 
 const ompl::control::ControlManifoldPtr& ompl::control::CompoundControlManifold::getSubManifold(const unsigned int index) const
 {
-    if (m_componentCount > index)
-	return m_components[index];
+    if (componentCount_ > index)
+	return components_[index];
     else
 	throw Exception("Submanifold index does not exist");
 }
@@ -81,25 +81,25 @@ const ompl::control::ControlManifoldPtr& ompl::control::CompoundControlManifold:
 unsigned int ompl::control::CompoundControlManifold::getDimension(void) const
 {
     unsigned int dim = 0;
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	dim += m_components[i]->getDimension();
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	dim += components_[i]->getDimension();
     return dim;
 }
 
 ompl::control::Control* ompl::control::CompoundControlManifold::allocControl(void) const
 {
     CompoundControl *control = new CompoundControl();
-    control->components = new Control*[m_componentCount];
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	control->components[i] = m_components[i]->allocControl();
+    control->components = new Control*[componentCount_];
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	control->components[i] = components_[i]->allocControl();
     return static_cast<Control*>(control);
 }
 
 void ompl::control::CompoundControlManifold::freeControl(Control *control) const
 {  
     CompoundControl *ccontrol = static_cast<CompoundControl*>(control);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->freeControl(ccontrol->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->freeControl(ccontrol->components[i]);
     delete[] ccontrol->components;
     delete ccontrol;
 }
@@ -108,16 +108,16 @@ void ompl::control::CompoundControlManifold::copyControl(Control *destination, c
 {  
     CompoundControl      *cdest = static_cast<CompoundControl*>(destination);
     const CompoundControl *csrc = static_cast<const CompoundControl*>(source);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->copyControl(cdest->components[i], csrc->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->copyControl(cdest->components[i], csrc->components[i]);
 }
 
 bool ompl::control::CompoundControlManifold::equalControls(const Control *control1, const Control *control2) const
 { 
     const CompoundControl *ccontrol1 = static_cast<const CompoundControl*>(control1);
     const CompoundControl *ccontrol2 = static_cast<const CompoundControl*>(control2);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	if (!m_components[i]->equalControls(ccontrol1->components[i], ccontrol2->components[i]))
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	if (!components_[i]->equalControls(ccontrol1->components[i], ccontrol2->components[i]))
 	    return false;
     return true;
 }
@@ -125,15 +125,15 @@ bool ompl::control::CompoundControlManifold::equalControls(const Control *contro
 void ompl::control::CompoundControlManifold::nullControl(Control *control) const
 {   
     CompoundControl *ccontrol = static_cast<CompoundControl*>(control);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->nullControl(ccontrol->components[i]);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->nullControl(ccontrol->components[i]);
 }
 
 ompl::control::ControlSamplerPtr ompl::control::CompoundControlManifold::allocControlSampler(void) const
 {
     CompoundControlSampler *ss = new CompoundControlSampler(this);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	ss->addSampler(m_components[i]->allocControlSampler());
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	ss->addSampler(components_[i]->allocControlSampler());
     return ControlSamplerPtr(ss);
 }
 
@@ -143,9 +143,9 @@ ompl::control::PropagationResult ompl::control::CompoundControlManifold::propaga
     const CompoundControl *ccontrol = static_cast<const CompoundControl*>(control);
     base::CompoundState *cresult = static_cast<base::CompoundState*>(result);
     PropagationResult pr = PROPAGATION_START_VALID;
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
     {
-	PropagationResult p = m_components[i]->propagate(cstate->components[i], ccontrol->components[i], duration, cresult->components[i]);
+	PropagationResult p = components_[i]->propagate(cstate->components[i], ccontrol->components[i], duration, cresult->components[i]);
 	if (pr == PROPAGATION_START_VALID)
 	    if (p != PROPAGATION_START_VALID)
 		pr = p;
@@ -155,22 +155,22 @@ ompl::control::PropagationResult ompl::control::CompoundControlManifold::propaga
 
 void ompl::control::CompoundControlManifold::lock(void)
 {
-    m_locked = true;
+    locked_ = true;
 }
 
 void ompl::control::CompoundControlManifold::printControl(const Control *control, std::ostream &out) const
 {
     out << "Compound control [" << std::endl;
     const CompoundControl *ccontrol = static_cast<const CompoundControl*>(control);
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->printControl(ccontrol->components[i], out);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->printControl(ccontrol->components[i], out);
     out << "]" << std::endl;
 }
 
 void ompl::control::CompoundControlManifold::printSettings(std::ostream &out) const
 {
     out << "Compound control manifold [" << std::endl;
-    for (unsigned int i = 0 ; i < m_componentCount ; ++i)
-	m_components[i]->printSettings(out);
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->printSettings(out);
     out << "]" << std::endl;
 }

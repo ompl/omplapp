@@ -67,13 +67,13 @@ namespace ompl
 		cast this state into does not match the type of states
 		allocated. */
 	    explicit
-	    ScopedState(const SpaceInformationPtr &si) : m_manifold(si->getStateManifold())
+	    ScopedState(const SpaceInformationPtr &si) : manifold_(si->getStateManifold())
 	    {	
-		State *s = m_manifold->allocState();
-		m_state = dynamic_cast<T*>(s);
-		if (!m_state)
+		State *s = manifold_->allocState();
+		state_ = dynamic_cast<T*>(s);
+		if (!state_)
 		{
-		    m_manifold->freeState(s);
+		    manifold_->freeState(s);
 		    throw Exception("StateManifold does not allocate states of desired type");
 		}
 	    }
@@ -83,50 +83,50 @@ namespace ompl
 		type to cast this state into does not match the type
 		of states allocated. */
 	    explicit
-	    ScopedState(const StateManifoldPtr &manifold) : m_manifold(manifold)
+	    ScopedState(const StateManifoldPtr &manifold) : manifold_(manifold)
 	    {
-		State *s = m_manifold->allocState();
-		m_state = dynamic_cast<T*>(s);
-		if (!m_state)
+		State *s = manifold_->allocState();
+		state_ = dynamic_cast<T*>(s);
+		if (!state_)
 		{
-		    m_manifold->freeState(s);
+		    manifold_->freeState(s);
 		    throw Exception("StateManifold does not allocate states of desired type");
 		}
 	    }
 
 	    /** \brief Copy constructor */
-	    ScopedState(const ScopedState<T> &other) : m_manifold(other.getManifold())
+	    ScopedState(const ScopedState<T> &other) : manifold_(other.getManifold())
 	    { 
-		State *s = m_manifold->allocState();
-		m_state = dynamic_cast<T*>(s);
-		m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+		State *s = manifold_->allocState();
+		state_ = dynamic_cast<T*>(s);
+		manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
 	    }
 
 	    /** \brief Copy constructor that allows instantiation from states of other type */
 	    template<class O>
-	    ScopedState(const ScopedState<O> &other) : m_manifold(other.getManifold())
+	    ScopedState(const ScopedState<O> &other) : manifold_(other.getManifold())
 	    { 
 		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, State*>));
 		
 		if (!dynamic_cast<const T*>(other.get()))
 		    throw Exception("Unable to copy state");
 		
-		State *s = m_manifold->allocState();
-		m_state = dynamic_cast<T*>(s);
-		m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+		State *s = manifold_->allocState();
+		state_ = dynamic_cast<T*>(s);
+		manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
 	    }
 
 
 	    /** \brief Free the memory of the internally allocated state */
 	    ~ScopedState(void)
 	    {	
-		m_manifold->freeState(m_state);
+		manifold_->freeState(state_);
 	    }	    
 
 	    /** \brief Get the manifold that the state corresponds to */
 	    const StateManifoldPtr& getManifold(void) const
 	    {
-		return m_manifold;
+		return manifold_;
 	    }
 	    
 	    /** \brief Assignment operator */
@@ -134,12 +134,12 @@ namespace ompl
 	    {
 		if (&other != this)
 		{
-		    m_manifold->freeState(m_state);
-		    m_manifold = other.getManifold();
+		    manifold_->freeState(state_);
+		    manifold_ = other.getManifold();
 		    
-		    State *s = m_manifold->allocState();
-		    m_state = dynamic_cast<T*>(s);
-		    m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+		    State *s = manifold_->allocState();
+		    state_ = dynamic_cast<T*>(s);
+		    manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
 		}
 		return *this;
 	    }
@@ -155,12 +155,12 @@ namespace ompl
 		
 		if (reinterpret_cast<const void*>(&other) != reinterpret_cast<const void*>(this))
 		{
-		    m_manifold->freeState(m_state);
-		    m_manifold = other.getManifold();
+		    manifold_->freeState(state_);
+		    manifold_ = other.getManifold();
 		    
-		    State *s = m_manifold->allocState();
-		    m_state = dynamic_cast<T*>(s);
-		    m_manifold->copyState(s, dynamic_cast<const State*>(other.get()));
+		    State *s = manifold_->allocState();
+		    state_ = dynamic_cast<T*>(s);
+		    manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
 		}
 		return *this;
 	    }
@@ -170,7 +170,7 @@ namespace ompl
 	    bool operator==(const ScopedState<O> &other) const
 	    {
 		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, State*>));
-		return m_manifold->equalStates(dynamic_cast<const State*>(m_state), dynamic_cast<const State*>(other.get()));
+		return manifold_->equalStates(dynamic_cast<const State*>(state_), dynamic_cast<const State*>(other.get()));
 	    }
 
 	    /** \brief Checks equality of two states */	    
@@ -183,25 +183,25 @@ namespace ompl
 	    /** \brief De-references to the contained state */
 	    T& operator*(void) const
 	    {
-		return *m_state;
+		return *state_;
 	    }
 	    
 	    /** \brief Returns a pointer to the contained state */
 	    T* operator->(void) const
 	    {
-		return m_state;
+		return state_;
 	    }
 	    
 	    /** \brief Returns a pointer to the contained state */
 	    T* get(void) const
 	    {
-		return m_state;
+		return state_;
 	    }
 
 	private:
 	    
-	    StateManifoldPtr     m_manifold;
-	    T                   *m_state;
+	    StateManifoldPtr     manifold_;
+	    T                   *state_;
 	};
     }
 }

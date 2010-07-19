@@ -70,23 +70,23 @@ public:
 	int x = (int)(state->as<base::RealVectorState>()->values[0]);
 	int y = (int)(state->as<base::RealVectorState>()->values[1]);
 	
-	if (x < 0 || y < 0 || x >= m_w || y >= m_h)
+	if (x < 0 || y < 0 || x >= w_ || y >= h_)
 	    return false;
 
-	return m_grid[x][y] == 0; // 0 means valid state
+	return grid_[x][y] == 0; // 0 means valid state
     }
     
     void setGrid(const std::vector< std::vector<int> > &grid)
     {
-	m_grid = grid;
-	m_w = m_grid.size();
-	m_h = m_grid[0].size();	
+	grid_ = grid;
+	w_ = grid_.size();
+	h_ = grid_[0].size();	
     }
     
 protected:
     
-    std::vector< std::vector<int> > m_grid;
-    int m_w, m_h;
+    std::vector< std::vector<int> > grid_;
+    int w_, h_;
     
 };
 
@@ -125,7 +125,7 @@ public:
 	result->as<base::RealVectorState>()->values[1] = state->as<base::RealVectorState>()->values[1] + duration * control->as<control::RealVectorControl>()->values[1];
 	result->as<base::RealVectorState>()->values[2] = control->as<control::RealVectorControl>()->values[0];
 	result->as<base::RealVectorState>()->values[3] = control->as<control::RealVectorControl>()->values[1];
-	m_stateManifold->enforceBounds(result);
+	stateManifold_->enforceBounds(result);
 	//	return SVC->isValid(state) ? control::PROPAGATION_START_VALID : control::PROPAGATION_START_INVALID;
 	return control::PROPAGATION_START_UNKNOWN;
     }

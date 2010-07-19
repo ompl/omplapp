@@ -40,13 +40,13 @@
 
 void ompl::base::SO2StateUniformSampler::sample(State *state)
 {
-    state->as<SO2State>()->value = m_rng.uniformReal(-M_PI, M_PI);
+    state->as<SO2State>()->value = rng_.uniformReal(-M_PI, M_PI);
 }
 
 void ompl::base::SO2StateUniformSampler::sampleNear(State *state, const State *near, const double distance)
 {
     double &v = state->as<SO2State>()->value;
-    v = m_rng.uniformReal(near->as<SO2State>()->value - distance, near->as<SO2State>()->value + distance);
+    v = rng_.uniformReal(near->as<SO2State>()->value - distance, near->as<SO2State>()->value + distance);
     // we don't need something as general as enforceBounds() since we know the input states are within bounds
     if (v < -M_PI)
 	v += 2.0 * M_PI;

@@ -41,19 +41,19 @@
 
 ompl::control::PathControl::PathControl(const base::SpaceInformationPtr &si) : base::Path(si)
 {
-    if (!dynamic_cast<const SpaceInformation*>(m_si.get()))
+    if (!dynamic_cast<const SpaceInformation*>(si_.get()))
 	throw Exception("Cannot create a path with controls from a space that does not support controls");
 }
 
-ompl::control::PathControl::PathControl(const PathControl &path) : base::Path(path.m_si)
+ompl::control::PathControl::PathControl(const PathControl &path) : base::Path(path.si_)
 {
     states.resize(path.states.size());
     controls.resize(path.controls.size());
 
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	states[i] = m_si->cloneState(path.states[i]);
+	states[i] = si_->cloneState(path.states[i]);
     
-    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(si_.get());
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
 	controls[i] = si->cloneControl(path.controls[i]);
     
@@ -67,25 +67,25 @@ double ompl::control::PathControl::length(void) const
 
 void ompl::control::PathControl::print(std::ostream &out) const
 {
-    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(si_.get());
     double res = si->getPropagationStepSize();
     out << "Control path with " << states.size() << " states" << std::endl;
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
     {
 	out << "At state ";
-	m_si->printState(states[i], out);
+	si_->printState(states[i], out);
 	out << "  apply control ";
 	si->printControl(controls[i], out);
 	out << "  for " << (int)round(controlDurations[i]/res) << " steps" << std::endl;
     }
     out << "Arrive at state ";
-    m_si->printState(states[controls.size()], out);
+    si_->printState(states[controls.size()], out);
     out << std::endl;
 }
 
 void ompl::control::PathControl::interpolate(void) 
 {
-    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(si_.get());
     std::vector<base::State*> newStates;
     std::vector<Control*> newControls;
     std::vector<double> newControlDurations;
@@ -107,7 +107,7 @@ void ompl::control::PathControl::interpolate(void)
 	// last state is already in the non-interpolated path
 	if (!istates.empty())
 	{
-	    m_si->freeState(istates.back());
+	    si_->freeState(istates.back());
 	    istates.pop_back();
 	}
 	newStates.push_back(states[i]);
@@ -129,9 +129,9 @@ void ompl::control::PathControl::interpolate(void)
 bool ompl::control::PathControl::check(void) const
 {
     bool valid = true;
-    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(si_.get());
     double res = si->getPropagationStepSize();
-    base::State *dummy = m_si->allocState();
+    base::State *dummy = si_->allocState();
     for (unsigned int  i = 0 ; i < controls.size() ; ++i)
     {
 	unsigned int steps = (unsigned int)round(controlDurations[i] / res);
@@ -141,15 +141,15 @@ bool ompl::control::PathControl::check(void) const
 	    break;
 	}
     }
-    m_si->freeState(dummy);
+    si_->freeState(dummy);
     return valid;
 }
 
 void ompl::control::PathControl::freeMemory(void)
 {
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	m_si->freeState(states[i]);
-    const SpaceInformation *si = static_cast<const SpaceInformation*>(m_si.get());
+	si_->freeState(states[i]);
+    const SpaceInformation *si = static_cast<const SpaceInformation*>(si_.get());
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
 	si->freeControl(controls[i]);
 }

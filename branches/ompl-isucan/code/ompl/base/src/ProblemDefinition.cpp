@@ -42,8 +42,8 @@
 
 bool ompl::base::ProblemDefinition::hasStartState(const State *state, unsigned int *startIndex)
 {
-    for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
-	if (m_si->equalStates(state, m_startStates[i]))
+    for (unsigned int i = 0 ; i < startStates_.size() ; ++i)
+	if (si_->equalStates(state, startStates_[i]))
 	{
 	    if (startIndex)
 		*startIndex = i;
@@ -56,33 +56,33 @@ bool ompl::base::ProblemDefinition::fixInvalidInputState(State *state, double di
 { 
     bool result = false;
 
-    bool b = m_si->satisfiesBounds(state);
+    bool b = si_->satisfiesBounds(state);
     bool v = false;
     if (b)
     {
-	v = m_si->isValid(state);
+	v = si_->isValid(state);
 	if (!v)
-	    m_msg.debug("%s state is not valid", start ? "Start" : "Goal");
+	    msg_.debug("%s state is not valid", start ? "Start" : "Goal");
     }
     else
-	m_msg.debug("%s state is not within space bounds", start ? "Start" : "Goal");
+	msg_.debug("%s state is not within space bounds", start ? "Start" : "Goal");
     
     if (!b || !v)
     {
 	std::stringstream ss;
-	m_si->printState(state, ss);
+	si_->printState(state, ss);
 	ss << " within distance " << dist;
-	m_msg.debug("Attempting to fix %s state %s", start ? "start" : "goal", ss.str().c_str());
+	msg_.debug("Attempting to fix %s state %s", start ? "start" : "goal", ss.str().c_str());
 	
-	State *temp = m_si->allocState();
-	if (m_si->searchValidNearby(temp, state, dist, attempts))
+	State *temp = si_->allocState();
+	if (si_->searchValidNearby(temp, state, dist, attempts))
 	{
-	    m_si->copyState(state, temp);
+	    si_->copyState(state, temp);
 	    result = true;
 	}
 	else
-	    m_msg.warn("Unable to fix %s state", start ? "start" : "goal");
-	m_si->freeState(temp);
+	    msg_.warn("Unable to fix %s state", start ? "start" : "goal");
+	si_->freeState(temp);
     }
     
     return result;    
@@ -93,12 +93,12 @@ bool ompl::base::ProblemDefinition::fixInvalidInputStates(double distStart, doub
     bool result = true;
     
     // fix start states
-    for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
-	if (!fixInvalidInputState(m_startStates[i], distStart, true, attempts))
+    for (unsigned int i = 0 ; i < startStates_.size() ; ++i)
+	if (!fixInvalidInputState(startStates_[i], distStart, true, attempts))
 	    result = false;
     
     // fix goal state
-    GoalState *goal = dynamic_cast<GoalState*>(m_goal.get());
+    GoalState *goal = dynamic_cast<GoalState*>(goal_.get());
     if (goal)
     {
 	if (!fixInvalidInputState(goal->state, distGoal, false, attempts))
@@ -106,7 +106,7 @@ bool ompl::base::ProblemDefinition::fixInvalidInputStates(double distStart, doub
     }
 
     // fix goal state
-    GoalStates *goals = dynamic_cast<GoalStates*>(m_goal.get());
+    GoalStates *goals = dynamic_cast<GoalStates*>(goal_.get());
     if (goals)
     {
 	for (unsigned int i = 0 ; i < goals->states.size() ; ++i)
@@ -119,19 +119,19 @@ bool ompl::base::ProblemDefinition::fixInvalidInputStates(double distStart, doub
 
 bool ompl::base::ProblemDefinition::isTrivial(unsigned int *startIndex, double *distance) const
 {
-    if (!m_goal)
+    if (!goal_)
     {
-	m_msg.error("Goal undefined");
+	msg_.error("Goal undefined");
 	return false;
     }
     
-    for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
+    for (unsigned int i = 0 ; i < startStates_.size() ; ++i)
     {
-	const State *start = m_startStates[i];
-	if (start && m_si->isValid(start) && m_si->satisfiesBounds(start))
+	const State *start = startStates_[i];
+	if (start && si_->isValid(start) && si_->satisfiesBounds(start))
 	{
 	    double dist;
-	    if (m_goal->isSatisfied(start, &dist))
+	    if (goal_->isSatisfied(start, &dist))
 	    {
 		if (startIndex)
 		    *startIndex = i;
@@ -142,7 +142,7 @@ bool ompl::base::ProblemDefinition::isTrivial(unsigned int *startIndex, double *
 	}
 	else
 	{
-	    m_msg.error("Initial state is in collision!");
+	    msg_.error("Initial state is in collision!");
 	}
     }
     
@@ -152,10 +152,10 @@ bool ompl::base::ProblemDefinition::isTrivial(unsigned int *startIndex, double *
 void ompl::base::ProblemDefinition::print(std::ostream &out) const
 {
     out << "Start states:" << std::endl;
-    for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
-	m_si->printState(m_startStates[i], out);
-    if (m_goal)
-	m_goal->print(out);
+    for (unsigned int i = 0 ; i < startStates_.size() ; ++i)
+	si_->printState(startStates_[i], out);
+    if (goal_)
+	goal_->print(out);
     else
 	out << "Goal = NULL" << std::endl;
 }

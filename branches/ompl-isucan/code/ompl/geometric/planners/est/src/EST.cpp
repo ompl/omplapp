@@ -42,35 +42,35 @@
 void ompl::geometric::EST::setup(void)
 {
     Planner::setup();
-    if (!m_projectionEvaluator)
+    if (!projectionEvaluator_)
 	throw Exception("No projection evaluator specified");
-    m_projectionEvaluator->checkCellDimensions();
-    if (m_projectionEvaluator->getDimension() <= 0)
+    projectionEvaluator_->checkCellDimensions();
+    if (projectionEvaluator_->getDimension() <= 0)
 	throw Exception("Dimension of projection needs to be larger than 0");
-    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    if (maxDistance_ < std::numeric_limits<double>::epsilon())
     {
-	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
-	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+	maxDistance_ = si_->getStateValidityCheckingResolution() * 10.0;
+	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
-    m_tree.grid.setDimension(m_projectionEvaluator->getDimension());
+    tree_.grid.setDimension(projectionEvaluator_->getDimension());
 }
 
 void ompl::geometric::EST::clear(void)
 {
     freeMemory();
-    m_tree.grid.clear();
-    m_tree.size = 0;
-    m_addedStartStates = 0;
+    tree_.grid.clear();
+    tree_.size = 0;
+    addedStartStates_ = 0;
 }
 
 void ompl::geometric::EST::freeMemory(void)
 {
-    for (Grid<MotionSet>::iterator it = m_tree.grid.begin(); it != m_tree.grid.end() ; ++it)
+    for (Grid<MotionSet>::iterator it = tree_.grid.begin(); it != tree_.grid.end() ; ++it)
     {
 	for (unsigned int i = 0 ; i < it->second->data.size() ; ++i)
 	{
 	    if (it->second->data[i]->state)
-		m_si->freeState(it->second->data[i]->state);
+		si_->freeState(it->second->data[i]->state);
 	    delete it->second->data[i];
 	}
     }
@@ -78,42 +78,42 @@ void ompl::geometric::EST::freeMemory(void)
 
 bool ompl::geometric::EST::solve(double solveTime)
 {
-    base::Goal                   *goal = m_pdef->getGoal().get();
+    base::Goal                   *goal = pdef_->getGoal().get();
     base::GoalSampleableRegion *goal_s = dynamic_cast<base::GoalSampleableRegion*>(goal);
     
     if (!goal)
     {
-	m_msg.error("Goal undefined");
+	msg_.error("Goal undefined");
 	return false;
     }
 
     time::point endTime = time::now() + time::seconds(solveTime);
 
-    for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
+    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
     {
-	const base::State *st = m_pdef->getStartState(i);
-	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
+	const base::State *st = pdef_->getStartState(i);
+	if (si_->satisfiesBounds(st) && si_->isValid(st))
 	{
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, st);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, st);
 	    addMotion(motion);
 	}
 	else
-	    m_msg.error("Initial state is invalid!");
+	    msg_.error("Initial state is invalid!");
     }
     
-    if (m_tree.grid.size() == 0)
+    if (tree_.grid.size() == 0)
     {
-	m_msg.error("There are no valid initial states!");
+	msg_.error("There are no valid initial states!");
 	return false;	
     }    
 
-    m_msg.inform("Starting with %u states", m_tree.size);
+    msg_.inform("Starting with %u states", tree_.size);
         
     Motion *solution  = NULL;
     Motion *approxsol = NULL;
     double  approxdif = std::numeric_limits<double>::infinity();
-    base::State *xstate = m_si->allocState();
+    base::State *xstate = si_->allocState();
     
     while (time::now() < endTime)
     {
@@ -122,16 +122,16 @@ bool ompl::geometric::EST::solve(double solveTime)
 	assert(existing);
 	
 	/* sample random state (with goal biasing) */
-	if (goal_s && m_rng.uniform01() < m_goalBias)
+	if (goal_s && rng_.uniform01() < goalBias_)
 	    goal_s->sampleGoal(xstate);
 	else
-	    m_sCore->sampleNear(xstate, existing->state, m_maxDistance);
+	    sCore_->sampleNear(xstate, existing->state, maxDistance_);
 	
-	if (m_si->checkMotion(existing->state, xstate))
+	if (si_->checkMotion(existing->state, xstate))
 	{
 	    /* create a motion */
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, xstate);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, xstate);
 	    motion->parent = existing;
 	    
 	    addMotion(motion);
@@ -169,19 +169,19 @@ bool ompl::geometric::EST::solve(double solveTime)
 	}
 
 	/* set the solution path */
-	PathGeometric *path = new PathGeometric(m_si);
+	PathGeometric *path = new PathGeometric(si_);
    	for (int i = mpath.size() - 1 ; i >= 0 ; --i)
-	    path->states.push_back(m_si->cloneState(mpath[i]->state));
+	    path->states.push_back(si_->cloneState(mpath[i]->state));
 	goal->setDifference(approxdif);
 	goal->setSolutionPath(base::PathPtr(path), approximate);
 
 	if (approximate)
-	    m_msg.warn("Found approximate solution");
+	    msg_.warn("Found approximate solution");
     }
 
-    m_si->freeState(xstate);
+    si_->freeState(xstate);
     
-    m_msg.inform("Created %u states in %u cells", m_tree.size, m_tree.grid.size());
+    msg_.inform("Created %u states in %u cells", tree_.size, tree_.grid.size());
     
     return goal->isAchieved();
 }
@@ -190,43 +190,43 @@ ompl::geometric::EST::Motion* ompl::geometric::EST::selectMotion(void)
 {
     double sum  = 0.0;
     Grid<MotionSet>::Cell* cell = NULL;
-    double prob = m_rng.uniform01() * (m_tree.grid.size() - 1);
-    for (Grid<MotionSet>::iterator it = m_tree.grid.begin(); it != m_tree.grid.end() ; ++it)
+    double prob = rng_.uniform01() * (tree_.grid.size() - 1);
+    for (Grid<MotionSet>::iterator it = tree_.grid.begin(); it != tree_.grid.end() ; ++it)
     {
-	sum += (double)(m_tree.size - it->second->data.size()) / (double)m_tree.size;
+	sum += (double)(tree_.size - it->second->data.size()) / (double)tree_.size;
 	if (prob < sum)
 	{
 	    cell = it->second;
 	    break;
 	}
     }
-    if (!cell && m_tree.grid.size() > 0)
-	cell = m_tree.grid.begin()->second;
-    return cell && !cell->data.empty() ? cell->data[m_rng.uniformInt(0, cell->data.size() - 1)] : NULL;
+    if (!cell && tree_.grid.size() > 0)
+	cell = tree_.grid.begin()->second;
+    return cell && !cell->data.empty() ? cell->data[rng_.uniformInt(0, cell->data.size() - 1)] : NULL;
 }
 
 void ompl::geometric::EST::addMotion(Motion *motion)
 {
     Grid<MotionSet>::Coord coord;
-    m_projectionEvaluator->computeCoordinates(motion->state, coord);
-    Grid<MotionSet>::Cell* cell = m_tree.grid.getCell(coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
+    Grid<MotionSet>::Cell* cell = tree_.grid.getCell(coord);
     if (cell)
 	cell->data.push_back(motion);
     else
     {
-	cell = m_tree.grid.createCell(coord);
+	cell = tree_.grid.createCell(coord);
 	cell->data.push_back(motion);
-	m_tree.grid.add(cell);
+	tree_.grid.add(cell);
     }
-    m_tree.size++;
+    tree_.size++;
 }
 
 void ompl::geometric::EST::getPlannerData(base::PlannerData &data) const
 {
     std::vector<MotionSet> motions;
-    m_tree.grid.getContent(motions);
+    tree_.grid.getContent(motions);
     data.states.resize(0);
-    data.states.reserve(m_tree.size);
+    data.states.reserve(tree_.size);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	for (unsigned int j = 0 ; j < motions[i].size() ; ++j)
 	    data.states.push_back(motions[i][j]->state);

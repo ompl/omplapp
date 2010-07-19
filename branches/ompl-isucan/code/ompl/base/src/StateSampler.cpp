@@ -39,21 +39,21 @@
 
 void ompl::base::CompoundStateSampler::addSampler(const StateSamplerPtr &sampler)
 {
-    m_samplers.push_back(sampler);
-    m_samplerCount = m_samplers.size();
+    samplers_.push_back(sampler);
+    samplerCount_ = samplers_.size();
 }
 
 void ompl::base::CompoundStateSampler::sample(State *state)
 {
     State **comps = static_cast<CompoundState*>(state)->components;
-    for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
-	m_samplers[i]->sample(comps[i]);
+    for (unsigned int i = 0 ; i < samplerCount_ ; ++i)
+	samplers_[i]->sample(comps[i]);
 }
 
 void ompl::base::CompoundStateSampler::sampleNear(State *state, const State *near, const double distance)
 {    
     State **comps = static_cast<CompoundState*>(state)->components;
     State **nearComps = static_cast<const CompoundState*>(near)->components;
-    for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
-	m_samplers[i]->sampleNear(comps[i], nearComps[i], distance);
+    for (unsigned int i = 0 ; i < samplerCount_ ; ++i)
+	samplers_[i]->sampleNear(comps[i], nearComps[i], distance);
 }

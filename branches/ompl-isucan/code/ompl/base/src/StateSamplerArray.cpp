@@ -39,14 +39,14 @@
 
 void ompl::base::StateSamplerArray::resize(std::size_t count)
 {
-    if (m_samplers.size() > count)
-	m_samplers.resize(count);
+    if (samplers_.size() > count)
+	samplers_.resize(count);
     else
-	if (m_samplers.size() < count)
+	if (samplers_.size() < count)
 	{
-	    std::size_t c = m_samplers.size();
-	    m_samplers.resize(count);
+	    std::size_t c = samplers_.size();
+	    samplers_.resize(count);
 	    for (std::size_t i = c ; i < count ; ++i)
-		m_samplers[i] = m_si->allocStateSampler();
+		samplers_[i] = si_->allocStateSampler();
 	}   
 }

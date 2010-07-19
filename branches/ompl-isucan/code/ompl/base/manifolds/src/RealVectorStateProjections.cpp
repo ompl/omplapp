@@ -38,24 +38,24 @@
 #include "ompl/util/Exception.h"
 
 ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
-										     const std::vector< std::valarray<double> > &projection) : ProjectionEvaluator(manifold, cellDimensions), m_projection(projection)
+										     const std::vector< std::valarray<double> > &projection) : ProjectionEvaluator(manifold, cellDimensions), projection_(projection)
 {
-    if (!dynamic_cast<const RealVectorStateManifold*>(m_manifold.get()))
+    if (!dynamic_cast<const RealVectorStateManifold*>(manifold_.get()))
 	throw Exception("Expected real vector manifold for projection");
 }
 
 ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
-											     const std::vector<unsigned int> &components) : ProjectionEvaluator(manifold, cellDimensions), m_components(components)
+											     const std::vector<unsigned int> &components) : ProjectionEvaluator(manifold, cellDimensions), components_(components)
 {
-    if (!dynamic_cast<const RealVectorStateManifold*>(m_manifold.get()))
+    if (!dynamic_cast<const RealVectorStateManifold*>(manifold_.get()))
 	throw Exception("Expected real vector manifold for projection");
 }
 
 void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
 {
-    for (unsigned int i = 0 ; i < m_projection.size() ; ++i)
+    for (unsigned int i = 0 ; i < projection_.size() ; ++i)
     {
-	const std::valarray<double> &vec = m_projection[i];
+	const std::valarray<double> &vec = projection_[i];
 	const unsigned int dim = vec.size();
 	double *pos = projection + i;
 	*pos = 0.0;
@@ -66,6 +66,6 @@ void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state
 
 void ompl::base::RealVectorOrthogonalProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
 {
-    for (unsigned int i = 0 ; i < m_components.size() ; ++i)
-	projection[i] = state->as<RealVectorState>()->values[m_components[i]];
+    for (unsigned int i = 0 ; i < components_.size() ; ++i)
+	projection[i] = state->as<RealVectorState>()->values[components_[i]];
 }

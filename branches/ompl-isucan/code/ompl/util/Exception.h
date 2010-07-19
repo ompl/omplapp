@@ -55,7 +55,7 @@ namespace ompl
 	explicit
 	Exception(const std::string& what) : std::runtime_error(what)
 	{
-	    m_msg.error(what);
+	    msg_.error(what);
 	}
 	
 	virtual ~Exception(void) throw()
@@ -64,7 +64,7 @@ namespace ompl
 	
     private:
 	
-	msg::Interface m_msg;
+	msg::Interface msg_;
     };
     
 }

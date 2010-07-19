@@ -69,17 +69,17 @@ namespace ompl
 	public:
 	    
 	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si),
-							      m_sCore(si->allocStateSampler())
+							      sCore_(si->allocStateSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
-		m_msg.setPrefix("RRTConnect");
+		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
+		msg_.setPrefix("RRTConnect");
 		
-		m_addedStartStates = 0;
-		m_sampledGoalsCount = 0;
+		addedStartStates_ = 0;
+		sampledGoalsCount_ = 0;
 		
-		m_tStart.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
-		m_tGoal.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
-		m_maxDistance = 0.0;
+		tStart_.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
+		tGoal_.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
+		maxDistance_ = 0.0;
 	    }
 	    
 	    virtual ~RRTConnect(void)
@@ -100,13 +100,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 
 	    virtual void setup(void);
@@ -154,20 +154,20 @@ namespace ompl
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
-		return m_si->distance(a->state, b->state);
+		return si_->distance(a->state, b->state);
 	    }
 
 	    GrowState growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion);
 	    
-	    base::StateSamplerPtr      m_sCore;
+	    base::StateSamplerPtr      sCore_;
 	    
-	    TreeData                   m_tStart;
-	    TreeData                   m_tGoal;
-	    unsigned int               m_addedStartStates;
-	    unsigned int               m_sampledGoalsCount;
+	    TreeData                   tStart_;
+	    TreeData                   tGoal_;
+	    unsigned int               addedStartStates_;
+	    unsigned int               sampledGoalsCount_;
 	    
-	    double                     m_maxDistance;
-	    RNG                        m_rng;
+	    double                     maxDistance_;
+	    RNG                        rng_;
 	};
 	
     }

@@ -86,14 +86,14 @@ namespace ompl
 	public:
 	    
 	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       m_sCore(si->allocStateSampler())
+						       sCore_(si->allocStateSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
-		m_msg.setPrefix("SBL");
+		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
+		msg_.setPrefix("SBL");
 		
-		m_sampledGoalsCount = 0;
-		m_addedStartStates = 0;
-		m_maxDistance = 0.0;
+		sampledGoalsCount_ = 0;
+		addedStartStates_ = 0;
+		maxDistance_ = 0.0;
 	    }
 	    
 	    virtual ~SBL(void)
@@ -109,13 +109,13 @@ namespace ompl
 		OrthogonalProjectionEvaluator */
 	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
-		m_projectionEvaluator = projectionEvaluator;
+		projectionEvaluator_ = projectionEvaluator;
 	    }
 	    
 	    /** \brief Get the projection evaluator. */
 	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
-		return m_projectionEvaluator;
+		return projectionEvaluator_;
 	    }
 	    	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -125,13 +125,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 
 	    virtual void setup(void);
@@ -181,8 +181,8 @@ namespace ompl
 	    
 	    void freeMemory(void)
 	    {
-		freeGridMotions(m_tStart.grid);
-		freeGridMotions(m_tGoal.grid);
+		freeGridMotions(tStart_.grid);
+		freeGridMotions(tGoal_.grid);
 	    }
 	    
 	    void freeGridMotions(Grid<MotionSet> &grid);
@@ -193,26 +193,26 @@ namespace ompl
 	    bool isPathValid(TreeData &tree, Motion *motion);
 	    bool checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution);
 	    
-	    base::StateSamplerPtr                      m_sCore;
+	    base::StateSamplerPtr                      sCore_;
 	    
-	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
+	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
-	    TreeData                                   m_tStart;
-	    TreeData                                   m_tGoal;
+	    TreeData                                   tStart_;
+	    TreeData                                   tGoal_;
 
 	    /// number of goal states that have been sampled already;
 	    /// helps the planner know when to stop sampling the goal
 	    /// region
-	    unsigned int                               m_sampledGoalsCount;
+	    unsigned int                               sampledGoalsCount_;
 
 	    /// number of added start states; if between subsequent
 	    /// calls to solve() start states have been added to the
 	    /// problem definition, this variable helps in determining
 	    /// which ones to add to the start tree
-	    unsigned int                               m_addedStartStates;
+	    unsigned int                               addedStartStates_;
 	    
-	    double                                     m_maxDistance;	
-	    RNG                                        m_rng;	
+	    double                                     maxDistance_;	
+	    RNG                                        rng_;	
 	};
 	
     }

@@ -68,8 +68,8 @@ namespace ompl
 	
 	BinaryHeap(void)
 	{
-	    m_eventAfterInsert  = NULL;
-	    m_eventBeforeRemove = NULL;
+	    eventAfterInsert_  = NULL;
+	    eventBeforeRemove_ = NULL;
 	}
 	
 	~BinaryHeap(void)
@@ -79,27 +79,27 @@ namespace ompl
 	
 	void onAfterInsert(EventAfterInsert event, void *arg)
 	{
-	    m_eventAfterInsert = event;
-	    m_eventAfterInsertData = arg;
+	    eventAfterInsert_ = event;
+	    eventAfterInsertData_ = arg;
 	}
 
 	void onBeforeRemove(EventBeforeRemove event, void *arg)
 	{
-	    m_eventBeforeRemove = event;
-	    m_eventBeforeRemoveData = arg;
+	    eventBeforeRemove_ = event;
+	    eventBeforeRemoveData_ = arg;
 	}	
 
 	void clear(void)
 	{
-	    for (typename std::vector<Element*>::iterator i = m_vector.begin() ;
-		 i != m_vector.end() ; i++)
+	    for (typename std::vector<Element*>::iterator i = vector_.begin() ;
+		 i != vector_.end() ; i++)
 		delete *i;
-	    m_vector.clear();
+	    vector_.clear();
 	}
 	
 	Element* top(void) const
 	{
-	    return m_vector.empty() ? NULL : m_vector.at(0);
+	    return vector_.empty() ? NULL : vector_.at(0);
 	}
 
 	void pop(void)
@@ -109,8 +109,8 @@ namespace ompl
 	
 	void remove(Element* element)
 	{
-	    if (m_eventBeforeRemove)
-		m_eventBeforeRemove(element, m_eventBeforeRemoveData);
+	    if (eventBeforeRemove_)
+		eventBeforeRemove_(element, eventBeforeRemoveData_);
 	    removePos(element->position);
 	}
 	
@@ -118,27 +118,27 @@ namespace ompl
 	{
 	    Element* element = new Element();
 	    element->data = data;
-	    const unsigned int pos = m_vector.size();
+	    const unsigned int pos = vector_.size();
 	    element->position = pos;	    
-	    m_vector.push_back(element);
+	    vector_.push_back(element);
 	    percolateUp(pos);
-	    if (m_eventAfterInsert)
-		m_eventAfterInsert(element, m_eventAfterInsertData);
+	    if (eventAfterInsert_)
+		eventAfterInsert_(element, eventAfterInsertData_);
 	    return element;
 	}
 	
 	void insert(const std::vector<_T>& list)
 	{
-	    const unsigned int n = m_vector.size();
+	    const unsigned int n = vector_.size();
 	    const unsigned int m = list.size();
 	    for (unsigned int i = 0 ; i < m ; i++)
 	    {
 		const unsigned int pos = i + n;
 		Element* element = newElement(list[i], pos);
-		m_vector.push_back(element);
+		vector_.push_back(element);
 		percolateUp(pos);
-		if (m_eventAfterInsert)
-		    m_eventAfterInsert(element, m_eventAfterInsertData);
+		if (eventAfterInsert_)
+		    eventAfterInsert_(element, eventAfterInsertData_);
 	    }
 	}
 	
@@ -146,7 +146,7 @@ namespace ompl
 	{
 	    const unsigned int m = list.size();
 	    for (unsigned int i = 0 ; i < m ; i++)
-		m_vector.push_back(newElement(list[i], i));
+		vector_.push_back(newElement(list[i], i));
 	    build();
 	}
 
@@ -158,71 +158,71 @@ namespace ompl
 	void update(Element* element)
 	{
 	    const unsigned int pos = element->position;
-	    assert(m_vector[pos] == element);
+	    assert(vector_[pos] == element);
 	    percolateUp(pos);
 	    percolateDown(pos);
 	}
 	
 	bool empty(void) const
 	{
-	    return m_vector.empty();
+	    return vector_.empty();
 	}
 	
 	unsigned int size(void) const
 	{
-	    return m_vector.size();
+	    return vector_.size();
 	}
 	
 	void getContent(std::vector<_T> &content) const
 	{
-	    for (typename std::vector<Element*>::const_iterator i = m_vector.begin();
-		 i != m_vector.end() ; i++)
+	    for (typename std::vector<Element*>::const_iterator i = vector_.begin();
+		 i != vector_.end() ; i++)
 		content.push_back((*i)->data);
 	}
 	
 	void sort(std::vector<_T>& list)
 	{	    
 	    const unsigned int n         = list.size();
-	    std::vector<Element*> backup = m_vector;
-	    m_vector.clear();
+	    std::vector<Element*> backup = vector_;
+	    vector_.clear();
 	    for (unsigned int i = 0 ; i < n ; i++)
-		m_vector.push_back(newElement(list[i], i));
+		vector_.push_back(newElement(list[i], i));
 	    build();
 	    list.clear();
 	    list.reserve(n);
 	    
 	    for (unsigned int i = 0 ; i < n ; i++)
 	    {
-		list.push_back(m_vector[0]->data);
+		list.push_back(vector_[0]->data);
 		removePos(0);
 	    }
-	    m_vector = backup;
+	    vector_ = backup;
 	}
 	
     private:
 
-        LessThan                 m_lt;
+        LessThan                 lt_;
 	
-	std::vector<Element*>    m_vector;
+	std::vector<Element*>    vector_;
 
-	EventAfterInsert         m_eventAfterInsert;
-	void                    *m_eventAfterInsertData;
-	EventBeforeRemove        m_eventBeforeRemove;
-	void                    *m_eventBeforeRemoveData;
+	EventAfterInsert         eventAfterInsert_;
+	void                    *eventAfterInsertData_;
+	EventBeforeRemove        eventBeforeRemove_;
+	void                    *eventBeforeRemoveData_;
 	
 	void removePos(unsigned int pos)
 	{
-	    const int n = m_vector.size() - 1;
-	    delete m_vector[pos];
+	    const int n = vector_.size() - 1;
+	    delete vector_[pos];
 	    if ((int)pos < n)
 	    {
-		m_vector[pos] = m_vector.back();
-		m_vector[pos]->position = pos;
-		m_vector.pop_back();
+		vector_[pos] = vector_.back();
+		vector_[pos]->position = pos;
+		vector_.pop_back();
 		percolateDown(pos);
 	    }
 	    else
-		m_vector.pop_back();
+		vector_.pop_back();
 	}
 	
 	Element* newElement(_T& data, unsigned int pos) const
@@ -235,24 +235,24 @@ namespace ompl
 
 	void build(void)
 	{
-	    for(int i = m_vector.size() / 2 - 1; i >= 0; --i)
+	    for(int i = vector_.size() / 2 - 1; i >= 0; --i)
 		percolateDown(i);
 	}
 
 	void percolateDown(const unsigned int pos)
 	{
-	    const unsigned int n      = m_vector.size();
-	    Element*           tmp    = m_vector[pos];
+	    const unsigned int n      = vector_.size();
+	    Element*           tmp    = vector_[pos];
 	    unsigned int       parent = pos;
 	    unsigned int       child  = (pos + 1) << 1;
 	    
 	    while (child < n)
 	    {
-		if (m_lt(m_vector[child - 1]->data, m_vector[child]->data)) child--;
-		if (m_lt(m_vector[child]->data,  tmp->data))
+		if (lt_(vector_[child - 1]->data, vector_[child]->data)) child--;
+		if (lt_(vector_[child]->data,  tmp->data))
 		{
-		    m_vector[parent] = m_vector[child];
-		    m_vector[parent]->position = parent;
+		    vector_[parent] = vector_[child];
+		    vector_[parent]->position = parent;
 		}		
 		else
 		    break;
@@ -262,37 +262,37 @@ namespace ompl
 	    if (child == n)
 	    {
 		child--;
-		if (m_lt(m_vector[child]->data, tmp->data))
+		if (lt_(vector_[child]->data, tmp->data))
 		{
-		    m_vector[parent] = m_vector[child];
-		    m_vector[parent]->position = parent;
+		    vector_[parent] = vector_[child];
+		    vector_[parent]->position = parent;
 		    parent = child;
 		}
 	    }
 	    if (parent != pos)
 	    {
-		m_vector[parent] = tmp;
-		m_vector[parent]->position = parent;
+		vector_[parent] = tmp;
+		vector_[parent]->position = parent;
 	    }
 	}
 
 	void percolateUp(const unsigned int pos)
 	{
-	    Element*           tmp    = m_vector[pos];
+	    Element*           tmp    = vector_[pos];
 	    unsigned int       child  = pos;
 	    unsigned int       parent = (pos - 1) >> 1;
 	    
-	    while (child > 0 && m_lt(tmp->data, m_vector[parent]->data))
+	    while (child > 0 && lt_(tmp->data, vector_[parent]->data))
 	    {
-		m_vector[child] = m_vector[parent];
-		m_vector[child]->position = child;
+		vector_[child] = vector_[parent];
+		vector_[child]->position = child;
 		child  = parent;
 		parent = (parent - 1) >> 1;
 	    }
 	    if (child != pos)
 	    {
-		m_vector[child] = tmp;
-		m_vector[child]->position = child;
+		vector_[child] = tmp;
+		vector_[child]->position = child;
 	    }
 	}
     };

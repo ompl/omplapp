@@ -49,7 +49,7 @@ namespace ompl
     public:
         NearestNeighborsSqrtApprox(void) : NearestNeighbors<_T>()
 	{
-	    m_checks = 0;
+	    checks_ = 0;
 	}
 	
 	virtual ~NearestNeighborsSqrtApprox(void)
@@ -58,23 +58,23 @@ namespace ompl
 	
 	virtual void clear(void)
 	{
-	    m_data.clear();
-	    m_active.clear();
+	    data_.clear();
+	    active_.clear();
 	}
 
 	virtual void add(_T &data)
 	{
-	    m_data.push_back(data);
-	    m_active.push_back(true);
-	    m_checks = 1 + (int)floor(sqrt(m_data.size()));
+	    data_.push_back(data);
+	    active_.push_back(true);
+	    checks_ = 1 + (int)floor(sqrt(data_.size()));
 	}
 
 	virtual bool remove(_T &data)
 	{
-	    for (int i = m_data.size() - 1 ; i >= 0 ; --i)
-		if (m_data[i] == data)
+	    for (int i = data_.size() - 1 ; i >= 0 ; --i)
+		if (data_[i] == data)
 		{
-		    m_active[i] = false;
+		    active_[i] = false;
 		    return true;
 		}
 	    return false;
@@ -83,24 +83,24 @@ namespace ompl
 	virtual _T nearest(const _T &data) const
 	{
 	    int pos = -1;
-	    if (m_checks > 0)
+	    if (checks_ > 0)
 	    {
 		double dmin = 0.0;
-		unsigned int n = m_data.size();
-		unsigned int offset = reinterpret_cast<unsigned long>(&data) % m_checks;
-		for (unsigned int j = 0 ; j < m_checks ; ++j)
+		unsigned int n = data_.size();
+		unsigned int offset = reinterpret_cast<unsigned long>(&data) % checks_;
+		for (unsigned int j = 0 ; j < checks_ ; ++j)
 		{
-		    unsigned int i = (j * m_checks + offset) % n;
+		    unsigned int i = (j * checks_ + offset) % n;
 		    unsigned int c = 0;
-		    while (!m_active[i] && c < n)
+		    while (!active_[i] && c < n)
 		    {
 			i = (i + 1) % n;
 			c++;
 		    }	    
 		    
-		    if (m_active[i])
+		    if (active_[i])
 		    {
-			double distance = NearestNeighbors<_T>::m_distFun(m_data[i], data);
+			double distance = NearestNeighbors<_T>::distFun_(data_[i], data);
 			if (pos < 0 || dmin > distance)
 			{
 			    pos = i;
@@ -110,24 +110,24 @@ namespace ompl
 		}
 	    }
 	    
-	    return pos >= 0 ? m_data[pos] : data;
+	    return pos >= 0 ? data_[pos] : data;
 	}
 	
 	virtual unsigned int size(void) const
 	{
-	    return m_data.size();
+	    return data_.size();
 	}
 	
 	virtual void list(std::vector<_T> &data) const
 	{
-	    data = m_data;
+	    data = data_;
 	}
 	
     protected:
 	
-	std::vector<_T>   m_data;
-	std::vector<bool> m_active;
-	unsigned int      m_checks;
+	std::vector<_T>   data_;
+	std::vector<bool> active_;
+	unsigned int      checks_;
     };
     
     

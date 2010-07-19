@@ -75,16 +75,16 @@ namespace ompl
 	public:
 	    
 	    pRRT(const base::SpaceInformationPtr &si) : base::Planner(si),
-							m_sCoreArray(si)
+							sCoreArray_(si)
 	    {
-		m_type = base::PLAN_TO_GOAL_ANY;
-		m_msg.setPrefix("pRRT");
+		type_ = base::PLAN_TO_GOAL_ANY;
+		msg_.setPrefix("pRRT");
 		
-		m_addedStartStates = 0;
-		m_nn.setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));
+		addedStartStates_ = 0;
+		nn_.setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));
 		setThreadCount(2);
-		m_goalBias = 0.05;
-		m_maxDistance = 0.0;
+		goalBias_ = 0.05;
+		maxDistance_ = 0.0;
 	    }
 	    
 	    virtual ~pRRT(void)
@@ -109,13 +109,13 @@ namespace ompl
 		the default value. */
 	    void setGoalBias(double goalBias)
 	    {
-		m_goalBias = goalBias;
+		goalBias_ = goalBias;
 	    }
 	    
 	    /** \brief Get the goal bias the planner is using */
 	    double getGoalBias(void) const
 	    {
-		return m_goalBias;
+		return goalBias_;
 	    }
 	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -125,13 +125,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 	    	    
 	    /** \brief Set the number of threads the planner should use. Default is 2. */
@@ -139,7 +139,7 @@ namespace ompl
 	    
 	    unsigned int getThreadCount(void) const
 	    {
-		return m_threadCount;
+		return threadCount_;
 	    }
 	    
 	    virtual void setup(void);
@@ -180,18 +180,18 @@ namespace ompl
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const
 	    {
-		return m_si->distance(a->state, b->state);
+		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerArray             m_sCoreArray;
-	    NearestNeighborsSqrtApprox<Motion*> m_nn;
-	    boost::mutex                        m_nnLock;
-	    unsigned int                        m_addedStartStates;
+	    base::StateSamplerArray             sCoreArray_;
+	    NearestNeighborsSqrtApprox<Motion*> nn_;
+	    boost::mutex                        nnLock_;
+	    unsigned int                        addedStartStates_;
 	    
-	    unsigned int                        m_threadCount;
+	    unsigned int                        threadCount_;
 	    
-	    double                              m_goalBias;
-	    double                              m_maxDistance;
+	    double                              goalBias_;
+	    double                              maxDistance_;
 	};
 	
     }

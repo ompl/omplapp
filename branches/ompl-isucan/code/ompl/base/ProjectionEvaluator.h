@@ -63,7 +63,7 @@ namespace ompl
 	{
 	public:
 	    
-	    ProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) : m_manifold(manifold), m_cellDimensions(cellDimensions)
+	    ProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) : manifold_(manifold), cellDimensions_(cellDimensions)
 	    {
 	    }
 	    
@@ -86,7 +86,7 @@ namespace ompl
 	    /** \brief Get the dimension (each component) of a grid cell  */
 	    const std::vector<double>& getCellDimensions(void) const
 	    {
-		return m_cellDimensions;
+		return cellDimensions_;
 	    }
 	    
 	    /** \brief Check if cell dimensions match projection dimension */
@@ -105,8 +105,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    StateManifoldPtr     m_manifold;
-	    std::vector<double>  m_cellDimensions;
+	    StateManifoldPtr     manifold_;
+	    std::vector<double>  cellDimensions_;
 	    
 	};
 	

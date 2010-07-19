@@ -74,9 +74,9 @@ ompl::msg::Interface::~Interface(void)
 
 void ompl::msg::Interface::setPrefix(const std::string &prefix)
 {
-    m_prefix = prefix;
-    if (!m_prefix.empty())
-	m_prefix += ": ";
+    prefix_ = prefix;
+    if (!prefix_.empty())
+	prefix_ += ": ";
 }
 
 void ompl::msg::Interface::debug(const std::string &text) const
@@ -84,7 +84,7 @@ void ompl::msg::Interface::debug(const std::string &text) const
     if (OUTPUT_HANDLER)
     {
 	_lock.lock();
-	OUTPUT_HANDLER->debug(m_prefix + text);
+	OUTPUT_HANDLER->debug(prefix_ + text);
 	_lock.unlock();
     }
 }
@@ -102,7 +102,7 @@ void ompl::msg::Interface::inform(const std::string &text) const
     if (OUTPUT_HANDLER)
     {
 	_lock.lock();
-	OUTPUT_HANDLER->inform(m_prefix + text);
+	OUTPUT_HANDLER->inform(prefix_ + text);
 	_lock.unlock();
     }
 }
@@ -120,7 +120,7 @@ void ompl::msg::Interface::warn(const std::string &text) const
     if (OUTPUT_HANDLER)
     {
 	_lock.lock();
-	OUTPUT_HANDLER->warn(m_prefix + text);
+	OUTPUT_HANDLER->warn(prefix_ + text);
 	_lock.unlock();
     }
 }
@@ -138,7 +138,7 @@ void ompl::msg::Interface::error(const std::string &text) const
     if (OUTPUT_HANDLER)
     {
 	_lock.lock();
-	OUTPUT_HANDLER->error(m_prefix + text);
+	OUTPUT_HANDLER->error(prefix_ + text);
 	_lock.unlock();
     }
 }

@@ -49,11 +49,11 @@ bool ompl::geometric::HCIK::tryToImprove(const base::GoalRegion &goal, base::Sta
     
     double bestDist = initialDistance;
     
-    base::StateSamplerPtr ss = m_si->allocStateSampler();
-    base::State *test = m_si->allocState();
+    base::StateSamplerPtr ss = si_->allocStateSampler();
+    base::State *test = si_->allocState();
     unsigned int noUpdateSteps = 0;
     
-    for (unsigned int i = 0 ; noUpdateSteps < 10 && i < m_maxImproveSteps ; ++i)
+    for (unsigned int i = 0 ; noUpdateSteps < 10 && i < maxImproveSteps_ ; ++i)
     {
 	bool update = false;
 	ss->sampleNear(test, state, nearDistance);
@@ -61,7 +61,7 @@ bool ompl::geometric::HCIK::tryToImprove(const base::GoalRegion &goal, base::Sta
 	bool isSatisfied = goal.isSatisfied(test, &tempDistance);
 	if (!wasValid && isValid)
 	{
-	    m_si->copyState(state, test);
+	    si_->copyState(state, test);
 	    wasValid = true;
 	    wasSatisfied = isSatisfied;
 	    update = true;
@@ -71,7 +71,7 @@ bool ompl::geometric::HCIK::tryToImprove(const base::GoalRegion &goal, base::Sta
 	    {
 		if (!wasSatisfied && isSatisfied)
 		{
-		    m_si->copyState(state, test);
+		    si_->copyState(state, test);
 		    wasSatisfied = true;
 		    update = true;
 		}
@@ -80,7 +80,7 @@ bool ompl::geometric::HCIK::tryToImprove(const base::GoalRegion &goal, base::Sta
 		    {
 			if (tempDistance < bestDist)
 			{
-			    m_si->copyState(state, test);
+			    si_->copyState(state, test);
 			    bestDist = tempDistance;
 			    update = true;
 			}
@@ -91,7 +91,7 @@ bool ompl::geometric::HCIK::tryToImprove(const base::GoalRegion &goal, base::Sta
 	else
 	    noUpdateSteps++;
     }    
-    m_si->freeState(test);
+    si_->freeState(test);
     
     if (betterGoalDistance)
 	*betterGoalDistance = bestDist;

@@ -70,7 +70,7 @@ namespace ompl
 	{
 	public:
 	    
-	    ControlManifold(const base::StateManifoldPtr &stateManifold) : m_stateManifold(stateManifold)
+	    ControlManifold(const base::StateManifoldPtr &stateManifold) : stateManifold_(stateManifold)
 	    {
 	    }
 	    
@@ -146,7 +146,7 @@ namespace ompl
 	protected:
 	    
 	    /** \brief The state manifold controls can be applied to */
-	    base::StateManifoldPtr m_stateManifold;
+	    base::StateManifoldPtr stateManifold_;
 	    
 	};
 	
@@ -157,7 +157,7 @@ namespace ompl
 	    /** \brief Define the type of control allocated by this manifold */
 	    typedef CompoundControl ControlType;
 	    
-	    CompoundControlManifold(const base::StateManifoldPtr &stateManifold) : ControlManifold(stateManifold), m_componentCount(0), m_locked(false)
+	    CompoundControlManifold(const base::StateManifoldPtr &stateManifold) : ControlManifold(stateManifold), componentCount_(0), locked_(false)
 	    {
 	    }
 	    
@@ -213,9 +213,9 @@ namespace ompl
 	     user to add further components. */
 	    void lock(void);
 	    
-	    std::vector<ControlManifoldPtr> m_components;
-	    unsigned int                    m_componentCount;
-	    bool                            m_locked;
+	    std::vector<ControlManifoldPtr> components_;
+	    unsigned int                    componentCount_;
+	    bool                            locked_;
 	};
     }
 }

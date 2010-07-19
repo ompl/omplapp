@@ -114,8 +114,8 @@ namespace ompl
 	    (unsigned int dimension)
 	{
 #ifdef OMPL_GRID_COUNT_NEIGHBORS
-	    m_hasBounds = false;
-	    m_overrideCellNeighborsLimit = false;
+	    hasBounds_ = false;
+	    overrideCellNeighborsLimit_ = false;
 #endif
 	    setDimension(dimension);
 	}
@@ -141,20 +141,20 @@ namespace ompl
 	/// return the dimension of the grid
 	unsigned int getDimension(void) const
 	{
-	    return m_dimension;
+	    return dimension_;
 	}
 	
 	/// update the dimension of the grid; this should not be done
 	/// unless the grid is empty
 	void setDimension(unsigned int dimension)
 	{
-	    m_dimension = dimension;
-	    m_maxNeighbors = 2 * m_dimension;
-	    assert(m_maxNeighbors < MAX_GRID_NEIGHBORS);
+	    dimension_ = dimension;
+	    maxNeighbors_ = 2 * dimension_;
+	    assert(maxNeighbors_ < MAX_GRID_NEIGHBORS);
 
 #ifdef OMPL_GRID_COUNT_NEIGHBORS
-	    if (!m_overrideCellNeighborsLimit)
-		m_interiorCellNeighborsLimit = m_maxNeighbors;
+	    if (!overrideCellNeighborsLimit_)
+		interiorCellNeighborsLimit_ = maxNeighbors_;
 #endif
 	}
 
@@ -165,18 +165,18 @@ namespace ompl
 	/// if bounds for the grid need to be considered, we can set them here
 	void setBounds(const Coord &low, const Coord &up)
 	{
-	    m_lowBound  = low;
-	    m_upBound   = up;
-	    m_hasBounds = true;
+	    lowBound_  = low;
+	    upBound_   = up;
+	    hasBounds_ = true;
 	}
 
 	/// set the limit of neighboring cells to determine when a cell becomes interior
 	/// by default, this is 2 * dimension of grid
 	void setInteriorCellNeighborLimit(unsigned int count)
 	{
-	    m_interiorCellNeighborsLimit = count;
-	    assert(m_interiorCellNeighborsLimit > 0);
-	    m_overrideCellNeighborsLimit = true;
+	    interiorCellNeighborsLimit_ = count;
+	    assert(interiorCellNeighborsLimit_ > 0);
+	    overrideCellNeighborsLimit_ = true;
 	}
 #endif
 
@@ -189,8 +189,8 @@ namespace ompl
 	/// get the cell at a specified coordinate
 	Cell* getCell(const Coord &coord) const
 	{ 
-	    iterator pos = m_hash.find(const_cast<Coord*>(&coord));
-	    Cell *c = (pos != m_hash.end()) ? pos->second : NULL;
+	    iterator pos = hash_.find(const_cast<Coord*>(&coord));
+	    Cell *c = (pos != hash_.end()) ? pos->second : NULL;
 	    return c;
 	}	
 	
@@ -211,21 +211,21 @@ namespace ompl
 	/// get the list of neighbors for a given coordinate
 	void    neighbors(Coord& coord, CellArray& list) const
 	{
-	    list.reserve(list.size() + m_maxNeighbors);
+	    list.reserve(list.size() + maxNeighbors_);
 	    
-	    for (int i = m_dimension - 1 ; i >= 0 ; --i)
+	    for (int i = dimension_ - 1 ; i >= 0 ; --i)
 	    {
 		coord[i]--;
 		
-		iterator pos = m_hash.find(&coord);
-		Cell *cell = (pos != m_hash.end()) ? pos->second : NULL;
+		iterator pos = hash_.find(&coord);
+		Cell *cell = (pos != hash_.end()) ? pos->second : NULL;
 
 		if (cell)
 		    list.push_back(cell);
 		coord[i] += 2;
 
-		pos = m_hash.find(&coord);
-		cell = (pos != m_hash.end()) ? pos->second : NULL;
+		pos = hash_.find(&coord);
+		cell = (pos != hash_.end()) ? pos->second : NULL;
 		
 		if (cell)
 		    list.push_back(cell);
@@ -250,12 +250,12 @@ namespace ompl
 	    {
 		Cell* c = *cl;
 		c->neighbors++;
-		if (c->border && c->neighbors >= m_interiorCellNeighborsLimit)
+		if (c->border && c->neighbors >= interiorCellNeighborsLimit_)
 		    c->border = false;
 	    }
 	    
 	    cell->neighbors = numberOfBoundaryDimensions(cell->coord) + list->size();
-	    if (cell->border && cell->neighbors >= m_interiorCellNeighborsLimit)
+	    if (cell->border && cell->neighbors >= interiorCellNeighborsLimit_)
 		cell->border = false;
 	    
 	    if (!nbh)
@@ -281,15 +281,15 @@ namespace ompl
 		{
 		    Cell* c = *cl;
 		    c->neighbors--;
-		    if (!c->border && c->neighbors < m_interiorCellNeighborsLimit)
+		    if (!c->border && c->neighbors < interiorCellNeighborsLimit_)
 			c->border = true;
 		}	  
 		delete list;
 #endif
-		typename CoordHash::iterator pos = m_hash.find(&cell->coord);
-		if (pos != m_hash.end())
+		typename CoordHash::iterator pos = hash_.find(&cell->coord);
+		if (pos != hash_.end())
 		{
-		    m_hash.erase(pos);
+		    hash_.erase(pos);
 		    return true;
 		}
 	    }
@@ -299,7 +299,7 @@ namespace ompl
 	/// add an instantiated cell to the grid
 	virtual void add(Cell *cell)
 	{
-	    m_hash.insert(std::make_pair(&cell->coord, cell));
+	    hash_.insert(std::make_pair(&cell->coord, cell));
 	}
 	
 	/// clear the memory occupied by a cell; do not call this function unless remove() was called first
@@ -311,21 +311,21 @@ namespace ompl
 	/// get the data stored in the cells we are aware of
 	void getContent(std::vector<_T> &content) const
 	{
-	    for (iterator i = m_hash.begin() ; i != m_hash.end() ; i++)
+	    for (iterator i = hash_.begin() ; i != hash_.end() ; i++)
 		content.push_back(i->second->data);
 	}
 	
 	/// get the set of coordinates where there are cells
 	void getCoordinates(std::vector<Coord*> &coords) const
 	{
-	    for (iterator i = m_hash.begin() ; i != m_hash.end() ; i++)
+	    for (iterator i = hash_.begin() ; i != hash_.end() ; i++)
 		coords.push_back(i->first);
 	}
 	
 	/// get the set of instantiated cells in the grid
 	void getCells(CellArray &cells) const
 	{
-	    for (iterator i = m_hash.begin() ; i != m_hash.end() ; i++)
+	    for (iterator i = hash_.begin() ; i != hash_.end() ; i++)
 		cells.push_back(i->second);
 	}
 	
@@ -333,7 +333,7 @@ namespace ompl
 	void printCoord(Coord& coord, std::ostream &out = std::cout) const
 	{
 	    out << "[ ";
-	    for (unsigned int i = 0 ; i < m_dimension ; ++i)
+	    for (unsigned int i = 0 ; i < dimension_ ; ++i)
 		out << coord[i] << " ";
 	    out << "]" << std::endl;
 	}
@@ -341,13 +341,13 @@ namespace ompl
 	/// check if the grid is empty
 	bool empty(void) const
 	{
-	    return m_hash.empty();
+	    return hash_.empty();
 	}
 	
 	/// check the size of the grid 
 	unsigned int size(void) const
 	{
-	    return m_hash.size();	    
+	    return hash_.size();	    
 	}
 
     protected:
@@ -358,10 +358,10 @@ namespace ompl
 	unsigned int numberOfBoundaryDimensions(const Coord &coord) const
 	{
 	    unsigned int result = 0;
-	    if (m_hasBounds)
+	    if (hasBounds_)
 	    {
-		for (unsigned int i = 0 ; i < m_dimension ; ++i)
-		    if (coord[i] == m_lowBound[i] || coord[i] == m_upBound[i])
+		for (unsigned int i = 0 ; i < dimension_ ; ++i)
+		    if (coord[i] == lowBound_[i] || coord[i] == upBound_[i])
 			result++;
 	    }
 	    return result;
@@ -373,7 +373,7 @@ namespace ompl
 	{
 	    CellArray content;
 	    getCells(content);
-	    m_hash.clear();
+	    hash_.clear();
 	    
 	    for (unsigned int i = 0 ; i < content.size() ; i++)
 		delete content[i];	    
@@ -417,29 +417,29 @@ namespace ompl
 	/// return the begin() iterator for the grid 
 	iterator begin(void) const
 	{
-	    return m_hash.begin();
+	    return hash_.begin();
 	}
 	
 	/// return the end() iterator for the grid 
 	iterator end(void) const
 	{
-	    return m_hash.end();
+	    return hash_.end();
 	}
 	
     protected:
 
-	unsigned int     m_dimension;
-	unsigned int     m_maxNeighbors;
+	unsigned int     dimension_;
+	unsigned int     maxNeighbors_;
 	
 #ifdef OMPL_GRID_COUNT_NEIGHBORS
-	bool             m_hasBounds;
-	Coord            m_lowBound;
-	Coord            m_upBound;
-	unsigned int     m_interiorCellNeighborsLimit;
-	bool             m_overrideCellNeighborsLimit;
+	bool             hasBounds_;
+	Coord            lowBound_;
+	Coord            upBound_;
+	unsigned int     interiorCellNeighborsLimit_;
+	bool             overrideCellNeighborsLimit_;
 #endif
 	
-	CoordHash        m_hash;
+	CoordHash        hash_;
     };
 }
 

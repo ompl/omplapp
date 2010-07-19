@@ -56,7 +56,7 @@ namespace ompl
 	{	    
 	public:
 
-	    StateSampler(const StateManifold *manifold) : m_manifold(manifold)
+	    StateSampler(const StateManifold *manifold) : manifold_(manifold)
 	    {
 	    }
 	    
@@ -73,13 +73,13 @@ namespace ompl
 	    /** \brief Return a reference to the random number generator used */
 	    RNG& getRNG(void)
 	    {
-		return m_rng;
+		return rng_;
 	    }
 	    
 	protected:
 	    
-	    const StateManifold *m_manifold;
-	    RNG                  m_rng;
+	    const StateManifold *manifold_;
+	    RNG                  rng_;
 	};
 
 	/** \brief Definition of a compound state sampler. This is useful to construct samplers for compound states. */
@@ -110,8 +110,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    std::vector<StateSamplerPtr> m_samplers;
-	    unsigned int                 m_samplerCount;
+	    std::vector<StateSamplerPtr> samplers_;
+	    unsigned int                 samplerCount_;
 	    
 	};
 

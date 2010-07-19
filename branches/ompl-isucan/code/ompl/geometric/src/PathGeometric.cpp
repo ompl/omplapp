@@ -36,17 +36,17 @@
 
 #include "ompl/geometric/PathGeometric.h"
 
-ompl::geometric::PathGeometric::PathGeometric(const PathGeometric &path) : base::Path(path.m_si)
+ompl::geometric::PathGeometric::PathGeometric(const PathGeometric &path) : base::Path(path.si_)
 {
     states.resize(path.states.size());
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	states[i] = m_si->cloneState(path.states[i]);
+	states[i] = si_->cloneState(path.states[i]);
 }
 
 void ompl::geometric::PathGeometric::freeMemory(void)
 {
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	m_si->freeState(states[i]);
+	si_->freeState(states[i]);
 }
 
 double ompl::geometric::PathGeometric::length(void) const
@@ -59,11 +59,11 @@ bool ompl::geometric::PathGeometric::check(void) const
     bool result = true;
     if (states.size() > 0)
     {
-	if (m_si->isValid(states[0]))
+	if (si_->isValid(states[0]))
 	{
 	    int last = states.size() - 1;
 	    for (int j = 0 ; result && j < last ; ++j)
-		if (!m_si->checkMotion(states[j], states[j + 1]))
+		if (!si_->checkMotion(states[j], states[j + 1]))
 		    result = false;
 	}
 	else
@@ -76,7 +76,7 @@ void ompl::geometric::PathGeometric::print(std::ostream &out) const
 {
     out << "Geometric path with " << states.size() << " states" << std::endl;
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	m_si->printState(states[i], out);
+	si_->printState(states[i], out);
     out << std::endl;
 }
 
@@ -93,7 +93,7 @@ void ompl::geometric::PathGeometric::interpolate(double factor)
 	newStates.push_back(s1);
 	
 	std::vector<base::State*> block;
-	m_si->getMotionStates(s1, s2, block, factor, false, true);
+	si_->getMotionStates(s1, s2, block, factor, false, true);
 	newStates.insert(newStates.end(), block.begin(), block.end());
     }
     

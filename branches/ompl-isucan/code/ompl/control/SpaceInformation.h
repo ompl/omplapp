@@ -60,8 +60,8 @@ namespace ompl
 	    /** \brief Constructor. Sets the instance of the manifold
 		to plan on. */
 	    SpaceInformation(const base::StateManifoldPtr &stateManifold, const ControlManifoldPtr &controlManifold) : base::SpaceInformation(stateManifold),
-														       m_controlManifold(controlManifold),
-														       m_minSteps(0), m_maxSteps(0), m_stepSize(0.0)
+														       controlManifold_(controlManifold),
+														       minSteps_(0), maxSteps_(0), stepSize_(0.0)
 	    {
 	    }
 	    	    
@@ -72,85 +72,85 @@ namespace ompl
 	    /** \brief Allocate memory for a control */
 	    Control* allocControl(void) const
 	    {
-		return m_controlManifold->allocControl();
+		return controlManifold_->allocControl();
 	    }
 	    
 	    /** \brief Free the memory of a control */
 	    void freeControl(Control *control) const
 	    {
-		m_controlManifold->freeControl(control);
+		controlManifold_->freeControl(control);
 	    }
 
 	    /** \brief Print a control to a stream */
 	    void printControl(const Control *control, std::ostream &out = std::cout) const
 	    {
-		m_controlManifold->printControl(control, out);
+		controlManifold_->printControl(control, out);
 	    }
 
 	    /** \brief Copy a control to another */
 	    void copyControl(Control *destination, const Control *source) const
 	    {
-		m_controlManifold->copyControl(destination, source);
+		controlManifold_->copyControl(destination, source);
 	    }
 	    
 	    /** \brief Clone a control */
 	    Control* cloneControl(const Control *source) const
 	    {
-		Control *copy = m_controlManifold->allocControl();
-		m_controlManifold->copyControl(copy, source);
+		Control *copy = controlManifold_->allocControl();
+		controlManifold_->copyControl(copy, source);
 		return copy;
 	    }
 	    
 	    /** \brief Check if two controls are the same */
 	    bool equalControls(const Control *control1, const Control *control2) const
 	    {
-		return m_controlManifold->equalControls(control1, control2);
+		return controlManifold_->equalControls(control1, control2);
 	    }
 	    
 	    /** \brief Make the control have no effect if it were to be applied to a state for any amount of time. */
 	    void nullControl(Control *control) const
 	    {
-		m_controlManifold->nullControl(control);
+		controlManifold_->nullControl(control);
 	    }
 	    
 	    /** \brief Allocate a control sampler */
 	    ControlSamplerPtr allocControlSampler(void) const
 	    {
-		return m_controlManifold->allocControlSampler();
+		return controlManifold_->allocControlSampler();
 	    }
 	    
 	    /** \brief When controls are applied to states, they are applied for a time duration that is an integer
 		multiple of the stepSize, within the bounds specified by setMinMaxControlDuration() */
 	    void setPropagationStepSize(double stepSize)
 	    {
-		m_stepSize = stepSize;
+		stepSize_ = stepSize;
 		// even if we need to do validation checking at a smaller resolution, we cannot go lower than the propagation step
-		if (m_resolution < m_stepSize)
-		    m_resolution = m_stepSize;
+		if (resolution_ < stepSize_)
+		    resolution_ = stepSize_;
 	    }
 	    
 	    double getPropagationStepSize(void) const
 	    {
-		return m_stepSize;
+		return stepSize_;
 	    }
 
 	    /** \brief Set the minimum and maximum number of steps a control is propagated for */
 	    void setMinMaxControlDuration(unsigned int minSteps, unsigned int maxSteps)
 	    {
-		m_minSteps = minSteps;
-		m_maxSteps = maxSteps;
+		minSteps_ = minSteps;
+		maxSteps_ = maxSteps;
 	    }
 	    
 	    /** \brief Get the minimum number of steps a control is propagated for */
 	    unsigned int getMinControlDuration(void) const
 	    {
-		return m_minSteps;
+		return minSteps_;
 	    }
 
 	    /** \brief Get the maximum number of steps a control is propagated for */
 	    unsigned int getMaxControlDuration(void) const
 	    {
-		return m_maxSteps;
+		return maxSteps_;
 	    }
 	    
 	    /** \brief Propagate the model of the system forward,
@@ -177,10 +177,10 @@ namespace ompl
 	    
 	protected:
 	    
-	    ControlManifoldPtr m_controlManifold;
-	    unsigned int       m_minSteps;
-	    unsigned int       m_maxSteps;
-	    double             m_stepSize;
+	    ControlManifoldPtr controlManifold_;
+	    unsigned int       minSteps_;
+	    unsigned int       maxSteps_;
+	    double             stepSize_;
 	    
 	};
 	

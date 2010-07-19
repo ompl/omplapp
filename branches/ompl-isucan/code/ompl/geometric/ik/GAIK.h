@@ -64,15 +64,15 @@ namespace ompl
 	{
 	public:
 	    
-	    GAIK(const base::SpaceInformationPtr &si) : m_hcik(si), m_msg("GAIK")
+	    GAIK(const base::SpaceInformationPtr &si) : hcik_(si), msg_("GAIK")
 	    {
-		m_si = si;
-		m_maxDistance = m_si->getStateValidityCheckingResolution() * 100.0;
-		m_poolSize = 80;
-		m_poolExpansion = 100;
-		m_hcik.setMaxImproveSteps(3);
+		si_ = si;
+		maxDistance_ = si_->getStateValidityCheckingResolution() * 100.0;
+		poolSize_ = 80;
+		poolExpansion_ = 100;
+		hcik_.setMaxImproveSteps(3);
 		setValidityCheck(true);
-		m_sCore = m_si->allocStateSampler();
+		sCore_ = si_->allocStateSampler();
 	    }
 	    
 	    virtual ~GAIK(void)
@@ -85,62 +85,62 @@ namespace ompl
 	    /** \brief Set the number of steps to perform when using hill climbing to improve an individual in the population */
 	    void setMaxImproveSteps(unsigned int maxSteps)
 	    {
-		m_hcik.setMaxImproveSteps(maxSteps);
+		hcik_.setMaxImproveSteps(maxSteps);
 	    }
 
 	    /** \brief Get the number of steps to perform when using hill climbing to improve an individual in the population */
 	    unsigned int getMaxImproveSteps(void) const
 	    {
-		return m_hcik.getMaxImproveSteps();
+		return hcik_.getMaxImproveSteps();
 	    }
 	    
 	    /** \brief Set the state validity flag; if this is false, states are not checked for validity */
 	    void setValidityCheck(bool valid)
 	    {
-		m_checkValidity = valid;
-		m_hcik.setValidityCheck(valid);
+		checkValidity_ = valid;
+		hcik_.setValidityCheck(valid);
 	    }
 
 	    /** \brief Get the state validity flag; if this is false, states are not checked for validity */
 	    bool getValidityCheck(void) const
 	    {
-		return m_checkValidity;
+		return checkValidity_;
 	    }
 	    
 	    /** \brief Set the number of individuals in the population */
 	    void setPoolSize(unsigned int size)
 	    {
-		m_poolSize = size;
+		poolSize_ = size;
 	    }
 
 	    /** \brief Get the number number of individuals in the population */
 	    unsigned int getPoolSize(void) const
 	    {
-		return m_poolSize;
+		return poolSize_;
 	    }
 	    
 	    /** \brief Set the number of individuals to add to the population in each generation */
 	    void setPoolExpansionSize(unsigned int size)
 	    {
-		m_poolExpansion = size;
+		poolExpansion_ = size;
 	    }
 	    
 	    /** \brief Get the number of individuals to add to the population in each generation */
 	    unsigned int getPoolExpansionSize(void) const
 	    {
-		return m_poolExpansion;
+		return poolExpansion_;
 	    }
 	    
 	    /** \brief Set the range (distance) to be used when sampling around a state */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range GAIK is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 	    
 	protected:
@@ -149,7 +149,7 @@ namespace ompl
 
 	    bool valid(const base::State *state) const
 	    {
-		return m_checkValidity ? m_si->isValid(state) : true;
+		return checkValidity_ ? si_->isValid(state) : true;
 	    }
 	    
 	    
@@ -170,16 +170,16 @@ namespace ompl
 		}
 	    };
 	    
-	    HCIK                                         m_hcik;
-	    base::StateSamplerPtr                        m_sCore;
-	    base::SpaceInformationPtr                    m_si;	
-	    unsigned int                                 m_poolSize;
-	    unsigned int                                 m_poolExpansion;
-	    bool                                         m_checkValidity;	
+	    HCIK                                         hcik_;
+	    base::StateSamplerPtr                        sCore_;
+	    base::SpaceInformationPtr                    si_;	
+	    unsigned int                                 poolSize_;
+	    unsigned int                                 poolExpansion_;
+	    bool                                         checkValidity_;	
 	    
-	    double                                       m_maxDistance;	
+	    double                                       maxDistance_;	
 
-	    msg::Interface                               m_msg;
+	    msg::Interface                               msg_;
 	};
 	
     }

@@ -83,7 +83,7 @@ namespace ompl
 	    /** \brief Return the instance of the used manifold */
 	    const StateManifoldPtr& getStateManifold(void) const
 	    {
-		return m_stateManifold;
+		return stateManifold_;
 	    }	
 	    
 	    /** \brief Set the instance of the validity checker to
@@ -92,100 +92,100 @@ namespace ompl
 		checker is thread safe. */
 	    void setStateValidityChecker(const StateValidityCheckerPtr &svc)
 	    {
-		m_stateValidityChecker = svc;
+		stateValidityChecker_ = svc;
 	    }
 	    
 	    /** \brief Return the instance of the used state validity checker */
 	    const StateValidityCheckerPtr& getStateValidityChecker(void) const
 	    {
-		return m_stateValidityChecker;
+		return stateValidityChecker_;
 	    }	
 	    
 	    /** \brief Set the resolution (maximum distance between states) at which state validity needs to be
 		verified in order for a motion between two states to be considered valid */
 	    void setStateValidityCheckingResolution(double resolution)
 	    {
-		m_resolution = resolution;
+		resolution_ = resolution;
 	    }
 	    
 	    /** \brief Get the resolution (maximum distance between states) at which state validity is verified */
 	    double getStateValidityCheckingResolution(void) const
 	    {
-		return m_resolution;
+		return resolution_;
 	    }
 	    
 	    /** \brief Return the dimension of the state space */
 	    unsigned int getStateDimension(void) const
 	    {
-		return m_stateManifold->getDimension();
+		return stateManifold_->getDimension();
 	    }
 	    
 	    /** \brief Check if a given state is valid or not */
 	    bool isValid(const State *state) const
 	    {
-		return m_stateValidityChecker->isValid(state);
+		return stateValidityChecker_->isValid(state);
 	    }
 
 	    /** \brief Allocate memory for a state */
 	    State* allocState(void) const
 	    {
-		return m_stateManifold->allocState();
+		return stateManifold_->allocState();
 	    }
 	    
 	    /** \brief Free the memory of a state */
 	    void freeState(State *state) const
 	    {
-		m_stateManifold->freeState(state);
+		stateManifold_->freeState(state);
 	    }
 
 	    /** \brief Print a state to a stream */
 	    void printState(const State *state, std::ostream &out = std::cout) const
 	    {
-		m_stateManifold->printState(state, out);
+		stateManifold_->printState(state, out);
 	    }
 
 	    /** \brief Copy a state to another */
 	    void copyState(State *destination, const State *source) const
 	    {
-		m_stateManifold->copyState(destination, source);
+		stateManifold_->copyState(destination, source);
 	    }
 	    
 	    /** \brief Clone a state */
 	    State* cloneState(const State *source) const
 	    {
-		State *copy = m_stateManifold->allocState();
-		m_stateManifold->copyState(copy, source);
+		State *copy = stateManifold_->allocState();
+		stateManifold_->copyState(copy, source);
 		return copy;
 	    }
 	    
 	    /** \brief Check if two states are the same */
 	    bool equalStates(const State *state1, const State *state2) const
 	    {
-		return m_stateManifold->equalStates(state1, state2);
+		return stateManifold_->equalStates(state1, state2);
 	    }
 	    
 	    /** \brief Check if a state is inside the bounding box */
 	    bool satisfiesBounds(const State *state) const
 	    {
-		return m_stateManifold->satisfiesBounds(state);
+		return stateManifold_->satisfiesBounds(state);
 	    }
 	    
 	    /** \brief Compute the distance between two states */
 	    double distance(const State *state1, const State *state2) const
 	    {
-		return m_stateManifold->distance(state1, state2);
+		return stateManifold_->distance(state1, state2);
 	    }
 
 	    /** \brief Bring the state within the bounds of the state space */
 	    void enforceBounds(State *state) const
 	    {
-		m_stateManifold->enforceBounds(state);
+		stateManifold_->enforceBounds(state);
 	    }
 
 	    /** \brief Allocate a state sampler */
 	    StateSamplerPtr allocStateSampler(void) const
 	    {
-		return m_stateManifold->allocStateSampler();
+		return stateManifold_->allocStateSampler();
 	    }
 	    
 	    /** \brief Estimate the maximum (underapproximation)
@@ -230,14 +230,14 @@ namespace ompl
 	    
 	protected:
 	    
-	    StateValidityCheckerPtr m_stateValidityChecker;
-	    StateManifoldPtr        m_stateManifold;
-	    double                  m_resolution;
-	    double                  m_maxExtent;
+	    StateValidityCheckerPtr stateValidityChecker_;
+	    StateManifoldPtr        stateManifold_;
+	    double                  resolution_;
+	    double                  maxExtent_;
 	    
-	    bool                    m_setup;
+	    bool                    setup_;
 
-	    msg::Interface          m_msg;
+	    msg::Interface          msg_;
 	};
 	
     }

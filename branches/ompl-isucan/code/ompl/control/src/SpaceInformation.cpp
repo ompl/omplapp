@@ -43,25 +43,25 @@
 void ompl::control::SpaceInformation::setup(void)
 {
     base::SpaceInformation::setup();
-    if (m_minSteps > m_maxSteps)
+    if (minSteps_ > maxSteps_)
 	throw Exception("The minimum number of steps cannot be larger than the maximum number of steps");
-    if (m_minSteps == 0 && m_maxSteps == 0)
+    if (minSteps_ == 0 && maxSteps_ == 0)
     {
-	m_minSteps = 1;
-	m_maxSteps = 2;
-	m_msg.warn("Assuming propagation will always have 1 or 2 steps");
+	minSteps_ = 1;
+	maxSteps_ = 2;
+	msg_.warn("Assuming propagation will always have 1 or 2 steps");
     }
-    if (m_minSteps < 1)
+    if (minSteps_ < 1)
 	throw Exception("The minimum number of steps must be at least 1");
     
-    if (m_stepSize < std::numeric_limits<double>::epsilon())
+    if (stepSize_ < std::numeric_limits<double>::epsilon())
     {
-	m_stepSize = m_resolution;
-	m_msg.warn("The propagation step size is assumed to be the same as the state validity checking resolution: %f", m_stepSize);
+	stepSize_ = resolution_;
+	msg_.warn("The propagation step size is assumed to be the same as the state validity checking resolution: %f", stepSize_);
     }
 
-    m_controlManifold->setup();    
-    if (m_controlManifold->getDimension() <= 0)
+    controlManifold_->setup();    
+    if (controlManifold_->getDimension() <= 0)
 	throw Exception("The dimension of the control manifold we plan in must be > 0");
 }
 
@@ -71,9 +71,9 @@ void ompl::control::SpaceInformation::propagate(const base::State *state, const 
 	copyState(result, state);
     else
     {
-	m_controlManifold->propagate(state, control, m_stepSize, result);
+	controlManifold_->propagate(state, control, stepSize_, result);
         for (unsigned int i = 1 ; i < steps ; ++i)
-	    m_controlManifold->propagate(result, control, m_stepSize, result);
+	    controlManifold_->propagate(result, control, stepSize_, result);
     }
 }
 
@@ -86,7 +86,7 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
     }
     
     // perform the first step of propagation
-    PropagationResult pr = m_controlManifold->propagate(state, control, m_stepSize, result);
+    PropagationResult pr = controlManifold_->propagate(state, control, stepSize_, result);
     
     // if the propagator we use cannot tell state validity, we ignore the PropagationResult
     if (pr == PROPAGATION_START_UNKNOWN)
@@ -102,7 +102,7 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
 	    // for the remaining number of steps
 	    for (unsigned int i = 1 ; i < steps ; ++i)
 	    {
-		m_controlManifold->propagate(temp1, control, m_stepSize, temp2);
+		controlManifold_->propagate(temp1, control, stepSize_, temp2);
 		if (isValid(temp2))
 		    std::swap(temp1, temp2);
 		else
@@ -145,7 +145,7 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
 	// for the remaining number of steps
 	for (unsigned int i = 1 ; i < steps ; ++i)
 	{
-	    pr = m_controlManifold->propagate(temp2, control, m_stepSize, temp3);
+	    pr = controlManifold_->propagate(temp2, control, stepSize_, temp3);
 	    
 	    // compute the validity of temp2
 	    bool valid = pr == PROPAGATION_START_UNKNOWN ? isValid(temp2) : pr == PROPAGATION_START_VALID;
@@ -215,12 +215,12 @@ void ompl::control::SpaceInformation::propagate(const base::State *state, const 
     
     if (st < steps)
     { 
-	m_controlManifold->propagate(state, control, m_stepSize, result[st]);
+	controlManifold_->propagate(state, control, stepSize_, result[st]);
 	st++;
 	
 	while (st < steps)
 	{
-	    m_controlManifold->propagate(result[st-1], control, m_stepSize, result[st]);
+	    controlManifold_->propagate(result[st-1], control, stepSize_, result[st]);
 	    st++;	    
 	}
     }
@@ -243,7 +243,7 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
     {
 	if (alloc)
 	    result[st] = allocState();
-	PropagationResult pr = m_controlManifold->propagate(state, control, m_stepSize, result[st]);
+	PropagationResult pr = controlManifold_->propagate(state, control, stepSize_, result[st]);
 	st++;
 	
 	if (pr == PROPAGATION_START_UNKNOWN)
@@ -254,7 +254,7 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
 		{
 		    if (alloc)
 			result[st] = allocState();
-		    m_controlManifold->propagate(result[st-1], control, m_stepSize, result[st]);
+		    controlManifold_->propagate(result[st-1], control, stepSize_, result[st]);
 		    st++;
 		    if (!isValid(result[st-1]))
 		    {
@@ -284,7 +284,7 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
 		if (alloc)
 		    result[st] = allocState();
 		
-		PropagationResult pr = m_controlManifold->propagate(result[st-1], control, m_stepSize, result[st]);
+		PropagationResult pr = controlManifold_->propagate(result[st-1], control, stepSize_, result[st]);
 		bool valid = pr == PROPAGATION_START_UNKNOWN ? isValid(result[st-1]) : pr == PROPAGATION_START_VALID;
 		
 		if (!valid)
@@ -323,8 +323,8 @@ void ompl::control::SpaceInformation::printSettings(std::ostream &out) const
 {
     base::SpaceInformation::printSettings(out);
     out << "  - control manifold:" << std::endl;
-    m_controlManifold->printSettings(out);
-    out << "  - propagation step size: " << m_stepSize << std::endl;
-    out << "  - propagation duration: [" << m_minSteps << ", " << m_maxSteps << "]" << std::endl;
+    controlManifold_->printSettings(out);
+    out << "  - propagation step size: " << stepSize_ << std::endl;
+    out << "  - propagation duration: [" << minSteps_ << ", " << maxSteps_ << "]" << std::endl;
 }
 

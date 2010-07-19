@@ -165,10 +165,10 @@ namespace ompl
 	protected:
 	    
 	    /** \brief Interface used for console output */
-	    msg::Interface        m_msg;
+	    msg::Interface        msg_;
 	    
 	    /** \brief The optional state sampler allocator */
-	    StateSamplerAllocator m_ssa;
+	    StateSamplerAllocator ssa_;
 	    
 	};
 	
@@ -179,7 +179,7 @@ namespace ompl
 	    /** \brief Define the type of state allocated by this manifold */
 	    typedef CompoundState StateType;
 	    
-	    CompoundStateManifold(void) : StateManifold(), m_componentCount(0), m_locked(false)
+	    CompoundStateManifold(void) : StateManifold(), componentCount_(0), locked_(false)
 	    {
 	    }
 	    
@@ -248,10 +248,10 @@ namespace ompl
 	     user to add further components. */
 	    void lock(void);
 	    
-	    std::vector<StateManifoldPtr> m_components;
-	    unsigned int                  m_componentCount;
-	    std::vector<double>           m_weights;
-	    bool                          m_locked;
+	    std::vector<StateManifoldPtr> components_;
+	    unsigned int                  componentCount_;
+	    std::vector<double>           weights_;
+	    bool                          locked_;
 	    
 	};
     }

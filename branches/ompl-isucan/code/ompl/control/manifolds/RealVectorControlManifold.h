@@ -85,7 +85,7 @@ namespace ompl
 	    /** \brief Define the type of control allocated by this manifold */
 	    typedef RealVectorControl ControlType;
 
-	    RealVectorControlManifold(const base::StateManifoldPtr &stateManifold, unsigned int dim) : ControlManifold(stateManifold), m_dimension(dim), m_controlBytes(dim * sizeof(double)), m_bounds(dim)
+	    RealVectorControlManifold(const base::StateManifoldPtr &stateManifold, unsigned int dim) : ControlManifold(stateManifold), dimension_(dim), controlBytes_(dim * sizeof(double)), bounds_(dim)
 	    {
 	    }
 	    
@@ -97,7 +97,7 @@ namespace ompl
 
 	    const RealVectorBounds& getBounds(void) const
 	    {
-		return m_bounds;
+		return bounds_;
 	    }
 	    
 	    /** \brief Get the dimension of the space */
@@ -129,9 +129,9 @@ namespace ompl
 	    
 	protected:
 	    
-	    unsigned int     m_dimension;
-	    std::size_t      m_controlBytes;
-	    RealVectorBounds m_bounds;
+	    unsigned int     dimension_;
+	    std::size_t      controlBytes_;
+	    RealVectorBounds bounds_;
 	    
 	};
     }

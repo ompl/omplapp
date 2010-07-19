@@ -92,7 +92,7 @@ namespace ompl
 	    /** \brief Define the type of state allocated by this manifold */
 	    typedef RealVectorState StateType;
 
-	    RealVectorStateManifold(unsigned int dim) : StateManifold(), m_dimension(dim), m_stateBytes(dim * sizeof(double)), m_bounds(dim)
+	    RealVectorStateManifold(unsigned int dim) : StateManifold(), dimension_(dim), stateBytes_(dim * sizeof(double)), bounds_(dim)
 	    {
 	    }
 	    
@@ -104,7 +104,7 @@ namespace ompl
 
 	    const RealVectorBounds& getBounds(void) const
 	    {
-		return m_bounds;
+		return bounds_;
 	    }
 	    
 	    /** \brief Get the dimension of the space */
@@ -150,9 +150,9 @@ namespace ompl
 	    
 	protected:
 	    
-	    unsigned int     m_dimension;
-	    std::size_t      m_stateBytes;
-	    RealVectorBounds m_bounds;
+	    unsigned int     dimension_;
+	    std::size_t      stateBytes_;
+	    RealVectorBounds bounds_;
 
 	};
     }

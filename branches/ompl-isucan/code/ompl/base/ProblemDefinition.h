@@ -62,7 +62,7 @@ namespace ompl
 	{
 	public:
 	    
-	    ProblemDefinition(const SpaceInformationPtr &si) : m_si(si)
+	    ProblemDefinition(const SpaceInformationPtr &si) : si_(si)
 	    {
 	    }
 	    
@@ -74,13 +74,13 @@ namespace ompl
 	    /** \brief Add a start state */
 	    void addStartState(const State *state)
 	    {
-		m_startStates.push_back(m_si->cloneState(state));
+		startStates_.push_back(si_->cloneState(state));
 	    }
 	    
 	    /** \brief Add a start state */
 	    void addStartState(const ScopedState<> &state)
 	    {
-		m_startStates.push_back(m_si->cloneState(state.get()));
+		startStates_.push_back(si_->cloneState(state.get()));
 	    }
 	    
 	    /** \brief Check whether a specified starting state is
@@ -91,45 +91,45 @@ namespace ompl
 	    /** \brief Clear all start states (memory is freed) */
 	    void clearStartStates(void)
 	    {
-		for (unsigned int i = 0 ; i < m_startStates.size() ; ++i)
-		    m_si->freeState(m_startStates[i]);
-		m_startStates.clear();
+		for (unsigned int i = 0 ; i < startStates_.size() ; ++i)
+		    si_->freeState(startStates_[i]);
+		startStates_.clear();
 	    }
 	    
 	    /** \brief Returns the number of start states */
 	    unsigned int getStartStateCount(void) const
 	    {
-		return m_startStates.size();
+		return startStates_.size();
 	    }
 	    
 	    /** \brief Returns a specific start state */
 	    const State* getStartState(unsigned int index) const
 	    {
-		return m_startStates[index];
+		return startStates_[index];
 	    }
 
 	    /** \brief Returns a specific start state */
 	    State* getStartState(unsigned int index)
 	    {
-		return m_startStates[index];
+		return startStates_[index];
 	    }
 
 	    /** \brief Set the goal. The memory for a previous goal is freed. */
 	    void setGoal(const GoalPtr &goal)
 	    {
-		m_goal = goal;
+		goal_ = goal;
 	    }
 	    
 	    /** \brief Clear the goal. Memory is freed. */
 	    void clearGoal(void)
 	    {
-		m_goal.reset();
+		goal_.reset();
 	    }
 	    
 	    /** \brief Return the current goal */
 	    const GoalPtr& getGoal(void) const
 	    {
-		return m_goal;
+		return goal_;
 	    }
 	    
 	    /** \brief A problem is trivial if the given starting state already
@@ -153,11 +153,11 @@ namespace ompl
 	    /** \brief Helper function for fixInvalidInputStates(). Attempts to fix an individual state */
 	    bool fixInvalidInputState(State *state, double dist, bool start, unsigned int attempts);
 
-	    SpaceInformationPtr  m_si;
-	    std::vector<State*>  m_startStates;
-	    GoalPtr              m_goal;
+	    SpaceInformationPtr  si_;
+	    std::vector<State*>  startStates_;
+	    GoalPtr              goal_;
 	    
-	    msg::Interface       m_msg;
+	    msg::Interface       msg_;
 	};
     }    
 }

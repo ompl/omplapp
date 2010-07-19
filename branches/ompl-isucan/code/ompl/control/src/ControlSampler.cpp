@@ -39,18 +39,18 @@
 
 unsigned int ompl::control::ControlSampler::sampleStepCount(unsigned int minSteps, unsigned int maxSteps)
 {
-    return m_rng.uniformInt(minSteps, maxSteps);
+    return rng_.uniformInt(minSteps, maxSteps);
 }
 
 void ompl::control::CompoundControlSampler::addSampler(const ControlSamplerPtr &sampler)
 {
-    m_samplers.push_back(sampler);
-    m_samplerCount = m_samplers.size();
+    samplers_.push_back(sampler);
+    samplerCount_ = samplers_.size();
 }
 
 void ompl::control::CompoundControlSampler::sample(Control *control)
 {
     Control **comps = static_cast<CompoundControl*>(control)->components;
-    for (unsigned int i = 0 ; i < m_samplerCount ; ++i)
-	m_samplers[i]->sample(comps[i]);
+    for (unsigned int i = 0 ; i < samplerCount_ ; ++i)
+	samplers_[i]->sample(comps[i]);
 }

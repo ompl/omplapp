@@ -56,7 +56,7 @@ namespace ompl
 	{	    
 	public:
 
-	    ControlSampler(const ControlManifold *manifold) : m_manifold(manifold)
+	    ControlSampler(const ControlManifold *manifold) : manifold_(manifold)
 	    {
 	    }
 
@@ -73,13 +73,13 @@ namespace ompl
 	    /** \brief Return a reference to the random number generator used */
 	    RNG& getRNG(void)
 	    {
-		return m_rng;
+		return rng_;
 	    }
 	    
 	protected:
 	    
-	    const ControlManifold *m_manifold;
-	    RNG                    m_rng;
+	    const ControlManifold *manifold_;
+	    RNG                    rng_;
 	};
 
 	/** \brief Definition of a compound control sampler. This is useful to construct samplers for compound controls. */
@@ -107,8 +107,8 @@ namespace ompl
 	    
 	protected:
 	    
-	    std::vector<ControlSamplerPtr> m_samplers;
-	    unsigned int                   m_samplerCount;
+	    std::vector<ControlSamplerPtr> samplers_;
+	    unsigned int                   samplerCount_;
 	    
 	};
 

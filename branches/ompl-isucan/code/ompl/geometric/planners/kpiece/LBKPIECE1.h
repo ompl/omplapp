@@ -75,17 +75,17 @@ namespace ompl
 	public:
 	    
 	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
-							     m_sCore(si->allocStateSampler())
+							     sCore_(si->allocStateSampler())
 	    {
-		m_type = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
-		m_msg.setPrefix("LBKPIECE1");
+		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
+		msg_.setPrefix("LBKPIECE1");
 		
-		m_selectBorderPercentage = 0.9;
-		m_maxDistance = 0.0;
-		m_sampledGoalsCount = 0;
-		m_addedStartStates = 0;
-		m_tStart.grid.onCellUpdate(computeImportance, NULL);
-		m_tGoal.grid.onCellUpdate(computeImportance, NULL);
+		selectBorderPercentage_ = 0.9;
+		maxDistance_ = 0.0;
+		sampledGoalsCount_ = 0;
+		addedStartStates_ = 0;
+		tStart_.grid.onCellUpdate(computeImportance, NULL);
+		tGoal_.grid.onCellUpdate(computeImportance, NULL);
 	    }
 	    
 	    virtual ~LBKPIECE1(void)
@@ -99,12 +99,12 @@ namespace ompl
 		OrthogonalProjectionEvaluator */
 	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
 	    {
-		m_projectionEvaluator = projectionEvaluator;
+		projectionEvaluator_ = projectionEvaluator;
 	    }
 	    
 	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
 	    {
-		return m_projectionEvaluator;
+		return projectionEvaluator_;
 	    }
 	    
 	    /** \brief Set the range the planner is supposed to use.
@@ -114,13 +114,13 @@ namespace ompl
 		motion to be added in the tree of motions. */
 	    void setRange(double distance)
 	    {
-		m_maxDistance = distance;
+		maxDistance_ = distance;
 	    }
 	    
 	    /** \brief Get the range the planner is using */
 	    double getRange(void) const
 	    {
-		return m_maxDistance;
+		return maxDistance_;
 	    }
 	    
 	    /** \brief Set the percentage of time for focusing on the
@@ -130,12 +130,12 @@ namespace ompl
 		chance, even if this percentage is set to 90%)*/
 	    void setBorderPercentage(double bp)
 	    {
-		m_selectBorderPercentage = bp;
+		selectBorderPercentage_ = bp;
 	    }
 	    
 	    double getBorderPercentage(void) const
 	    {
-		return m_selectBorderPercentage;
+		return selectBorderPercentage_;
 	    }
 	    
 	    virtual void setup(void);
@@ -226,27 +226,27 @@ namespace ompl
 	    bool isPathValid(TreeData &tree, Motion* motion);
 	    bool checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion* motion, std::vector<Motion*> &solution);
 	    
-	    base::StateSamplerPtr                      m_sCore;
+	    base::StateSamplerPtr                      sCore_;
 
-	    base::ProjectionEvaluatorPtr               m_projectionEvaluator;
+	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
-	    TreeData                                   m_tStart;
-	    TreeData                                   m_tGoal;
+	    TreeData                                   tStart_;
+	    TreeData                                   tGoal_;
 	    
 	    /// number of goal states that have been sampled already;
 	    /// helps the planner know when to stop sampling the goal
 	    /// region
-	    unsigned int                               m_sampledGoalsCount;
+	    unsigned int                               sampledGoalsCount_;
 
 	    /// number of added start states; if between subsequent
 	    /// calls to solve() start states have been added to the
 	    /// problem definition, this variable helps in determining
 	    /// which ones to add to the start tree
-	    unsigned int                               m_addedStartStates;
+	    unsigned int                               addedStartStates_;
 	    
-	    double                                     m_selectBorderPercentage;
-	    double                                     m_maxDistance;
-	    RNG                                        m_rng;	
+	    double                                     selectBorderPercentage_;
+	    double                                     maxDistance_;
+	    RNG                                        rng_;	
 	};
 	
     }

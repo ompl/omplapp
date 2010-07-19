@@ -58,7 +58,7 @@ class myStateValidityChecker : public base::StateValidityChecker
 public:
 
     myStateValidityChecker(base::SpaceInformation *si, const std::vector< std::vector<int> > &grid) :
-	base::StateValidityChecker(si), m_grid(grid)
+	base::StateValidityChecker(si), grid_(grid)
     {
     }
     
@@ -67,12 +67,12 @@ public:
 	/* planning is done in a continuous space, but our collision space representation is discrete */
 	int x = (int)(state->as<base::RealVectorState>()->values[0]);
 	int y = (int)(state->as<base::RealVectorState>()->values[1]);
-	return m_grid[x][y] == 0; // 0 means valid state
+	return grid_[x][y] == 0; // 0 means valid state
     }
     
 protected:
     
-    std::vector< std::vector<int> > m_grid;
+    std::vector< std::vector<int> > grid_;
 
 };
 

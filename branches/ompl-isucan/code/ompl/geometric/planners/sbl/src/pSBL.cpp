@@ -43,33 +43,33 @@
 void ompl::geometric::pSBL::setup(void)
 {
     Planner::setup();
-    if (!m_projectionEvaluator)
+    if (!projectionEvaluator_)
 	throw Exception("No projection evaluator specified");
-    m_projectionEvaluator->checkCellDimensions();
-    if (m_projectionEvaluator->getDimension() <= 0)
+    projectionEvaluator_->checkCellDimensions();
+    if (projectionEvaluator_->getDimension() <= 0)
 	throw Exception("Dimension of projection needs to be larger than 0");
-    if (m_maxDistance < std::numeric_limits<double>::epsilon())
+    if (maxDistance_ < std::numeric_limits<double>::epsilon())
     {
-	m_maxDistance = m_si->getStateValidityCheckingResolution() * 10.0;
-	m_msg.warn("Maximum motion extension distance is %f", m_maxDistance);
+	maxDistance_ = si_->getStateValidityCheckingResolution() * 10.0;
+	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
-    m_tStart.grid.setDimension(m_projectionEvaluator->getDimension());
-    m_tGoal.grid.setDimension(m_projectionEvaluator->getDimension());
+    tStart_.grid.setDimension(projectionEvaluator_->getDimension());
+    tGoal_.grid.setDimension(projectionEvaluator_->getDimension());
 }
 
 void ompl::geometric::pSBL::clear(void)
 {
     freeMemory();
     
-    m_tStart.grid.clear();
-    m_tStart.size = 0;
+    tStart_.grid.clear();
+    tStart_.size = 0;
     
-    m_tGoal.grid.clear();
-    m_tGoal.size = 0;
+    tGoal_.grid.clear();
+    tGoal_.size = 0;
     
-    m_removeList.motions.clear();
+    removeList_.motions.clear();
     
-    m_addedStartStates = 0;
+    addedStartStates_ = 0;
 }
 
 void ompl::geometric::pSBL::freeGridMotions(Grid<MotionSet> &grid)
@@ -78,63 +78,63 @@ void ompl::geometric::pSBL::freeGridMotions(Grid<MotionSet> &grid)
 	for (unsigned int i = 0 ; i < it->second->data.size() ; ++i)
 	{
 	    if (it->second->data[i]->state)
-		m_si->freeState(it->second->data[i]->state);
+		si_->freeState(it->second->data[i]->state);
 	    delete it->second->data[i];
 	}
 }
 
 void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, SolutionInfo *sol)
 {   
-    base::GoalState *goal = static_cast<base::GoalState*>(m_pdef->getGoal().get());
+    base::GoalState *goal = static_cast<base::GoalState*>(pdef_->getGoal().get());
     
     std::vector<Motion*> solution;
-    base::State *xstate = m_si->allocState();
-    bool      startTree = m_sCoreArray[tid]->getRNG().uniformBool();
+    base::State *xstate = si_->allocState();
+    bool      startTree = sCoreArray_[tid]->getRNG().uniformBool();
     
     while (!sol->found && time::now() < endTime)
     {
 	bool retry = true;
 	while (retry && !sol->found && time::now() < endTime)
 	{
-	    m_removeList.lock.lock();
-	    if (!m_removeList.motions.empty())
+	    removeList_.lock.lock();
+	    if (!removeList_.motions.empty())
 	    {
-		if (m_loopLock.try_lock())
+		if (loopLock_.try_lock())
 		{
 		    retry = false;
 		    std::map<Motion*, bool> seen;
-		    for (unsigned int i = 0 ; i < m_removeList.motions.size() ; ++i)
-			if (seen.find(m_removeList.motions[i].motion) == seen.end())
-			    removeMotion(*m_removeList.motions[i].tree, m_removeList.motions[i].motion, seen);
-		    m_removeList.motions.clear();
-		    m_loopLock.unlock();
+		    for (unsigned int i = 0 ; i < removeList_.motions.size() ; ++i)
+			if (seen.find(removeList_.motions[i].motion) == seen.end())
+			    removeMotion(*removeList_.motions[i].tree, removeList_.motions[i].motion, seen);
+		    removeList_.motions.clear();
+		    loopLock_.unlock();
 		}
 	    }
 	    else
 		retry = false;
-	    m_removeList.lock.unlock();
+	    removeList_.lock.unlock();
 	}
 	
 	if (sol->found || time::now() > endTime)
 	    break;
 	
-	m_loopLockCounter.lock();
-	if (m_loopCounter == 0)
-	    m_loopLock.lock();
-	m_loopCounter++;
-	m_loopLockCounter.unlock();
+	loopLockCounter_.lock();
+	if (loopCounter_ == 0)
+	    loopLock_.lock();
+	loopCounter_++;
+	loopLockCounter_.unlock();
 	
 
-	TreeData &tree      = startTree ? m_tStart : m_tGoal;
+	TreeData &tree      = startTree ? tStart_ : tGoal_;
 	startTree = !startTree;
-	TreeData &otherTree = startTree ? m_tStart : m_tGoal;
+	TreeData &otherTree = startTree ? tStart_ : tGoal_;
 	
-	Motion *existing = selectMotion(m_sCoreArray[tid]->getRNG(), tree);
-	m_sCoreArray[tid]->sampleNear(xstate, existing->state, m_maxDistance);
+	Motion *existing = selectMotion(sCoreArray_[tid]->getRNG(), tree);
+	sCoreArray_[tid]->sampleNear(xstate, existing->state, maxDistance_);
 	
 	/* create a motion */
-	Motion *motion = new Motion(m_si);
-	m_si->copyState(motion->state, xstate);
+	Motion *motion = new Motion(si_);
+	si_->copyState(motion->state, xstate);
 	motion->parent = existing;
 	motion->root = existing->root;
 	
@@ -144,15 +144,15 @@ void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	
 	addMotion(tree, motion);
 
-	if (checkSolution(m_sCoreArray[tid]->getRNG(), !startTree, tree, otherTree, motion, solution))
+	if (checkSolution(sCoreArray_[tid]->getRNG(), !startTree, tree, otherTree, motion, solution))
 	{
 	    sol->lock.lock();
 	    if (!sol->found)
 	    {
 		sol->found = true;
-		PathGeometric *path = new PathGeometric(m_si);
+		PathGeometric *path = new PathGeometric(si_);
 		for (unsigned int i = 0 ; i < solution.size() ; ++i)
-		    path->states.push_back(m_si->cloneState(solution[i]->state));
+		    path->states.push_back(si_->cloneState(solution[i]->state));
 		goal->setDifference(0.0);
 		goal->setSolutionPath(base::PathPtr(path));
 	    }
@@ -160,80 +160,80 @@ void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	}
 
 	
-	m_loopLockCounter.lock();
-	m_loopCounter--;
-	if (m_loopCounter == 0)
-	    m_loopLock.unlock();
-	m_loopLockCounter.unlock();
+	loopLockCounter_.lock();
+	loopCounter_--;
+	if (loopCounter_ == 0)
+	    loopLock_.unlock();
+	loopLockCounter_.unlock();
     }
     
-    m_si->freeState(xstate);    
+    si_->freeState(xstate);    
 }
 
 bool ompl::geometric::pSBL::solve(double solveTime)
 {
-    base::GoalState *goal = dynamic_cast<base::GoalState*>(m_pdef->getGoal().get());
+    base::GoalState *goal = dynamic_cast<base::GoalState*>(pdef_->getGoal().get());
     
     if (!goal)
     {
-	m_msg.error("Unknown type of goal (or goal undefined)");
+	msg_.error("Unknown type of goal (or goal undefined)");
 	return false;
     }
     
     time::point endTime = time::now() + time::seconds(solveTime);
     
-    for (unsigned int i = m_addedStartStates ; i < m_pdef->getStartStateCount() ; ++i, ++m_addedStartStates)
+    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
     {
-	const base::State *st = m_pdef->getStartState(i);
-	if (m_si->satisfiesBounds(st) && m_si->isValid(st))
+	const base::State *st = pdef_->getStartState(i);
+	if (si_->satisfiesBounds(st) && si_->isValid(st))
 	{
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, st);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, st);
 	    motion->valid = true;
 	    motion->root = st;
-	    addMotion(m_tStart, motion);
+	    addMotion(tStart_, motion);
 	}
 	else
-	    m_msg.error("Initial state is invalid!");
+	    msg_.error("Initial state is invalid!");
     }
     
-    if (m_tGoal.size == 0)
+    if (tGoal_.size == 0)
     {	   
-	if (m_si->satisfiesBounds(goal->state) && m_si->isValid(goal->state))
+	if (si_->satisfiesBounds(goal->state) && si_->isValid(goal->state))
 	{
-	    Motion *motion = new Motion(m_si);
-	    m_si->copyState(motion->state, goal->state);
+	    Motion *motion = new Motion(si_);
+	    si_->copyState(motion->state, goal->state);
 	    motion->valid = true;
 	    motion->root = goal->state;
-	    addMotion(m_tGoal, motion);
+	    addMotion(tGoal_, motion);
 	}
 	else
-	    m_msg.error("Goal state is invalid!");
+	    msg_.error("Goal state is invalid!");
     }
     
-    if (m_tStart.size == 0 || m_tGoal.size == 0)
+    if (tStart_.size == 0 || tGoal_.size == 0)
     {
-	m_msg.error("Motion planning trees could not be initialized!");
+	msg_.error("Motion planning trees could not be initialized!");
 	return false;
     }
     
-    m_msg.inform("Starting with %d states", (int)(m_tStart.size + m_tGoal.size));
+    msg_.inform("Starting with %d states", (int)(tStart_.size + tGoal_.size));
     
     SolutionInfo sol;
     sol.found = false;
-    m_loopCounter = 0;
+    loopCounter_ = 0;
     
-    std::vector<boost::thread*> th(m_threadCount);
-    for (unsigned int i = 0 ; i < m_threadCount ; ++i)
+    std::vector<boost::thread*> th(threadCount_);
+    for (unsigned int i = 0 ; i < threadCount_ ; ++i)
 	th[i] = new boost::thread(boost::bind(&pSBL::threadSolve, this, i, endTime, &sol));
-    for (unsigned int i = 0 ; i < m_threadCount ; ++i)
+    for (unsigned int i = 0 ; i < threadCount_ ; ++i)
     {
 	th[i]->join();
 	delete th[i];
     }
         
-    m_msg.inform("Created %u (%u start + %u goal) states in %u cells (%u start + %u goal)", m_tStart.size + m_tGoal.size, m_tStart.size, m_tGoal.size,
-	     m_tStart.grid.size() + m_tGoal.grid.size(), m_tStart.grid.size(), m_tGoal.grid.size());
+    msg_.inform("Created %u (%u start + %u goal) states in %u cells (%u start + %u goal)", tStart_.size + tGoal_.size, tStart_.size, tGoal_.size,
+	     tStart_.grid.size() + tGoal_.grid.size(), tStart_.grid.size(), tGoal_.grid.size());
     
     return goal->isAchieved();
 }
@@ -241,7 +241,7 @@ bool ompl::geometric::pSBL::solve(double solveTime)
 bool ompl::geometric::pSBL::checkSolution(RNG &rng, bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution)
 {
     Grid<MotionSet>::Coord coord;
-    m_projectionEvaluator->computeCoordinates(motion->state, coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
 
     otherTree.lock.lock();    
     Grid<MotionSet>::Cell* cell = otherTree.grid.getCell(coord);
@@ -251,11 +251,11 @@ bool ompl::geometric::pSBL::checkSolution(RNG &rng, bool start, TreeData &tree, 
 	Motion *connectOther = cell->data[rng.uniformInt(0, cell->data.size() - 1)];
 	otherTree.lock.unlock();    
 	
-	if (m_pdef->getGoal()->isStartGoalPairValid(start ? motion->root : connectOther->root, start ? connectOther->root : motion->root))
+	if (pdef_->getGoal()->isStartGoalPairValid(start ? motion->root : connectOther->root, start ? connectOther->root : motion->root))
 	{
-	    Motion *connect = new Motion(m_si);
+	    Motion *connect = new Motion(si_);
 	    
-	    m_si->copyState(connect->state, connectOther->state);
+	    si_->copyState(connect->state, connectOther->state);
 	    connect->parent = motion;
 	    connect->root = motion->root;
 	    
@@ -319,7 +319,7 @@ bool ompl::geometric::pSBL::isPathValid(TreeData &tree, Motion *motion)
 	mpath[i]->lock.lock();
 	if (!mpath[i]->valid)
 	{
-	    if (m_si->checkMotion(mpath[i]->parent->state, mpath[i]->state))
+	    if (si_->checkMotion(mpath[i]->parent->state, mpath[i]->state))
 		mpath[i]->valid = true;
 	    else
 	    {
@@ -327,9 +327,9 @@ bool ompl::geometric::pSBL::isPathValid(TreeData &tree, Motion *motion)
 		PendingRemoveMotion prm;
 		prm.tree = &tree;
 		prm.motion = mpath[i];
-		m_removeList.lock.lock();
-		m_removeList.motions.push_back(prm);
-		m_removeList.lock.unlock();
+		removeList_.lock.lock();
+		removeList_.motions.push_back(prm);
+		removeList_.lock.unlock();
 		result = false;
 	    }
 	}
@@ -367,7 +367,7 @@ void ompl::geometric::pSBL::removeMotion(TreeData &tree, Motion *motion, std::ma
     seen[motion] = true;
 
     Grid<MotionSet>::Coord coord;
-    m_projectionEvaluator->computeCoordinates(motion->state, coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
     Grid<MotionSet>::Cell* cell = tree.grid.getCell(coord);
     if (cell)
     {
@@ -405,14 +405,14 @@ void ompl::geometric::pSBL::removeMotion(TreeData &tree, Motion *motion, std::ma
     }
 
     if (motion->state)
-	m_si->freeState(motion->state);
+	si_->freeState(motion->state);
     delete motion;
 }
 
 void ompl::geometric::pSBL::addMotion(TreeData &tree, Motion *motion)
 {
     Grid<MotionSet>::Coord coord;
-    m_projectionEvaluator->computeCoordinates(motion->state, coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
     tree.lock.lock();
     Grid<MotionSet>::Cell* cell = tree.grid.getCell(coord);
     if (cell)
@@ -430,16 +430,16 @@ void ompl::geometric::pSBL::addMotion(TreeData &tree, Motion *motion)
 void ompl::geometric::pSBL::getPlannerData(base::PlannerData &data) const
 {
     data.states.resize(0);
-    data.states.reserve(m_tStart.size + m_tGoal.size);
+    data.states.reserve(tStart_.size + tGoal_.size);
     
     std::vector<MotionSet> motions;
-    m_tStart.grid.getContent(motions);
+    tStart_.grid.getContent(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	for (unsigned int j = 0 ; j < motions[i].size() ; ++j)
 	    data.states.push_back(motions[i][j]->state);    
 
     motions.clear();
-    m_tGoal.grid.getContent(motions);
+    tGoal_.grid.getContent(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	for (unsigned int j = 0 ; j < motions[i].size() ; ++j)
 	    data.states.push_back(motions[i][j]->state);    
@@ -448,6 +448,6 @@ void ompl::geometric::pSBL::getPlannerData(base::PlannerData &data) const
 void ompl::geometric::pSBL::setThreadCount(unsigned int nthreads)
 {
     assert(nthreads > 0);		
-    m_threadCount = nthreads;
-    m_sCoreArray.resize(m_threadCount);
+    threadCount_ = nthreads;
+    sCoreArray_.resize(threadCount_);
 }
