@@ -90,25 +90,59 @@ void ompl::base::QuaternionStateManifold::copyState(State *destination, const St
     qdestination->w = qsource->w;
 }
 
+
+/*
+Based on code from :
+
+Copyright (c) 2003-2006 Gino van den Bergen / Erwin Coumans  http://continuousphysics.com/Bullet/
+*/
 double ompl::base::QuaternionStateManifold::distance(const State *state1, const State *state2) const
 {
-    /** \todo implement distance */
-    return 0.0;
+    const QuaternionState *qs1 = static_cast<const QuaternionState*>(state1);
+    const QuaternionState *qs2 = static_cast<const QuaternionState*>(state2);
+    double dq = fabs(qs1->x * qs2->x + qs1->y * qs2->y + qs1->z * qs2->z + qs1->w * qs2->w);
+    if (dq > 1.0 - std::numeric_limits<double>::epsilon())
+	return 0.0;
+    else
+	return acos(dq) * 2.0;
 }
 
 bool ompl::base::QuaternionStateManifold::equalStates(const State *state1, const State *state2) const
 {
-    const QuaternionState *qs1 = static_cast<const QuaternionState*>(state1);
-    const QuaternionState *qs2 = static_cast<const QuaternionState*>(state2);
-    return fabs(qs2->x - qs1->x) < std::numeric_limits<double>::epsilon() &&
-	fabs(qs2->y - qs1->y) < std::numeric_limits<double>::epsilon() &&
-	fabs(qs2->z - qs1->z) < std::numeric_limits<double>::epsilon() &&
-	fabs(qs2->w - qs1->w) < std::numeric_limits<double>::epsilon();
+    return distance(state1, state2) < std::numeric_limits<double>::epsilon();
 }
 
+/*
+Based on code from :
+
+Copyright (c) 2003-2006 Gino van den Bergen / Erwin Coumans  http://continuousphysics.com/Bullet/
+*/
 void ompl::base::QuaternionStateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
 {
-    /** \todo implement interpolation */
+    double theta = distance(from, to) / 2.0;
+    if (theta > std::numeric_limits<double>::epsilon())
+    {
+	double d = 1.0 / sin(theta);
+	double s0 = sin((1.0 - t) * theta);
+	double s1 = sin(t * theta);
+	
+	const QuaternionState *qs1 = static_cast<const QuaternionState*>(from);
+	const QuaternionState *qs2 = static_cast<const QuaternionState*>(to);
+	QuaternionState       *qr  = static_cast<QuaternionState*>(state);
+	double dq = qs1->x * qs2->x + qs1->y * qs2->y + qs1->z * qs2->z + qs1->w * qs2->w;
+	if (dq < 0)  // Take care of long angle case see http://en.wikipedia.org/wiki/Slerp
+	    s1 = -s1;
+	
+	qr->x = (qs1->x * s0 + qs2->x * s1) * d;
+	qr->y = (qs1->y * s0 + qs2->y * s1) * d;
+	qr->z = (qs1->z * s0 + qs2->z * s1) * d;
+	qr->w = (qs1->w * s0 + qs2->w * s1) * d;
+    }
+    else
+    {
+	if (state != from)
+	    copyState(state, from);
+    }
 }
 
 ompl::base::StateSamplerPtr ompl::base::QuaternionStateManifold::allocUniformStateSampler(void) const 

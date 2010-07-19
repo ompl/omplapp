@@ -50,7 +50,6 @@ TEST(SO2, Simple)
     base::ScopedState<base::SO2StateManifold::StateType> s1(m);
     base::ScopedState<base::SO2StateManifold::StateType> s2(m);
     base::ScopedState<base::SO2StateManifold::StateType> s3(m);
-
     
     s1->value = M_PI - 0.1;
     s2->value = -M_PI + 0.1;
@@ -68,7 +67,6 @@ TEST(SO2, Simple)
 
     m->interpolate(s1.get(), s2.get(), 0.5, s3.get());
     EXPECT_NEAR(s3->value, M_PI / 2.0, 1e-3);
-
 }
 
 int main(int argc, char **argv)
