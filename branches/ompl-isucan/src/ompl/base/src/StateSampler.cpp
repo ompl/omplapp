@@ -37,9 +37,10 @@
 #include "ompl/base/StateSampler.h"
 #include "ompl/base/StateManifold.h"
 
-void ompl::base::CompoundStateSampler::addSampler(const StateSamplerPtr &sampler)
+void ompl::base::CompoundStateSampler::addSampler(const StateSamplerPtr &sampler, double weightImportance)
 {
     samplers_.push_back(sampler);
+    weightImportance_.push_back(weightImportance);
     samplerCount_ = samplers_.size();
 }
 
@@ -55,5 +56,5 @@ void ompl::base::CompoundStateSampler::sampleNear(State *state, const State *nea
     State **comps = static_cast<CompoundState*>(state)->components;
     State **nearComps = static_cast<const CompoundState*>(near)->components;
     for (unsigned int i = 0 ; i < samplerCount_ ; ++i)
-	samplers_[i]->sampleNear(comps[i], nearComps[i], distance);
+	samplers_[i]->sampleNear(comps[i], nearComps[i], weightImportance_[i] * distance);
 }

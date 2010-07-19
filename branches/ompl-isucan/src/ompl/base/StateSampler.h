@@ -87,7 +87,6 @@ namespace ompl
 	{	    
 	public:
 
-	    /** \brief Constructor */
 	    CompoundStateSampler(const StateManifold* manifold) : StateSampler(manifold) 
 	    {
 	    }
@@ -99,8 +98,11 @@ namespace ompl
 	    
 	    /** \brief Add a sampler as part of the new compound
 		sampler. This sampler is used to sample part of the
-		compound state. */
-	    virtual void addSampler(const StateSamplerPtr &sampler);
+		compound state. When sampling hear a state, the
+		compound sampler calls in to added samplers. The
+		distance passed to the called samplers is adjusted
+		according to the specified importance. */
+	    virtual void addSampler(const StateSamplerPtr &sampler, double weightImportance);
 	    
 	    /** \brief Sample a state. */
 	    virtual void sample(State *state);
@@ -111,6 +113,7 @@ namespace ompl
 	protected:
 	    
 	    std::vector<StateSamplerPtr> samplers_;
+	    std::vector<double>          weightImportance_;
 	    unsigned int                 samplerCount_;
 	    
 	};

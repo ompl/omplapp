@@ -34,6 +34,7 @@
 
 #include "ompl/base/StateManifold.h"
 #include "ompl/util/Exception.h"
+#include <numeric>
 
 void ompl::base::StateManifold::setup(void)
 {
@@ -167,9 +168,12 @@ void ompl::base::CompoundStateManifold::interpolate(const State *from, const Sta
 
 ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocUniformStateSampler(void) const
 {
+    double totalWeight = std::accumulate(weights_.begin(), weights_.end(), 0.0);
+    if (totalWeight < std::numeric_limits<double>::epsilon())
+	totalWeight = 1.0;	
     CompoundStateSampler *ss = new CompoundStateSampler(this);
     for (unsigned int i = 0 ; i < componentCount_ ; ++i)
-	ss->addSampler(components_[i]->allocUniformStateSampler());
+	ss->addSampler(components_[i]->allocUniformStateSampler(), weights_[i] / totalWeight);
     return StateSamplerPtr(ss);
 }
 
@@ -179,9 +183,12 @@ ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocStateSampler
 	return ssa_(this);
     else
     {
+	double totalWeight = std::accumulate(weights_.begin(), weights_.end(), 0.0);
+	if (totalWeight < std::numeric_limits<double>::epsilon())
+	    totalWeight = 1.0;
 	CompoundStateSampler *ss = new CompoundStateSampler(this);
 	for (unsigned int i = 0 ; i < componentCount_ ; ++i)
-	    ss->addSampler(components_[i]->allocStateSampler());
+	    ss->addSampler(components_[i]->allocStateSampler(), weights_[i] / totalWeight);
 	return StateSamplerPtr(ss);
     }
 }
