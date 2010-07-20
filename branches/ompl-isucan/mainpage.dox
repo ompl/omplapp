@@ -190,6 +190,10 @@
    - @ref cRRT "Rapidly-exploring Random Trees (RRT)"
    - @ref cKPIECE1 "Kinodynamic Planning by Interior-Exterior Cell Exploration (KPIECE)"
 
+@section demo Demos
+
+   @include demos/RigidBodyPlanning.cpp
+
 @section howto How To's
 
    @ref implementStateManifold "How to implement a new state manifold"
