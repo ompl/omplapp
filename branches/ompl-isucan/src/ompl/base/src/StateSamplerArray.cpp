@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/** \author Ioan Sucan */
 
 #include "ompl/base/StateSamplerArray.h"
 #include "ompl/base/SpaceInformation.h"
