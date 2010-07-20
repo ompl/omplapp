@@ -43,6 +43,9 @@ int main(int argc, char **argv)
     /// perform setup steps for this space; this also checks all settings are correct
     si->setup();
     
+    /// print the settings for this space
+    si->printSettings(std::cout);
+
     /// create a random start state
     ob::ScopedState<> start(manifold);
     start.random();
@@ -56,6 +59,9 @@ int main(int argc, char **argv)
 
     /// set the start and goal states
     pdef->setStartAndGoalStates(start, goal);
+    
+    /// print the problem settings
+    pdef->print(std::cout);
     
     /// create a planner for the defined space
     ob::PlannerPtr planner(new og::RRTConnect(si));
