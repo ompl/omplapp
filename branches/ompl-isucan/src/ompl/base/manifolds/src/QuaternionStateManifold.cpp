@@ -44,7 +44,7 @@ void ompl::base::QuaternionStateUniformSampler::sample(State *state)
     rng_.quaternion(&state->as<QuaternionState>()->x);
 }
 
-void ompl::base::QuaternionStateUniformSampler::sampleNear(State *state, const State *near, const double distance)
+void ompl::base::QuaternionStateUniformSampler::sampleNear(State *state, const State * /* near */, const double /* distance */)
 {
     /** \todo How do we sample near a quaternion ? */
     sample(state);

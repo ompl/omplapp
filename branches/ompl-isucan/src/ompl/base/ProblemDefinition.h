@@ -77,7 +77,7 @@ namespace ompl
 		startStates_.push_back(si_->cloneState(state));
 	    }
 	    
-	    /** \brief Add a start state */
+	    /** \copydoc addStartState() */
 	    void addStartState(const ScopedState<> &state)
 	    {
 		startStates_.push_back(si_->cloneState(state.get()));
@@ -108,7 +108,7 @@ namespace ompl
 		return startStates_[index];
 	    }
 
-	    /** \brief Returns a specific start state */
+	    /** \copydoc getStartState() */
 	    State* getStartState(unsigned int index)
 	    {
 		return startStates_[index];
@@ -130,6 +130,21 @@ namespace ompl
 	    const GoalPtr& getGoal(void) const
 	    {
 		return goal_;
+	    }
+	    
+	    /** \brief In the simplest case possible, we have a single
+		starting state and a goal state.
+
+		This function simply configures the problem definition
+		using these states (performs the needed calls to
+		addStartState(), creates an instance of
+		ompl::base::GoalState and calls setGoal() on it. */
+	    void setStartAndGoalStates(const State *start, const State *goal);
+
+	    /** \copydoc setStartAndGoalStates() */
+	    void setStartAndGoalStates(const ScopedState<> &start, const ScopedState<> &goal)
+	    {
+		setStartAndGoalStates(start.get(), goal.get());
 	    }
 	    
 	    /** \brief A problem is trivial if the given starting state already

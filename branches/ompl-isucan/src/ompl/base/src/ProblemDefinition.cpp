@@ -40,6 +40,16 @@
 
 #include <sstream>
 
+void ompl::base::ProblemDefinition::setStartAndGoalStates(const State *start, const State *goal)
+{
+    clearStartStates();
+    clearGoal();
+    addStartState(start);
+    GoalState *gs = new GoalState(si_);
+    gs->setState(goal);
+    setGoal(base::GoalPtr(gs));
+}
+
 bool ompl::base::ProblemDefinition::hasStartState(const State *state, unsigned int *startIndex)
 {
     for (unsigned int i = 0 ; i < startStates_.size() ; ++i)

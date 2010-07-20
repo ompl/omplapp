@@ -60,7 +60,19 @@ namespace ompl
 	    
 	    virtual ~SE2StateManifold(void)
 	    {	
-	    }	    
+	    }	
+	    
+	    /** \copydoc RealVectorStateManifold::setBounds() */
+	    void setBounds(const RealVectorBounds &bounds)
+	    {
+		as<RealVectorStateManifold>(0)->setBounds(bounds);
+	    }
+	    
+	    /** \copydoc RealVectorStateManifold::getBounds() */
+	    const RealVectorBounds& getBounds(void) const
+	    {
+		return as<RealVectorStateManifold>(0)->getBounds();
+	    }    
 	};	
     }
 }

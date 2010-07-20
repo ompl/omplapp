@@ -15,7 +15,7 @@ if(BUILD_TESTS)
 		macro(add_ompl_test test_name)
 			rosbuild_add_gtest(${ARGV})
 			target_link_libraries(${test_name} ompl)
-			rosbuild_link_boost(test_2dmap_kinematic filesystem system thread date_time)
+			rosbuild_link_boost(${test_name} filesystem system thread date_time)
 		endmacro(add_ompl_test)
 
 	else(ROS)

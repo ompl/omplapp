@@ -38,6 +38,7 @@
 #define OMPL_BASE_MANIFOLDS_REAL_VECTOR_STATE_MANIFOLD_
 
 #include "ompl/base/StateManifold.h"
+#include <algorithm>
 #include <vector>
 
 namespace ompl
@@ -61,6 +62,18 @@ namespace ompl
 	    {
 		low.resize(dim, 0.0);
 		high.resize(dim, 0.0);
+	    }
+	    
+	    /** \brief Set the lower bound in each dimension to a specific value */
+	    void setLow(double value)
+	    {
+		std::fill(low.begin(), low.end(), value);
+	    }
+
+	    /** \brief Set the upper bound in each dimension to a specific value */
+	    void setHigh(double value)
+	    {
+		std::fill(high.begin(), high.end(), value);
 	    }
 	    
 	    /** \brief Lower bound */
@@ -100,8 +113,12 @@ namespace ompl
 	    {	
 	    }
 	    
+	    /** \brief Set the bounds of this manifold. This defines
+		the range of the space in which sampling is
+		performed. */
 	    void setBounds(const RealVectorBounds &bounds);
 
+	    /** \brief Get the bounds for this manifold */
 	    const RealVectorBounds& getBounds(void) const
 	    {
 		return bounds_;
