@@ -36,12 +36,12 @@
 
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
+#include <boost/bind.hpp>
 #include <libgen.h>
 #include <iostream>
 
 #include "ompl/base/GoalState.h"
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
-#include "ompl/geometric/planners/rrt/RRT.h"
 #include "ompl/geometric/SimpleSetup.h"
 
 #include "../../resources/config.h"
@@ -51,32 +51,15 @@ using namespace ompl;
 
 static const double SOLUTION_TIME = 1.0;
 
-/** \brief Declare a class used in validating states. Such a class
-    definition is needed for any use of a kinematic planner */
-class myStateValidityChecker : public base::StateValidityChecker
+bool isValid(const std::vector< std::vector<int> > *grid, const base::State *state) 
 {
-public:
-
-    myStateValidityChecker(base::SpaceInformation *si, const std::vector< std::vector<int> > &grid) :
-	base::StateValidityChecker(si), grid_(grid)
-    {
-    }
+    const base::CompoundState *cstate = state->as<base::CompoundState>();
     
-    virtual bool isValid(const base::State *state) const
-    {
-        const base::CompoundState *cstate = state->as<base::CompoundState>();
-    
-	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(cstate->as<base::RealVectorState>(0)->values[0]);
-	int y = (int)(cstate->as<base::RealVectorState>(1)->values[0]);
-	return grid_[x][y] == 0; // 0 means valid state
-    }
-    
-protected:
-    
-    std::vector< std::vector<int> > grid_;
-
-};
+    /* planning is done in a continuous space, but our collision space representation is discrete */
+    int x = (int)(cstate->as<base::RealVectorState>(0)->values[0]);
+    int y = (int)(cstate->as<base::RealVectorState>(1)->values[0]);
+    return (*grid)[x][y] == 0; // 0 means valid state
+}
 
 class myManifold1 : public base::RealVectorStateManifold
 {
@@ -99,7 +82,7 @@ class mySetup
 {
 public:
     
-    mySetup(Environment2D &env, const base::PlannerAllocator &pa) : setup(base::StateManifoldPtr(new base::CompoundStateManifold()), pa)
+    mySetup(Environment2D &env) : setup(base::StateManifoldPtr(new base::CompoundStateManifold()))
     {
 	base::RealVectorBounds bounds(1);
 	bounds.low[0] = 0.0;
@@ -115,29 +98,18 @@ public:
 	setup.getStateManifold()->as<base::CompoundStateManifold>()->addSubManifold(base::StateManifoldPtr(m2), 1.0);
 	// add a dummy manifold to test corner cases
 	setup.getStateManifold()->as<base::CompoundStateManifold>()->addSubManifold(base::StateManifoldPtr(new base::RealVectorStateManifold(0)), 0.0);
-	setup.setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityChecker(setup.getSpaceInformation().get(), env.grid)));
-
-	setup.getPathSimplifier()->setMaxSteps(50);
-	setup.getPathSimplifier()->setMaxEmptySteps(10);
-	setup.getSpaceInformation()->setStateValidityCheckingResolution(1.0);
 	
-	setup.getSpaceInformation()->printSettings();
+	setup.setStateValidityChecker(boost::bind(&isValid, &env.grid, _1));
 	
-	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
 	base::ScopedState<base::CompoundState> state(setup.getSpaceInformation());
 	state->as<base::RealVectorState>(0)->values[0] = env.start.first;
 	state->as<base::RealVectorState>(1)->values[0] = env.start.second;
-	setup.getProblemDefinition()->addStartState(state);
-
-	base::GoalState *goal = new base::GoalState(setup.getSpaceInformation());
-
+	
 	base::ScopedState<base::CompoundState> gstate(setup.getSpaceInformation());	
 	gstate->as<base::RealVectorState>(0)->values[0] = env.goal.first;
 	gstate->as<base::RealVectorState>(1)->values[0] = env.goal.second;
-	goal->setState(gstate);
-	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
 	
-	setup.setGoal(base::GoalPtr(goal));
+	setup.setStartAndGoalStates(state, gstate);
     }
     
     geometric::SimpleSetup* operator->(void)
@@ -149,17 +121,6 @@ private:
     
     geometric::SimpleSetup setup;
 };
-
-
-/** Define a function that constructs planner instances */
-base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si)
-{
-    geometric::RRT *rrt = new geometric::RRT(si);
-    rrt->setRange(10.0);
-    return base::PlannerPtr(rrt);
-}
-
-
 
 
 /** A base class for testing planners */
@@ -178,7 +139,7 @@ public:
     {	 
 	bool result = true;
 	
-	mySetup setup(env, boost::bind(&allocPlanner, _1));
+	mySetup setup(env);
  
 	/* start counting time */
 	ompl::time::point startTime = ompl::time::now();	
@@ -299,7 +260,7 @@ protected:
     bool          verbose;
 };
 
-TEST_F(PlanTest, geometric_RRT)
+TEST_F(PlanTest, SimpleSetup)
 {
     double success    = 0.0;
     double avgruntime = 0.0;
@@ -309,7 +270,7 @@ TEST_F(PlanTest, geometric_RRT)
     runPlanTest(&p, &success, &avgruntime, &avglength);
     
     EXPECT_TRUE(success >= 99.0);
-    EXPECT_TRUE(avgruntime < 0.01);
+    EXPECT_TRUE(avgruntime < 0.5);
     EXPECT_TRUE(avglength < 70.0);
 }
 

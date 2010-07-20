@@ -39,11 +39,11 @@
 
 #include "ompl/base/Planner.h"
 #include "ompl/base/SpaceInformation.h"
+#include "ompl/base/ProblemDefinition.h"
 #include "ompl/geometric/PathGeometric.h"
 #include "ompl/geometric/PathSimplifier.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/Exception.h"
-#include <boost/function.hpp>
 
 namespace ompl
 {
@@ -56,7 +56,7 @@ namespace ompl
 	class SimpleSetup
 	{
 	public:
-	    SimpleSetup(const base::StateManifoldPtr &manifold, const base::PlannerAllocator &pa) : configured_(false)
+	    SimpleSetup(const base::StateManifoldPtr &manifold, const base::PlannerAllocator &pa = base::PlannerAllocator()) : configured_(false)
 	    {
 		si_.reset(new base::SpaceInformation(manifold));
 		pdef_.reset(new base::ProblemDefinition(si_));
@@ -90,9 +90,24 @@ namespace ompl
 
 	    void setStateValidityChecker(const base::StateValidityCheckerPtr &svc) const
 	    {
-		return si_->setStateValidityChecker(svc);
+		si_->setStateValidityChecker(svc);
+	    }
+	    
+	    void setStateValidityChecker(const base::StateValidityCheckerFn &svc) const
+	    {
+		si_->setStateValidityChecker(svc);
 	    }
 
+	    void setStartAndGoalStates(const base::ScopedState<> &start, const base::ScopedState<> &goal)
+	    {
+		pdef_->setStartAndGoalStates(start, goal);
+	    }
+	    
+	    void addStartState(const base::ScopedState<> &state)
+	    {
+		pdef_->addStartState(state);
+	    }
+	    
 	    const base::GoalPtr& getGoal(void) const
 	    {
 		return pdef_->getGoal();
@@ -107,23 +122,18 @@ namespace ompl
 	    {
 		return planner_;
 	    }
-
+	    
+	    void setPlanner(const base::PlannerPtr &planner)
+	    {
+		planner_ = planner;
+	    }
+	    
 	    const PathSimplifierPtr& getPathSimplifier(void) const
 	    {
 		return psk_;
 	    }
 	    
-	    void setup(void)
-	    {
-		if (!configured_)
-		{
-		    si_->setup();
-		    planner_ = pa_(si_);
-		    planner_->setProblemDefinition(pdef_);
-		    planner_->setup();
-		    configured_ = true;
-		}
-	    }
+	    void setup(void);
 	    
 	    bool solve(double time)
 	    {
@@ -131,45 +141,11 @@ namespace ompl
 		return planner_->solve(time);
 	    }
 	    
-	    void clear(void)
-	    {
-		if (planner_)
-		    planner_->clear();
-		if (pdef_->getGoal())
-		    pdef_->getGoal()->clearSolutionPath();
-		pdef_->clearStartStates();
-	    }
+	    void clear(void);
 	    	    
-	    void simplifySolution(void)
-	    {
-		const base::PathPtr &p =  pdef_->getGoal()->getSolutionPath();
-		if (p)
-		    psk_->simplifyMax(static_cast<PathGeometric&>(*p));
-		else
-		    msg_.warn("No solution to simplify");
-	    }
-	    
-	    const PathGeometric& getSolutionPath(void) const
-	    {
-		if (pdef_->getGoal())
-		{
-		    const base::PathPtr &p = pdef_->getGoal()->getSolutionPath();
-		    if (p)
-			return static_cast<const PathGeometric&>(*p);
-		}
-		throw Exception("No solution path");		
-	    }	
-	    
-	    PathGeometric& getSolutionPath(void)
-	    {
-		if (pdef_->getGoal())
-		{
-		    const base::PathPtr &p = pdef_->getGoal()->getSolutionPath();
-		    if (p)
-			return static_cast<PathGeometric&>(*p);
-		}
-		throw Exception("No solution path");		
-	    }
+	    void simplifySolution(void);
+	    const PathGeometric& getSolutionPath(void) const;	    
+	    PathGeometric& getSolutionPath(void);
 	    
 	protected:
 	    
