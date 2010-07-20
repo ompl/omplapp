@@ -47,17 +47,30 @@ ompl::control::PathControl::PathControl(const base::SpaceInformationPtr &si) : b
 
 ompl::control::PathControl::PathControl(const PathControl &path) : base::Path(path.si_)
 {
-    states.resize(path.states.size());
-    controls.resize(path.controls.size());
+    copyFrom(path);
+}
+
+ompl::control::PathControl& ompl::control::PathControl::operator=(const PathControl& other)
+{
+    freeMemory();
+    si_ = other.si_;
+    copyFrom(other);
+    return *this;
+}
+
+void ompl::control::PathControl::copyFrom(const PathControl& other) 
+{
+    states.resize(other.states.size()); 
+    controls.resize(other.controls.size());
 
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	states[i] = si_->cloneState(path.states[i]);
+	states[i] = si_->cloneState(other.states[i]);
     
     const SpaceInformation *si = static_cast<const SpaceInformation*>(si_.get());
     for (unsigned int i = 0 ; i < controls.size() ; ++i)
-	controls[i] = si->cloneControl(path.controls[i]);
+	controls[i] = si->cloneControl(other.controls[i]);
     
-    controlDurations = path.controlDurations;
+    controlDurations = other.controlDurations; 
 }
 
 double ompl::control::PathControl::length(void) const

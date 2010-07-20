@@ -40,6 +40,7 @@
 #include "ompl/base/StateManifold.h"
 #include "ompl/util/ClassForward.h"
 #include <vector>
+#include <boost/noncopyable.hpp>
 
 namespace ompl
 {
@@ -59,7 +60,7 @@ namespace ompl
 	    projections to R^n. Integer grids can be imposed on this
 	    projection by setting cell sizes. The implementation of
 	    this class is thread safe. */
-	class ProjectionEvaluator
+	class ProjectionEvaluator : private boost::noncopyable
 	{
 	public:
 	    

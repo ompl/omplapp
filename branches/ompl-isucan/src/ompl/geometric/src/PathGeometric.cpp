@@ -38,9 +38,22 @@
 
 ompl::geometric::PathGeometric::PathGeometric(const PathGeometric &path) : base::Path(path.si_)
 {
-    states.resize(path.states.size());
+    copyFrom(path);
+}
+
+ompl::geometric::PathGeometric& ompl::geometric::PathGeometric::operator=(const PathGeometric &other)
+{
+    freeMemory();
+    si_ = other.si_;
+    copyFrom(other);    
+    return *this;
+}
+
+void ompl::geometric::PathGeometric::copyFrom(const PathGeometric &other)
+{   
+    states.resize(other.states.size());
     for (unsigned int i = 0 ; i < states.size() ; ++i)
-	states[i] = si_->cloneState(path.states[i]);
+	states[i] = si_->cloneState(other.states[i]);
 }
 
 void ompl::geometric::PathGeometric::freeMemory(void)

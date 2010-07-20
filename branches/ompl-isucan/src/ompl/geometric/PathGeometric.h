@@ -65,7 +65,10 @@ namespace ompl
 	    {
 		freeMemory();
 	    }
-
+	    
+	    /** \brief Assignment operator */
+	    PathGeometric& operator=(const PathGeometric& other);
+	    
 	    /** \brief Compute the length of a geometric path (number of states) */
 	    virtual double length(void) const;
 
@@ -85,7 +88,7 @@ namespace ompl
 	    
 	    /** \brief Free the memory corresponding to the states on this path */
 	    void freeMemory(void);
-	    
+	    void copyFrom(const PathGeometric& other);
 	};
 	
     }

@@ -48,6 +48,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <boost/noncopyable.hpp>
+
 namespace ompl
 {
     namespace base
@@ -58,7 +60,7 @@ namespace ompl
 	
 	/** \brief Definition of a problem to be solved. This includes
 	    the start state(s) for the system and a goal specification */
-	class ProblemDefinition
+	class ProblemDefinition : private boost::noncopyable
 	{
 	public:
 	    

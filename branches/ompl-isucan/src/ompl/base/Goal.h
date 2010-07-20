@@ -43,6 +43,7 @@
 #include "ompl/util/ClassForward.h"
 #include <iostream>
 #include <limits>
+#include <boost/noncopyable.hpp>
 
 namespace ompl
 {
@@ -52,7 +53,7 @@ namespace ompl
 	ClassForward(Goal);
 	
 	/** \brief Abstract definition of goals. Will contain solutions, if found */
-	class Goal
+	class Goal : private boost::noncopyable
 	{
 	public:
 	    

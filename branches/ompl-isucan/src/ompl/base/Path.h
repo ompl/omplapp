@@ -40,6 +40,8 @@
 #include "ompl/util/ClassForward.h"
 #include <iostream>
 
+#include <boost/noncopyable.hpp>
+
 namespace ompl
 {
     namespace base
@@ -49,7 +51,7 @@ namespace ompl
 	ClassForward(Path);
 	
 	/** \brief Abstract definition of a path */
-	class Path
+	class Path : private boost::noncopyable
 	{
 	public:
 	    

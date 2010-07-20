@@ -42,6 +42,7 @@
 #include "ompl/util/ClassForward.h"
 #include <vector>
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 
 namespace ompl
 {
@@ -52,7 +53,7 @@ namespace ompl
 	ClassForward(StateSampler);
 	
 	/** \brief Abstract definition of a state sampler. */
-	class StateSampler
+	class StateSampler : private boost::noncopyable
 	{	    
 	public:
 
