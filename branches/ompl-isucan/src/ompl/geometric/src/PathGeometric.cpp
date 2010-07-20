@@ -64,7 +64,10 @@ void ompl::geometric::PathGeometric::freeMemory(void)
 
 double ompl::geometric::PathGeometric::length(void) const
 {
-    return (double)states.size();
+    double L = 0.0;
+    for (unsigned int i = 1 ; i < states.size() ; ++i)
+	L += si_->distance(states[i-1], states[i]);
+    return L;
 }
 
 bool ompl::geometric::PathGeometric::check(void) const

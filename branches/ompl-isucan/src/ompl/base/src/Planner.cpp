@@ -41,8 +41,6 @@ ompl::base::Planner::Planner(const SpaceInformationPtr &si) : si_(si), type_(PLA
 {
     if (!si_)
 	throw Exception("Invalid space information instance");
-    if (!si_->isSetup())
-	msg_.warn("It is best if space information setup has been called before a planner is instantiated");
 }
 
 ompl::base::PlannerType ompl::base::Planner::getType(void) const
@@ -64,10 +62,18 @@ void ompl::base::Planner::setProblemDefinition(const ProblemDefinitionPtr &pdef)
 void ompl::base::Planner::setup(void)
 {
     if (!si_->isSetup())
-	throw Exception("Space information setup should have been called before planner setup was called");
+    {
+	msg_.inform("Space information setup was not yet called. Calling now");
+	si_->setup();
+    }
+    
     if (setup_)
 	msg_.warn("Planner setup called multiple times");
     else
 	setup_ = true;
 }
 
+bool ompl::base::Planner::isSetup(void) const
+{
+    return setup_;
+}

@@ -138,8 +138,11 @@ namespace ompl
 		can solve */
 	    PlannerType getType(void) const;
 	    
-	    /** \brief Perform extra configuration steps, if needed. This must be called before solving */
+	    /** \brief Perform extra configuration steps, if needed. This call will also issue a call to SpaceInformation::setup() if needed. This must be called before solving */
 	    virtual void setup(void);
+	    
+	    /** \brief Check if setup() was called for this planner */
+	    bool isSetup(void) const;
 	    
 	protected:
 	    

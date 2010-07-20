@@ -69,7 +69,7 @@ namespace ompl
 	    /** \brief Assignment operator */
 	    PathGeometric& operator=(const PathGeometric& other);
 	    
-	    /** \brief Compute the length of a geometric path (number of states) */
+	    /** \brief Compute the length of a geometric path */
 	    virtual double length(void) const;
 
 	    /** \brief Check if the path is valid */

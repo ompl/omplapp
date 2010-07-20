@@ -75,13 +75,7 @@ int main(int argc, char **argv)
 
     /// set state validity checking for this space
     si->setStateValidityChecker(boost::bind(&isStateValid, _1));
-
-    /// perform setup steps for this space; this also checks all settings are correct
-    si->setup();
     
-    /// print the settings for this space
-    si->printSettings(std::cout);
-
     /// create a random start state
     ob::ScopedState<> start(manifold);
     start.random();
@@ -96,8 +90,7 @@ int main(int argc, char **argv)
     /// set the start and goal states
     pdef->setStartAndGoalStates(start, goal);
     
-    /// print the problem settings
-    pdef->print(std::cout);
+
     
     /// create a planner for the defined space
     ob::PlannerPtr planner(new og::RRTConnect(si));
@@ -107,6 +100,13 @@ int main(int argc, char **argv)
 
     /// perform setup steps for the planner
     planner->setup();
+
+
+    /// print the settings for this space
+    si->printSettings(std::cout);
+
+    /// print the problem settings
+    pdef->print(std::cout);    
     
     /// attempt to solve the problem within one second of planning time
     bool solved = planner->solve(1.0);
