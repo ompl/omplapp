@@ -50,10 +50,8 @@ namespace ompl
 	class GoalRegion : public Goal
 	{
 	public:
-	    
-	    GoalRegion(const SpaceInformationPtr &si) : Goal(si), threshold(0.0)
-	    {
-	    }
+	   
+	    GoalRegion(const SpaceInformationPtr &si);
 	    
 	    virtual ~GoalRegion(void)
 	    {

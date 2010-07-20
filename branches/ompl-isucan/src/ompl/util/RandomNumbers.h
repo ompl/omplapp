@@ -67,7 +67,7 @@ namespace ompl
 	/** \brief Generate a random integer within given bounds */
 	int uniformInt(int lower_bound, int upper_bound)
 	{
-	    int r = (int)uniformReal((double)lower_bound, (double)(upper_bound + 1));
+	    int r = (int)uniformReal((double)lower_bound, (double)(upper_bound) + 1.0);
 	    return (r > upper_bound) ? upper_bound : r;
 	}
 	

@@ -180,6 +180,14 @@ namespace ompl
 		return !(*this == other);
 	    }
 	    
+	    /** \brief Set this state to a random value */
+	    void random(void)
+	    {
+		if (!sampler_)
+		    sampler_ = manifold_->allocStateSampler();
+		sampler_->sample(state_);
+	    }
+	    
 	    /** \brief De-references to the contained state */
 	    T& operator*(void) const
 	    {
@@ -201,6 +209,7 @@ namespace ompl
 	private:
 	    
 	    StateManifoldPtr     manifold_;
+	    StateSamplerPtr      sampler_;
 	    T                   *state_;
 	};
     }

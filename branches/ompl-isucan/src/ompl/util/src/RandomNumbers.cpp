@@ -76,7 +76,7 @@ double ompl::RNG::halfNormalReal(double r_min, double r_max, double focus)
 
 int ompl::RNG::halfNormalInt(int r_min, int r_max, double focus)
 {
-    return (int)halfNormalReal(r_min, r_max + (1.0 - 1e-9), focus);
+    return (int)halfNormalReal((double)r_min, (double)r_max + (1.0 - 1e-9), focus);
 }
 
 // From: "Uniform Random Rotations", Ken Shoemake, Graphics Gems III,
