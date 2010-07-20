@@ -74,6 +74,33 @@ bool ompl::base::SpaceInformation::isSetup(void) const
     return setup_;
 }
 
+void ompl::base::SpaceInformation::setStateValidityChecker(const StateValidityCheckerFn &svc)
+{
+    class BoostFnStateValidityChecker : public StateValidityChecker
+    {
+    public:
+	
+	BoostFnStateValidityChecker(SpaceInformation* si,
+				    const StateValidityCheckerFn &fn) : StateValidityChecker(si), fn_(fn)
+	{
+	}
+	
+	virtual bool isValid(const State *state) const
+	{
+	    return fn_(state);
+	}
+
+    protected:
+
+	StateValidityCheckerFn fn_;	
+    };
+    
+    if (!svc)
+	throw Exception("Invalid function definition for state validity checking");
+    
+    setStateValidityChecker(StateValidityCheckerPtr(dynamic_cast<StateValidityChecker*>(new BoostFnStateValidityChecker(this, svc))));
+}
+
 double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
 {
     if (maxExtent_ > std::numeric_limits<double>::epsilon())

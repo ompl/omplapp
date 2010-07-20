@@ -63,6 +63,12 @@ namespace ompl
     {
 
 	ClassForward(SpaceInformation);
+
+	/** \brief If no state validity checking class is specified
+	    (StateValidityChecker), a boost function can be specified
+	    instead */
+	typedef boost::function<bool(const State*)> StateValidityCheckerFn;
+	
 	
 	/** \brief The base class for space information. This contains
 	    all the information about the space planning is done in.
@@ -87,14 +93,18 @@ namespace ompl
 	    }	
 	    
 	    /** \brief Set the instance of the validity checker to
-		use. No memory freeing is performed. Parallel
-		implementations of planners assume this validity
-		checker is thread safe. */
+		use. Parallel implementations of planners assume this
+		validity checker is thread safe. */
 	    void setStateValidityChecker(const StateValidityCheckerPtr &svc)
 	    {
 		stateValidityChecker_ = svc;
 	    }
 	    
+	    /** \brief If no state validity checking class is specified
+		(StateValidityChecker), a boost function can be specified
+		instead */
+	    void setStateValidityChecker(const StateValidityCheckerFn &svc);
+
 	    /** \brief Return the instance of the used state validity checker */
 	    const StateValidityCheckerPtr& getStateValidityChecker(void) const
 	    {
