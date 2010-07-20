@@ -50,7 +50,7 @@ void ompl::geometric::pSBL::setup(void)
 	throw Exception("Dimension of projection needs to be larger than 0");
     if (maxDistance_ < std::numeric_limits<double>::epsilon())
     {
-	maxDistance_ = si_->getStateValidityCheckingResolution() * 10.0;
+	maxDistance_ = si_->estimateExtent() / 5.0;
 	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
     tStart_.grid.setDimension(projectionEvaluator_->getDimension());

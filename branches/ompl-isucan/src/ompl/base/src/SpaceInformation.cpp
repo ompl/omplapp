@@ -37,12 +37,12 @@
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/util/Exception.h"
 #include <queue>
-#include <utility>
+#include <algorithm>
 #include <limits>
 #include <cmath>
 #include <cassert>
 
-ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : stateManifold_(manifold), resolution_(0.0), maxExtent_(0.0), setup_(false), msg_("SpaceInformation")
+ompl::base::SpaceInformation::SpaceInformation(const StateManifoldPtr &manifold) : stateManifold_(manifold), resolution_(0.0), maxExtent_(0.0), maxResolution_(0.0), setup_(false), msg_("SpaceInformation")
 {
     if (!stateManifold_)
 	throw Exception("Invalid manifold definition");
@@ -55,16 +55,16 @@ void ompl::base::SpaceInformation::setup(void)
     
     if (!stateValidityChecker_)
 	throw Exception("State validity checker not set!");
-    
-    if (resolution_ < std::numeric_limits<double>::epsilon())
-    {
-	resolution_ = estimateExtent(1000) / 50.0;
-	msg_.warn("The resolution at which states need to be checked for collision is detected to be %f", resolution_);
-    }
-    
+        
     stateManifold_->setup();
     if (stateManifold_->getDimension() <= 0)
 	throw Exception("The dimension of the state manifold we plan in must be > 0");
+
+    if (resolution_ < std::numeric_limits<double>::epsilon())
+    {
+	resolution_ = estimateMaxResolution(1000);
+	msg_.warn("The resolution at which states need to be checked for collision is detected to be %f", resolution_);
+    }
 
     setup_ = true;
 }
@@ -151,6 +151,53 @@ double ompl::base::SpaceInformation::estimateExtent(unsigned int samples)
     msg_.inform("Estimated extent of space to plan in is %f", maxD);
     
     return maxD;
+}
+
+double ompl::base::SpaceInformation::estimateMaxResolution(unsigned int samples)
+{
+    if (maxResolution_ > std::numeric_limits<double>::epsilon())
+	return maxResolution_;
+    
+    if (samples < 2)
+	samples = 2;
+
+    double extent = estimateExtent(samples);
+    maxResolution_ = extent / 50.0;
+    
+    // sample some states
+    StateSamplerPtr ss = allocStateSampler();
+    std::vector<State*> validStates;
+    std::vector<State*> invalidStates;
+    for (unsigned int i = 0 ; i  < samples ; ++i)
+    {
+	State *s = allocState();
+	ss->sample(s);
+	if (isValid(s))
+	    validStates.push_back(s);
+	else
+	    invalidStates.push_back(s);
+    }
+
+    if (!validStates.empty() && !invalidStates.empty())
+    {
+	double minD = std::numeric_limits<double>::infinity();
+	
+	for (unsigned int i = 0 ; i < validStates.size() ; ++i)
+	    for (unsigned int j = 0 ; j < invalidStates.size() ; ++j)
+	    {
+		double d = distance(validStates[i], invalidStates[j]);
+		if (d < minD)
+		    minD = d;
+	    }
+	maxResolution_ = std::min(minD / 3.0, maxResolution_);
+    }
+    
+    for (unsigned int i = 0 ; i < validStates.size() ; ++i)
+	freeState(validStates[i]);
+    for (unsigned int i = 0 ; i < invalidStates.size() ; ++i)
+	freeState(invalidStates[i]);
+
+    return maxResolution_;
 }
 
 bool ompl::base::SpaceInformation::searchValidNearby(State *state, const State *near, double distance, unsigned int attempts) const

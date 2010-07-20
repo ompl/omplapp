@@ -201,7 +201,14 @@ namespace ompl
 	    /** \brief Estimate the maximum (underapproximation)
 		extent of the space we are planning in. This is done
 		through random sampling. */
-	    virtual double estimateExtent(unsigned int samples = 10);
+	    virtual double estimateExtent(unsigned int samples = 100);
+
+	    /** \brief Estimate the maximum (overapproximation)
+		resolution at which states should be checked for
+		validity. This is done through random sampling and
+		returning the shortest distance between the closest
+		pair of valid and invalid states. */
+	    virtual double estimateMaxResolution(unsigned int samples = 100);
 	    
 	    /** \brief Find a valid state near a given one. If the given state is valid, it will be returned itself.
 	     *  The two passed state pointers must point to different states. Returns true on success.  */
@@ -244,6 +251,7 @@ namespace ompl
 	    StateManifoldPtr        stateManifold_;
 	    double                  resolution_;
 	    double                  maxExtent_;
+	    double                  maxResolution_;
 	    
 	    bool                    setup_;
 
