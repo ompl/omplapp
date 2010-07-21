@@ -44,6 +44,7 @@
 #include "ompl/util/ClassForward.h"
 #include <boost/concept_check.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/function.hpp>
 #include <iostream>
 #include <vector>
 
@@ -65,6 +66,9 @@ namespace ompl
 	    /** \brief it is unknown whether the initial state of the propagation is valid or invalid */
 	    PROPAGATION_START_UNKNOWN
 	};
+
+	/** \brief A function that achieves state propagation.*/
+	typedef boost::function<PropagationResult(const base::State *state, const Control*, const double, base::State*)> StatePropagationFn;
 	
 	class ControlManifold : private boost::noncopyable
 	{
@@ -132,7 +136,10 @@ namespace ompl
 		the return value is PROPAGATION_START_INVALID. If no such check is performed, the return value is
 		PROPAGATION_START_UNKNOWN. Returning PROPAGATION_START_UNKNOWN always leads to a correct
 		implementation but may not be the most efficient one. The pointer to the starting state and the result state may be the same. */
-	    virtual PropagationResult propagate(const base::State *state, const Control* control, const double duration, base::State *result) const = 0;
+	    virtual PropagationResult propagate(const base::State *state, const Control* control, const double duration, base::State *result) const;
+	    
+	    /** \brief Set the function that performs state propagation */
+	    void setPropagationFunction(const StatePropagationFn &fn);
 	    
 	    /** \brief Print a control to a stream */
 	    virtual void printControl(const Control *control, std::ostream &out) const;
@@ -147,6 +154,9 @@ namespace ompl
 	    
 	    /** \brief The state manifold controls can be applied to */
 	    base::StateManifoldPtr stateManifold_;
+
+	    /** \brief Function that can perform state propagation */
+	    StatePropagationFn     statePropagation_;
 	    
 	};
 	
