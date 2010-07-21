@@ -61,7 +61,7 @@ bool isStateValid(const ob::State *state)
     return (void*)rot != (void*)pos;
 }
 
-void version1(void)
+void plan(void)
 {
     /// construct the manifold we are planning in
     ob::StateManifoldPtr manifold(new ob::SE3StateManifold());
@@ -128,7 +128,7 @@ void version1(void)
 	std::cout << "No solution found" << std::endl;
 }
 
-void version2(void)
+void planWithSimpleSetup(void)
 {
     /// construct the manifold we are planning in
     ob::StateManifoldPtr manifold(new ob::SE3StateManifold());
@@ -173,11 +173,11 @@ void version2(void)
 
 int main(int, char **)
 {
-    version1();
+    plan();
     
     std::cout << std::endl << std::endl;
     
-    version2();
+    planWithSimpleSetup();
     
     return 0;
 }
