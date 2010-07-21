@@ -209,6 +209,15 @@ namespace ompl
 	    /** \brief Clear all planning data */
 	    void clear(void);
 
+	    /** \brief Print information about the current setup */
+	    void print(std::ostream &out = std::cout)
+	    {
+		if (si_)
+		    si_->print(out);
+		if (pdef_)
+		    pdef_->print(out);
+	    }
+	    
 	    /** \brief This method will create the necessary classes
 		for planning. The solve() method will call this
 		function automatically. */

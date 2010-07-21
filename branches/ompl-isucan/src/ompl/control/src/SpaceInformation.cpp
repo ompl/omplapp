@@ -319,9 +319,9 @@ unsigned int ompl::control::SpaceInformation::propagateWhileValid(const base::St
     return st;
 }
 
-void ompl::control::SpaceInformation::printSettings(std::ostream &out) const
+void ompl::control::SpaceInformation::print(std::ostream &out) const
 {
-    base::SpaceInformation::printSettings(out);
+    base::SpaceInformation::print(out);
     out << "  - control manifold:" << std::endl;
     controlManifold_->printSettings(out);
     out << "  - propagation step size: " << stepSize_ << std::endl;

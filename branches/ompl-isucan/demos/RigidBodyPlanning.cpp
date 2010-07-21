@@ -37,6 +37,7 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/manifolds/SE3StateManifold.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/SimpleSetup.h>
 #include <iostream>
 
 namespace ob = ompl::base;
@@ -55,10 +56,12 @@ bool isStateValid(const ob::State *state)
     
     /// check validity of state defined by pos & rot
     
-    return true;
+
+    // return a value that is always true but uses the two variables we define, so we avoid compiler warnings
+    return (void*)rot != (void*)pos;
 }
 
-int main(int argc, char **argv)
+void version1(void)
 {
     /// construct the manifold we are planning in
     ob::StateManifoldPtr manifold(new ob::SE3StateManifold());
@@ -103,7 +106,7 @@ int main(int argc, char **argv)
 
 
     /// print the settings for this space
-    si->printSettings(std::cout);
+    si->print(std::cout);
 
     /// print the problem settings
     pdef->print(std::cout);    
@@ -123,6 +126,58 @@ int main(int argc, char **argv)
     }
     else
 	std::cout << "No solution found" << std::endl;
+}
+
+void version2(void)
+{
+    /// construct the manifold we are planning in
+    ob::StateManifoldPtr manifold(new ob::SE3StateManifold());
+
+    /// set the bounds for the R^3 part of SE(3)
+    ob::RealVectorBounds bounds(3);
+    bounds.setLow(-1);
+    bounds.setHigh(1);
+    
+    manifold->as<ob::SE3StateManifold>()->setBounds(bounds);
+
+    // define a simple setup class
+    og::SimpleSetup ss;
+
+    /// set state validity checking for this space
+    ss.setStateValidityChecker(boost::bind(&isStateValid, _1));
+    
+    /// create a random start state
+    ob::ScopedState<> start(manifold);
+    start.random();
+
+    /// create a random goal state
+    ob::ScopedState<> goal(manifold);
+    goal.random();
+    
+    /// set the start and goal states; this call allows SimpleSetup to infer the planning manifold, if needed
+    ss.setStartAndGoalStates(start, goal);
+        
+    /// attempt to solve the problem within one second of planning time
+    bool solved = ss.solve(1.0);
+
+    if (solved)
+    {
+	std::cout << "Found solution:" << std::endl;
+	/// print the path to screen
+	ss.simplifySolution();
+	ss.getSolutionPath().print(std::cout);
+    }
+    else
+	std::cout << "No solution found" << std::endl;
+}
+
+int main(int, char **)
+{
+    version1();
+    
+    std::cout << std::endl << std::endl;
+    
+    version2();
     
     return 0;
 }

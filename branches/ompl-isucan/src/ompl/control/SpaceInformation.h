@@ -170,7 +170,7 @@ namespace ompl
 	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const;
 	    
 	    /** \brief Print information about the current instance of the state space */
-	    virtual void printSettings(std::ostream &out = std::cout) const;
+	    virtual void print(std::ostream &out = std::cout) const;
 	    
 	    /** \brief Perform additional setup tasks (run once, before use) */
 	    virtual void setup(void);

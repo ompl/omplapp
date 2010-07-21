@@ -423,7 +423,7 @@ bool ompl::base::SpaceInformation::checkMotion(const std::vector<State*> &states
     return true;
 }
 
-void ompl::base::SpaceInformation::printSettings(std::ostream &out) const
+void ompl::base::SpaceInformation::print(std::ostream &out) const
 {
     out << "State space settings:" << std::endl;
     out << "  - dimension: " << stateManifold_->getDimension() << std::endl;
