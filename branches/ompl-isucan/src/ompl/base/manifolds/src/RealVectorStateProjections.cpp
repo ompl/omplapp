@@ -36,6 +36,7 @@
 
 #include "ompl/base/manifolds/RealVectorStateProjections.h"
 #include "ompl/util/Exception.h"
+#include "ompl/util/RandomNumbers.h"
 
 ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
 										     const std::vector< std::valarray<double> > &projection) : ProjectionEvaluator(manifold, cellDimensions), projection_(projection)
@@ -68,4 +69,32 @@ void ompl::base::RealVectorOrthogonalProjectionEvaluator::project(const State *s
 {
     for (unsigned int i = 0 ; i < components_.size() ; ++i)
 	projection[i] = state->as<RealVectorState>()->values[components_[i]];
+}
+
+std::vector< std::valarray<double> > ompl::base::RealVectorRandomLinearProjectionEvaluator::computeProjection(unsigned int from, unsigned int to) const
+{
+    RNG rng;
+    
+    std::vector< std::valarray<double> > p(to);
+    for (unsigned int i = 0 ; i < p.size() ; ++i)
+    {
+	p[i].resize(from);
+	for (unsigned int j = 0 ; j < p[i].size() ; ++j)
+	    p[i][j] = rng.gaussian01();	
+    }
+
+    for (unsigned int i = 1 ; i < p.size() ; ++i)
+    {
+	std::valarray<double> &row = p[i];
+	for (unsigned int j = 0 ; j < i ; ++j)
+	{
+	    std::valarray<double> &prevRow = p[j];
+	    // subtract projection
+	    row -= (row * prevRow).sum() * prevRow;
+	}
+	// normalize
+	row /= sqrt((row * row).sum());	
+    }
+        
+    return p;
 }

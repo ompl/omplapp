@@ -67,6 +67,22 @@ namespace ompl
 	    
 	};
 
+        /** \brief Definition for a class computing a random linear projections */
+	class RealVectorRandomLinearProjectionEvaluator : public RealVectorLinearProjectionEvaluator
+	{
+	public:
+	    
+	    RealVectorRandomLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) :
+		RealVectorLinearProjectionEvaluator(manifold, cellDimensions, computeProjection(manifold->getDimension(), cellDimensions.size()))
+	    {
+	    }
+	    
+	protected:
+	    
+	    std::vector< std::valarray<double> > computeProjection(unsigned int from, unsigned int to) const;
+	    
+	};
+	
 	/** \brief Definition for a class computing orthogonal projections */
 	class RealVectorOrthogonalProjectionEvaluator : public ProjectionEvaluator
 	{
