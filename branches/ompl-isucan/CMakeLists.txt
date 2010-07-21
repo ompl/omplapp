@@ -9,6 +9,7 @@ else(ROS)
 	set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 	set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
+	# this looks like a hack more than a feature to me ...
 	set(CMAKE_PREFIX_PATH 
 		${CMAKE_CURRENT_SOURCE_DIR}/external/sandbox
 		${CMAKE_PREFIX_PATH})
