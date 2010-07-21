@@ -56,107 +56,206 @@ namespace ompl
 	class SimpleSetup
 	{
 	public:
-	    SimpleSetup(const base::StateManifoldPtr &manifold, const base::PlannerAllocator &pa = base::PlannerAllocator()) : configured_(false)
+	    
+	    /** \brief Optionally provide the manifold for
+		planning. If the manifold is not specified here, it
+		will be inferred at some point from other calls made to
+		this class. */
+	    SimpleSetup(const base::StateManifoldPtr &manifold = base::StateManifoldPtr()) : configured_(false), msg_("SimpleSetup")
 	    {
-		si_.reset(new base::SpaceInformation(manifold));
-		pdef_.reset(new base::ProblemDefinition(si_));
-		psk_.reset(new PathSimplifier(si_));
-		pa_ = pa;
+		useManifold(manifold);
 	    }
 	    
 	    ~SimpleSetup(void)
 	    {
 	    }
 	    
+	    /** \brief Get the current instance of the space information */
 	    const base::SpaceInformationPtr& getSpaceInformation(void) const
 	    {
 		return si_;
 	    }
 	    
-	    const base::StateManifoldPtr& getStateManifold(void) const
-	    {
-		return si_->getStateManifold();
-	    }
-	    
+	    /** \brief Get the current instance of the problem definition */
 	    const base::ProblemDefinitionPtr& getProblemDefinition(void) const
 	    {
 		return pdef_;
 	    }
 	    
+	    /** \brief Get the current instance of the state manifold */
+	    const base::StateManifoldPtr& getStateManifold(void) const
+	    {
+		if (si_)
+		    return si_->getStateManifold();
+		else
+		    return emptyManifold_;
+	    }
+	    
+	    /** \brief Get the current instance of the state validity checker */
 	    const base::StateValidityCheckerPtr& getStateValidityChecker(void) const
 	    {
-		return si_->getStateValidityChecker();
+		if (si_)
+		    return si_->getStateValidityChecker();
+		else
+		    return svc_;
 	    }
 
-	    void setStateValidityChecker(const base::StateValidityCheckerPtr &svc) const
-	    {
-		si_->setStateValidityChecker(svc);
-	    }
-	    
-	    void setStateValidityChecker(const base::StateValidityCheckerFn &svc) const
-	    {
-		si_->setStateValidityChecker(svc);
-	    }
-
-	    void setStartAndGoalStates(const base::ScopedState<> &start, const base::ScopedState<> &goal)
-	    {
-		pdef_->setStartAndGoalStates(start, goal);
-	    }
-	    
-	    void addStartState(const base::ScopedState<> &state)
-	    {
-		pdef_->addStartState(state);
-	    }
-	    
+	    /** \brief Get the current goal definition */
 	    const base::GoalPtr& getGoal(void) const
 	    {
-		return pdef_->getGoal();
+		if (pdef_)
+		    return pdef_->getGoal();
+		else
+		    return goal_;
 	    }
 
-	    void setGoal(const base::GoalPtr &goal)
-	    {
-		pdef_->setGoal(goal);
-	    }
-
+	    /** \brief Get the current planner */
 	    const base::PlannerPtr& getPlanner(void) const
 	    {
 		return planner_;
 	    }
-	    
-	    void setPlanner(const base::PlannerPtr &planner)
-	    {
-		planner_ = planner;
-	    }
-	    
+
+	    /** \brief Get the path simplifier */
 	    const PathSimplifierPtr& getPathSimplifier(void) const
 	    {
 		return psk_;
 	    }
 	    
-	    void setup(void);
+	    /** \brief Get the solution path. Throw an exception if no solution is available */
+	    PathGeometric& getSolutionPath(void) const;
 	    
+
+	    /** \brief Set the manifold to use for planning. This call
+		is needed only if a manifold was not set in the
+		constructor. The manifold can also be inferred when
+		setting starting states. */
+	    void setManifold(const base::StateManifoldPtr &manifold)
+	    {
+		useManifold(manifold);
+	    }
+	    
+	    /** \brief Set the state validity checker to use */
+	    void setStateValidityChecker(const base::StateValidityCheckerPtr &svc)
+	    {
+		if (si_)
+		    si_->setStateValidityChecker(svc);
+		else
+		    svc_ = svc;
+	    }
+	    
+	    /** \brief Set the state validity checker to use */
+	    void setStateValidityChecker(const base::StateValidityCheckerFn &svc)
+	    {
+		if (si_)
+		    si_->setStateValidityChecker(svc);
+		else
+		    svcf_ = svc;
+	    }
+
+	    /** \brief Set the start and goal states to use. The state
+		manifold is inferred, if not yet set. */
+	    void setStartAndGoalStates(const base::ScopedState<> &start, const base::ScopedState<> &goal)
+	    {
+		useManifold(start.getManifold());
+		pdef_->setStartAndGoalStates(start, goal);
+	    }
+	    
+	    /** \brief Add a starting state for planning. The state
+		manifold is inferred, if not yet set. This call is not
+		needed if setStartAndGoalStates() has been called. */
+	    void addStartState(const base::ScopedState<> &state)
+	    {
+		useManifold(state.getManifold());
+		pdef_->addStartState(state);
+	    }
+	    
+	    /** \brief Set the goal for planning. This call is not
+		needed if setStartAndGoalStates() has been called. */
+	    void setGoal(const base::GoalPtr &goal)
+	    {
+		if (pdef_)
+		    pdef_->setGoal(goal);
+		else
+		    goal_ = goal;
+	    }
+
+	    /** \brief Set the planner to use. If the planner is not
+		set, an attempt is made to use the planner
+		allocator. If no planner allocator is available
+		either, a default planner is set. */
+	    void setPlanner(const base::PlannerPtr &planner)
+	    {
+		planner_ = planner;
+	    }
+	    
+	    /** \brief Set the planner allocator to use. This is only
+		used if no planner has been set. This is optional -- a default
+		planner will be used if no planner is otherwise specified. */
+	    void setPlannerAllocator(const base::PlannerAllocator &pa)
+	    {
+		pa_ = pa;
+	    }
+	    	    
+	    /** \brief Run the planner for a specified amount of time */
 	    bool solve(double time)
 	    {
 		setup();
 		return planner_->solve(time);
 	    }
 	    
-	    void clear(void);
-	    	    
+	    /** \brief Attempt to simplify the current solution path */
 	    void simplifySolution(void);
-	    const PathGeometric& getSolutionPath(void) const;	    
-	    PathGeometric& getSolutionPath(void);
 	    
+	    /** \brief Clear all planning data */
+	    void clear(void);
+
+	    /** \brief This method will create the necessary classes
+		for planning. The solve() method will call this
+		function automatically. */
+	    void setup(void);
+
 	protected:
+
+	    void useManifold(const base::StateManifoldPtr &manifold);
 	    
+	    /// the created space information 
 	    base::SpaceInformationPtr     si_;
+
+	    /// the created problem definition 
 	    base::ProblemDefinitionPtr    pdef_;
+
+	    /// the maintained planner instance
 	    base::PlannerPtr              planner_;
+
+	    /// the optional planner allocator
 	    base::PlannerAllocator        pa_;
-	    
+
+	    /// the instance of the path simplifier 
 	    PathSimplifierPtr             psk_;
+
+	    /// flag indicating whether the classes needed for planning are set up
 	    bool                          configured_;
 	    msg::Interface                msg_;
+
+	private:
+
+	    /// empty instance for a state manifold, in case
+	    /// getStateManifold() is called before a manifold is available
+	    base::StateManifoldPtr        emptyManifold_;
+	    
+	    /// temporary storage for a goal definition (if no
+	    /// manifold was available when the goal was set)
+	    base::GoalPtr                 goal_;
+	    
+	    /// temporary storage for the state validity checker (if
+	    /// no manifold was available when the state validity
+	    /// checker was set)
+	    base::StateValidityCheckerPtr svc_;
+
+	    /// temporary storage for the state validity checker
+	    /// function (if no manifold was available when the state
+	    /// validity checker function was set)
+	    base::StateValidityCheckerFn  svcf_;
 	    
 	};
     }

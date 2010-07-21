@@ -39,11 +39,40 @@
 #include "ompl/geometric/planners/rrt/RRTConnect.h"
 #include "ompl/geometric/planners/rrt/RRT.h"
 
+void ompl::geometric::SimpleSetup::useManifold(const base::StateManifoldPtr &manifold)
+{
+    if (manifold && !si_)
+    {
+	si_.reset(new base::SpaceInformation(manifold));
+	pdef_.reset(new base::ProblemDefinition(si_));
+	psk_.reset(new PathSimplifier(si_));
+	
+	// set accumulated information
+	if (goal_)
+	{
+	    pdef_->setGoal(goal_);
+	    goal_.reset();
+	}
+	if (svc_)
+	{
+	    si_->setStateValidityChecker(svc_);
+	    svc_.reset();
+	}
+	else
+	    if (svcf_)
+		si_->setStateValidityChecker(svcf_);
+    }
+}
+
 void ompl::geometric::SimpleSetup::setup(void)
 {
     if (!configured_)
     {
-	si_->setup();
+	if (!si_)
+	    throw Exception("No space information defined");
+	
+	if (!si_->isSetup())
+	    si_->setup();
 	if (!planner_)
 	{
 	    if (pa_)
@@ -59,7 +88,8 @@ void ompl::geometric::SimpleSetup::setup(void)
 	    }
 	}
 	planner_->setProblemDefinition(pdef_);
-	planner_->setup();
+	if (!planner_->isSetup())
+	    planner_->setup();
 	configured_ = true;
     }
 }
@@ -68,38 +98,31 @@ void ompl::geometric::SimpleSetup::clear(void)
 {
     if (planner_)
 	planner_->clear();
-    if (pdef_->getGoal())
+    if (pdef_ && pdef_->getGoal())
 	pdef_->getGoal()->clearSolutionPath();
-    pdef_->clearStartStates();
 }
 
 void ompl::geometric::SimpleSetup::simplifySolution(void)
 {
-    const base::PathPtr &p =  pdef_->getGoal()->getSolutionPath();
-    if (p)
-	psk_->simplifyMax(static_cast<PathGeometric&>(*p));
+    if (pdef_ && pdef_->getGoal())
+    {
+	const base::PathPtr &p =  pdef_->getGoal()->getSolutionPath();
+	if (p)
+	    psk_->simplifyMax(static_cast<PathGeometric&>(*p));
+	else
+	    msg_.warn("No solution to simplify");
+    }
     else
 	msg_.warn("No solution to simplify");
 }
 
-const ompl::geometric::PathGeometric& ompl::geometric::SimpleSetup::getSolutionPath(void) const
+ompl::geometric::PathGeometric& ompl::geometric::SimpleSetup::getSolutionPath(void) const
 {
-    if (pdef_->getGoal())
-    {
-	const base::PathPtr &p = pdef_->getGoal()->getSolutionPath();
-	if (p)
-	    return static_cast<const PathGeometric&>(*p);
-    }
-    throw Exception("No solution path");		
-}	
-
-ompl::geometric::PathGeometric& ompl::geometric::SimpleSetup::getSolutionPath(void)
-{
-    if (pdef_->getGoal())
+    if (pdef_ && pdef_->getGoal())
     {
 	const base::PathPtr &p = pdef_->getGoal()->getSolutionPath();
 	if (p)
 	    return static_cast<PathGeometric&>(*p);
     }
     throw Exception("No solution path");		
-}
+}	
