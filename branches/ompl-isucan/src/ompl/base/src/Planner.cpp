@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #include "ompl/base/Planner.h"
 #include "ompl/util/Exception.h"

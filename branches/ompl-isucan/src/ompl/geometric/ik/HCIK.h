@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_GEOMETRIC_IK_HCIK_
 #define OMPL_GEOMETRIC_IK_HCIK_

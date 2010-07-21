@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_CONTROL_PLANNERS_RRT_RRT_
 #define OMPL_CONTROL_PLANNERS_RRT_RRT_

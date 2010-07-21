@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_BASE_MANIFOLDS_QUATERNION_STATE_MANIFOLD_
 #define OMPL_BASE_MANIFOLDS_QUATERNION_STATE_MANIFOLD_

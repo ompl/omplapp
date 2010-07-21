@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 // there should be no inclusion guards for this file
 #ifndef OMPL_GRID_INCLUDE

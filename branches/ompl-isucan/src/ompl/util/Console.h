@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_UTIL_CONSOLE_
 #define OMPL_UTIL_CONSOLE_

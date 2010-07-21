@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_GEOMETRIC_PLANNERS_KPIECE_KPIECE1_
 #define OMPL_GEOMETRIC_PLANNERS_KPIECE_KPIECE1_

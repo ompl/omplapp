@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_GEOMETRIC_PATH_SIMPLIFIER_
 #define OMPL_GEOMETRIC_PATH_SIMPLIFIER_

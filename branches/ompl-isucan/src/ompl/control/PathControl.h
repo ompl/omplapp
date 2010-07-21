@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #ifndef OMPL_CONTROL_PATH_CONTROL_
 #define OMPL_CONTROL_PATH_CONTROL_

@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/** \author Ioan Sucan */
+/* Author: Ioan Sucan */
 
 #include "ompl/control/planners/kpiece/KPIECE1.h"
 #include "ompl/base/GoalSampleableRegion.h"
