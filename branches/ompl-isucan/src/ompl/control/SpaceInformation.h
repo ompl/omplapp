@@ -69,6 +69,12 @@ namespace ompl
 	    {
 	    }
 	    
+	    /** \brief Get the control manifold */
+	    const ControlManifoldPtr& getControlManifold(void) const
+	    {
+		return controlManifold_;
+	    }
+	    
 	    /** \brief Allocate memory for a control */
 	    Control* allocControl(void) const
 	    {
