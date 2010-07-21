@@ -232,3 +232,10 @@ void ompl::base::CompoundStateManifold::printSettings(std::ostream &out) const
 	components_[i]->printSettings(out);
     out << "]" << std::endl;
 }
+
+void ompl::base::CompoundStateManifold::setup(void)
+{
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->setup();
+    StateManifold::setup();
+}

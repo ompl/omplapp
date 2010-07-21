@@ -49,6 +49,14 @@ void ompl::control::RealVectorControlUniformSampler::sample(Control *control)
 	rcontrol->values[i] = rng_.uniformReal(bounds.low[i], bounds.high[i]);
 }
 
+void ompl::control::RealVectorControlManifold::setup(void)
+{
+    ControlManifold::setup();
+    for (unsigned int i = 0 ; i < dimension_ ; ++i)
+	if (bounds_.low[i] + std::numeric_limits<double>::epsilon() > bounds_.high[i])
+	    throw Exception("Bounds for real vector control manifold seem to be incorrect (lower bound must be stricly less than upper bound). Sampling will not be possible");
+}
+
 void ompl::control::RealVectorControlManifold::setBounds(const RealVectorBounds &bounds)
 {
     if (bounds.low.size() != bounds.high.size())

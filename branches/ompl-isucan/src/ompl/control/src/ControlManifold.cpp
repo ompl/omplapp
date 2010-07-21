@@ -174,3 +174,10 @@ void ompl::control::CompoundControlManifold::printSettings(std::ostream &out) co
 	components_[i]->printSettings(out);
     out << "]" << std::endl;
 }
+
+void ompl::control::CompoundControlManifold::setup(void)
+{
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	components_[i]->setup();
+    ControlManifold::setup();
+}

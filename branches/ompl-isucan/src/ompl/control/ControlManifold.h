@@ -204,6 +204,8 @@ namespace ompl
 
 	    virtual void printSettings(std::ostream &out) const;
 
+	    virtual void setup(void);
+
 	protected:
 
 	    /** \brief Lock this manifold. This means no further

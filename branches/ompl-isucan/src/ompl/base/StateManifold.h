@@ -239,6 +239,8 @@ namespace ompl
 
 	    virtual void printSettings(std::ostream &out) const;
 
+	    virtual void setup(void);
+
 	protected:
 	    
 	    /** \brief Lock this manifold. This means no further
@@ -248,9 +250,16 @@ namespace ompl
 	     user to add further components. */
 	    void lock(void);
 	    
+	    /** \brief The component manifolds that make up the compound manifold */
 	    std::vector<StateManifoldPtr> components_;
+	    
+	    /** \brief The number of components */
 	    unsigned int                  componentCount_;
+
+	    /** \brief The weight assigned to each component of the manifold when computing the compound distance */
 	    std::vector<double>           weights_;
+	    
+	    /** \brief Flag indicating whether adding further componets is allowed or not */
 	    bool                          locked_;
 	    
 	};

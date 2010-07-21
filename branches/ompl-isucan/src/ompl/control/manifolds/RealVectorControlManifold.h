@@ -127,6 +127,8 @@ namespace ompl
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
 	    
+	    virtual void setup(void);
+	    		
 	protected:
 	    
 	    unsigned int     dimension_;

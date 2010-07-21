@@ -65,9 +65,10 @@ void ompl::base::RealVectorStateUniformSampler::sampleNear(State *state, const S
 
 void ompl::base::RealVectorStateManifold::setup(void)
 {
+    StateManifold::setup();
     for (unsigned int i = 0 ; i < dimension_ ; ++i)
 	if (bounds_.low[i] + std::numeric_limits<double>::epsilon() > bounds_.high[i])
-	    throw Exception("Bounds for real vector manifold seem to be incorrect (lower bound must be stricly less than upper bound). Sampling will not be possible");
+	    throw Exception("Bounds for real vector state manifold seem to be incorrect (lower bound must be stricly less than upper bound). Sampling will not be possible");
 }
 
 void ompl::base::RealVectorStateManifold::setBounds(const RealVectorBounds &bounds)
