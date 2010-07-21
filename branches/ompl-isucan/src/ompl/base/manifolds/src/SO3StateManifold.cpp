@@ -34,7 +34,7 @@
 
 /* Author: Ioan Sucan */
 
-#include "ompl/base/manifolds/QuaternionStateManifold.h"
+#include "ompl/base/manifolds/SO3StateManifold.h"
 #include <algorithm>
 #include <limits>
 #include <cmath>
@@ -50,19 +50,19 @@ void ompl::base::QuaternionStateUniformSampler::sampleNear(State *state, const S
     sample(state);
 }
 
-unsigned int ompl::base::QuaternionStateManifold::getDimension(void) const
+unsigned int ompl::base::SO3StateManifold::getDimension(void) const
 {
     return 3;
 }
 
-double ompl::base::QuaternionStateManifold::norm(const State *state) const
+double ompl::base::SO3StateManifold::norm(const State *state) const
 {
     const QuaternionState *qstate = static_cast<const QuaternionState*>(state);
     double nrmSqr = qstate->x * qstate->x + qstate->y * qstate->y + qstate->z * qstate->z + qstate->w * qstate->w;
     return (fabs(nrmSqr - 1.0) > std::numeric_limits<double>::epsilon()) ? sqrt(nrmSqr) : 1.0;
 }
 
-void ompl::base::QuaternionStateManifold::enforceBounds(State *state) const
+void ompl::base::SO3StateManifold::enforceBounds(State *state) const
 {
     double nrm = norm(state);
     if (fabs(nrm - 1.0) > std::numeric_limits<double>::epsilon())
@@ -75,12 +75,12 @@ void ompl::base::QuaternionStateManifold::enforceBounds(State *state) const
     }
 }    
 	    	    
-bool ompl::base::QuaternionStateManifold::satisfiesBounds(const State *state) const
+bool ompl::base::SO3StateManifold::satisfiesBounds(const State *state) const
 {
     return fabs(norm(state) - 1.0) < std::numeric_limits<double>::epsilon();
 }
 
-void ompl::base::QuaternionStateManifold::copyState(State *destination, const State *source) const
+void ompl::base::SO3StateManifold::copyState(State *destination, const State *source) const
 {
     const QuaternionState *qsource = static_cast<const QuaternionState*>(source);
     QuaternionState *qdestination = static_cast<QuaternionState*>(destination);
@@ -96,7 +96,7 @@ Based on code from :
 
 Copyright (c) 2003-2006 Gino van den Bergen / Erwin Coumans  http://continuousphysics.com/Bullet/
 */
-double ompl::base::QuaternionStateManifold::distance(const State *state1, const State *state2) const
+double ompl::base::SO3StateManifold::distance(const State *state1, const State *state2) const
 {
     const QuaternionState *qs1 = static_cast<const QuaternionState*>(state1);
     const QuaternionState *qs2 = static_cast<const QuaternionState*>(state2);
@@ -107,7 +107,7 @@ double ompl::base::QuaternionStateManifold::distance(const State *state1, const 
 	return acos(dq) * 2.0;
 }
 
-bool ompl::base::QuaternionStateManifold::equalStates(const State *state1, const State *state2) const
+bool ompl::base::SO3StateManifold::equalStates(const State *state1, const State *state2) const
 {
     return distance(state1, state2) < std::numeric_limits<double>::epsilon();
 }
@@ -117,7 +117,7 @@ Based on code from :
 
 Copyright (c) 2003-2006 Gino van den Bergen / Erwin Coumans  http://continuousphysics.com/Bullet/
 */
-void ompl::base::QuaternionStateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
+void ompl::base::SO3StateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
 {
     double theta = distance(from, to) / 2.0;
     if (theta > std::numeric_limits<double>::epsilon())
@@ -145,22 +145,22 @@ void ompl::base::QuaternionStateManifold::interpolate(const State *from, const S
     }
 }
 
-ompl::base::StateSamplerPtr ompl::base::QuaternionStateManifold::allocUniformStateSampler(void) const 
+ompl::base::StateSamplerPtr ompl::base::SO3StateManifold::allocUniformStateSampler(void) const 
 {
     return StateSamplerPtr(new QuaternionStateUniformSampler(this));
 }
 
-ompl::base::State* ompl::base::QuaternionStateManifold::allocState(void) const
+ompl::base::State* ompl::base::SO3StateManifold::allocState(void) const
 {
     return new QuaternionState();
 }
 
-void ompl::base::QuaternionStateManifold::freeState(State *state) const
+void ompl::base::SO3StateManifold::freeState(State *state) const
 {
     delete static_cast<QuaternionState*>(state);
 }
 
-void ompl::base::QuaternionStateManifold::printState(const State *state, std::ostream &out) const
+void ompl::base::SO3StateManifold::printState(const State *state, std::ostream &out) const
 {
     if (state)
     {
@@ -171,7 +171,7 @@ void ompl::base::QuaternionStateManifold::printState(const State *state, std::os
 	out << "NULL" << std::endl;
 }
 
-void ompl::base::QuaternionStateManifold::printSettings(std::ostream &out) const
+void ompl::base::SO3StateManifold::printSettings(std::ostream &out) const
 {
     out << "SO(3) state manifold (represented using quaternions)" << std::endl;
 }

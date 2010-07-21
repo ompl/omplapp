@@ -52,7 +52,7 @@ bool isStateValid(const ob::State *state)
     const ob::RealVectorStateManifold::StateType *pos = se3state->as<ob::RealVectorStateManifold::StateType>(0);
 
     /// extract the second component of the state and cast it to what we expect
-    const ob::QuaternionStateManifold::StateType *rot = se3state->as<ob::QuaternionStateManifold::StateType>(1);
+    const ob::SO3StateManifold::StateType *rot = se3state->as<ob::SO3StateManifold::StateType>(1);
     
     /// check validity of state defined by pos & rot
     

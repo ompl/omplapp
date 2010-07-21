@@ -39,7 +39,7 @@
 
 #include "ompl/base/StateManifold.h"
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
-#include "ompl/base/manifolds/QuaternionStateManifold.h"
+#include "ompl/base/manifolds/SO3StateManifold.h"
 
 namespace ompl
 {
@@ -54,7 +54,7 @@ namespace ompl
 	    SE3StateManifold(void) : CompoundStateManifold()
 	    {
 		addSubManifold(StateManifoldPtr(new RealVectorStateManifold(3)), 1.0);
-		addSubManifold(StateManifoldPtr(new QuaternionStateManifold()), 0.5);
+		addSubManifold(StateManifoldPtr(new SO3StateManifold()), 0.5);
 		lock();
 	    }
 	    

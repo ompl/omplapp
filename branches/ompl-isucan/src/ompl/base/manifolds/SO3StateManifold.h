@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef OMPL_BASE_MANIFOLDS_QUATERNION_STATE_MANIFOLD_
-#define OMPL_BASE_MANIFOLDS_QUATERNION_STATE_MANIFOLD_
+#ifndef OMPL_BASE_MANIFOLDS_SO3_STATE_MANIFOLD_
+#define OMPL_BASE_MANIFOLDS_SO3_STATE_MANIFOLD_
 
 #include "ompl/base/StateManifold.h"
 
@@ -66,18 +66,18 @@ namespace ompl
 	};
 	
 	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
-	class QuaternionStateManifold : public StateManifold
+	class SO3StateManifold : public StateManifold
 	{
 	public:
 
 	    /** \brief Define the type of state allocated by this manifold */
 	    typedef QuaternionState StateType;
 
-	    QuaternionStateManifold(void) : StateManifold()
+	    SO3StateManifold(void) : StateManifold()
 	    {
 	    }
 	    
-	    virtual ~QuaternionStateManifold(void)
+	    virtual ~SO3StateManifold(void)
 	    {	
 	    }
 
