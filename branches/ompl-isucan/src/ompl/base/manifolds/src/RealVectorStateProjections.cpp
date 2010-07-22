@@ -37,6 +37,7 @@
 #include "ompl/base/manifolds/RealVectorStateProjections.h"
 #include "ompl/util/Exception.h"
 #include "ompl/util/RandomNumbers.h"
+#include <cstring>
 
 ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions,
 										     const std::vector< std::valarray<double> > &projection) :
@@ -119,4 +120,27 @@ std::vector< std::valarray<double> > ompl::base::RealVectorRandomLinearProjectio
     }
         
     return p;
+}
+
+ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions) :
+    ProjectionEvaluator(manifold)
+{
+    if (!dynamic_cast<const RealVectorStateManifold*>(manifold_))
+	throw Exception("Expected real vector manifold for projection");
+    setCellDimensions(cellDimensions);
+    copySize_ = manifold_->getDimension() * sizeof(double);
+}
+
+ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) :
+    ProjectionEvaluator(manifold.get())
+{
+    if (!dynamic_cast<const RealVectorStateManifold*>(manifold_))
+	throw Exception("Expected real vector manifold for projection");
+    setCellDimensions(cellDimensions);
+    copySize_ = manifold_->getDimension() * sizeof(double);
+}
+
+void ompl::base::RealVectorIdentityProjectionEvaluator::project(const base::State *state, EuclideanProjection *projection) const
+{
+    memcpy(projection, state->as<RealVectorStateManifold::StateType>()->values, copySize_);
 }

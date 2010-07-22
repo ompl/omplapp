@@ -79,9 +79,20 @@ void ompl::base::RealVectorStateManifold::setup(void)
     }
     
     // compute a default random projection
-    int p = std::max(2, (int)ceil(log((double)getDimension())));
-    std::vector<double> cellDims(p, md / 5.0);
-    registerProjection("", ProjectionEvaluatorPtr(new RealVectorRandomLinearProjectionEvaluator(this, cellDims)));
+    if (dimension_ > 0)
+    {
+	if (dimension_ > 2)
+	{
+	    int p = std::max(2, (int)ceil(log((double)getDimension())));
+	    std::vector<double> cellDims(p, md / 5.0);
+	    registerProjection("", ProjectionEvaluatorPtr(new RealVectorRandomLinearProjectionEvaluator(this, cellDims)));
+	}
+	else
+	{
+	    std::vector<double> cellDims(dimension_, md / 5.0);
+	    registerProjection("", ProjectionEvaluatorPtr(new RealVectorIdentityProjectionEvaluator(this, cellDims)));
+	}
+    }
 }
 
 void ompl::base::RealVectorStateManifold::setBounds(const RealVectorBounds &bounds)

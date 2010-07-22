@@ -55,7 +55,7 @@ bool ompl::geometric::GAIK::solve(double solveTime, const base::GoalRegion &goal
     
     if (poolSize_ < 1)
     {
-	msg_.error("GAIK: Pool size too small");
+	msg_.error("Pool size too small");
 	return false;	
     }
     
@@ -162,7 +162,7 @@ bool ompl::geometric::GAIK::solve(double solveTime, const base::GoalRegion &goal
     
     
     // fill in solution, if found
-    msg_.inform("GAIK: Ran for %u generations", generations);
+    msg_.inform("Ran for %u generations", generations);
 
     if (solved)
     {
@@ -208,12 +208,12 @@ bool ompl::geometric::GAIK::solve(double solveTime, const base::GoalRegion &goal
 
 bool ompl::geometric::GAIK::tryToImprove(const base::GoalRegion &goal, base::State *state, double distance)
 {
-    msg_.debug("GAIK: Distance to goal before improvement: %g", distance);    
+    msg_.debug("Distance to goal before improvement: %g", distance);    
     time::point start = time::now();
     hcik_.tryToImprove(goal, state, si_->getStateValidityCheckingResolution() * 100.0, &distance);
     hcik_.tryToImprove(goal, state, si_->getStateValidityCheckingResolution() * 10.0, &distance);
     hcik_.tryToImprove(goal, state, si_->getStateValidityCheckingResolution(), &distance);
-    msg_.debug("GAIK: Improvement took  %g ms", (time::now() - start).total_milliseconds());
-    msg_.debug("GAIK: Distance to goal after improvement: %g", distance);
+    msg_.debug("Improvement took  %g ms", (time::now() - start).total_milliseconds());
+    msg_.debug("Distance to goal after improvement: %g", distance);
     return true;
 }

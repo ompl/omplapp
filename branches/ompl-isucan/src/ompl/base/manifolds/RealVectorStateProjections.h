@@ -104,13 +104,35 @@ namespace ompl
 		return components_.size();
 	    }
 	    
-	    virtual void project(const base::State *state, double *projection) const;
+	    virtual void project(const base::State *state, EuclideanProjection *projection) const;
 	    
 	protected:
 	    
 	    std::vector<unsigned int> components_;
 	    
 	};	
+
+	/** \brief Define the identity projection */
+	class RealVectorIdentityProjectionEvaluator : public ProjectionEvaluator
+	{
+	public:
+	    RealVectorIdentityProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions);
+	    RealVectorIdentityProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions);
+	    
+	    virtual unsigned int getDimension(void) const
+	    {
+		return manifold_->getDimension();
+	    }
+	    
+	    virtual void project(const base::State *state, EuclideanProjection *projection) const;
+
+	private:
+	    
+	    /** \brief The amount of data to copy from projection to state */
+	    std::size_t copySize_;
+	    
+	};
+	
     }
 }
 #endif
