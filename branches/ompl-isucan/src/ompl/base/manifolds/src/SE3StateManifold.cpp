@@ -34,29 +34,42 @@
 
 /* Author: Ioan Sucan */
 
-#include "ompl/base/StateManifold.h"
-#include "ompl/base/ProjectionEvaluator.h"
-#include "ompl/util/Exception.h"
-#include <cmath>
+#include "ompl/base/manifolds/SE3StateManifold.h"
+#include <cstring>
 
-void ompl::base::ProjectionEvaluator::setCellDimensions(const std::vector<double> &cellDimensions)
+namespace ompl
 {
-    cellDimensions_ = cellDimensions;
-    checkCellDimensions();
+    namespace base
+    {
+	class SE3DefaultProjection : public ProjectionEvaluator
+	{
+	public:
+	    
+	    SE3DefaultProjection(const StateManifold *manifold) : ProjectionEvaluator(manifold)
+	    {
+		cellDimensions_.resize(3);
+		const RealVectorBounds &b = manifold->as<SE3StateManifold>()->as<RealVectorStateManifold>(0)->getBounds();
+		cellDimensions_[0] = (b.high[0] - b.low[0]) / 10.0;
+		cellDimensions_[1] = (b.high[1] - b.low[1]) / 10.0;
+		cellDimensions_[2] = (b.high[2] - b.low[2]) / 10.0;
+	    }
+
+	    virtual unsigned int getDimension(void) const
+	    {
+		return 3;
+	    }
+	    
+	    virtual void project(const State *state, EuclideanProjection *projection) const
+	    {
+		memcpy(projection, state->as<SE3StateManifold::StateType>()->as<RealVectorState>(0)->values, 3 * sizeof(double));
+	    }
+	};
+	
+    }
 }
 
-void ompl::base::ProjectionEvaluator::checkCellDimensions(void) const
+void ompl::base::SE3StateManifold::setup(void)
 {
-    if (getDimension() <= 0)
-	throw Exception("Dimension of projection needs to be larger than 0");
-    if (cellDimensions_.size() != getDimension())
-	throw Exception("Number of dimensions in projection space does not match number of cell dimensions");
-}
-
-void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjection *projection, ProjectionCoordinates &coord) const
-{
-    unsigned int dim = getDimension();
-    coord.resize(dim);
-    for (unsigned int i = 0 ; i < dim ; ++i)
-	coord[i] = (int)trunc(projection[i]/cellDimensions_[i]);
+    CompoundStateManifold::setup();
+    registerProjection("", ProjectionEvaluatorPtr(new SE3DefaultProjection(this)));
 }

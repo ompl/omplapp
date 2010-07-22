@@ -39,12 +39,15 @@
 
 #include "ompl/base/State.h"
 #include "ompl/base/StateSampler.h"
+#include "ompl/base/ProjectionEvaluator.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/ClassForward.h"
 #include <boost/concept_check.hpp>
 #include <boost/noncopyable.hpp>
 #include <iostream>
 #include <vector>
+#include <string>
+#include <map>
 
 namespace ompl
 {
@@ -152,12 +155,24 @@ namespace ompl
 	    
 	    /** \brief Free the memory of the allocated state */
 	    virtual void freeState(State *state) const = 0;
-	    	    
+	    
+	    /** \brief Register a projection for this manifold under a specified name */
+	    void registerProjection(const std::string &name, const ProjectionEvaluatorPtr &projection);
+	    
+	    /** \brief Get the projection registered under a specific name */
+	    ProjectionEvaluatorPtr getProjection(const std::string &name) const;
+	    
+	    /** \brief Get the default projection (registered under the empty name) */
+	    ProjectionEvaluatorPtr getProjection(void) const;
+
 	    /** \brief Print a state to a stream */
 	    virtual void printState(const State *state, std::ostream &out) const;
 	    
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
+
+	    /** \brief Print the list of registered projections */
+	    virtual void printProjections(std::ostream &out) const;
 	    
 	    /** \brief Perform final setup steps. This function is automatically called by the SpaceInformation */
 	    virtual void setup(void);
@@ -169,6 +184,9 @@ namespace ompl
 	    
 	    /** \brief The optional state sampler allocator */
 	    StateSamplerAllocator ssa_;
+
+	    /** \brief List of available projections */
+	    std::map<std::string, ProjectionEvaluatorPtr> projections_;
 	    
 	};
 	

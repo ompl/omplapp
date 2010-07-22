@@ -37,7 +37,7 @@
 #ifndef OMPL_BASE_PROJECTION_EVALUATOR_
 #define OMPL_BASE_PROJECTION_EVALUATOR_
 
-#include "ompl/base/StateManifold.h"
+#include "ompl/base/State.h"
 #include "ompl/util/ClassForward.h"
 #include <vector>
 #include <boost/noncopyable.hpp>
@@ -53,7 +53,8 @@ namespace ompl
 
 	/** \brief The datatype for state projections. */
 	typedef double EuclideanProjection;
-	
+
+	ClassForward(StateManifold);
 	ClassForward(ProjectionEvaluator);
 	
 	/** \brief Abstract definition for a class computing
@@ -64,7 +65,11 @@ namespace ompl
 	{
 	public:
 	    
-	    ProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) : manifold_(manifold), cellDimensions_(cellDimensions)
+	    ProjectionEvaluator(const StateManifold *manifold) : manifold_(manifold)
+	    {
+	    }
+
+	    ProjectionEvaluator(const StateManifoldPtr &manifold) : manifold_(manifold.get())
 	    {
 	    }
 	    
@@ -106,7 +111,7 @@ namespace ompl
 	    
 	protected:
 	    
-	    StateManifoldPtr     manifold_;
+	    const StateManifold *manifold_;
 	    std::vector<double>  cellDimensions_;
 	    
 	};

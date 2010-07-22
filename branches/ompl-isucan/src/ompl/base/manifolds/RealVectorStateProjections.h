@@ -51,6 +51,9 @@ namespace ompl
 	{
 	public:
 	    
+	    RealVectorLinearProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions,
+						const std::vector< std::valarray<double> > &projection);
+	    
 	    RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
 						const std::vector< std::valarray<double> > &projection);
 	    
@@ -72,8 +75,13 @@ namespace ompl
 	{
 	public:
 	    
-	    RealVectorRandomLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) :
+	    RealVectorRandomLinearProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions) :
 		RealVectorLinearProjectionEvaluator(manifold, cellDimensions, computeProjection(manifold->getDimension(), cellDimensions.size()))
+	    {
+	    }
+	    
+	    RealVectorRandomLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) :
+		RealVectorLinearProjectionEvaluator(manifold.get(), cellDimensions, computeProjection(manifold->getDimension(), cellDimensions.size()))
 	    {
 	    }
 	    
@@ -88,6 +96,7 @@ namespace ompl
 	{
 	public:
 	    
+	    RealVectorOrthogonalProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions, const std::vector<unsigned int> &components);
 	    RealVectorOrthogonalProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions, const std::vector<unsigned int> &components);
 	    
 	    virtual unsigned int getDimension(void) const

@@ -73,6 +73,9 @@ namespace ompl
 	    {
 		return as<RealVectorStateManifold>(0)->getBounds();
 	    }    
+
+	    virtual void setup(void);
+	    
 	};	
     }
 }

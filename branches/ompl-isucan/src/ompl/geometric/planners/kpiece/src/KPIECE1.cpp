@@ -43,10 +43,13 @@ void ompl::geometric::KPIECE1::setup(void)
 {
     Planner::setup();
     if (!projectionEvaluator_)
+    {
+	projectionEvaluator_ = si_->getStateManifold()->getProjection();
+	msg_.inform("Attempt to use default projection");
+    }
+    if (!projectionEvaluator_)
 	throw Exception("No projection evaluator specified");
     projectionEvaluator_->checkCellDimensions();
-    if (projectionEvaluator_->getDimension() <= 0)
-	throw Exception("Dimension of projection needs to be larger than 0");
     if (maxDistance_ < std::numeric_limits<double>::epsilon())
     {
 	maxDistance_ = si_->estimateExtent() / 5.0;

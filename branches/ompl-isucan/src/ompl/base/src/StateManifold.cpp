@@ -61,6 +61,45 @@ void ompl::base::StateManifold::printState(const State *state, std::ostream &out
 void ompl::base::StateManifold::printSettings(std::ostream &out) const
 {
     out << "StateManifold instance: " << this << std::endl;
+    printProjections(out);
+}
+
+void ompl::base::StateManifold::printProjections(std::ostream &out) const
+{
+    if (projections_.empty())
+	out << "No registered projections" << std::endl;
+    else
+    {
+	out << "Registered projections:" << std::endl;
+	for (std::map<std::string, ProjectionEvaluatorPtr>::const_iterator it = projections_.begin() ; it != projections_.end() ; ++it)
+	{
+	    out << "  - ";
+	    if (it->first.empty())
+		out << "<default>";
+	    else
+		out << it->first;
+	    out << " of dimension " << it->second->getDimension() << std::endl;
+	}
+    }
+}
+
+ompl::base::ProjectionEvaluatorPtr ompl::base::StateManifold::getProjection(void) const
+{
+    return getProjection("");
+}
+
+ompl::base::ProjectionEvaluatorPtr ompl::base::StateManifold::getProjection(const std::string &name) const
+{
+    std::map<std::string, ProjectionEvaluatorPtr>::const_iterator it = projections_.find(name);
+    if (it != projections_.end())
+	return it->second;
+    else
+	return ProjectionEvaluatorPtr();
+}
+
+void ompl::base::StateManifold::registerProjection(const std::string &name, const ProjectionEvaluatorPtr &projection)
+{
+    projections_[name] = projection;
 }
 
 void ompl::base::CompoundStateManifold::addSubManifold(const StateManifoldPtr &component, double weight)
@@ -231,8 +270,9 @@ void ompl::base::CompoundStateManifold::printSettings(std::ostream &out) const
     for (unsigned int i = 0 ; i < componentCount_ ; ++i)
 	components_[i]->printSettings(out);
     out << "]" << std::endl;
+    printProjections(out);
 }
-
+	
 void ompl::base::CompoundStateManifold::setup(void)
 {
     for (unsigned int i = 0 ; i < componentCount_ ; ++i)

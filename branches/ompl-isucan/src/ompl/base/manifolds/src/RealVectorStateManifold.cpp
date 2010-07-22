@@ -35,7 +35,9 @@
 /* Author: Ioan Sucan */
 
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
+#include "ompl/base/manifolds/RealVectorStateProjections.h"
 #include "ompl/util/Exception.h"
+#include <algorithm>
 #include <cstring>
 #include <limits>
 #include <cmath>
@@ -60,15 +62,26 @@ void ompl::base::RealVectorStateUniformSampler::sampleNear(State *state, const S
     for (unsigned int i = 0 ; i < dim ; ++i)
 	rstate->values[i] =
 	    rng_.uniformReal(std::max(bounds.low[i], rnear->values[i] - distance), 
-			      std::min(bounds.high[i], rnear->values[i] + distance));
+			     std::min(bounds.high[i], rnear->values[i] + distance));
 }
 
 void ompl::base::RealVectorStateManifold::setup(void)
 {
     StateManifold::setup();
+    double md = std::numeric_limits<double>::infinity();
     for (unsigned int i = 0 ; i < dimension_ ; ++i)
+    {
 	if (bounds_.low[i] + std::numeric_limits<double>::epsilon() > bounds_.high[i])
 	    throw Exception("Bounds for real vector state manifold seem to be incorrect (lower bound must be stricly less than upper bound). Sampling will not be possible");
+	double d = bounds_.high[i] - bounds_.low[i];
+	if (d < md)
+	    md = d;
+    }
+    
+    // compute a default random projection
+    int p = std::max(2, (int)ceil(log((double)getDimension())));
+    std::vector<double> cellDims(p, md / 5.0);
+    registerProjection("", ProjectionEvaluatorPtr(new RealVectorRandomLinearProjectionEvaluator(this, cellDims)));
 }
 
 void ompl::base::RealVectorStateManifold::setBounds(const RealVectorBounds &bounds)
