@@ -62,6 +62,7 @@ namespace ompl
     namespace base
     {
 
+	/** \brief Forward declaration of ompl::base::SpaceInformation */
 	ClassForward(SpaceInformation);
 
 	/** \brief If no state validity checking class is specified

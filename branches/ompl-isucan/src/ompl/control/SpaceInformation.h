@@ -51,6 +51,7 @@ namespace ompl
     namespace control
     {
 
+	/** \brief Forward declaration of ompl::control::SpaceInformation */
 	ClassForward(SpaceInformation);
 	
 	class SpaceInformation : public base::SpaceInformation

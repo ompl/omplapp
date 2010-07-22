@@ -47,6 +47,8 @@ namespace ompl
     {
 
 	ClassForward(SpaceInformation);
+
+	/** \brief Forward declaration of ompl::base::StateValidityChecker */
 	ClassForward(StateValidityChecker);
 	
 	/** \brief Abstract definition for a class checking the

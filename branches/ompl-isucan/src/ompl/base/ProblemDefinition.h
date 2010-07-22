@@ -55,6 +55,7 @@ namespace ompl
     namespace base
     {
 	
+	/** \brief Forward declaration of ompl::base::ProblemDefinition */
 	ClassForward(ProblemDefinition);
 	
 	

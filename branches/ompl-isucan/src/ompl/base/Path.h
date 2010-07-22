@@ -48,6 +48,8 @@ namespace ompl
     {
 	
 	ClassForward(SpaceInformation);
+	
+	/** \brief Forward declaration of ompl::base::Path */
 	ClassForward(Path);
 	
 	/** \brief Abstract definition of a path */

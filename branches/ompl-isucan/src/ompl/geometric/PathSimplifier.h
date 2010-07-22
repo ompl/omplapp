@@ -48,6 +48,7 @@ namespace ompl
     namespace geometric
     {
 
+	/** \brief Forward declaration of ompl::geometric::PathSimplifier */
 	ClassForward(PathSimplifier);
 	
 	/** \brief This class contains smoothers that can be applied to geometric paths.

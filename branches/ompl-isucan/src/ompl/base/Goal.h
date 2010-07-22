@@ -50,6 +50,7 @@ namespace ompl
     namespace base
     {
 	
+	/** \brief Forward declaration of ompl::base::Goal */
 	ClassForward(Goal);
 	
 	/** \brief Abstract definition of goals. Will contain solutions, if found */

@@ -49,6 +49,8 @@ namespace ompl
     {
 	
 	ClassForward(ControlManifold);
+
+	/** \brief Forward declaration of ompl::control::ControlSampler */	
 	ClassForward(ControlSampler);
 	
 	/** \brief Abstract definition of a control sampler. */

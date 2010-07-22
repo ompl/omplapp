@@ -53,7 +53,8 @@ namespace ompl
 {
     namespace base
     {
-	
+
+	/** \brief Forward declaration of ompl::base::StateManifold */
 	ClassForward(StateManifold);
 	
 	/** \brief Representation of a space in which planning can be

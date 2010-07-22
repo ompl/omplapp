@@ -50,6 +50,8 @@ namespace ompl
     {
 	
 	ClassForward(StateManifold);
+
+	/** \brief Forward declaration of ompl::base::StateSampler */
 	ClassForward(StateSampler);
 	
 	/** \brief Abstract definition of a state sampler. */

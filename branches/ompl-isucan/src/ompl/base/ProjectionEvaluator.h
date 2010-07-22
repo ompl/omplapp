@@ -55,6 +55,8 @@ namespace ompl
 	typedef double EuclideanProjection;
 
 	ClassForward(StateManifold);
+
+	/** \brief Forward declaration of ompl::base::ProjectionEvaluator */
 	ClassForward(ProjectionEvaluator);
 	
 	/** \brief Abstract definition for a class computing

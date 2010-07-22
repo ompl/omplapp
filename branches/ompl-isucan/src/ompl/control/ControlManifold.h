@@ -53,7 +53,8 @@ namespace ompl
 
     namespace control
     {
-	
+
+	/** \brief Forward declaration of ompl::control::ControlManifold */	
 	ClassForward(ControlManifold);
 	
 	/** \brief The return value of a propagation step executed by a ControlManifold */

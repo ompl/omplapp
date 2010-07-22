@@ -73,8 +73,8 @@ namespace ompl
 		PLAN_TO_GOAL_ANY    = 32768 | PLAN_TO_GOAL_REGION
 	    };
 	
+	/** \brief Forward declaration of ompl::base::Planner */
 	ClassForward(Planner);
-	ClassForward(PlannerData);
 	
 	/** \brief Datatype holding data a planner can expose for debug purposes. */
 	class PlannerData
