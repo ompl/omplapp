@@ -37,39 +37,32 @@
 #include "ompl/base/manifolds/SE3StateManifold.h"
 #include <cstring>
 
-namespace ompl
-{
-    namespace base
-    {
-	class SE3DefaultProjection : public ProjectionEvaluator
-	{
-	public:
-	    
-	    SE3DefaultProjection(const StateManifold *manifold) : ProjectionEvaluator(manifold)
-	    {
-		cellDimensions_.resize(3);
-		const RealVectorBounds &b = manifold->as<SE3StateManifold>()->as<RealVectorStateManifold>(0)->getBounds();
-		cellDimensions_[0] = (b.high[0] - b.low[0]) / 10.0;
-		cellDimensions_[1] = (b.high[1] - b.low[1]) / 10.0;
-		cellDimensions_[2] = (b.high[2] - b.low[2]) / 10.0;
-	    }
-
-	    virtual unsigned int getDimension(void) const
-	    {
-		return 3;
-	    }
-	    
-	    virtual void project(const State *state, EuclideanProjection *projection) const
-	    {
-		memcpy(projection, state->as<SE3StateManifold::StateType>()->as<RealVectorState>(0)->values, 3 * sizeof(double));
-	    }
-	};
-	
-    }
-}
-
 void ompl::base::SE3StateManifold::setup(void)
 {
+    class SE3DefaultProjection : public ProjectionEvaluator
+    {
+    public:
+	
+	SE3DefaultProjection(const StateManifold *manifold) : ProjectionEvaluator(manifold)
+	{
+	    cellDimensions_.resize(3);
+	    const RealVectorBounds &b = manifold->as<SE3StateManifold>()->as<RealVectorStateManifold>(0)->getBounds();
+	    cellDimensions_[0] = (b.high[0] - b.low[0]) / 10.0;
+	    cellDimensions_[1] = (b.high[1] - b.low[1]) / 10.0;
+	    cellDimensions_[2] = (b.high[2] - b.low[2]) / 10.0;
+	}
+	
+	virtual unsigned int getDimension(void) const
+	{
+	    return 3;
+	}
+	
+	virtual void project(const State *state, EuclideanProjection *projection) const
+	{
+	    memcpy(projection, state->as<SE3StateManifold::StateType>()->as<RealVectorStateManifold::StateType>(0)->values, 3 * sizeof(double));
+	}
+    };
+    
     CompoundStateManifold::setup();
-    registerProjection("", ProjectionEvaluatorPtr(new SE3DefaultProjection(this)));
+    registerProjection("", ProjectionEvaluatorPtr(dynamic_cast<ProjectionEvaluator*>(new SE3DefaultProjection(this))));
 }

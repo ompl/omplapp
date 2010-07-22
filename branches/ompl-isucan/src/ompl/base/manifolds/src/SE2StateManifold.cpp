@@ -37,38 +37,32 @@
 #include "ompl/base/manifolds/SE2StateManifold.h"
 #include <cstring>
 
-namespace ompl
-{
-    namespace base
-    {
-	class SE2DefaultProjection : public ProjectionEvaluator
-	{
-	public:
-	    
-	    SE2DefaultProjection(const StateManifold *manifold) : ProjectionEvaluator(manifold)
-	    {
-		cellDimensions_.resize(2);
-		const RealVectorBounds &b = manifold->as<SE2StateManifold>()->as<RealVectorStateManifold>(0)->getBounds();
-		cellDimensions_[0] = (b.high[0] - b.low[0]) / 10.0;
-		cellDimensions_[1] = (b.high[1] - b.low[1]) / 10.0;
-	    }
-
-	    virtual unsigned int getDimension(void) const
-	    {
-		return 2;
-	    }
-	    
-	    virtual void project(const State *state, EuclideanProjection *projection) const
-	    {
-		memcpy(projection, state->as<SE2StateManifold::StateType>()->as<RealVectorState>(0)->values, 2 * sizeof(double));
-	    }
-	};
-    }
-}
-
 void ompl::base::SE2StateManifold::setup(void)
 {
+    class SE2DefaultProjection : public ProjectionEvaluator
+    {
+    public:
+	
+	SE2DefaultProjection(const StateManifold *manifold) : ProjectionEvaluator(manifold)
+	{
+	    cellDimensions_.resize(2);
+	    const RealVectorBounds &b = manifold->as<SE2StateManifold>()->as<RealVectorStateManifold>(0)->getBounds();
+	    cellDimensions_[0] = (b.high[0] - b.low[0]) / 10.0;
+	    cellDimensions_[1] = (b.high[1] - b.low[1]) / 10.0;
+	}
+	
+	virtual unsigned int getDimension(void) const
+	{
+	    return 2;
+	}
+	
+	virtual void project(const State *state, EuclideanProjection *projection) const
+	{
+	    memcpy(projection, state->as<SE2StateManifold::StateType>()->as<RealVectorStateManifold::StateType>(0)->values, 2 * sizeof(double));
+	}
+    };
+    
     CompoundStateManifold::setup();
-    registerProjection("", ProjectionEvaluatorPtr(new SE2DefaultProjection(this)));
+    registerProjection("", ProjectionEvaluatorPtr(dynamic_cast<ProjectionEvaluator*>(new SE2DefaultProjection(this))));
 }
 

@@ -82,16 +82,17 @@ void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state
 	const std::valarray<double> &vec = projection_[i];
 	const unsigned int dim = vec.size();
 	double *pos = projection + i;
+	const double *values = state->as<RealVectorStateManifold::StateType>()->values;
 	*pos = 0.0;
 	for (unsigned int j = 0 ; j < dim ; ++j)
-	    *pos += state->as<RealVectorState>()->values[j] * vec[j];
+	    *pos += values[j] * vec[j];
     }
 }
 
 void ompl::base::RealVectorOrthogonalProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
 {
     for (unsigned int i = 0 ; i < components_.size() ; ++i)
-	projection[i] = state->as<RealVectorState>()->values[components_[i]];
+	projection[i] = state->as<RealVectorStateManifold::StateType>()->values[components_[i]];
 }
 
 std::vector< std::valarray<double> > ompl::base::RealVectorRandomLinearProjectionEvaluator::computeProjection(unsigned int from, unsigned int to) const
