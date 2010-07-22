@@ -53,10 +53,10 @@ void ompl::base::ProjectionEvaluator::checkCellDimensions(void) const
 	throw Exception("Number of dimensions in projection space does not match number of cell dimensions");
 }
 
-void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjection *projection, ProjectionCoordinates &coord) const
+void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjection &projection, ProjectionCoordinates &coord) const
 {
     unsigned int dim = getDimension();
     coord.resize(dim);
     for (unsigned int i = 0 ; i < dim ; ++i)
-	coord[i] = (int)trunc(projection[i]/cellDimensions_[i]);
+	coord[i] = (int)trunc(projection.values[i]/cellDimensions_[i]);
 }

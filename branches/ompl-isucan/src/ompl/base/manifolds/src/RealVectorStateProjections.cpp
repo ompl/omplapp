@@ -39,7 +39,8 @@
 #include "ompl/util/RandomNumbers.h"
 #include <cstring>
 
-ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions,
+ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifold *manifold,
+										     const std::vector<double> &cellDimensions,
 										     const std::vector< std::valarray<double> > &projection) :
     ProjectionEvaluator(manifold), projection_(projection)
 {
@@ -48,7 +49,8 @@ ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvalu
     setCellDimensions(cellDimensions);
 }
 
-ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
+ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvaluator(const StateManifoldPtr &manifold,
+										     const std::vector<double> &cellDimensions,
 										     const std::vector< std::valarray<double> > &projection) :
     ProjectionEvaluator(manifold.get()), projection_(projection)
 {
@@ -57,7 +59,8 @@ ompl::base::RealVectorLinearProjectionEvaluator::RealVectorLinearProjectionEvalu
     setCellDimensions(cellDimensions);
 }
 
-ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions,
+ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProjectionEvaluator(const StateManifold *manifold,
+											     const std::vector<double> &cellDimensions,
 											     const std::vector<unsigned int> &components) : 
     ProjectionEvaluator(manifold), components_(components)
 {
@@ -66,7 +69,8 @@ ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProject
     setCellDimensions(cellDimensions);
 }
 
-ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions,
+ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProjectionEvaluator(const StateManifoldPtr &manifold,
+											     const std::vector<double> &cellDimensions,
 											     const std::vector<unsigned int> &components) : 
     ProjectionEvaluator(manifold.get()), components_(components)
 {
@@ -75,13 +79,13 @@ ompl::base::RealVectorOrthogonalProjectionEvaluator::RealVectorOrthogonalProject
     setCellDimensions(cellDimensions);
 }
 
-void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
+void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state, EuclideanProjection &projection) const
 {
     for (unsigned int i = 0 ; i < projection_.size() ; ++i)
     {
 	const std::valarray<double> &vec = projection_[i];
 	const unsigned int dim = vec.size();
-	double *pos = projection + i;
+	double *pos = projection.values + i;
 	const double *values = state->as<RealVectorStateManifold::StateType>()->values;
 	*pos = 0.0;
 	for (unsigned int j = 0 ; j < dim ; ++j)
@@ -89,10 +93,10 @@ void ompl::base::RealVectorLinearProjectionEvaluator::project(const State *state
     }
 }
 
-void ompl::base::RealVectorOrthogonalProjectionEvaluator::project(const State *state, EuclideanProjection *projection) const
+void ompl::base::RealVectorOrthogonalProjectionEvaluator::project(const State *state, EuclideanProjection &projection) const
 {
     for (unsigned int i = 0 ; i < components_.size() ; ++i)
-	projection[i] = state->as<RealVectorStateManifold::StateType>()->values[components_[i]];
+	projection.values[i] = state->as<RealVectorStateManifold::StateType>()->values[components_[i]];
 }
 
 std::vector< std::valarray<double> > ompl::base::RealVectorRandomLinearProjectionEvaluator::computeProjection(unsigned int from, unsigned int to) const
@@ -123,7 +127,8 @@ std::vector< std::valarray<double> > ompl::base::RealVectorRandomLinearProjectio
     return p;
 }
 
-ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionEvaluator(const StateManifold *manifold, const std::vector<double> &cellDimensions) :
+ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionEvaluator(const StateManifold *manifold,
+											 const std::vector<double> &cellDimensions) :
     ProjectionEvaluator(manifold)
 {
     if (!dynamic_cast<const RealVectorStateManifold*>(manifold_))
@@ -132,7 +137,8 @@ ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionE
     copySize_ = manifold_->getDimension() * sizeof(double);
 }
 
-ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionEvaluator(const StateManifoldPtr &manifold, const std::vector<double> &cellDimensions) :
+ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionEvaluator(const StateManifoldPtr &manifold,
+											 const std::vector<double> &cellDimensions) :
     ProjectionEvaluator(manifold.get())
 {
     if (!dynamic_cast<const RealVectorStateManifold*>(manifold_))
@@ -141,7 +147,7 @@ ompl::base::RealVectorIdentityProjectionEvaluator::RealVectorIdentityProjectionE
     copySize_ = manifold_->getDimension() * sizeof(double);
 }
 
-void ompl::base::RealVectorIdentityProjectionEvaluator::project(const base::State *state, EuclideanProjection *projection) const
+void ompl::base::RealVectorIdentityProjectionEvaluator::project(const State *state, EuclideanProjection &projection) const
 {
-    memcpy(projection, state->as<RealVectorStateManifold::StateType>()->values, copySize_);
+    memcpy(projection.values, state->as<RealVectorStateManifold::StateType>()->values, copySize_);
 }

@@ -46,15 +46,15 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief The definition of a state in R^n */
+	/** \brief The definition of a state in R<sup>n</sup> */
 	class RealVectorState : public State
 	{
 	public:
-	    /** \brief The value of the actual vector in R^n */
+	    /** \brief The value of the actual vector in R<sup>n</sup> */
 	    double *values;
 	};
 	
-	/** \brief The lower and upper bounds for an R^n manifold */
+	/** \brief The lower and upper bounds for an R<sup>n</sup> manifold */
 	class RealVectorBounds
 	{
 	public:
@@ -83,7 +83,7 @@ namespace ompl
 	    std::vector<double> high;
 	};
 	
-	/** \brief Uniform sampler for the R^n manifold */
+	/** \brief Uniform sampler for the R<sup>n</sup> manifold */
 	class RealVectorStateUniformSampler : public StateSampler
 	{
 	public:
@@ -97,7 +97,7 @@ namespace ompl
 	    
 	};
 	
-	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
+	/** \brief A manifold representing R<sup>n</sup>. The distance function is the L2 norm. */
 	class RealVectorStateManifold : public StateManifold
 	{
 	public:

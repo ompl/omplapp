@@ -48,21 +48,37 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief Grid cells corresponding to a projection value are described in terms of their coordinates. q*/
+	/** \brief Grid cells corresponding to a projection value are described in terms of their coordinates. */
 	typedef std::vector<int> ProjectionCoordinates;
 
 	/** \brief The datatype for state projections. */
-	typedef double EuclideanProjection;
-
+	class EuclideanProjection
+	{
+	public:
+	    EuclideanProjection(unsigned int n) : values(new double[n])
+	    {	
+	    }
+	    
+	    ~EuclideanProjection(void)
+	    {
+		delete[] values;
+	    }
+	    
+	    /** \brief The values of the R<sup>n</sup> vector that makes up the projection */
+	    double *values;
+	};
+	
 	ClassForward(StateManifold);
 
 	/** \brief Forward declaration of ompl::base::ProjectionEvaluator */
 	ClassForward(ProjectionEvaluator);
 	
 	/** \brief Abstract definition for a class computing
-	    projections to R^n. Integer grids can be imposed on this
-	    projection by setting cell sizes. The implementation of
-	    this class is thread safe. */
+	    projections to R<sup>n</sup>. Implicit integer grids are
+	    imposed on this projection space by setting cell
+	    sizes. Before use, the user must supply cell dimensions
+	    for the integer grid (setCellDimensions()). The
+	    implementation of this class is thread safe. */
 	class ProjectionEvaluator : private boost::noncopyable
 	{
 	public:
@@ -83,7 +99,7 @@ namespace ompl
 	    virtual unsigned int getDimension(void) const = 0;
 	    
 	    /** \brief Compute the projection as an array of double values */
-	    virtual void project(const State *state, EuclideanProjection *projection) const = 0;
+	    virtual void project(const State *state, EuclideanProjection &projection) const = 0;
 	    	    
 	    /** \brief Define the dimension (each component) of a grid cell. The
 		number of dimensions set here must be the same as the
@@ -101,19 +117,24 @@ namespace ompl
 	    void checkCellDimensions(void) const;
 	    
 	    /** \brief Compute integer coordinates for a projection */
-	    void computeCoordinates(const EuclideanProjection *projection, ProjectionCoordinates &coord) const;
+	    void computeCoordinates(const EuclideanProjection &projection, ProjectionCoordinates &coord) const;
 	    
 	    /** \brief Compute integer coordinates for a state */
 	    void computeCoordinates(const State *state, ProjectionCoordinates &coord) const
 	    {
-		double projection[getDimension()];
+		EuclideanProjection projection(getDimension());
 		project(state, projection);
 		computeCoordinates(projection, coord);
 	    }
 	    
 	protected:
 	    
+	    /** \brief The manifold this projection operates on */
 	    const StateManifold *manifold_;
+	    
+	    /** \brief The size of a cell, in every dimension of the
+		projected space, in the implicitly defined integer
+		grid. */
 	    std::vector<double>  cellDimensions_;
 	    
 	};

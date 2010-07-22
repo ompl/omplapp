@@ -65,7 +65,9 @@ namespace ompl
 	    virtual void sampleNear(State *state, const State *near, const double distance);
 	};
 	
-	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
+	/** \brief A manifold representing SO(2). The distance
+	    function and interpolation take into account angle
+	    wrapping. */
 	class SO2StateManifold : public StateManifold
 	{
 	public:

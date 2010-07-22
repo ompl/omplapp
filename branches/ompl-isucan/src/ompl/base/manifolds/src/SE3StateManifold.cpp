@@ -57,9 +57,9 @@ void ompl::base::SE3StateManifold::setup(void)
 	    return 3;
 	}
 	
-	virtual void project(const State *state, EuclideanProjection *projection) const
+	virtual void project(const State *state, EuclideanProjection &projection) const
 	{
-	    memcpy(projection, state->as<SE3StateManifold::StateType>()->as<RealVectorStateManifold::StateType>(0)->values, 3 * sizeof(double));
+	    memcpy(projection.values, state->as<SE3StateManifold::StateType>()->as<RealVectorStateManifold::StateType>(0)->values, 3 * sizeof(double));
 	}
     };
     

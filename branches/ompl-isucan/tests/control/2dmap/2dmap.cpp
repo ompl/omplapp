@@ -314,10 +314,10 @@ public:
 	return 2;
     }
         
-    virtual void project(const base::State *state, base::EuclideanProjection *projection) const
+    virtual void project(const base::State *state, base::EuclideanProjection &projection) const
     {
-	projection[0] = state->as<base::RealVectorState>()->values[0];
-	projection[1] = state->as<base::RealVectorState>()->values[1];
+	projection.values[0] = state->as<base::RealVectorState>()->values[0];
+	projection.values[1] = state->as<base::RealVectorState>()->values[1];
     }
 };
     

@@ -65,7 +65,10 @@ namespace ompl
 	    virtual void sampleNear(State *state, const State *near, const double distance);
 	};
 	
-	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
+	/** \brief A manifold representing SO(3). The internal
+	    representation is done with quaternions. The distance
+	    between states is the angle between quaternions and
+	    interpolation is done with slerp. */
 	class SO3StateManifold : public StateManifold
 	{
 	public:
@@ -102,7 +105,7 @@ namespace ompl
 	    /** \brief Checks whether two states are equal */
 	    virtual bool equalStates(const State *state1, const State *state2) const;
 
-	    /** \brief Computes the state that lies at time t \in [0, 1] on the
+	    /** \brief Computes the state that lies at time t in [0, 1] on the
 		segment that connects the current state to the
 		destination state */
 	    virtual void interpolate(const State *from, const State *to, const double t, State *state) const;
