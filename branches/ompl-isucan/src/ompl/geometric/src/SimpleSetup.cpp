@@ -38,6 +38,8 @@
 #include "ompl/base/GoalSampleableRegion.h"
 #include "ompl/geometric/planners/rrt/RRTConnect.h"
 #include "ompl/geometric/planners/rrt/RRT.h"
+#include "ompl/geometric/planners/kpiece/LBKPIECE1.h"
+#include "ompl/geometric/planners/kpiece/KPIECE1.h"
 
 void ompl::geometric::SimpleSetup::useManifold(const base::StateManifoldPtr &manifold)
 {
@@ -46,7 +48,10 @@ void ompl::geometric::SimpleSetup::useManifold(const base::StateManifoldPtr &man
 	si_.reset(new base::SpaceInformation(manifold));
 	pdef_.reset(new base::ProblemDefinition(si_));
 	psk_.reset(new PathSimplifier(si_));
-	
+
+	psk_->setMaxSteps(50);
+	psk_->setMaxEmptySteps(5);
+
 	// set accumulated information
 	if (goal_)
 	{
@@ -81,10 +86,25 @@ void ompl::geometric::SimpleSetup::setup(void)
 	    {
 		msg_.inform("No planner specified. Using default.");
 		const base::GoalPtr &goal = getGoal();
+
+		// if we can sample the goal region, use a bi-directional planner
 		if (goal && dynamic_cast<const base::GoalSampleableRegion*>(goal.get()))
-		    planner_ = base::PlannerPtr(new RRTConnect(si_));
+		{
+		    // if we have a default projection
+		    if (si_->getStateManifold()->getProjection())
+			planner_ = base::PlannerPtr(new LBKPIECE1(si_));
+		    else
+			planner_ = base::PlannerPtr(new RRTConnect(si_));
+		}
+		// other use a single-tree planner
 		else
-		    planner_ = base::PlannerPtr(new RRT(si_));
+		{
+		    // if we have a default projection
+		    if (si_->getStateManifold()->getProjection())
+			planner_ = base::PlannerPtr(new KPIECE1(si_));
+		    else
+			planner_ = base::PlannerPtr(new RRT(si_));
+		}
 	    }
 	}
 	planner_->setProblemDefinition(pdef_);
