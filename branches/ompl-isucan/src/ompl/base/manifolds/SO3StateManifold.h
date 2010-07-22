@@ -44,7 +44,12 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief The definition of a state in SO(3) represented as a quaternion */
+	/** \brief The definition of a state in SO(3) represented as a quaternion
+
+	    The representation of a quaternion (x,y,z) define the
+	    vector component and w is the scalar component. Important:
+	    the order of the elements matters in this definition for
+	    the QuaternionStateUniformSampler::sample() function. */
 	class QuaternionState : public State
 	{
 	public:
