@@ -62,8 +62,7 @@ namespace ompl
 
 	   @anchor implementStateManifold
 
-	   @par Inheriting from existing manifolds
-	   
+	   @par Inheriting from existing manifolds	   
 	   In order to implement a new state manifold it is necessary
 	   to define a class that inherits from an existing manifold
 	   class. All manifold specific functions (pure virtual in the
@@ -74,7 +73,6 @@ namespace ompl
 	   state that is allocated/freed.
 	   
 	   @par Inheriting from CompoundStateManifold
-
 	   Another option is to inherit from a CompoundStateManifold
 	   and call addSubManifold() in the constructor of the new
 	   class for other existing manifolds. This is the easiest way
@@ -83,6 +81,14 @@ namespace ompl
 	   the CompoundStateManifold::lock() function can be called
 	   after the components have been set in order to prevent the
 	   user of the manifold from adding further components.
+	   
+	   Optionally, if there exist projections to Euclidean spaces
+	   for the defined manifold, these can be registered by the
+	   setup() function (by calling
+	   registerProjection()). Registering a projection under the
+	   empty string name makes it the default projection. Planners
+	   that need a projection but do not have one defined can
+	   attempt using this default projection during planning.
 	*/
 	class StateManifold : private boost::noncopyable
 	{
@@ -171,10 +177,12 @@ namespace ompl
 	    /** \brief Print the settings for this manifold to a stream */
 	    virtual void printSettings(std::ostream &out) const;
 
-	    /** \brief Print the list of registered projections */
+	    /** \brief Print the list of registered projections. This function is also called by printSettings() */
 	    virtual void printProjections(std::ostream &out) const;
 	    
-	    /** \brief Perform final setup steps. This function is automatically called by the SpaceInformation */
+	    /** \brief Perform final setup steps. This function is
+		automatically called by the SpaceInformation. If any
+		default projections are to be registered, this call will set them. */
 	    virtual void setup(void);
 	    
 	protected:
