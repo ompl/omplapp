@@ -36,6 +36,7 @@
 
 #include "ompl/control/SimpleSetup.h"
 #include "ompl/control/planners/rrt/RRT.h"
+#include "ompl/control/planners/kpiece/KPIECE1.h"
 
 void ompl::control::SimpleSetup::setup(void)
 {
@@ -53,7 +54,10 @@ void ompl::control::SimpleSetup::setup(void)
 	    else
 	    {
 		msg_.inform("No planner specified. Using default.");
-		planner_ = base::PlannerPtr(new RRT(si_));
+		if (si_->getStateManifold()->getProjection())
+		    planner_ = base::PlannerPtr(new KPIECE1(si_));
+		else
+		    planner_ = base::PlannerPtr(new RRT(si_));
 	    }
 	}
 	planner_->setProblemDefinition(pdef_);

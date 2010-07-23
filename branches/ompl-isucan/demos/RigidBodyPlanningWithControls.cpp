@@ -46,7 +46,7 @@
 namespace ob = ompl::base;
 namespace oc = ompl::control;
 
-bool isStateValid(const oc::SpaceInformationPtr &si, const ob::State *state)
+bool isStateValid(const oc::SpaceInformation *si, const ob::State *state)
 {
     /// cast the abstract state type to the type we expect
     const ob::SE2StateManifold::StateType *se2state = state->as<ob::SE2StateManifold::StateType>();
@@ -112,7 +112,7 @@ void plan(void)
     oc::SpaceInformationPtr si(new oc::SpaceInformation(manifold, cmanifold));
 
     /// set state validity checking for this space
-    si->setStateValidityChecker(boost::bind(&isStateValid, si,  _1));
+    si->setStateValidityChecker(boost::bind(&isStateValid, si.get(),  _1));
     
     /// create a random start state
     ob::ScopedState<ob::SE2StateManifold::StateType> start(manifold);
@@ -166,57 +166,75 @@ void plan(void)
 	std::cout << "No solution found" << std::endl;
 }
 
-/*
+
 void planWithSimpleSetup(void)
 {
     /// construct the manifold we are planning in
-    ob::StateManifoldPtr manifold(new ob::SE3StateManifold());
+    ob::StateManifoldPtr manifold(new ob::SE2StateManifold());
 
-    /// set the bounds for the R^3 part of SE(3)
-    ob::RealVectorBounds bounds(3);
+    /// set the bounds for the R^2 part of SE(2)
+    ob::RealVectorBounds bounds(2);
     bounds.setLow(-1);
     bounds.setHigh(1);
     
-    manifold->as<ob::SE3StateManifold>()->setBounds(bounds);
+    manifold->as<ob::SE2StateManifold>()->setBounds(bounds);
 
+    // create a control manifold
+    oc::ControlManifoldPtr cmanifold(new oc::RealVectorControlManifold(manifold, 2));
+    
+    // set the bounds for the control manifold
+    oc::RealVectorBounds cbounds(2);
+    cbounds.setLow(-0.3);
+    cbounds.setHigh(0.3);
+    
+    cmanifold->as<oc::RealVectorControlManifold>()->setBounds(cbounds);
+
+    // set the state propagation routine 
+    cmanifold->setPropagationFunction(boost::bind(&propagate, _1, _2, _3, _4));
+    
     // define a simple setup class
-    og::SimpleSetup ss;
+    oc::SimpleSetup ss(cmanifold);
 
     /// set state validity checking for this space
-    ss.setStateValidityChecker(boost::bind(&isStateValid, _1));
+    ss.setStateValidityChecker(boost::bind(&isStateValid, ss.getSpaceInformation().get(), _1));
     
     /// create a random start state
-    ob::ScopedState<> start(manifold);
-    start.random();
+    ob::ScopedState<ob::SE2StateManifold::StateType> start(manifold);
+    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = -0.5;
+    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.0;
+    (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
 
     /// create a random goal state
-    ob::ScopedState<> goal(manifold);
-    goal.random();
+    ob::ScopedState<ob::SE2StateManifold::StateType> goal(manifold);
+    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
+    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.5;
+    (*goal)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
+
     
     /// set the start and goal states; this call allows SimpleSetup to infer the planning manifold, if needed
-    ss.setStartAndGoalStates(start, goal);
+    ss.setStartAndGoalStates(start, goal, 0.05);
         
     /// attempt to solve the problem within one second of planning time
-    bool solved = ss.solve(1.0);
+    bool solved = ss.solve(10.0);
 
     if (solved)
     {
 	std::cout << "Found solution:" << std::endl;
 	/// print the path to screen
-	ss.simplifySolution();
-	ss.getSolutionPath().print(std::cout);
+
+	ss.getSolutionPath().asGeometric()->print(std::cout);
     }
     else
 	std::cout << "No solution found" << std::endl;
 }
-*/
+
 int main(int, char **)
 {
     plan();
     
     std::cout << std::endl << std::endl;
     
-    //    planWithSimpleSetup();
+    planWithSimpleSetup();
     
     return 0;
 }
