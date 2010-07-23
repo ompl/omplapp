@@ -50,6 +50,12 @@ namespace ompl
 	class RealVectorState : public State
 	{
 	public:
+	    /** \brief Access element i of values.
+	    This does not check whether the index is within bounds */
+	    double& operator[](unsigned int i) 
+	    {
+            return values[i];
+	    }
 	    /** \brief The value of the actual vector in R<sup>n</sup> */
 	    double *values;
 	};
