@@ -44,11 +44,13 @@
 namespace ompl
 {
     
+    /** \brief Abstract representation of a container that can perform nearest neighbors queries */
     template<typename _T>
     class NearestNeighbors
     {
     public:
 	
+	/** \brief The definition of a distance function */
 	typedef	boost::function<double(const _T &a, const _T &b)> DistanceFunction;
 	
 	NearestNeighbors(void)
@@ -59,25 +61,42 @@ namespace ompl
 	{
 	}
 
+	/** \brief Set the distance function to use */
 	void setDistanceFunction(const DistanceFunction &distFun)
 	{
 	    distFun_ = distFun;
 	}
 
-	DistanceFunction& getDistanceFunction(void) const
+	/** \brief Get the distance function used */
+	const DistanceFunction& getDistanceFunction(void) const
 	{
 	    return distFun_;
 	}
 	
+	/** \brief Clear the datastructure */
 	virtual void clear(void) = 0;
+
+	/** \brief Add an element to the datastructure */
 	virtual void add(_T &data) = 0;
+
+	/** \brief Remove an element from the datastructure */
 	virtual bool remove(_T &data) = 0;
+
+	/** \brief Get the nearest neighbor of a point */
 	virtual _T nearest(const _T &data) const = 0;
-	virtual unsigned int size(void) const = 0;		
+
+	/** \brief Get the k-nearest neighbors of a point */
+	virtual void nearest(const _T &data, unsigned int k, std::vector<_T> &nbh) const = 0;
+
+	/** \brief Get the number of elements in the datastructure */
+	virtual unsigned int size(void) const = 0;
+
+	/** \brief Get all the elements in the datastructure */
 	virtual void list(std::vector<_T> &data) const = 0;
 		
     protected:
 	
+	/** \brief The used distance function */
 	DistanceFunction distFun_;
 	
     };

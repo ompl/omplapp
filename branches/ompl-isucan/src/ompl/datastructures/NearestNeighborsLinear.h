@@ -38,6 +38,8 @@
 #define OMPL_DATASTRUCTURES_NEAREST_NEIGHBORS_LINEAR_
 
 #include "ompl/datastructures/NearestNeighbors.h"
+#include "ompl/util/Exception.h"
+#include <algorithm>
 
 namespace ompl
 {
@@ -93,7 +95,21 @@ namespace ompl
 		    }
 		}
 	    }
-	    return pos >= 0 ? data_[pos] : data;
+	    if (pos >= 0) 
+		return data_[pos];
+	    
+	    throw Exception("No elements found");
+	}
+
+	virtual void nearest(const _T &data, unsigned int k, std::vector<_T> &nbh) const
+	{
+	    nbh.clear();
+	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
+		if (active_[i])
+		    nbh.push_back(data_[i]);
+	    std::sort(nbh.begin(), nbh.end(), MySort(data, NearestNeighbors<_T>::distFun_));
+	    if (nbh.size() > k)
+		nbh.resize(k);
 	}
 	
 	virtual unsigned int size(void) const
@@ -110,7 +126,24 @@ namespace ompl
 	
 	std::vector<_T>   data_;
 	std::vector<bool> active_;
+
+    private:
 	
+	struct MySort
+	{
+	    MySort(const _T &e, const typename NearestNeighbors<_T>::DistanceFunction &df) : e_(e), df_(df)
+	    {
+	    }
+	    
+	    bool operator()(const _T &a, const _T &b) const
+	    {
+		return df_(a, e_) < df_(b, e_);
+	    }
+
+	    const _T                                              &e_;
+	    const typename NearestNeighbors<_T>::DistanceFunction &df_;
+	};
+
     };
     
     
