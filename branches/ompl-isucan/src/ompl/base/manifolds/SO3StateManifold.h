@@ -49,8 +49,8 @@ namespace ompl
 	    The representation of a quaternion (x,y,z) define the
 	    vector component and w is the scalar component. Important:
 	    the order of the elements matters in this definition for
-	    the QuaternionStateUniformSampler::sample() function. */
-	class QuaternionState : public State
+	    the SO3StateUniformSampler::sample() function. */
+	class SO3State : public State
 	{
 	public:
 	    
@@ -58,11 +58,11 @@ namespace ompl
 	};
 	
 	/** \brief Uniform sampler for the SO(3) manifold, using quaternion representation */
-	class QuaternionStateUniformSampler : public StateSampler
+	class SO3StateUniformSampler : public StateSampler
 	{
 	public:
 	    
-	    QuaternionStateUniformSampler(const StateManifold *manifold) : StateSampler(manifold)
+	    SO3StateUniformSampler(const StateManifold *manifold) : StateSampler(manifold)
 	    {
 	    }
 	    
@@ -79,7 +79,7 @@ namespace ompl
 	public:
 
 	    /** \brief Define the type of state allocated by this manifold */
-	    typedef QuaternionState StateType;
+	    typedef SO3State StateType;
 
 	    SO3StateManifold(void) : StateManifold()
 	    {
