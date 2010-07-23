@@ -17,13 +17,15 @@ else(ROS)
 	include(FindPackageHandleStandardArgs)
 	find_package(Boost COMPONENTS date_time thread filesystem system REQUIRED)
 	include_directories("${Boost_INCLUDE_DIR}")
-	add_definitions(-W -Wall -Wextra -Wno-missing-field-initializers)
-
+	if(CMAKE_COMPILER_IS_GNUCXX)
+		add_definitions(-W -Wall -Wextra -Wno-missing-field-initializers)
+	endif(CMAKE_COMPILER_IS_GNUCXX)
+	
 	enable_testing()
 endif(ROS)
 
 include_directories(src)
 add_subdirectory(src)
+add_subdirectory(py-bindings)
 add_subdirectory(tests)
 add_subdirectory(demos)
-#add_subdirectory(py-bindings)

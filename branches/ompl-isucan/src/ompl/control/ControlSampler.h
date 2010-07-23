@@ -115,7 +115,7 @@ namespace ompl
 	};
 
 	/** \brief Definition of a function that can allocate a control sampler */
-	typedef boost::function<ControlSamplerPtr(const ControlManifold*)> ControlSamplerAllocator;
+	typedef boost::function1<ControlSamplerPtr, const ControlManifold*> ControlSamplerAllocator;
     }
 }
 

@@ -18,8 +18,12 @@
 # module. If the module is required add the keyword "REQUIRED":
 #	find_python_module(numpy REQUIRED)
 
-find_program(PYTHON_EXEC "python${Python_FIND_VERSION}" 
+find_program(PYTHON_EXEC_ "python${Python_FIND_VERSION}" 
 	DOC "Location of python executable to use")
+# On OS X the python executable might be symlinked to the "real" location
+# of the python executable. The header files and libraries are found relative
+# to that path.
+get_filename_component(PYTHON_EXEC "${PYTHON_EXEC_}" REALPATH)
 string(REGEX REPLACE "/bin/python${Python_FIND_VERSION}$" "" PYTHON_PREFIX
 	"${PYTHON_EXEC}")
 execute_process(COMMAND "${PYTHON_EXEC}" "-c"

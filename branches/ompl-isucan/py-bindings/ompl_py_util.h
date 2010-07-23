@@ -32,76 +32,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* \author Mark Moll */
 
-#ifndef OMPL_DATASTRUCTURES_NEAREST_NEIGHBORS_
-#define OMPL_DATASTRUCTURES_NEAREST_NEIGHBORS_
+#ifndef PY_BINDINGS_OMPL_PY_UTIL_
+#define PY_BINDINGS_OMPL_PY_UTIL_
 
-#include <vector>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
+#include <valarray>
 
-namespace ompl
+namespace std
 {
-    
-    /** \brief Abstract representation of a container that can perform nearest neighbors queries */
-    template<typename _T>
-    class NearestNeighbors
+    inline bool operator==(const std::valarray<double>& a, const std::valarray<double>& b)
     {
-    public:
-	
-	/** \brief The definition of a distance function */
-	typedef	boost::function2<double, const _T&, const _T&> DistanceFunction;
-	
-	NearestNeighbors(void)
-	{
-	}
-	
-	virtual ~NearestNeighbors(void)
-	{
-	}
-
-	/** \brief Set the distance function to use */
-	void setDistanceFunction(const DistanceFunction &distFun)
-	{
-	    distFun_ = distFun;
-	}
-
-	/** \brief Get the distance function used */
-	const DistanceFunction& getDistanceFunction(void) const
-	{
-	    return distFun_;
-	}
-	
-	/** \brief Clear the datastructure */
-	virtual void clear(void) = 0;
-
-	/** \brief Add an element to the datastructure */
-	virtual void add(_T &data) = 0;
-
-	/** \brief Remove an element from the datastructure */
-	virtual bool remove(_T &data) = 0;
-
-	/** \brief Get the nearest neighbor of a point */
-	virtual _T nearest(const _T &data) const = 0;
-
-	/** \brief Get the k-nearest neighbors of a point */
-	virtual void nearest(const _T &data, unsigned int k, std::vector<_T> &nbh) const = 0;
-
-	/** \brief Get the number of elements in the datastructure */
-	virtual unsigned int size(void) const = 0;
-
-	/** \brief Get all the elements in the datastructure */
-	virtual void list(std::vector<_T> &data) const = 0;
-		
-    protected:
-	
-	/** \brief The used distance function */
-	DistanceFunction distFun_;
-	
-    };
-    
-    
+        if (a.size()!=b.size()) return false;
+        for (unsigned int i=0; i<a.size(); ++i)
+            if (a[i]!=b[i]) return false;
+        return true;
+    }
 }
 
 #endif
