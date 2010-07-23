@@ -44,6 +44,7 @@ if(BUILD_TESTS)
 
 	# Test manifolds
 	add_ompl_test(test_manifold_SO2 manifolds/SO2/test_SO2.cpp)
+	add_ompl_test(test_manifold_SO3 manifolds/SO3/test_SO3.cpp)
 
 	# Test kinematic motion planners on a 2D map
 	add_ompl_test(test_2dmap_geometric geometric/2dmap/2dmap.cpp)
