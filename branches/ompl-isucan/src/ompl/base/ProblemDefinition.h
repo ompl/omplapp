@@ -47,6 +47,7 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 
 #include <boost/noncopyable.hpp>
 
@@ -142,12 +143,12 @@ namespace ompl
 		using these states (performs the needed calls to
 		addStartState(), creates an instance of
 		ompl::base::GoalState and calls setGoal() on it. */
-	    void setStartAndGoalStates(const State *start, const State *goal);
+	    void setStartAndGoalStates(const State *start, const State *goal, const double threshold = std::numeric_limits<double>::epsilon());
 
 	    /** \copydoc setStartAndGoalStates() */
-	    void setStartAndGoalStates(const ScopedState<> &start, const ScopedState<> &goal)
+	    void setStartAndGoalStates(const ScopedState<> &start, const ScopedState<> &goal, const double threshold = std::numeric_limits<double>::epsilon())
 	    {
-		setStartAndGoalStates(start.get(), goal.get());
+		setStartAndGoalStates(start.get(), goal.get(), threshold);
 	    }
 	    
 	    /** \brief A problem is trivial if the given starting state already

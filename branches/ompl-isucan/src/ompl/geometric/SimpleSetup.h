@@ -154,10 +154,10 @@ namespace ompl
 
 	    /** \brief Set the start and goal states to use. The state
 		manifold is inferred, if not yet set. */
-	    void setStartAndGoalStates(const base::ScopedState<> &start, const base::ScopedState<> &goal)
+	    void setStartAndGoalStates(const base::ScopedState<> &start, const base::ScopedState<> &goal, const double threshold = std::numeric_limits<double>::epsilon())
 	    {
 		useManifold(start.getManifold());
-		pdef_->setStartAndGoalStates(start, goal);
+		pdef_->setStartAndGoalStates(start, goal, threshold);
 	    }
 	    
 	    /** \brief Add a starting state for planning. The state

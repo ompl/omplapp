@@ -40,13 +40,14 @@
 
 #include <sstream>
 
-void ompl::base::ProblemDefinition::setStartAndGoalStates(const State *start, const State *goal)
+void ompl::base::ProblemDefinition::setStartAndGoalStates(const State *start, const State *goal, const double threshold)
 {
     clearStartStates();
     clearGoal();
     addStartState(start);
     GoalState *gs = new GoalState(si_);
     gs->setState(goal);
+    gs->threshold = threshold;
     setGoal(base::GoalPtr(gs));
 }
 

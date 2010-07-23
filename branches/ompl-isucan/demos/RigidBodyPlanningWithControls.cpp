@@ -131,9 +131,7 @@ void plan(void)
     ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
 
     /// set the start and goal states
-    pdef->setStartAndGoalStates(start, goal);
-    
-    dynamic_cast<ob::GoalState*>(pdef->getGoal().get())->threshold = 0.1;
+    pdef->setStartAndGoalStates(start, goal, 0.1);
     
     /// create a planner for the defined space
     ob::PlannerPtr planner(new oc::KPIECE1(si));
