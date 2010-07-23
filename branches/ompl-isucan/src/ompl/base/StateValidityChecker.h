@@ -62,17 +62,19 @@ namespace ompl
 	    StateValidityChecker(SpaceInformation* si) : si_(si)
 	    {
 	    }	
-	    
+
+	    /** \brief Constructor */
 	    StateValidityChecker(const SpaceInformationPtr &si) : si_(si.get())
 	    {
 	    }
 	    
-	    /** \brief Destructor */
 	    virtual ~StateValidityChecker(void)
 	    {
 	    }
 	    
-	    /** \brief Return true if the state is valid */
+	    /** \brief Return true if the state is valid. Usually, this means at least collision checking. If it is
+		possible that ompl::base::StateManifold::interpolate() or ompl::control::ControlManifold::propagate() return states that
+		are outside of bounds, this function should also make a call to ompl::base::SpaceInformation::satisfiesBounds(). */
 	    virtual bool isValid(const State *state) const = 0;
 	    
 	protected:

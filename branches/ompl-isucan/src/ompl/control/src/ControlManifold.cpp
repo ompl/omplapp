@@ -46,6 +46,11 @@ const ompl::base::StateManifoldPtr& ompl::control::ControlManifold::getStateMani
     return stateManifold_;
 }
 
+bool ompl::control::ControlManifold::canPropagateBackward(void) const
+{
+    return true;
+}
+
 void ompl::control::ControlManifold::printControl(const Control *control, std::ostream &out) const
 {
     out << "Control instance: " << control << std::endl;
@@ -174,6 +179,14 @@ ompl::control::PropagationResult ompl::control::CompoundControlManifold::propaga
 void ompl::control::CompoundControlManifold::lock(void)
 {
     locked_ = true;
+}
+
+bool ompl::control::CompoundControlManifold::canPropagateBackward(void) const
+{
+    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
+	if (!components_[i]->canPropagateBackward())
+	    return false;
+    return true;
 }
 
 void ompl::control::CompoundControlManifold::printControl(const Control *control, std::ostream &out) const

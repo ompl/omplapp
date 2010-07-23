@@ -127,18 +127,30 @@ namespace ompl
 	    /** \brief Allocate a control sampler */
 	    virtual ControlSamplerPtr allocControlSampler(void) const = 0;
 
-	    /** \brief Propagate forward from a state, given a control, for some time.
-
+	    /** \brief Propagate from a state, given a control, for some specified amount of time (the amount of time can
+		also be negative, if canPropagateBackward() returns true)
+		
+		Notes:
+		\li Return value:
 		In the process of propagation, it is sometimes the case that collisions are evaluated (e.g., with physics
 		simulation).  Important: This is not the same as state validity, but it may represent an important
 		computational part of checking state validity. The implementation of this function may
-		choose to evaluate the full validity of the starting state of the propagation. If this is the case, and the
+		choose to evaluate the full validity of the starting state of the propagation, for efficiency reasons. If this is the case, and the
 		state is valid, the return value of the function is PROPAGATION_START_VALID. If the state is not valid,
 		the return value is PROPAGATION_START_INVALID. If no such check is performed, the return value is
 		PROPAGATION_START_UNKNOWN. Returning PROPAGATION_START_UNKNOWN always leads to a correct
-		implementation but may not be the most efficient one. The pointer to the starting state and the result state may be the same. */
+		implementation but may not be the most efficient one.
+		
+		\li The pointer to the starting state and the result state may be the same.
+	    */
 	    virtual PropagationResult propagate(const base::State *state, const Control* control, const double duration, base::State *result) const;
 	    
+	    /** \brief Some systems can only propagate forward in time (i.e., the duration argument for the propagate()
+		function is always positive). If this is the case, this function should return false. Planners that need
+		backward propagation (negative durations) will call this function to check. If backward propagation is 
+		possible, this function should return true (this is the default). */
+	    virtual bool canPropagateBackward(void) const;
+
 	    /** \brief Set the function that performs state propagation */
 	    void setPropagationFunction(const StatePropagationFn &fn);
 	    
@@ -210,7 +222,9 @@ namespace ompl
 	    virtual ControlSamplerPtr allocControlSampler(void) const;
 
 	    virtual PropagationResult propagate(const base::State *state, const Control* control, const double duration, base::State *result) const;
-	    
+
+	    virtual bool canPropagateBackward(void) const;
+
 	    virtual void printControl(const Control *control, std::ostream &out = std::cout) const;
 
 	    virtual void printSettings(std::ostream &out) const;
