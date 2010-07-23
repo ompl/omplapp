@@ -88,7 +88,7 @@ void plan(void)
     /// construct the manifold we are planning in
     ob::StateManifoldPtr manifold(new ob::SE2StateManifold());
 
-    /// set the bounds for the R^3 part of SE(2)
+    /// set the bounds for the R^2 part of SE(2)
     ob::RealVectorBounds bounds(2);
     bounds.setLow(-1);
     bounds.setHigh(1);
