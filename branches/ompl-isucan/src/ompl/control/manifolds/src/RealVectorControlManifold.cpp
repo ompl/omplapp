@@ -44,7 +44,7 @@ void ompl::control::RealVectorControlUniformSampler::sample(Control *control)
     const unsigned int dim = manifold_->getDimension();
     const RealVectorBounds &bounds = static_cast<const RealVectorControlManifold*>(manifold_)->getBounds();
     
-    RealVectorControl *rcontrol = static_cast<RealVectorControl*>(control);
+    RealVectorControlManifold::ControlType *rcontrol = static_cast<RealVectorControlManifold::ControlType*>(control);
     for (unsigned int i = 0 ; i < dim ; ++i)
 	rcontrol->values[i] = rng_.uniformReal(bounds.low[i], bounds.high[i]);
 }
@@ -73,14 +73,14 @@ unsigned int ompl::control::RealVectorControlManifold::getDimension(void) const
 
 void ompl::control::RealVectorControlManifold::copyControl(Control *destination, const Control *source) const
 {
-    memcpy(static_cast<RealVectorControl*>(destination)->values,
-	   static_cast<const RealVectorControl*>(source)->values, controlBytes_);    
+    memcpy(static_cast<ControlType*>(destination)->values,
+	   static_cast<const ControlType*>(source)->values, controlBytes_);    
 }
 
 bool ompl::control::RealVectorControlManifold::equalControls(const Control *control1, const Control *control2) const
 {
-    const double *s1 = static_cast<const RealVectorControl*>(control1)->values;
-    const double *s2 = static_cast<const RealVectorControl*>(control2)->values;
+    const double *s1 = static_cast<const ControlType*>(control1)->values;
+    const double *s2 = static_cast<const ControlType*>(control2)->values;
     for (unsigned int i = 0 ; i < dimension_ ; ++i)
     {	 
 	double diff = (*s1++) - (*s2++);
@@ -97,21 +97,21 @@ ompl::control::ControlSamplerPtr ompl::control::RealVectorControlManifold::alloc
 
 ompl::control::Control* ompl::control::RealVectorControlManifold::allocControl(void) const
 {
-    RealVectorControl *rcontrol = new RealVectorControl();
+    ControlType *rcontrol = new ControlType();
     rcontrol->values = new double[dimension_];
     return rcontrol;
 }
 
 void ompl::control::RealVectorControlManifold::freeControl(Control *control) const
 {
-    RealVectorControl *rcontrol = static_cast<RealVectorControl*>(control);
+    ControlType *rcontrol = static_cast<ControlType*>(control);
     delete[] rcontrol->values;
     delete rcontrol;
 }
 
 void ompl::control::RealVectorControlManifold::nullControl(Control *control) const
 {
-    RealVectorControl *rcontrol = static_cast<RealVectorControl*>(control);
+    ControlType *rcontrol = static_cast<ControlType*>(control);
     for (unsigned int i = 0 ; i < dimension_ ; ++i)
 	rcontrol->values[i] = 0.0;
 }
@@ -120,7 +120,7 @@ void ompl::control::RealVectorControlManifold::printControl(const Control *contr
 {
     if (control)
     {
-	const RealVectorControl *rcontrol = static_cast<const RealVectorControl*>(control);
+	const ControlType *rcontrol = static_cast<const ControlType*>(control);
 	for (unsigned int i = 0 ; i < dimension_ ; ++i)
 	    out << rcontrol->values[i] << " ";
 	out << std::endl;

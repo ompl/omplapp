@@ -41,7 +41,7 @@
 
 void ompl::base::SO3StateUniformSampler::sample(State *state)
 {
-    rng_.quaternion(&state->as<SO3State>()->x);
+    rng_.quaternion(&state->as<SO3StateManifold::StateType>()->x);
 }
 
 void ompl::base::SO3StateUniformSampler::sampleNear(State *state, const State * /* near */, const double /* distance */)
@@ -57,7 +57,7 @@ unsigned int ompl::base::SO3StateManifold::getDimension(void) const
 
 double ompl::base::SO3StateManifold::norm(const State *state) const
 {
-    const SO3State *qstate = static_cast<const SO3State*>(state);
+    const StateType *qstate = static_cast<const StateType*>(state);
     double nrmSqr = qstate->x * qstate->x + qstate->y * qstate->y + qstate->z * qstate->z + qstate->w * qstate->w;
     return (fabs(nrmSqr - 1.0) > std::numeric_limits<double>::epsilon()) ? sqrt(nrmSqr) : 1.0;
 }
@@ -67,7 +67,7 @@ void ompl::base::SO3StateManifold::enforceBounds(State *state) const
     double nrm = norm(state);
     if (fabs(nrm - 1.0) > std::numeric_limits<double>::epsilon())
     {
-	SO3State *qstate = static_cast<SO3State*>(state);
+	StateType *qstate = static_cast<StateType*>(state);
 	qstate->x /= nrm;
 	qstate->y /= nrm;
 	qstate->z /= nrm;
@@ -82,8 +82,8 @@ bool ompl::base::SO3StateManifold::satisfiesBounds(const State *state) const
 
 void ompl::base::SO3StateManifold::copyState(State *destination, const State *source) const
 {
-    const SO3State *qsource = static_cast<const SO3State*>(source);
-    SO3State *qdestination = static_cast<SO3State*>(destination);
+    const StateType *qsource = static_cast<const StateType*>(source);
+    StateType *qdestination = static_cast<StateType*>(destination);
     qdestination->x = qsource->x;
     qdestination->y = qsource->y;
     qdestination->z = qsource->z;
@@ -98,8 +98,8 @@ Copyright (c) 2003-2006 Gino van den Bergen / Erwin Coumans  http://continuousph
 */
 double ompl::base::SO3StateManifold::distance(const State *state1, const State *state2) const
 {
-    const SO3State *qs1 = static_cast<const SO3State*>(state1);
-    const SO3State *qs2 = static_cast<const SO3State*>(state2);
+    const StateType *qs1 = static_cast<const StateType*>(state1);
+    const StateType *qs2 = static_cast<const StateType*>(state2);
     double dq = fabs(qs1->x * qs2->x + qs1->y * qs2->y + qs1->z * qs2->z + qs1->w * qs2->w);
     if (dq > 1.0 - std::numeric_limits<double>::epsilon())
 	return 0.0;
@@ -126,9 +126,9 @@ void ompl::base::SO3StateManifold::interpolate(const State *from, const State *t
 	double s0 = sin((1.0 - t) * theta);
 	double s1 = sin(t * theta);
 	
-	const SO3State *qs1 = static_cast<const SO3State*>(from);
-	const SO3State *qs2 = static_cast<const SO3State*>(to);
-	SO3State       *qr  = static_cast<SO3State*>(state);
+	const StateType *qs1 = static_cast<const StateType*>(from);
+	const StateType *qs2 = static_cast<const StateType*>(to);
+	StateType       *qr  = static_cast<StateType*>(state);
 	double dq = qs1->x * qs2->x + qs1->y * qs2->y + qs1->z * qs2->z + qs1->w * qs2->w;
 	if (dq < 0)  // Take care of long angle case see http://en.wikipedia.org/wiki/Slerp
 	    s1 = -s1;
@@ -152,19 +152,19 @@ ompl::base::StateSamplerPtr ompl::base::SO3StateManifold::allocUniformStateSampl
 
 ompl::base::State* ompl::base::SO3StateManifold::allocState(void) const
 {
-    return new SO3State();
+    return new StateType();
 }
 
 void ompl::base::SO3StateManifold::freeState(State *state) const
 {
-    delete static_cast<SO3State*>(state);
+    delete static_cast<StateType*>(state);
 }
 
 void ompl::base::SO3StateManifold::printState(const State *state, std::ostream &out) const
 {
     if (state)
     {
-	const SO3State *qstate = static_cast<const SO3State*>(state);
+	const StateType *qstate = static_cast<const StateType*>(state);
 	out << qstate->x << " " << qstate->y << " " << qstate->z << " " << qstate->w << std::endl;
     }
     else

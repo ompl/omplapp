@@ -70,7 +70,7 @@ namespace ompl
 	   StateManifold class) need to be implemented accordingly. If
 	   the implementation of the new manifold defines an
 	   allocState() function, it should also provide a freeState()
-	   function and define (typedef) StateType to the type of the
+	   function and define (or typedef) StateType to the type of the
 	   state that is allocated/freed.
 	   
 	   @par Inheriting from CompoundStateManifold

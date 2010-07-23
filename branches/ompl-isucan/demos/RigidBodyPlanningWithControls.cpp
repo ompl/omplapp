@@ -114,17 +114,26 @@ void plan(void)
     /// set state validity checking for this space
     si->setStateValidityChecker(boost::bind(&isStateValid, si.get(),  _1));
     
-    /// create a random start state
+    /// create a start state
     ob::ScopedState<ob::SE2StateManifold::StateType> start(manifold);
-    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = -0.5;
-    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.0;
-    (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
+    ob::SE2StateManifold::Mapper mapper(start);
+    
+    mapper.setX(-0.5);
+    mapper.setY(0.0);
+    mapper.setYaw(0.0);
 
-    /// create a random goal state
-    ob::ScopedState<ob::SE2StateManifold::StateType> goal(manifold);
-    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
-    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.5;
-    (*goal)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
+    //    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = -0.5;
+    //    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.0;
+    //    (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
+
+    /// create a goal state
+    ob::ScopedState<ob::SE2StateManifold::StateType> goal(start);
+    mapper.use(goal);
+    mapper.setX(0.5);
+    
+    //    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
+    //    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.5;
+    //    (*goal)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
 
     
     /// create a problem instance

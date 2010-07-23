@@ -46,28 +46,6 @@ namespace ompl
     namespace control
     {
 	
-	/** \brief The definition of a control in R<sup>n</sup> */
-	class RealVectorControl : public Control
-	{
-	public:
-
-	    /** \brief Access element i of values.  This does not
-		check whether the index is within bounds */
-	    double operator[](unsigned int i) const
-	    {
-		return values[i];
-	    }
-
-	    /** \brief Access element i of values.  This does not
-		check whether the index is within bounds */
-	    double& operator[](unsigned int i)
-	    {
-		return values[i];
-	    }
-	    
-	    double *values;
-	};
-	
 	class RealVectorBounds
 	{
 	public:
@@ -110,9 +88,28 @@ namespace ompl
 	{
 	public:
 
-	    /** \brief Define the type of control allocated by this manifold */
-	    typedef RealVectorControl ControlType;
-
+	    /** \brief The definition of a control in R<sup>n</sup> */
+	    class ControlType : public Control
+	    {
+	    public:
+		
+		/** \brief Access element i of values.  This does not
+		    check whether the index is within bounds */
+		double operator[](unsigned int i) const
+		{
+		    return values[i];
+		}
+		
+		/** \brief Access element i of values.  This does not
+		    check whether the index is within bounds */
+		double& operator[](unsigned int i)
+		{
+		    return values[i];
+		}
+		
+		double *values;
+	    };
+	
 	    RealVectorControlManifold(const base::StateManifoldPtr &stateManifold, unsigned int dim) : ControlManifold(stateManifold), dimension_(dim), controlBytes_(dim * sizeof(double)), bounds_(dim)
 	    {
 	    }

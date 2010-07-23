@@ -40,6 +40,7 @@
 #include "ompl/base/StateManifold.h"
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
 #include "ompl/base/manifolds/SO2StateManifold.h"
+#include "ompl/base/ScopedState.h"
 
 namespace ompl
 {
@@ -51,6 +52,66 @@ namespace ompl
 	{
 	public:
 
+	    /** \brief Interface to an SE(2) state */
+	    class Mapper
+	    {
+	    public:
+		Mapper(State *state) : state_(state)
+		{
+		}
+		
+		template<class T>
+		Mapper(const ScopedState<T> &state) : state_(state.get())
+		{
+		}
+		
+		void use(State *state)
+		{
+		    state_ = state;
+		}
+		
+		template<class T>
+		void use(const ScopedState<T> &state)
+		{
+		    state_ = state.get();
+		}
+		
+		double getX(void) const
+		{
+		    return state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[0];
+		}
+		
+		double getY(void) const
+		{
+		    return state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[1];
+		}
+		
+		double getYaw(void) const
+		{
+		    return state_->as<CompoundState>()->as<SO2StateManifold::StateType>(1)->value;
+		}
+		
+		void setX(double x)
+		{
+		    state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[0] = x;
+		}
+		
+		void setY(double y)
+		{
+		    state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[1] = y;
+		}
+		
+		void setYaw(double yaw)
+		{
+		    state_->as<CompoundState>()->as<SO2StateManifold::StateType>(1)->value = yaw;
+		}
+		
+	    private:
+		
+		State *state_;
+		
+	    };
+	    
 	    SE2StateManifold(void) : CompoundStateManifold()
 	    {
 		addSubManifold(StateManifoldPtr(new RealVectorStateManifold(2)), 1.0);

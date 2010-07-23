@@ -56,8 +56,8 @@ bool isValid(const std::vector< std::vector<int> > *grid, const base::State *sta
     const base::CompoundState *cstate = state->as<base::CompoundState>();
     
     /* planning is done in a continuous space, but our collision space representation is discrete */
-    int x = (int)(cstate->as<base::RealVectorState>(0)->values[0]);
-    int y = (int)(cstate->as<base::RealVectorState>(1)->values[0]);
+    int x = (int)(cstate->as<base::RealVectorStateManifold::StateType>(0)->values[0]);
+    int y = (int)(cstate->as<base::RealVectorStateManifold::StateType>(1)->values[0]);
     return (*grid)[x][y] == 0; // 0 means valid state
 }
 
@@ -71,8 +71,8 @@ public:
     
     virtual double distance(const base::State *state1, const base::State *state2) const
     {
-	int x1 = (int)(state1->as<base::RealVectorState>()->values[0]);
-	int x2 = (int)(state2->as<base::RealVectorState>()->values[0]);
+	int x1 = (int)(state1->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int x2 = (int)(state2->as<base::RealVectorStateManifold::StateType>()->values[0]);
 	
 	return abs(x1 - x2);
     }
@@ -102,12 +102,12 @@ public:
 	setup.setStateValidityChecker(boost::bind(&isValid, &env.grid, _1));
 	
 	base::ScopedState<base::CompoundState> state(setup.getSpaceInformation());
-	state->as<base::RealVectorState>(0)->values[0] = env.start.first;
-	state->as<base::RealVectorState>(1)->values[0] = env.start.second;
+	state->as<base::RealVectorStateManifold::StateType>(0)->values[0] = env.start.first;
+	state->as<base::RealVectorStateManifold::StateType>(1)->values[0] = env.start.second;
 	
 	base::ScopedState<base::CompoundState> gstate(setup.getSpaceInformation());	
-	gstate->as<base::RealVectorState>(0)->values[0] = env.goal.first;
-	gstate->as<base::RealVectorState>(1)->values[0] = env.goal.second;
+	gstate->as<base::RealVectorStateManifold::StateType>(0)->values[0] = env.goal.first;
+	gstate->as<base::RealVectorStateManifold::StateType>(1)->values[0] = env.goal.second;
 	
 	setup.setStartAndGoalStates(state, gstate);
     }
@@ -183,8 +183,8 @@ public:
 	    /* display the solution */	    
 	    for (unsigned int i = 0 ; i < path.states.size() ; ++i)
 	    {
-		int x = (int)path.states[i]->as<base::CompoundState>()->as<base::RealVectorState>(0)->values[0];
-		int y = (int)path.states[i]->as<base::CompoundState>()->as<base::RealVectorState>(1)->values[0];
+		int x = (int)path.states[i]->as<base::CompoundState>()->as<base::RealVectorStateManifold::StateType>(0)->values[0];
+		int y = (int)path.states[i]->as<base::CompoundState>()->as<base::RealVectorStateManifold::StateType>(1)->values[0];
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else

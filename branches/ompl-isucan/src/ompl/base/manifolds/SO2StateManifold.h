@@ -44,14 +44,6 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief The definition of a state in SO(2) */
-	class SO2State : public State
-	{
-	public:
-	    /** \brief The value of the angle (between -PI and PI) */
-	    double value;
-	};
-	
 	/** \brief Uniform sampler for the SO(2) manifold */
 	class SO2StateUniformSampler : public StateSampler
 	{
@@ -72,9 +64,15 @@ namespace ompl
 	{
 	public:
 
-	    /** \brief Define the type of state allocated by this manifold */
-	    typedef SO2State StateType;
-
+	    /** \brief The definition of a state in SO(2) */
+	    class StateType : public State
+	    {
+	    public:
+		
+		/** \brief The value of the angle (between -PI and PI) */
+		double value;
+	    };
+	
 	    SO2StateManifold(void) : StateManifold()
 	    {
 	    }

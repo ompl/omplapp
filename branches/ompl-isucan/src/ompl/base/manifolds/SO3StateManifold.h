@@ -44,19 +44,7 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief The definition of a state in SO(3) represented as a quaternion
 
-	    The representation of a quaternion (x,y,z) define the
-	    vector component and w is the scalar component. Important:
-	    the order of the elements matters in this definition for
-	    the SO3StateUniformSampler::sample() function. */
-	class SO3State : public State
-	{
-	public:
-	    
-	    double x, y, z, w;
-	};
-	
 	/** \brief Uniform sampler for the SO(3) manifold, using quaternion representation */
 	class SO3StateUniformSampler : public StateSampler
 	{
@@ -78,9 +66,20 @@ namespace ompl
 	{
 	public:
 
-	    /** \brief Define the type of state allocated by this manifold */
-	    typedef SO3State StateType;
-
+	    
+	    /** \brief The definition of a state in SO(3) represented as a quaternion
+		
+		The representation of a quaternion (x,y,z) define the
+		vector component and w is the scalar component. Important:
+		the order of the elements matters in this definition for
+		the SO3StateUniformSampler::sample() function. */
+	    class StateType : public State
+	    {
+	    public:
+		
+		double x, y, z, w;
+	    };
+	
 	    SO3StateManifold(void) : StateManifold()
 	    {
 	    }

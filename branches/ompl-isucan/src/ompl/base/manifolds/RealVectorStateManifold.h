@@ -46,29 +46,6 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief The definition of a state in R<sup>n</sup> */
-	class RealVectorState : public State
-	{
-	public:
-	    
-	    /** \brief Access element i of values.  This does not
-		check whether the index is within bounds */
-	    double operator[](unsigned int i) const
-	    {
-		return values[i];
-	    }
-
-	    /** \brief Access element i of values.  This does not
-		check whether the index is within bounds */
-	    double& operator[](unsigned int i)
-	    {
-		return values[i];
-	    }
-	    
-	    /** \brief The value of the actual vector in R<sup>n</sup> */
-	    double *values;
-	};
-	
 	/** \brief The lower and upper bounds for an R<sup>n</sup> manifold */
 	class RealVectorBounds
 	{
@@ -117,9 +94,29 @@ namespace ompl
 	{
 	public:
 
-	    /** \brief Define the type of state allocated by this manifold */
-	    typedef RealVectorState StateType;
-
+	    /** \brief The definition of a state in R<sup>n</sup> */
+	    class StateType : public State
+	    {
+	    public:
+		
+		/** \brief Access element i of values.  This does not
+		    check whether the index is within bounds */
+		double operator[](unsigned int i) const
+		{
+		    return values[i];
+		}
+		
+		/** \brief Access element i of values.  This does not
+		    check whether the index is within bounds */
+		double& operator[](unsigned int i)
+		{
+		    return values[i];
+		}
+		
+		/** \brief The value of the actual vector in R<sup>n</sup> */
+		double *values;
+	    };
+	    
 	    RealVectorStateManifold(unsigned int dim) : StateManifold(), dimension_(dim), stateBytes_(dim * sizeof(double)), bounds_(dim)
 	    {
 	    }

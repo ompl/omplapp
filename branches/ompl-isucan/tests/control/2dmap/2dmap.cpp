@@ -67,8 +67,8 @@ public:
     virtual bool isValid(const base::State *state) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(state->as<base::RealVectorState>()->values[0]);
-	int y = (int)(state->as<base::RealVectorState>()->values[1]);
+	int x = (int)(state->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int y = (int)(state->as<base::RealVectorStateManifold::StateType>()->values[1]);
 	
 	if (x < 0 || y < 0 || x >= w_ || y >= h_)
 	    return false;
@@ -101,11 +101,11 @@ public:
     virtual double distance(const base::State *state1, const base::State *state2) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x1 = (int)(state1->as<base::RealVectorState>()->values[0]);
-	int y1 = (int)(state1->as<base::RealVectorState>()->values[1]);
+	int x1 = (int)(state1->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int y1 = (int)(state1->as<base::RealVectorStateManifold::StateType>()->values[1]);
 
-	int x2 = (int)(state2->as<base::RealVectorState>()->values[0]);
-	int y2 = (int)(state2->as<base::RealVectorState>()->values[1]);
+	int x2 = (int)(state2->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int y2 = (int)(state2->as<base::RealVectorStateManifold::StateType>()->values[1]);
 
 	return abs(x1 - x2) + abs(y1 - y2);
     }
@@ -121,10 +121,13 @@ public:
     
     virtual control::PropagationResult propagate(const base::State *state, const control::Control* control, const double duration, base::State *result) const
     {
-       	result->as<base::RealVectorState>()->values[0] = state->as<base::RealVectorState>()->values[0] + duration * control->as<control::RealVectorControl>()->values[0];
-	result->as<base::RealVectorState>()->values[1] = state->as<base::RealVectorState>()->values[1] + duration * control->as<control::RealVectorControl>()->values[1];
-	result->as<base::RealVectorState>()->values[2] = control->as<control::RealVectorControl>()->values[0];
-	result->as<base::RealVectorState>()->values[3] = control->as<control::RealVectorControl>()->values[1];
+       	result->as<base::RealVectorStateManifold::StateType>()->values[0] =
+	    state->as<base::RealVectorStateManifold::StateType>()->values[0] + duration * control->as<control::RealVectorControlManifold::ControlType>()->values[0];
+	result->as<base::RealVectorStateManifold::StateType>()->values[1] = 
+	    state->as<base::RealVectorStateManifold::StateType>()->values[1] + duration * control->as<control::RealVectorControlManifold::ControlType>()->values[1];
+	
+	result->as<base::RealVectorStateManifold::StateType>()->values[2] = control->as<control::RealVectorControlManifold::ControlType>()->values[0];
+	result->as<base::RealVectorStateManifold::StateType>()->values[3] = control->as<control::RealVectorControlManifold::ControlType>()->values[1];
 	stateManifold_->enforceBounds(result);
 	//	return SVC->isValid(state) ? control::PROPAGATION_START_VALID : control::PROPAGATION_START_INVALID;
 	return control::PROPAGATION_START_UNKNOWN;
@@ -210,7 +213,7 @@ public:
 	planner->setup();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::ScopedState<base::RealVectorState> state(si);
+	base::ScopedState<base::RealVectorStateManifold::StateType> state(si);
 	state->values[0] = env.start.first;
 	state->values[1] = env.start.second;
 	state->values[2] = 0.0;
@@ -219,7 +222,7 @@ public:
 		
 	/* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
 	base::GoalState *goal = new base::GoalState(si);
-	base::ScopedState<base::RealVectorState> gstate(si);
+	base::ScopedState<base::RealVectorStateManifold::StateType> gstate(si);
 	gstate->values[0] = env.goal.first;
 	gstate->values[1] = env.goal.second;
 	gstate->values[2] = 0.0;
@@ -264,8 +267,8 @@ public:
 	    /* display the solution */	    
 	    for (unsigned int i = 0 ; i < path->states.size() ; ++i)
 	    {
-		int x = (int)(path->states[i]->as<base::RealVectorState>()->values[0]);
-		int y = (int)(path->states[i]->as<base::RealVectorState>()->values[1]);
+		int x = (int)(path->states[i]->as<base::RealVectorStateManifold::StateType>()->values[0]);
+		int y = (int)(path->states[i]->as<base::RealVectorStateManifold::StateType>()->values[1]);
 		if (temp.grid[x][y] == T_FREE || temp.grid[x][y] == T_PATH)
 		    temp.grid[x][y] = T_PATH;
 		else
@@ -316,8 +319,8 @@ public:
         
     virtual void project(const base::State *state, base::EuclideanProjection &projection) const
     {
-	projection.values[0] = state->as<base::RealVectorState>()->values[0];
-	projection.values[1] = state->as<base::RealVectorState>()->values[1];
+	projection.values[0] = state->as<base::RealVectorStateManifold::StateType>()->values[0];
+	projection.values[1] = state->as<base::RealVectorStateManifold::StateType>()->values[1];
     }
 };
     

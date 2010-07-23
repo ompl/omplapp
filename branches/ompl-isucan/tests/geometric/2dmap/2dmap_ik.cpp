@@ -65,8 +65,8 @@ public:
     virtual bool isValid(const base::State *state) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x = (int)(state->as<base::RealVectorState>()->values[0]);
-	int y = (int)(state->as<base::RealVectorState>()->values[1]);
+	int x = (int)(state->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int y = (int)(state->as<base::RealVectorStateManifold::StateType>()->values[1]);
 	return grid_[x][y] == 0; // 0 means valid state
     }
     
@@ -87,11 +87,11 @@ public:
     virtual double distance(const base::State *state1, const base::State *state2) const
     {
 	/* planning is done in a continuous space, but our collision space representation is discrete */
-	int x1 = (int)(state1->as<base::RealVectorState>()->values[0]);
-	int y1 = (int)(state1->as<base::RealVectorState>()->values[1]);
+	int x1 = (int)(state1->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int y1 = (int)(state1->as<base::RealVectorStateManifold::StateType>()->values[1]);
 
-	int x2 = (int)(state2->as<base::RealVectorState>()->values[0]);
-	int y2 = (int)(state2->as<base::RealVectorState>()->values[1]);
+	int x2 = (int)(state2->as<base::RealVectorStateManifold::StateType>()->values[0]);
+	int y2 = (int)(state2->as<base::RealVectorStateManifold::StateType>()->values[1]);
 
 	return abs(x1 - x2) + abs(y1 - y2);
     }
@@ -150,7 +150,7 @@ TEST(GAIK, Simple)
         
     /* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
     base::GoalState goal(si);
-    base::ScopedState<base::RealVectorState> gstate(si);
+    base::ScopedState<base::RealVectorStateManifold::StateType> gstate(si);
     gstate->values[0] = env.goal.first;
     gstate->values[1] = env.goal.second;
     goal.setState(gstate);
@@ -158,7 +158,7 @@ TEST(GAIK, Simple)
     
     geometric::GAIK gaik(si);
     gaik.setRange(5.0);
-    base::ScopedState<base::RealVectorState> found(si);
+    base::ScopedState<base::RealVectorStateManifold::StateType> found(si);
     double time = 0.0;
     
     /* start counting time */

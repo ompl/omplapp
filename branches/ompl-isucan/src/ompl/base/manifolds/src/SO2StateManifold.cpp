@@ -41,13 +41,14 @@
 
 void ompl::base::SO2StateUniformSampler::sample(State *state)
 {
-    state->as<SO2State>()->value = rng_.uniformReal(-M_PI, M_PI);
+    state->as<SO2StateManifold::StateType>()->value = rng_.uniformReal(-M_PI, M_PI);
 }
 
 void ompl::base::SO2StateUniformSampler::sampleNear(State *state, const State *near, const double distance)
 {
-    double &v = state->as<SO2State>()->value;
-    v = rng_.uniformReal(near->as<SO2State>()->value - distance, near->as<SO2State>()->value + distance);
+    double &v = state->as<SO2StateManifold::StateType>()->value;
+    v = rng_.uniformReal(near->as<SO2StateManifold::StateType>()->value - distance,
+			 near->as<SO2StateManifold::StateType>()->value + distance);
     // we don't need something as general as enforceBounds() since we know the input states are within bounds
     if (v < -M_PI)
 	v += 2.0 * M_PI;
@@ -63,51 +64,51 @@ unsigned int ompl::base::SO2StateManifold::getDimension(void) const
 
 void ompl::base::SO2StateManifold::enforceBounds(State *state) const
 {
-    double v = fmod(state->as<SO2State>()->value, 2.0 * M_PI);
+    double v = fmod(state->as<StateType>()->value, 2.0 * M_PI);
     if (v < -M_PI)
 	v += 2.0 * M_PI;
     else
 	if (v > M_PI)
 	    v -= 2.0 * M_PI;
-    state->as<SO2State>()->value = v;
+    state->as<StateType>()->value = v;
 }    
 	    	    
 bool ompl::base::SO2StateManifold::satisfiesBounds(const State *state) const
 {
-    return (state->as<SO2State>()->value < M_PI + std::numeric_limits<double>::epsilon()) && 
-	    (state->as<SO2State>()->value > -M_PI - std::numeric_limits<double>::epsilon());
+    return (state->as<StateType>()->value < M_PI + std::numeric_limits<double>::epsilon()) && 
+	    (state->as<StateType>()->value > -M_PI - std::numeric_limits<double>::epsilon());
 }
 
 void ompl::base::SO2StateManifold::copyState(State *destination, const State *source) const
 {
-    destination->as<SO2State>()->value = source->as<SO2State>()->value;
+    destination->as<StateType>()->value = source->as<StateType>()->value;
 }
 
 double ompl::base::SO2StateManifold::distance(const State *state1, const State *state2) const
 {
     // assuming the states 1 & 2 are within bounds
-    double d = fabs(state1->as<SO2State>()->value - state2->as<SO2State>()->value);
+    double d = fabs(state1->as<StateType>()->value - state2->as<StateType>()->value);
     return (d > M_PI) ? 2.0 * M_PI - d : d;
 }
 
 bool ompl::base::SO2StateManifold::equalStates(const State *state1, const State *state2) const
 {
-    return fabs(state1->as<SO2State>()->value - state2->as<SO2State>()->value) < std::numeric_limits<double>::epsilon();
+    return fabs(state1->as<StateType>()->value - state2->as<StateType>()->value) < std::numeric_limits<double>::epsilon();
 }
 
 void ompl::base::SO2StateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
 {
-    double diff = to->as<SO2State>()->value - from->as<SO2State>()->value;
+    double diff = to->as<StateType>()->value - from->as<StateType>()->value;
     if (fabs(diff) <= M_PI)
-	state->as<SO2State>()->value = from->as<SO2State>()->value + diff * t;
+	state->as<StateType>()->value = from->as<StateType>()->value + diff * t;
     else
     {
-	double &v = state->as<SO2State>()->value;
+	double &v = state->as<StateType>()->value;
 	if (diff > 0.0)
 	    diff = 2.0 * M_PI - diff;
 	else
 	    diff = -2.0 * M_PI - diff;
-	v = from->as<SO2State>()->value - diff * t;
+	v = from->as<StateType>()->value - diff * t;
 	// input states are within bounds, so the following check is sufficient
 	if (v > M_PI)
 	    v -= 2.0 * M_PI;
@@ -124,18 +125,18 @@ ompl::base::StateSamplerPtr ompl::base::SO2StateManifold::allocUniformStateSampl
 
 ompl::base::State* ompl::base::SO2StateManifold::allocState(void) const
 {
-    return new SO2State();
+    return new StateType();
 }
 
 void ompl::base::SO2StateManifold::freeState(State *state) const
 {
-    delete static_cast<SO2State*>(state);
+    delete static_cast<StateType*>(state);
 }
 
 void ompl::base::SO2StateManifold::printState(const State *state, std::ostream &out) const
 {
     if (state)
-	out << state->as<SO2State>()->value << std::endl;
+	out << state->as<StateType>()->value << std::endl;
     else
 	out << "NULL" << std::endl;
 }
