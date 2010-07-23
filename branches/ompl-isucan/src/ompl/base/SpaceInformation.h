@@ -46,6 +46,8 @@
 #include "ompl/util/Console.h"
 
 #include <boost/noncopyable.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 #include <cstdlib>
 #include <vector>

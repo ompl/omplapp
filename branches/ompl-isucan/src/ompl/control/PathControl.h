@@ -78,6 +78,9 @@ namespace ompl
 	    /** \brief Make the path such that all controls are applied for a single time step (computes intermediate states) */
 	    void interpolate(void);
 	    
+	    /** \brief Convert this path into a geometric path (interpolation is performed and then states are copied) */
+	    base::PathPtr asGeometric(void) const;
+	    
 	    /** \brief The list of states that make up the path */
 	    std::vector<base::State*>   states;
 

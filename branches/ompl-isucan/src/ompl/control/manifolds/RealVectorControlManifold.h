@@ -38,6 +38,7 @@
 #define OMPL_CONTROL_MANIFOLDS_REAL_VECTOR_CONTROL_MANIFOLD_
 
 #include "ompl/control/ControlManifold.h"
+#include <algorithm>
 #include <vector>
 
 namespace ompl
@@ -45,10 +46,25 @@ namespace ompl
     namespace control
     {
 	
-	/** \brief The definition of a control in R^n */
+	/** \brief The definition of a control in R<sup>n</sup> */
 	class RealVectorControl : public Control
 	{
 	public:
+
+	    /** \brief Access element i of values.  This does not
+		check whether the index is within bounds */
+	    double operator[](unsigned int i) const
+	    {
+		return values[i];
+	    }
+
+	    /** \brief Access element i of values.  This does not
+		check whether the index is within bounds */
+	    double& operator[](unsigned int i)
+	    {
+		return values[i];
+	    }
+	    
 	    double *values;
 	};
 	
@@ -61,11 +77,23 @@ namespace ompl
 		high.resize(dim, 0.0);
 	    }
 
+	    /** \brief Set the lower bound in each dimension to a specific value */
+	    void setLow(double value)
+	    {
+		std::fill(low.begin(), low.end(), value);
+	    }
+
+	    /** \brief Set the upper bound in each dimension to a specific value */
+	    void setHigh(double value)
+	    {
+		std::fill(high.begin(), high.end(), value);
+	    }
+	    
 	    std::vector<double> low;
 	    std::vector<double> high;
 	};
 	
-	/** \brief Uniform sampler for the R^n manifold */
+	/** \brief Uniform sampler for the R<sup>n</sup> manifold */
 	class RealVectorControlUniformSampler : public ControlSampler
 	{
 	public:
@@ -77,7 +105,7 @@ namespace ompl
 	    virtual void sample(Control *control);	    
 	};
 	
-	/** \brief A manifold representing R^n. The distance function is the L2 norm. */
+	/** \brief A manifold representing R<sup>n</sup>. The distance function is the L2 norm. */
 	class RealVectorControlManifold : public ControlManifold
 	{
 	public:

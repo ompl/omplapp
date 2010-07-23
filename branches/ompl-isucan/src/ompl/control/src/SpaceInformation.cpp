@@ -48,8 +48,8 @@ void ompl::control::SpaceInformation::setup(void)
     if (minSteps_ == 0 && maxSteps_ == 0)
     {
 	minSteps_ = 1;
-	maxSteps_ = 2;
-	msg_.warn("Assuming propagation will always have 1 or 2 steps");
+	maxSteps_ = 10;
+	msg_.warn("Assuming propagation will always have between %d and %d steps", minSteps_, maxSteps_);
     }
     if (minSteps_ < 1)
 	throw Exception("The minimum number of steps must be at least 1");

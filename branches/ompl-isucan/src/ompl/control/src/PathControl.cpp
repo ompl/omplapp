@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include "ompl/control/PathControl.h"
+#include "ompl/geometric/PathGeometric.h"
 #include "ompl/util/Exception.h"
 #include <numeric>
 #include <cmath>
@@ -48,6 +49,15 @@ ompl::control::PathControl::PathControl(const base::SpaceInformationPtr &si) : b
 ompl::control::PathControl::PathControl(const PathControl &path) : base::Path(path.si_)
 {
     copyFrom(path);
+}
+
+ompl::base::PathPtr ompl::control::PathControl::asGeometric(void) const
+{
+    PathControl pc(*this);
+    pc.interpolate();
+    geometric::PathGeometric *pg = new geometric::PathGeometric(si_);
+    pg->states.swap(pc.states);
+    return base::PathPtr(pg);
 }
 
 ompl::control::PathControl& ompl::control::PathControl::operator=(const PathControl& other)
