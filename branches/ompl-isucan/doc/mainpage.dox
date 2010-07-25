@@ -72,6 +72,11 @@
    until a solution is found. A call to ompl::base::Planner::clear()
    will restore a planner to its state before any calls to the
    ompl::base::Planner::solve() method were made.
+   @code
+   using namespace ompl;
+   base::SpaceInformationPtr si(...);
+   base::PlannerPtr planner(new geometric::SBL(si));
+   @endcode
 
    @subsection spaceinfo Instantiating a space information class
 
@@ -81,8 +86,8 @@
    requires only a state manifold to be specified
    (ompl::base::StateManifold). When planning with controls
    (ompl::control::SpaceInformation), this constructor requires a
-   control manifold (ompl::control::ControlManifold) as well.  This
-   class also needs to be configured before use:
+   control manifold (ompl::control::ControlManifold) as well.  The space information
+   class also needs to be configured before use:\n\n
      - ompl::base::StateValidityChecker is an abstract class that
        provides functionality for determining whether a state is valid
        or not. This class is assumed to be thread safe. The user must
@@ -101,6 +106,35 @@
        used to determine this resolution. This functionality however
        is NOT SAFE. It is meant to be used as last resort, as this
        parameter usually needs to be specified for planning to work.
+   @code
+   // define this class:
+   class myStateValidityCheckerClass : public base::StateValidityChecker
+   {
+   public:
+	myStateValidityCheckerClass(const base::SpaceInformationPtr &si) :
+	  base::StateValidityChecker(si)
+   	{
+	}
+	
+	virtual bool isValid(const base::State *state) const
+	{
+		return ...;
+	}
+   };
+   // or this function:
+   bool myStateValidityCheckerFunction(const base::State *state)
+   {
+	return ...;
+   }	
+
+   base::SpaceInformationPtr si(manifold);
+   // either this call:
+   si->setStateValidityChecker(base::StateValidityCheckerPtr(new myStateValidityCheckerClass(si)));
+   // or this call:
+   si->setStateValidityChecker(boost::bind(&myStateValidityCheckerFunction, _1));
+   si->setStateValidityCheckingResolution(0.1);
+   si->setup();
+   @endcode
 
    \par
    Once the class is instantiated and all parameters have been set,
@@ -113,8 +147,11 @@
    Simply create an instance of a class that iherits from
    ompl::base::StateManifold. To change the definition of the employed
    sampler or distance function, it is possible to provide a further
-   specialization of such a manifold. See @ref implementStateManifold
-   "implementing a new manifold".
+   specialization of such a manifold. See @ref implementStateManifold.
+   @code
+   base::StateManifoldPtr manifold(new base::SE2StateManifold());
+   // set bounds ....
+   @endcode
 
    @subsection cmanifold Instantiating a control manifold
 
@@ -122,6 +159,15 @@
    Simply create an instance of a class that inherits from
    ompl::control::ControlManifold. Usually,
    ompl::control::RealVectorControlManifold is sufficient.
+   An implementation needs to be specified for the ompl::control:ControlManifold::propagate() 
+   either by inheriting from the manifold class or by making a call to
+   ompl::control::ControlManifold::setPropagationFunction().
+   @code
+   base::StateManifoldPtr manifold(new base::SE2StateManifold());
+   // set bounds for manifold
+   control::ControlManifoldPtr cmanifold(new control::RealVectorControlManifold(manifold));
+   // set bounds for cmanifold
+   @endcode
 
    @subsection pdef Instantiating a problem definition
 
@@ -131,7 +177,7 @@
 
      - an ompl::base::Goal specification must be set using
        ompl::base::ProblemDefinition::setGoal(). For simplicity,
-       specifications of this class are available:
+       the following specifications of this class are available:
        ompl::base::GoalRegion, ompl::base::GoalSampleableRegion,
        ompl::base::GoalState, ompl::base::GoalStates.
        
@@ -139,6 +185,23 @@
        ompl::base::ProblemDefinition::setStartAndGoalStates(). This
        will clear previous settings, add one start state and create an
        ompl::base::GoalState representation for the goal.
+   @code
+   base::SpaceInformationPtr si(...);
+   base::ProblemDefinifionPtr pdef(new base::ProblemDefinition(si));
+
+   base::ScopedState start;
+   // fill start state
+
+   base::ScopedState goal;
+   // fill goal state
+
+   pdef->setStartAndGoalStates(start, goal);
+   @endcode
+
+   \par
+   An important part of setting the problem definition is filling the
+   content of start states (and goal states, if using a goal
+   representation that requires states). Please see \ref stateOps.
 
    @subsection simplesetup Using SimpleSetup
 
@@ -147,7 +210,6 @@
    ompl::geometric::SimpleSetup class (ompl::control::SimpleSetup,
    respectively). Please see the documentation of these classes for
    more information.
-
 
 @section demo Demos
 
@@ -230,9 +292,12 @@
    @skip solved
    @until }
    \n
+
 @section howto How To's
 
-   \li @ref implementStateManifold "How to implement a new state manifold"
+   \li @ref implementStateManifold 
+   \li @ref stateAlloc
+   \li @ref stateOps
 
 \author Ioan A. Șucan
 

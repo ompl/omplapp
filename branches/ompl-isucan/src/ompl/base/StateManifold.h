@@ -56,26 +56,27 @@ namespace ompl
 
 	/** \brief Forward declaration of ompl::base::StateManifold */
 	ClassForward(StateManifold);
-	
-	/** \brief Representation of a space in which planning can be
-	    performed. Topology specific sampling, interpolation and distance
-	    are defined. 
 
-	   @anchor implementStateManifold
 
-	   @par Inheriting from existing manifolds	   
+	/** \page implementStateManifold Implementing a state manifold
+
+	   @par Inheriting from existing manifolds
 	   In order to implement a new state manifold it is necessary
 	   to define a class that inherits from an existing manifold
 	   class. All manifold specific functions (pure virtual in the
 	   StateManifold class) need to be implemented accordingly. If
-	   the implementation of the new manifold defines an
-	   allocState() function, it should also provide a freeState()
-	   function and define (or typedef) StateType to the type of the
-	   state that is allocated/freed.
+	   the implementation of the new manifold defines a
+	   StateManifold::allocState() function, it should also
+	   provide a StateManifold::freeState() function and define
+	   (or typedef) @b StateType to the type of the state that is
+	   allocated/freed. For ease of use, the new manifold should
+	   also define a @b Mapper class. The base class
+	   (StateManifold) should be the only one that does not define
+	   these subtypes.
 	   
 	   @par Inheriting from CompoundStateManifold
 	   Another option is to inherit from a CompoundStateManifold
-	   and call addSubManifold() in the constructor of the new
+	   and call CompoundStateManifold::addSubManifold() in the constructor of the new
 	   class for other existing manifolds. This is the easiest way
 	   to create new manifolds -- only the constructor needs to be
 	   provided. For example, see SE2StateManifold. Optionally,
@@ -83,14 +84,20 @@ namespace ompl
 	   after the components have been set in order to prevent the
 	   user of the manifold from adding further components.
 	   
-	   Optionally, if there exist projections to Euclidean spaces
+	   Optionally, if there exist projections to Euclidean spaces (ProjectionEvaluator)
 	   for the defined manifold, these can be registered by the
-	   setup() function (by calling
-	   registerProjection()). Registering a projection under the
-	   empty string name makes it the default projection. Planners
-	   that need a projection but do not have one defined can
-	   attempt using this default projection during planning.
-	*/
+	   StateManifold::setup() function (by calling
+	   StateManifold::registerProjection()). Registering a
+	   projection under the empty string name makes it the default
+	   projection. Planners that need a projection but do not have
+	   one defined will attempt using this default projection
+	   during planning. */
+
+	/** \brief Representation of a space in which planning can be
+	    performed. Topology specific sampling, interpolation and distance
+	    are defined. 
+	
+	    See \ref implementStateManifold. */
 	class StateManifold : private boost::noncopyable
 	{
 	public:

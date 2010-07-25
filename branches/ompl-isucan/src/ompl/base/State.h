@@ -44,61 +44,93 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief Definition of an abstract state 
+	/** \page stateAlloc Allocating memory for states
 
-	    @anchor stateOps
-	    
-	    \par Operating with states
-	    
-	    \li Simple case 1:\n
-	    In the simplest scenario, after a manifold of type T is
-	    defined, a state can be instantiated from that manifold
-	    using ompl::base::ScopedStateTyped. This will
-	    automatically allocate and free the state. The template
-	    argument is optional and specifies the state type to be
-	    maintained.
-
+	    \li The simple version:\n
 	    \code
-	    ompl::base::StateManifold manifold(new T());
-	    ompl::base::ScopedStateTyped<T::StateType> state(manifold);
-	    state->value = ...;
-	    \endcode
-
-	    \li Simple case 2:\n	    
-	    In some cases, for instance, the
-	    ompl::base::SE2StateManifold, the layout of the state uses
-	    a CompoundState, which makes accessing members a little
-	    more complicated. To alleviate this, a manifold of type T
-	    can provide a T::Mapper class that provides setters and
-	    getters for the various members of the state. The
-	    T::Mapper class does not create or even store a state. It
-	    simply allows updating the state's content.
-
-	    \code
-	    ompl::base::StateManifold manifold(new T());
+	    ompl::base::StateManifoldPtr manifold(new T());
 	    ompl::base::ScopedState state(manifold);
-	    T::Mapper mapper(state);
-	    mapper.setValue(...);
 	    \endcode
+	    or
+	    \code
+	    ompl::base::SpaceInformationPtr si(manifold);
+	    ompl::base::ScopedState state(si);
+	    \endcode
+	    The ompl::base::ScopedState class will do the necessary
+	    memory operations to allocate a state from the correct
+	    manifold. This is the recommended way of allocating states
+	    for code other than ompl internals. Convenience operators such
+	    as = and == are provided.
 
-	    \li Expert users:\n
+	    \li The expert version:\n
+	    \code
+	    ompl::base::SpaceInformationPtr si(manifold);
+	    ompl::base::State* state = si->allocState();
+	    ...
+	    si->freeState(state);
+	    \endcode
 	    The structure of a state depends on a manifold
 	    specification. The State type is just an abstract base for
 	    the states of other manifolds.  For this reason, states
 	    cannot be allocated directly, but through the use of a
 	    manifold's allocation mechanism:
 	    ompl::base::StateManifold::allocState(). States are to be
-	    freed using ompl::base::StateManifold::freeState(). For a
-	    manifold type of type T, the result of
-	    ompl::base::StateManifold::allocState() can be casted to
-	    T::StateType to gain access to the state's members. For
-	    convenience, it ompl::base::SpaceInformation::allocState()
+	    freed using ompl::base::StateManifold::freeState(). For
+	    convenience, ompl::base::SpaceInformation::allocState()
 	    and ompl::base::SpaceInformation::freeState() are defined
-	    as well. Using these calls is better since they certainly
+	    as well. Using the calls from the SpaceInformation class is better since they certainly
 	    use the same manifold as the one used for planning.  This
 	    is the lowest level of operating on states and only
 	    recomended for expert users.
+
+	    See \ref stateOps for how to fill the contents of the
+	    allocated states.
 	*/
+
+	/** \page stateOps Operating with states
+
+	    In order for states to be useful in setting start (or
+	    goal) positions, accessing their content is needed. It is
+	    assumed the reader is familiar with \ref stateAlloc.
+
+	    \li Simple version:\n
+	    After a state has been allocated from manifold T, no
+	    matter what the state type is: State *, State& or
+	    ScopedState&, an instance of T::Mapper can be defined to
+	    allow access to the state's members.
+	    \code
+	    ompl::base::StateManifoldPtr manifold(new ompl::base::SE2StateManifold());
+	    ompl::base::ScopedState state(manifold);
+	    ompl::base::SE2StateManifold::Mapper mapper(state);
+	    mapper.setX(...);
+	    \endcode
+	    A further simplification of this code can be used: the
+	    ompl::base::MappedState<T> class will create an instance
+	    of a ScopedState and a T::Mapper simultaneously:
+	    \code
+	    ompl::base::StateManifoldPtr manifold(new ompl::base::SE2StateManifold());
+	    ompl::base::MappedState<ompl::base::SE2StateManifold> mstate(manifold);
+	    mstate.setX(...);
+	    \endcode
+
+	    \li Expert version:\n	    
+	    \code
+	    ompl::base::StateManifoldPtr manifold(new ompl::base::RealVectorStateManifold());
+	    ompl::base::State *state = manifold->allocState();
+	    state->as<ompl::base::RealVectorStateManifold::StateType>()->values[0] = ...;
+	    manifold->freeState(state);
+	    \endcode
+	    For a manifold type of type T, the result of
+	    ompl::base::StateManifold::allocState() can be casted to
+	    T::StateType to gain access to the state's members. To
+	    ease this functionality, the ompl::base::State::as()
+	    functions have been defined.
+
+	*/
+
+	/** \brief Definition of an abstract state.
+	 
+	    See \ref stateAlloc and \ref stateOps. */
 	class State
 	{
 	private:
