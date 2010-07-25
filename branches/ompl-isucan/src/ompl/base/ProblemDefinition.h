@@ -82,7 +82,7 @@ namespace ompl
 	    }
 	    
 	    /** \copydoc addStartState() */
-	    void addStartState(const ScopedState<> &state)
+	    void addStartState(const ScopedState &state)
 	    {
 		startStates_.push_back(si_->cloneState(state.get()));
 	    }
@@ -146,7 +146,7 @@ namespace ompl
 	    void setStartAndGoalStates(const State *start, const State *goal, const double threshold = std::numeric_limits<double>::epsilon());
 
 	    /** \copydoc setStartAndGoalStates() */
-	    void setStartAndGoalStates(const ScopedState<> &start, const ScopedState<> &goal, const double threshold = std::numeric_limits<double>::epsilon())
+	    void setStartAndGoalStates(const ScopedState &start, const ScopedState &goal, const double threshold = std::numeric_limits<double>::epsilon())
 	    {
 		setStartAndGoalStates(start.get(), goal.get(), threshold);
 	    }

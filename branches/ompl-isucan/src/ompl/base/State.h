@@ -44,7 +44,61 @@ namespace ompl
     namespace base
     {
 	
-	/** \brief Definition of an abstract state */
+	/** \brief Definition of an abstract state 
+
+	    @anchor stateOps
+	    
+	    \par Operating with states
+	    
+	    \li Simple case 1:\n
+	    In the simplest scenario, after a manifold of type T is
+	    defined, a state can be instantiated from that manifold
+	    using ompl::base::ScopedStateTyped. This will
+	    automatically allocate and free the state. The template
+	    argument is optional and specifies the state type to be
+	    maintained.
+
+	    \code
+	    ompl::base::StateManifold manifold(new T());
+	    ompl::base::ScopedStateTyped<T::StateType> state(manifold);
+	    state->value = ...;
+	    \endcode
+
+	    \li Simple case 2:\n	    
+	    In some cases, for instance, the
+	    ompl::base::SE2StateManifold, the layout of the state uses
+	    a CompoundState, which makes accessing members a little
+	    more complicated. To alleviate this, a manifold of type T
+	    can provide a T::Mapper class that provides setters and
+	    getters for the various members of the state. The
+	    T::Mapper class does not create or even store a state. It
+	    simply allows updating the state's content.
+
+	    \code
+	    ompl::base::StateManifold manifold(new T());
+	    ompl::base::ScopedState state(manifold);
+	    T::Mapper mapper(state);
+	    mapper.setValue(...);
+	    \endcode
+
+	    \li Expert users:\n
+	    The structure of a state depends on a manifold
+	    specification. The State type is just an abstract base for
+	    the states of other manifolds.  For this reason, states
+	    cannot be allocated directly, but through the use of a
+	    manifold's allocation mechanism:
+	    ompl::base::StateManifold::allocState(). States are to be
+	    freed using ompl::base::StateManifold::freeState(). For a
+	    manifold type of type T, the result of
+	    ompl::base::StateManifold::allocState() can be casted to
+	    T::StateType to gain access to the state's members. For
+	    convenience, it ompl::base::SpaceInformation::allocState()
+	    and ompl::base::SpaceInformation::freeState() are defined
+	    as well. Using these calls is better since they certainly
+	    use the same manifold as the one used for planning.  This
+	    is the lowest level of operating on states and only
+	    recomended for expert users.
+	*/
 	class State
 	{
 	private:

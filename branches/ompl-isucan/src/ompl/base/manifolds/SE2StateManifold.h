@@ -59,9 +59,12 @@ namespace ompl
 		Mapper(State *state) : state_(state)
 		{
 		}
+
+		Mapper(State &state) : state_(&state)
+		{
+		}
 		
-		template<class T>
-		Mapper(const ScopedState<T> &state) : state_(state.get())
+		Mapper(const ScopedState &state) : state_(state.get())
 		{
 		}
 		
@@ -70,8 +73,12 @@ namespace ompl
 		    state_ = state;
 		}
 		
-		template<class T>
-		void use(const ScopedState<T> &state)
+		void use(State &state)
+		{
+		    state_ = &state;
+		}
+		
+		void use(const ScopedState &state)
 		{
 		    state_ = state.get();
 		}

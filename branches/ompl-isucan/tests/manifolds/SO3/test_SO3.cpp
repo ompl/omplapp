@@ -47,8 +47,8 @@ using namespace ompl;
 TEST(SO3, Simple)
 {
     base::StateManifoldPtr m(new base::SO3StateManifold());
-    base::ScopedState<base::SO3StateManifold::StateType> s1(m);
-    base::ScopedState<base::SO3StateManifold::StateType> s2(m);
+    base::ScopedStateTyped<base::SO3StateManifold::StateType> s1(m);
+    base::ScopedStateTyped<base::SO3StateManifold::StateType> s2(m);
     
     s1.random();
     s2 = s1;

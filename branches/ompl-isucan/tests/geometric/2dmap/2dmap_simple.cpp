@@ -101,11 +101,11 @@ public:
 	
 	setup.setStateValidityChecker(boost::bind(&isValid, &env.grid, _1));
 	
-	base::ScopedState<base::CompoundState> state(setup.getSpaceInformation());
+	base::ScopedStateTyped<base::CompoundState> state(setup.getSpaceInformation());
 	state->as<base::RealVectorStateManifold::StateType>(0)->values[0] = env.start.first;
 	state->as<base::RealVectorStateManifold::StateType>(1)->values[0] = env.start.second;
 	
-	base::ScopedState<base::CompoundState> gstate(setup.getSpaceInformation());	
+	base::ScopedStateTyped<base::CompoundState> gstate(setup.getSpaceInformation());	
 	gstate->as<base::RealVectorStateManifold::StateType>(0)->values[0] = env.goal.first;
 	gstate->as<base::RealVectorStateManifold::StateType>(1)->values[0] = env.goal.second;
 	
@@ -278,30 +278,36 @@ TEST(ScopedStateTest, Simple)
 {
     base::StateManifoldPtr m(new base::RealVectorStateManifold(2));
     
-    base::ScopedState<base::RealVectorStateManifold::StateType> s1(m);
+    base::ScopedStateTyped<base::RealVectorStateManifold::StateType> s1(m);
     s1->values[0] = 1.0;
     s1->values[1] = 2.0;
     
-    base::ScopedState<base::RealVectorStateManifold::StateType> s2 = s1;
+    base::ScopedStateTyped<base::RealVectorStateManifold::StateType> s2 = s1;
     EXPECT_TRUE(s2->values[1] == s1->values[1]);
     
-    base::ScopedState<> s3 = s1;
+    base::ScopedStateTyped<> s3 = s1;
     EXPECT_TRUE(s2 == s3);
     
-    base::ScopedState<> s4 = s3;
+    base::ScopedStateTyped<> s4 = s3;
 
-    base::ScopedState<base::RealVectorStateManifold::StateType> s5 = s4;
+    base::ScopedStateTyped<base::RealVectorStateManifold::StateType> s5 = s4;
     EXPECT_TRUE(s5 == s1);
 
     s1->values[1] = 4.0;
     
     EXPECT_TRUE(s5 != s1);
     
-    base::ScopedState<base::RealVectorStateManifold::StateType> s6(s4);
+    base::ScopedStateTyped<base::RealVectorStateManifold::StateType> s6(s4);
     EXPECT_TRUE(s6 != s1);
     s1 = s4;
     s4 = s1;
     EXPECT_TRUE(s6 == s1);
+
+    base::ScopedState s7(m);
+    s7 = s1;
+    s6 = s7;
+    
+    EXPECT_TRUE(s7 == s6);
 }
 
 int main(int argc, char **argv)

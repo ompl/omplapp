@@ -74,7 +74,7 @@ namespace ompl
 	    void setState(const State* st);
 	    
 	    /** \brief Set the goal state */
-	    void setState(const ScopedState<> &st);
+	    void setState(const ScopedState &st);
 	    
 	    /** \brief The goal state */
 	    State *state;

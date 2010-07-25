@@ -115,8 +115,9 @@ void plan(void)
     si->setStateValidityChecker(boost::bind(&isStateValid, si.get(),  _1));
     
     /// create a start state
-    ob::ScopedState<ob::SE2StateManifold::StateType> start(manifold);
-    ob::SE2StateManifold::Mapper mapper(start);
+    ob::ScopedState start(manifold);
+    ob::SE2StateManifold::Mapper mapper(start.get());
+    // tentative syntax:    ob::ScopedStateMapped<ob::SE2StateManifold::Mapper> stst(manifold);
     
     mapper.setX(-0.5);
     mapper.setY(0.0);
@@ -127,8 +128,8 @@ void plan(void)
     //    (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
 
     /// create a goal state
-    ob::ScopedState<ob::SE2StateManifold::StateType> goal(start);
-    mapper.use(goal);
+    ob::ScopedState goal(start);
+    mapper.use(goal.reference());
     mapper.setX(0.5);
     
     //    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
@@ -208,13 +209,13 @@ void planWithSimpleSetup(void)
     ss.setStateValidityChecker(boost::bind(&isStateValid, ss.getSpaceInformation().get(), _1));
     
     /// create a random start state
-    ob::ScopedState<ob::SE2StateManifold::StateType> start(manifold);
+    ob::ScopedStateTyped<ob::SE2StateManifold::StateType> start(manifold);
     (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = -0.5;
     (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.0;
     (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
 
     /// create a random goal state
-    ob::ScopedState<ob::SE2StateManifold::StateType> goal(manifold);
+    ob::ScopedStateTyped<ob::SE2StateManifold::StateType> goal(manifold);
     (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
     (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.5;
     (*goal)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;

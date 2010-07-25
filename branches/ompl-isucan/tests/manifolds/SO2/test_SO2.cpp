@@ -47,9 +47,9 @@ using namespace ompl;
 TEST(SO2, Simple)
 {
     base::StateManifoldPtr m(new base::SO2StateManifold());
-    base::ScopedState<base::SO2StateManifold::StateType> s1(m);
-    base::ScopedState<base::SO2StateManifold::StateType> s2(m);
-    base::ScopedState<base::SO2StateManifold::StateType> s3(m);
+    base::ScopedStateTyped<base::SO2StateManifold::StateType> s1(m);
+    base::ScopedStateTyped<base::SO2StateManifold::StateType> s2(m);
+    base::ScopedStateTyped<base::SO2StateManifold::StateType> s3(m);
     
     s1->value = M_PI - 0.1;
     s2->value = -M_PI + 0.1;

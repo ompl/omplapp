@@ -150,7 +150,7 @@ TEST(GAIK, Simple)
         
     /* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
     base::GoalState goal(si);
-    base::ScopedState<base::RealVectorStateManifold::StateType> gstate(si);
+    base::ScopedStateTyped<base::RealVectorStateManifold::StateType> gstate(si);
     gstate->values[0] = env.goal.first;
     gstate->values[1] = env.goal.second;
     goal.setState(gstate);
@@ -158,7 +158,7 @@ TEST(GAIK, Simple)
     
     geometric::GAIK gaik(si);
     gaik.setRange(5.0);
-    base::ScopedState<base::RealVectorStateManifold::StateType> found(si);
+    base::ScopedStateTyped<base::RealVectorStateManifold::StateType> found(si);
     double time = 0.0;
     
     /* start counting time */
