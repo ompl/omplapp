@@ -40,49 +40,26 @@
 #include "ompl/base/StateManifold.h"
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
 #include "ompl/base/manifolds/SO2StateManifold.h"
-#include "ompl/base/ScopedState.h"
+#include "ompl/base/MappedState.h"
 
 namespace ompl
 {
     namespace base
     {
-		
+	
 	/** \brief A manifold representing SE(2) */
 	class SE2StateManifold : public CompoundStateManifold
 	{
 	public:
 
 	    /** \brief Interface to an SE(2) state */
-	    class Mapper
+	    class Mapper : public CompoundStateManifold::Mapper
 	    {
 	    public:
-		Mapper(State *state) : state_(state)
+		Mapper(State *state) : CompoundStateManifold::Mapper(state)
 		{
 		}
 
-		Mapper(State &state) : state_(&state)
-		{
-		}
-		
-		Mapper(const ScopedState &state) : state_(state.get())
-		{
-		}
-		
-		void use(State *state)
-		{
-		    state_ = state;
-		}
-		
-		void use(State &state)
-		{
-		    state_ = &state;
-		}
-		
-		void use(const ScopedState &state)
-		{
-		    state_ = state.get();
-		}
-		
 		double getX(void) const
 		{
 		    return state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[0];
@@ -112,12 +89,10 @@ namespace ompl
 		{
 		    state_->as<CompoundState>()->as<SO2StateManifold::StateType>(1)->value = yaw;
 		}
-		
-	    private:
-		
-		State *state_;
-		
 	    };
+
+	    typedef MappedState<SE2StateManifold> UserState;
+	    
 	    
 	    SE2StateManifold(void) : CompoundStateManifold()
 	    {

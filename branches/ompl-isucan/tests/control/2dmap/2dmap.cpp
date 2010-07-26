@@ -213,7 +213,7 @@ public:
 	planner->setup();
 	
 	/* set the initial state; the memory for this is automatically cleaned by SpaceInformation */
-	base::ScopedStateTyped<base::RealVectorStateManifold::StateType> state(si);
+	base::MappedState<base::RealVectorStateManifold> state(si);
 	state->values[0] = env.start.first;
 	state->values[1] = env.start.second;
 	state->values[2] = 0.0;
@@ -222,7 +222,7 @@ public:
 		
 	/* set the goal state; the memory for this is automatically cleaned by SpaceInformation */
 	base::GoalState *goal = new base::GoalState(si);
-	base::ScopedStateTyped<base::RealVectorStateManifold::StateType> gstate(si);
+	base::MappedState<base::RealVectorStateManifold> gstate(si);
 	gstate->values[0] = env.goal.first;
 	gstate->values[1] = env.goal.second;
 	gstate->values[2] = 0.0;

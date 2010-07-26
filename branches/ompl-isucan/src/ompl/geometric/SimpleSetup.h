@@ -57,11 +57,8 @@ namespace ompl
 	{
 	public:
 	    
-	    /** \brief Optionally provide the manifold for
-		planning. If the manifold is not specified here, it
-		will be inferred at some point from other calls made to
-		this class. */
-	    SimpleSetup(const base::StateManifoldPtr &manifold = base::StateManifoldPtr()) : configured_(false), msg_("SimpleSetup")
+	    /** \brief Provide the manifold needed for planning. */
+	    SimpleSetup(const base::StateManifoldPtr &manifold) : configured_(false), msg_("SimpleSetup")
 	    {
 		useManifold(manifold);
 	    }
@@ -85,28 +82,19 @@ namespace ompl
 	    /** \brief Get the current instance of the state manifold */
 	    const base::StateManifoldPtr& getStateManifold(void) const
 	    {
-		if (si_)
-		    return si_->getStateManifold();
-		else
-		    return emptyManifold_;
+		return si_->getStateManifold();
 	    }
 	    
 	    /** \brief Get the current instance of the state validity checker */
 	    const base::StateValidityCheckerPtr& getStateValidityChecker(void) const
 	    {
-		if (si_)
-		    return si_->getStateValidityChecker();
-		else
-		    return svc_;
+		return si_->getStateValidityChecker();
 	    }
 
 	    /** \brief Get the current goal definition */
 	    const base::GoalPtr& getGoal(void) const
 	    {
-		if (pdef_)
-		    return pdef_->getGoal();
-		else
-		    return goal_;
+		return pdef_->getGoal();
 	    }
 
 	    /** \brief Get the current planner */
@@ -124,48 +112,31 @@ namespace ompl
 	    /** \brief Get the solution path. Throw an exception if no solution is available */
 	    PathGeometric& getSolutionPath(void) const;
 	    
-
-	    /** \brief Set the manifold to use for planning. This call
-		is needed only if a manifold was not set in the
-		constructor. The manifold can also be inferred when
-		setting starting states. */
-	    void setManifold(const base::StateManifoldPtr &manifold)
-	    {
-		useManifold(manifold);
-	    }
 	    
 	    /** \brief Set the state validity checker to use */
 	    void setStateValidityChecker(const base::StateValidityCheckerPtr &svc)
 	    {
-		if (si_)
-		    si_->setStateValidityChecker(svc);
-		else
-		    svc_ = svc;
+		si_->setStateValidityChecker(svc);
 	    }
 	    
 	    /** \brief Set the state validity checker to use */
 	    void setStateValidityChecker(const base::StateValidityCheckerFn &svc)
 	    {
-		if (si_)
-		    si_->setStateValidityChecker(svc);
-		else
-		    svcf_ = svc;
+		si_->setStateValidityChecker(svc);
 	    }
 
 	    /** \brief Set the start and goal states to use. The state
 		manifold is inferred, if not yet set. */
-	    void setStartAndGoalStates(const base::ScopedState &start, const base::ScopedState &goal, const double threshold = std::numeric_limits<double>::epsilon())
+	    void setStartAndGoalStates(const base::MappedStateBase &start, const base::MappedStateBase &goal, const double threshold = std::numeric_limits<double>::epsilon())
 	    {
-		useManifold(start.getManifold());
 		pdef_->setStartAndGoalStates(start, goal, threshold);
 	    }
 	    
 	    /** \brief Add a starting state for planning. The state
 		manifold is inferred, if not yet set. This call is not
 		needed if setStartAndGoalStates() has been called. */
-	    void addStartState(const base::ScopedState &state)
+	    void addStartState(const base::MappedStateBase &state)
 	    {
-		useManifold(state.getManifold());
 		pdef_->addStartState(state);
 	    }
 	    
@@ -173,10 +144,7 @@ namespace ompl
 		needed if setStartAndGoalStates() has been called. */
 	    void setGoal(const base::GoalPtr &goal)
 	    {
-		if (pdef_)
-		    pdef_->setGoal(goal);
-		else
-		    goal_ = goal;
+		pdef_->setGoal(goal);
 	    }
 
 	    /** \brief Set the planner to use. If the planner is not
@@ -245,26 +213,6 @@ namespace ompl
 	    /// flag indicating whether the classes needed for planning are set up
 	    bool                          configured_;
 	    msg::Interface                msg_;
-
-	private:
-
-	    /// empty instance for a state manifold, in case
-	    /// getStateManifold() is called before a manifold is available
-	    base::StateManifoldPtr        emptyManifold_;
-	    
-	    /// temporary storage for a goal definition (if no
-	    /// manifold was available when the goal was set)
-	    base::GoalPtr                 goal_;
-	    
-	    /// temporary storage for the state validity checker (if
-	    /// no manifold was available when the state validity
-	    /// checker was set)
-	    base::StateValidityCheckerPtr svc_;
-
-	    /// temporary storage for the state validity checker
-	    /// function (if no manifold was available when the state
-	    /// validity checker function was set)
-	    base::StateValidityCheckerFn  svcf_;
 	    
 	};
     }

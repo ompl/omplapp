@@ -76,18 +76,19 @@ namespace ompl
 	   
 	   @par Inheriting from CompoundStateManifold
 	   Another option is to inherit from a CompoundStateManifold
-	   and call CompoundStateManifold::addSubManifold() in the constructor of the new
-	   class for other existing manifolds. This is the easiest way
-	   to create new manifolds -- only the constructor needs to be
-	   provided. For example, see SE2StateManifold. Optionally,
-	   the CompoundStateManifold::lock() function can be called
-	   after the components have been set in order to prevent the
-	   user of the manifold from adding further components.
+	   and call CompoundStateManifold::addSubManifold() in the
+	   constructor of the new class for other existing
+	   manifolds. This is the easiest way to create new manifolds
+	   -- only the constructor needs to be provided. For example,
+	   see SE2StateManifold. Optionally, the
+	   CompoundStateManifold::lock() function can be called after
+	   the components have been set in order to prevent the user
+	   of the manifold from adding further components.
 	   
-	   Optionally, if there exist projections to Euclidean spaces (ProjectionEvaluator)
-	   for the defined manifold, these can be registered by the
-	   StateManifold::setup() function (by calling
-	   StateManifold::registerProjection()). Registering a
+	   Optionally, if there exist projections to Euclidean spaces
+	   (ProjectionEvaluator) for the defined manifold, these can
+	   be registered by the StateManifold::setup() function (by
+	   calling StateManifold::registerProjection()). Registering a
 	   projection under the empty string name makes it the default
 	   projection. Planners that need a projection but do not have
 	   one defined will attempt using this default projection
@@ -101,6 +102,26 @@ namespace ompl
 	class StateManifold : private boost::noncopyable
 	{
 	public:
+	    
+	    /** \brief Base class for accessing and manipulaing potentially complex state representations */
+	    class Mapper
+	    {
+	    public:
+		
+		Mapper(State *state) : state_(state)
+		{
+		}
+
+		virtual ~Mapper(void)
+		{
+		}
+		
+	    protected:
+		
+		State *state_;		
+	    };
+	    
+	    typedef State StateType;
 	    
 	    StateManifold(void)
 	    {

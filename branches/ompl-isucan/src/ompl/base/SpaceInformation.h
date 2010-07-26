@@ -44,6 +44,7 @@
 
 #include "ompl/util/ClassForward.h"
 #include "ompl/util/Console.h"
+#include "ompl/util/Exception.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>

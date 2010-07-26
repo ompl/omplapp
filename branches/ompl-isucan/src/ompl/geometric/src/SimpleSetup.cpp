@@ -51,21 +51,6 @@ void ompl::geometric::SimpleSetup::useManifold(const base::StateManifoldPtr &man
 
 	psk_->setMaxSteps(50);
 	psk_->setMaxEmptySteps(5);
-
-	// set accumulated information
-	if (goal_)
-	{
-	    pdef_->setGoal(goal_);
-	    goal_.reset();
-	}
-	if (svc_)
-	{
-	    si_->setStateValidityChecker(svc_);
-	    svc_.reset();
-	}
-	else
-	    if (svcf_)
-		si_->setStateValidityChecker(svcf_);
     }
 }
 

@@ -71,8 +71,8 @@ void ompl::base::GoalState::setState(const State* st)
     state = si_->cloneState(st);
 }
 
-void ompl::base::GoalState::setState(const ScopedState &st)
+void ompl::base::GoalState::setState(const MappedStateBase &st)
 {
-    setState(st.get());
+    setState(st.getState());
 }
 

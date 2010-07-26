@@ -48,6 +48,7 @@ namespace oc = ompl::control;
 
 bool isStateValid(const oc::SpaceInformation *si, const ob::State *state)
 {
+    //    ob::MappedState<ob::SE2StateManifold>
     /// cast the abstract state type to the type we expect
     const ob::SE2StateManifold::StateType *se2state = state->as<ob::SE2StateManifold::StateType>();
 
@@ -84,7 +85,8 @@ oc::PropagationResult propagate(const ob::State *start, const oc::Control *contr
 }
 
 void plan(void)
-{
+{    
+
     /// construct the manifold we are planning in
     ob::StateManifoldPtr manifold(new ob::SE2StateManifold());
 
@@ -115,27 +117,14 @@ void plan(void)
     si->setStateValidityChecker(boost::bind(&isStateValid, si.get(),  _1));
     
     /// create a start state
-    ob::ScopedState start(manifold);
-    ob::SE2StateManifold::Mapper mapper(start.get());
-    // tentative syntax:    ob::ScopedStateMapped<ob::SE2StateManifold::Mapper> stst(manifold);
+    ob::MappedState<ob::SE2StateManifold> start(manifold);
+    start.setX(-0.5);
+    start.setY(0.0);
+    start.setYaw(0.0);
     
-    mapper.setX(-0.5);
-    mapper.setY(0.0);
-    mapper.setYaw(0.0);
-
-    //    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = -0.5;
-    //    (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.0;
-    //    (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
-
     /// create a goal state
-    ob::ScopedState goal(start);
-    mapper.use(goal.reference());
-    mapper.setX(0.5);
-    
-    //    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
-    //    (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.5;
-    //    (*goal)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
-
+    ob::MappedState<ob::SE2StateManifold> goal(start);
+    goal.setX(0.5);
     
     /// create a problem instance
     ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
@@ -209,13 +198,13 @@ void planWithSimpleSetup(void)
     ss.setStateValidityChecker(boost::bind(&isStateValid, ss.getSpaceInformation().get(), _1));
     
     /// create a random start state
-    ob::ScopedStateTyped<ob::SE2StateManifold::StateType> start(manifold);
+    ob::MappedState<ob::SE2StateManifold> start(manifold);
     (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = -0.5;
     (*start)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.0;
     (*start)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
 
     /// create a random goal state
-    ob::ScopedStateTyped<ob::SE2StateManifold::StateType> goal(manifold);
+    ob::MappedState<ob::SE2StateManifold> goal(manifold);
     (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[0] = 0.0;
     (*goal)[0]->as<ob::RealVectorStateManifold::StateType>()->values[1] = 0.5;
     (*goal)[1]->as<ob::SO2StateManifold::StateType>()->value = 0.0;
@@ -244,7 +233,7 @@ int main(int, char **)
     
     std::cout << std::endl << std::endl;
     
-    planWithSimpleSetup();
+    //    planWithSimpleSetup();
     
     return 0;
 }
