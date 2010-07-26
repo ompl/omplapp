@@ -40,7 +40,6 @@
 #include "ompl/base/StateManifold.h"
 #include "ompl/base/manifolds/RealVectorStateManifold.h"
 #include "ompl/base/manifolds/SO2StateManifold.h"
-#include "ompl/base/MappedState.h"
 
 namespace ompl
 {
@@ -51,47 +50,42 @@ namespace ompl
 	class SE2StateManifold : public CompoundStateManifold
 	{
 	public:
-
-	    /** \brief Interface to an SE(2) state */
-	    class Mapper : public CompoundStateManifold::Mapper
+	    
+	    class StateType : public CompoundStateManifold::StateType
 	    {
 	    public:
-		Mapper(State *state) : CompoundStateManifold::Mapper(state)
-		{
-		}
 
 		double getX(void) const
 		{
-		    return state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[0];
+		    return as<RealVectorStateManifold::StateType>(0)->values[0];
 		}
 		
 		double getY(void) const
 		{
-		    return state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[1];
+		    return as<RealVectorStateManifold::StateType>(0)->values[1];
 		}
 		
 		double getYaw(void) const
 		{
-		    return state_->as<CompoundState>()->as<SO2StateManifold::StateType>(1)->value;
+		    return as<SO2StateManifold::StateType>(1)->value;
 		}
 		
 		void setX(double x)
 		{
-		    state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[0] = x;
+		    as<RealVectorStateManifold::StateType>(0)->values[0] = x;
 		}
 		
 		void setY(double y)
 		{
-		    state_->as<CompoundState>()->as<RealVectorStateManifold::StateType>(0)->values[1] = y;
+		    as<RealVectorStateManifold::StateType>(0)->values[1] = y;
 		}
 		
 		void setYaw(double yaw)
 		{
-		    state_->as<CompoundState>()->as<SO2StateManifold::StateType>(1)->value = yaw;
+		    as<SO2StateManifold::StateType>(1)->value = yaw;
 		}
+		
 	    };
-
-	    typedef MappedState<SE2StateManifold> UserState;
 	    
 	    
 	    SE2StateManifold(void) : CompoundStateManifold()
@@ -115,8 +109,11 @@ namespace ompl
 	    const RealVectorBounds& getBounds(void) const
 	    {
 		return as<RealVectorStateManifold>(0)->getBounds();
-	    }    
+	    }    	
 
+	    virtual State* allocState(void) const;
+	    virtual void freeState(State *state) const;
+	    
 	    virtual void setup(void);
 	    
 	};	

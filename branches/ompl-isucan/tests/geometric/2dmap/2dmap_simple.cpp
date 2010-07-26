@@ -101,11 +101,11 @@ public:
 	
 	setup.setStateValidityChecker(boost::bind(&isValid, &env.grid, _1));
 	
-	base::MappedState<base::CompoundStateManifold> state(setup.getSpaceInformation());
+	base::ScopedState<base::CompoundStateManifold> state(setup.getSpaceInformation());
 	state->as<base::RealVectorStateManifold::StateType>(0)->values[0] = env.start.first;
 	state->as<base::RealVectorStateManifold::StateType>(1)->values[0] = env.start.second;
 	
-	base::MappedState<base::CompoundStateManifold> gstate(setup.getSpaceInformation());	
+	base::ScopedState<base::CompoundStateManifold> gstate(setup.getSpaceInformation());	
 	gstate->as<base::RealVectorStateManifold::StateType>(0)->values[0] = env.goal.first;
 	gstate->as<base::RealVectorStateManifold::StateType>(1)->values[0] = env.goal.second;
 	
@@ -278,26 +278,27 @@ TEST(ScopedStateTest, Simple)
 {
     base::StateManifoldPtr m(new base::RealVectorStateManifold(2));
     
-    base::MappedState<base::RealVectorStateManifold> s1(m);
+    base::ScopedState<base::RealVectorStateManifold> s1(m);
     s1->values[0] = 1.0;
     s1->values[1] = 2.0;
     
-    base::MappedState<base::RealVectorStateManifold> s2 = s1;
+    base::ScopedState<base::RealVectorStateManifold> s2 = s1;
     EXPECT_TRUE(s2->values[1] == s1->values[1]);
     
-    base::MappedState<> s3(m);
-    s3.random();
-    base::MappedState<> s4 = s3;
+    base::ScopedState<> s3(m);
+    s3 = s1;
+    base::ScopedState<> s4 = s3;
     EXPECT_TRUE(s4 == s3);
+    EXPECT_TRUE(s4 == s1);
     
-    base::MappedState<base::RealVectorStateManifold> s5 = s2;
+    base::ScopedState<base::RealVectorStateManifold> s5 = s2;
     EXPECT_TRUE(s5 == s1);
 
     s1->values[1] = 4.0;
     
     EXPECT_TRUE(s5 != s1);
     
-    base::MappedState<base::RealVectorStateManifold> s6(s5);
+    base::ScopedState<base::RealVectorStateManifold> s6(s5);
     EXPECT_TRUE(s6 != s1);
     s1 = s5;
     s5 = s1;

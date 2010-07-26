@@ -235,10 +235,15 @@ ompl::base::StateSamplerPtr ompl::base::CompoundStateManifold::allocStateSampler
 ompl::base::State* ompl::base::CompoundStateManifold::allocState(void) const
 {
     CompoundState *state = new CompoundState();
+    allocStateComponents(state);
+    return static_cast<State*>(state);
+}
+
+void ompl::base::CompoundStateManifold::allocStateComponents(CompoundState *state) const
+{   
     state->components = new State*[componentCount_];
     for (unsigned int i = 0 ; i < componentCount_ ; ++i)
 	state->components[i] = components_[i]->allocState();
-    return static_cast<State*>(state);
 }
 
 void ompl::base::CompoundStateManifold::freeState(State *state) const 

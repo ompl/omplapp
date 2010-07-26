@@ -38,7 +38,7 @@
 #define OMPL_BASE_GOAL_STATES_
 
 #include "ompl/base/GoalSampleableRegion.h"
-#include "ompl/base/MappedState.h"
+#include "ompl/base/ScopedState.h"
 #include <vector>
 
 namespace ompl
@@ -74,7 +74,7 @@ namespace ompl
 	    void addState(const State* st);
 	    
 	    /** \brief Add a goal state */
-	    void addState(const MappedStateBase &st);
+	    void addState(const ScopedState<> &st);
 	    
 	    /** \brief Clear all goal states */
 	    void clear(void);

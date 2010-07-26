@@ -218,7 +218,7 @@ namespace ompl
 	    /** \brief The components that make up a compound state */
 	    State **components;
 	};
-	
+
     }
 }
 

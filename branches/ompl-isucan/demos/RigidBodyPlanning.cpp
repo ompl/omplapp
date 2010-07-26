@@ -80,11 +80,11 @@ void plan(void)
     si->setStateValidityChecker(boost::bind(&isStateValid, _1));
     
     /// create a random start state
-    ob::MappedState<> start(manifold);
+    ob::ScopedState<> start(manifold);
     start.random();
 
     /// create a random goal state
-    ob::MappedState<> goal(manifold);
+    ob::ScopedState<> goal(manifold);
     goal.random();
     
     /// create a problem instance
@@ -147,11 +147,11 @@ void planWithSimpleSetup(void)
     ss.setStateValidityChecker(boost::bind(&isStateValid, _1));
     
     /// create a random start state
-    ob::MappedState<> start(manifold);
+    ob::ScopedState<> start(manifold);
     start.random();
 
     /// create a random goal state
-    ob::MappedState<> goal(manifold);
+    ob::ScopedState<> goal(manifold);
     goal.random();
     
     /// set the start and goal states; this call allows SimpleSetup to infer the planning manifold, if needed

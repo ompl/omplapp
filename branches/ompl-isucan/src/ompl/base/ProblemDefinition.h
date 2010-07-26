@@ -42,7 +42,7 @@
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/util/Console.h"
 #include "ompl/util/ClassForward.h"
-#include "ompl/base/MappedState.h"
+#include "ompl/base/ScopedState.h"
 
 #include <vector>
 #include <cstdlib>
@@ -82,9 +82,9 @@ namespace ompl
 	    }
 	    
 	    /** \copydoc addStartState() */
-	    void addStartState(const MappedStateBase &state)
+	    void addStartState(const ScopedState<> &state)
 	    {
-		startStates_.push_back(si_->cloneState(state.getState()));
+		startStates_.push_back(si_->cloneState(state.get()));
 	    }
 	    
 	    /** \brief Check whether a specified starting state is
@@ -146,9 +146,9 @@ namespace ompl
 	    void setStartAndGoalStates(const State *start, const State *goal, const double threshold = std::numeric_limits<double>::epsilon());
 
 	    /** \copydoc setStartAndGoalStates() */
-	    void setStartAndGoalStates(const MappedStateBase &start, const MappedStateBase &goal, const double threshold = std::numeric_limits<double>::epsilon())
+	    void setStartAndGoalStates(const ScopedState<> &start, const ScopedState<> &goal, const double threshold = std::numeric_limits<double>::epsilon())
 	    {
-		setStartAndGoalStates(start.getState(), goal.getState(), threshold);
+		setStartAndGoalStates(start.get(), goal.get(), threshold);
 	    }
 	    
 	    /** \brief A problem is trivial if the given starting state already

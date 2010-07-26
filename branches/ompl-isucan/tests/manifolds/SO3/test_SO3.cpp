@@ -39,7 +39,7 @@
 #include <libgen.h>
 #include <iostream>
 
-#include "ompl/base/MappedState.h"
+#include "ompl/base/ScopedState.h"
 #include "ompl/base/manifolds/SO3StateManifold.h"
 
 using namespace ompl;
@@ -47,8 +47,8 @@ using namespace ompl;
 TEST(SO3, Simple)
 {
     base::StateManifoldPtr m(new base::SO3StateManifold());
-    base::MappedState<base::SO3StateManifold> s1(m);
-    base::MappedState<base::SO3StateManifold> s2(m);
+    base::ScopedState<base::SO3StateManifold> s1(m);
+    base::ScopedState<base::SO3StateManifold> s2(m);
     
     s1.random();
     s2 = s1;

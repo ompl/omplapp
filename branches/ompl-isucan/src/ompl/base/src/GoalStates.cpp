@@ -91,9 +91,9 @@ void ompl::base::GoalStates::addState(const State* st)
     states.push_back(si_->cloneState(st));
 }
 
-void ompl::base::GoalStates::addState(const MappedStateBase &st)
+void ompl::base::GoalStates::addState(const ScopedState<> &st)
 {
-    addState(st.getState());
+    addState(st.get());
 }
 
 	    

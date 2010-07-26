@@ -39,7 +39,7 @@
 #include <libgen.h>
 #include <iostream>
 
-#include "ompl/base/MappedState.h"
+#include "ompl/base/ScopedState.h"
 #include "ompl/base/manifolds/SO2StateManifold.h"
 
 using namespace ompl;
@@ -47,9 +47,9 @@ using namespace ompl;
 TEST(SO2, Simple)
 {
     base::StateManifoldPtr m(new base::SO2StateManifold());
-    base::MappedState<base::SO2StateManifold> s1(m);
-    base::MappedState<base::SO2StateManifold> s2(m);
-    base::MappedState<base::SO2StateManifold> s3(m);
+    base::ScopedState<base::SO2StateManifold> s1(m);
+    base::ScopedState<base::SO2StateManifold> s2(m);
+    base::ScopedState<base::SO2StateManifold> s3(m);
     
     s1->value = M_PI - 0.1;
     s2->value = -M_PI + 0.1;

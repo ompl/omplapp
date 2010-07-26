@@ -38,7 +38,7 @@
 #define OMPL_BASE_GOAL_STATE_
 
 #include "ompl/base/GoalSampleableRegion.h"
-#include "ompl/base/MappedState.h"
+#include "ompl/base/ScopedState.h"
 
 namespace ompl
 {
@@ -74,7 +74,7 @@ namespace ompl
 	    void setState(const State* st);
 	    
 	    /** \brief Set the goal state */
-	    void setState(const MappedStateBase &st);
+	    void setState(const ScopedState<> &st);
 	    
 	    /** \brief The goal state */
 	    State *state;

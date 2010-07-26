@@ -102,25 +102,8 @@ namespace ompl
 	class StateManifold : private boost::noncopyable
 	{
 	public:
-	    
-	    /** \brief Base class for accessing and manipulaing potentially complex state representations */
-	    class Mapper
-	    {
-	    public:
-		
-		Mapper(State *state) : state_(state)
-		{
-		}
 
-		virtual ~Mapper(void)
-		{
-		}
-		
-	    protected:
-		
-		State *state_;		
-	    };
-	    
+	    /** \brief Define the type of state allocated by this manifold */
 	    typedef State StateType;
 	    
 	    StateManifold(void)
@@ -305,6 +288,9 @@ namespace ompl
 	     user to add further components. */
 	    void lock(void);
 	    
+	    /** \brief Allocate the state components. Called by allocState() */
+	    void allocStateComponents(CompoundState *state) const;
+
 	    /** \brief The component manifolds that make up the compound manifold */
 	    std::vector<StateManifoldPtr> components_;
 	    
