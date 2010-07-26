@@ -69,7 +69,7 @@ namespace ompl
 	};
 
 	/** \brief A function that achieves state propagation.*/
-	typedef boost::function<PropagationResult(const base::State *state, const Control*, const double, base::State*)> StatePropagationFn;
+	typedef boost::function4<PropagationResult, const base::State*, const Control*, const double, base::State*> StatePropagationFn;
 	
 	class ControlManifold : private boost::noncopyable
 	{

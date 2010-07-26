@@ -210,7 +210,7 @@ namespace ompl
 	    void clear(void);
 
 	    /** \brief Print information about the current setup */
-	    void print(std::ostream &out = std::cout)
+	    void print(std::ostream &out = std::cout) const
 	    {
 		if (si_)
 		    si_->print(out);

@@ -3,7 +3,7 @@
 from ompl import base as ob
 from ompl import geometric as og
 
-def isStateValid(state):
+def isStateValid(spaceInformation, state):
 	return True
 	
 def plan():
@@ -19,15 +19,19 @@ def plan():
 	
 	ss.setStateValidityChecker(isStateValid)
 	
-	start = ob.ScopedState(manifold)
+	start = ob.State(manifold)
 	start.random()
 	
-	goal = ob.ScopedState(manifold)
+	goal = ob.State(manifold)
 	goal.random()
 	
 	ss.setStartAndGoalStates(start, goal)
 	
 	solved = ss.solve(1.0)
+	
+	if solved:
+		ss.simplifySolution()
+		print ss.getSolutionPath()
 
 
 if __name__ == "__main__":
