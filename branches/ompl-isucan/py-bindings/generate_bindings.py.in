@@ -206,6 +206,7 @@ class ompl_base_generator_t(code_generator_t):
 		self.replace_member_functions(self.ompl_ns.member_functions('printSettings'))
 		self.ompl_ns.member_functions('printState').exclude()
 		self.add_array_access(self.ompl_ns.class_('RealVectorStateManifold').class_('StateType'))
+		self.ompl_ns.class_('Path').include()
 		
 class ompl_control_generator_t(code_generator_t):
 	def __init__(self):

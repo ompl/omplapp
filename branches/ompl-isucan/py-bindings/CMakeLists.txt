@@ -65,7 +65,7 @@ set(OMPL_UTIL_HEADERS
 	util/Exception.h
 	util/RandomNumbers.h)
 		
-set(OMPL_MODULES base control geometric)
+set(OMPL_MODULES base control geometric util)
 set(OMPL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src")
 include_directories(${PYTHON_INCLUDE_DIRS} "${CMAKE_CURRENT_SOURCE_DIR}/bindings" ".")	
 if(APPLE)
@@ -116,16 +116,21 @@ if(PY_OMPL_COMPILE)
 	foreach(module ${OMPL_MODULES})
 		# target for each python module
 		aux_source_directory("${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}" PY${module}BINDINGS)
-		add_library(py_ompl_${module} MODULE ${PY${module}BINDINGS})
-		target_link_libraries(py_ompl_${module} 
-			ompl ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES})
-		add_dependencies(py_ompl py_ompl_${module})
-		get_target_property(PY${module}_NAME py_ompl_${module} LOCATION)
-		add_custom_command(TARGET py_ompl_${module} POST_BUILD
+		list(LENGTH PY${module}BINDINGS NUM_SOURCE_FILES)
+		if(NUM_SOURCE_FILES GREATER 0)
+			add_library(py_ompl_${module} MODULE ${PY${module}BINDINGS})
+			target_link_libraries(py_ompl_${module} 
+				ompl ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES})
+			add_dependencies(py_ompl py_ompl_${module})
+			get_target_property(PY${module}_NAME py_ompl_${module} LOCATION)
+			add_custom_command(TARGET py_ompl_${module} POST_BUILD
 		        COMMAND ${CMAKE_COMMAND} -E copy "${PY${module}_NAME}" 
 		        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/${module}/_${module}${CMAKE_SHARED_MODULE_SUFFIX}"
 		        WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
-    	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}")	
+    		include_directories("${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}")
+		else(NUM_SOURCE_FILES GREATER 0)
+			message(STATUS "Skipping Python module ${module}: code for module not found")
+		endif(NUM_SOURCE_FILES GREATER 0)
 	endforeach(module)
 	
 	# python unit tests
