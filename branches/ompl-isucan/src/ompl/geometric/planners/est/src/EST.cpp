@@ -129,7 +129,7 @@ bool ompl::geometric::EST::solve(double solveTime)
 	if (goal_s && rng_.uniform01() < goalBias_)
 	    goal_s->sampleGoal(xstate);
 	else
-	    sCore_->sampleNear(xstate, existing->state, maxDistance_);
+	    sampler_->sampleNear(xstate, existing->state, maxDistance_);
 	
 	if (si_->checkMotion(existing->state, xstate))
 	{

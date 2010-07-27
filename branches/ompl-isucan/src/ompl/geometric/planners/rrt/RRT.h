@@ -74,7 +74,7 @@ namespace ompl
 	public:
 	    
 	    RRT(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       sCore_(si->allocStateSampler())
+						       sampler_(si->allocStateSampler())
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("RRT");
@@ -174,7 +174,7 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr                sCore_;
+	    base::StateSamplerPtr                sampler_;
 
 	    NearestNeighborsSqrtApprox<Motion*>  nn_;
 	    unsigned int                         addedStartStates_;

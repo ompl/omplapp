@@ -117,7 +117,7 @@ bool ompl::geometric::LazyRRT::solve(double solveTime)
 	if (goal_s && rng_.uniform01() < goalBias_)
 	    goal_s->sampleGoal(rstate);
 	else
-	    sCore_->sample(rstate);
+	    sampler_->sample(rstate);
 
 	/* find closest state in the tree */
 	Motion *nmotion = nn_.nearest(rmotion);

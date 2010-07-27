@@ -73,7 +73,7 @@ namespace ompl
 	public:
 	    
 	    RRT(const SpaceInformationPtr &si) : base::Planner(si),
-						 sCore_(si->allocStateSampler()),
+						 sampler_(si->allocStateSampler()),
 						 cCore_(si->allocControlSampler())
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
@@ -166,7 +166,7 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr               sCore_;
+	    base::StateSamplerPtr               sampler_;
 	    ControlSamplerPtr                   cCore_;
 	    const SpaceInformation             *siC_;
 	    

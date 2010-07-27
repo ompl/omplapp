@@ -71,7 +71,7 @@ namespace ompl
 	public:
 	    
 	    EST(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       sCore_(si->allocStateSampler())
+						       sampler_(si->allocStateSampler())
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("EST");
@@ -182,7 +182,7 @@ namespace ompl
 	    void addMotion(Motion *motion);
 	    Motion* selectMotion(void);
 	    
-	    base::StateSamplerPtr        sCore_;
+	    base::StateSamplerPtr        sampler_;
 	    
 	    TreeData                     tree_;
 	    unsigned int                 addedStartStates_;

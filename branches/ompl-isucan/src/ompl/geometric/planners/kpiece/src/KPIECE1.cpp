@@ -158,15 +158,15 @@ bool ompl::geometric::KPIECE1::solve(double solveTime)
 		    if (hcik_.tryToImprove(*goal_r, xstate, improveValue))
 			improveValue /= 2.0;
 		    else
-			sCore_->sampleNear(xstate, existing->state, maxDistance_);
+			sampler_->sampleNear(xstate, existing->state, maxDistance_);
 		    msg_.debug("End Running HCIK");			
 		}
 		else
-		    sCore_->sampleNear(xstate, existing->state, maxDistance_);
+		    sampler_->sampleNear(xstate, existing->state, maxDistance_);
 	    }
 	}
 	else
-	    sCore_->sampleNear(xstate, existing->state, maxDistance_);
+	    sampler_->sampleNear(xstate, existing->state, maxDistance_);
 	
 	double failTime = 0.0;
 	bool keep = si_->checkMotion(existing->state, xstate, xstate, &failTime);

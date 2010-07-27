@@ -89,7 +89,7 @@ void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, S
     
     std::vector<Motion*> solution;
     base::State *xstate = si_->allocState();
-    bool      startTree = sCoreArray_[tid]->getRNG().uniformBool();
+    bool      startTree = samplerArray_[tid]->getRNG().uniformBool();
     
     while (!sol->found && time::now() < endTime)
     {
@@ -129,8 +129,8 @@ void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	startTree = !startTree;
 	TreeData &otherTree = startTree ? tStart_ : tGoal_;
 	
-	Motion *existing = selectMotion(sCoreArray_[tid]->getRNG(), tree);
-	sCoreArray_[tid]->sampleNear(xstate, existing->state, maxDistance_);
+	Motion *existing = selectMotion(samplerArray_[tid]->getRNG(), tree);
+	samplerArray_[tid]->sampleNear(xstate, existing->state, maxDistance_);
 	
 	/* create a motion */
 	Motion *motion = new Motion(si_);
@@ -144,7 +144,7 @@ void ompl::geometric::pSBL::threadSolve(unsigned int tid, time::point endTime, S
 	
 	addMotion(tree, motion);
 
-	if (checkSolution(sCoreArray_[tid]->getRNG(), !startTree, tree, otherTree, motion, solution))
+	if (checkSolution(samplerArray_[tid]->getRNG(), !startTree, tree, otherTree, motion, solution))
 	{
 	    sol->lock.lock();
 	    if (!sol->found)
@@ -449,5 +449,5 @@ void ompl::geometric::pSBL::setThreadCount(unsigned int nthreads)
 {
     assert(nthreads > 0);		
     threadCount_ = nthreads;
-    sCoreArray_.resize(threadCount_);
+    samplerArray_.resize(threadCount_);
 }

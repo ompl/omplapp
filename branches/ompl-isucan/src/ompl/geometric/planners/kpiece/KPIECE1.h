@@ -77,7 +77,7 @@ namespace ompl
 	public:
 	    
 	    KPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
-							   sCore_(si->allocStateSampler()),
+							   sampler_(si->allocStateSampler()),
 							   hcik_(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
@@ -234,7 +234,7 @@ namespace ompl
 	    unsigned int addMotion(Motion* motion, double dist);
 	    bool selectMotion(Motion* &smotion, Grid::Cell* &scell);
 	    
-	    base::StateSamplerPtr                      sCore_;
+	    base::StateSamplerPtr                      sampler_;
 	    
 	    HCIK                                       hcik_;
 	    TreeData                                   tree_;

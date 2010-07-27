@@ -75,7 +75,7 @@ namespace ompl
 	public:
 	    
 	    pRRT(const base::SpaceInformationPtr &si) : base::Planner(si),
-							sCoreArray_(si)
+							samplerArray_(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("pRRT");
@@ -183,7 +183,7 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerArray             sCoreArray_;
+	    base::StateSamplerArray             samplerArray_;
 	    NearestNeighborsSqrtApprox<Motion*> nn_;
 	    boost::mutex                        nnLock_;
 	    unsigned int                        addedStartStates_;

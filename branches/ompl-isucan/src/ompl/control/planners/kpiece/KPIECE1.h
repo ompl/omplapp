@@ -74,7 +74,7 @@ namespace ompl
 	public:
 	    
 	    KPIECE1(const SpaceInformationPtr &si) : base::Planner(si),
-						     sCore_(si->allocStateSampler()),
+						     sampler_(si->allocStateSampler()),
 						     cCore_(si->allocControlSampler())
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
@@ -212,7 +212,7 @@ namespace ompl
 	    bool selectMotion(Motion* &smotion, Grid::Cell* &scell);
 	    unsigned int findNextMotion(const Grid::Coord &origin, const std::vector<Grid::Coord> &coords, unsigned int index, unsigned int last);
 	    
-	    base::StateSamplerPtr      sCore_;
+	    base::StateSamplerPtr      sampler_;
 	    ControlSamplerPtr          cCore_;
 	    
 	    TreeData                   tree_;

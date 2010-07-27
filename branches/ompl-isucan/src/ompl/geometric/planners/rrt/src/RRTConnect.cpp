@@ -198,7 +198,7 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	}
 	
 	/* sample random state */
-	sCore_->sample(rstate);
+	sampler_->sample(rstate);
 	
 	GrowState gs = growTree(tree, tgi, rmotion);
 	

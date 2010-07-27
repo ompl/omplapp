@@ -72,7 +72,7 @@ namespace ompl
 		poolExpansion_ = 100;
 		hcik_.setMaxImproveSteps(3);
 		setValidityCheck(true);
-		sCore_ = si_->allocStateSampler();
+		sampler_ = si_->allocStateSampler();
 	    }
 	    
 	    virtual ~GAIK(void)
@@ -171,7 +171,7 @@ namespace ompl
 	    };
 	    
 	    HCIK                                         hcik_;
-	    base::StateSamplerPtr                        sCore_;
+	    base::StateSamplerPtr                        sampler_;
 	    base::SpaceInformationPtr                    si_;	
 	    unsigned int                                 poolSize_;
 	    unsigned int                                 poolExpansion_;

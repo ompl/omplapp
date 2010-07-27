@@ -79,10 +79,10 @@ void ompl::geometric::pRRT::threadSolve(unsigned int tid, time::point endTime, S
     while (sol->solution == NULL && time::now() < endTime)
     {
 	/* sample random state (with goal biasing) */
-	if (goal_s && sCoreArray_[tid]->getRNG().uniform01() < goalBias_)
+	if (goal_s && samplerArray_[tid]->getRNG().uniform01() < goalBias_)
 	    goal_s->sampleGoal(rstate);
 	else
-	    sCoreArray_[tid]->sample(rstate);
+	    samplerArray_[tid]->sample(rstate);
 	
 	/* find closest state in the tree */
 	nnLock_.lock();
@@ -232,5 +232,5 @@ void ompl::geometric::pRRT::setThreadCount(unsigned int nthreads)
 {
     assert(nthreads > 0);		
     threadCount_ = nthreads;
-    sCoreArray_.resize(threadCount_);
+    samplerArray_.resize(threadCount_);
 }

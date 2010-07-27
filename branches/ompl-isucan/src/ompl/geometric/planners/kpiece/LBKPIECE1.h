@@ -75,7 +75,7 @@ namespace ompl
 	public:
 	    
 	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
-							     sCore_(si->allocStateSampler())
+							     sampler_(si->allocStateSampler())
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("LBKPIECE1");
@@ -226,7 +226,7 @@ namespace ompl
 	    bool isPathValid(TreeData &tree, Motion* motion);
 	    bool checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion* motion, std::vector<Motion*> &solution);
 	    
-	    base::StateSamplerPtr                      sCore_;
+	    base::StateSamplerPtr                      sampler_;
 
 	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    

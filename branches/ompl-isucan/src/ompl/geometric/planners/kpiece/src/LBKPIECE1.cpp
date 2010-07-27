@@ -147,7 +147,7 @@ bool ompl::geometric::LBKPIECE1::solve(double solveTime)
 	
 	Motion* existing = selectMotion(tree);
 	assert(existing);
-	sCore_->sampleNear(xstate, existing->state, maxDistance_);
+	sampler_->sampleNear(xstate, existing->state, maxDistance_);
 	
 	/* create a motion */
 	Motion* motion = new Motion(si_);

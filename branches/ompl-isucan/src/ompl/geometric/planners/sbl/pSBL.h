@@ -88,7 +88,7 @@ namespace ompl
 	public:
 	    
 	    pSBL(const base::SpaceInformationPtr &si) : base::Planner(si),
-							sCoreArray_(si)
+							samplerArray_(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_STATE;
 		msg_.setPrefix("pSBL");
@@ -228,7 +228,7 @@ namespace ompl
 	    bool checkSolution(RNG &rng, bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution);
 	    
 	    
-	    base::StateSamplerArray                    sCoreArray_;
+	    base::StateSamplerArray                    samplerArray_;
 	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
 	    TreeData                                   tStart_;

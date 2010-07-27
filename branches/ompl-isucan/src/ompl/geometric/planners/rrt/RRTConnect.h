@@ -69,7 +69,7 @@ namespace ompl
 	public:
 	    
 	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si),
-							      sCore_(si->allocStateSampler())
+							      sampler_(si->allocStateSampler())
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("RRTConnect");
@@ -159,7 +159,7 @@ namespace ompl
 
 	    GrowState growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion);
 	    
-	    base::StateSamplerPtr      sCore_;
+	    base::StateSamplerPtr      sampler_;
 	    
 	    TreeData                   tStart_;
 	    TreeData                   tGoal_;
