@@ -39,6 +39,7 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/math/constants/constants.hpp>
 
 /// We use a different random number generator for the seeds of the
 /// other random generators. The root seed is from the number of
@@ -47,7 +48,7 @@ static unsigned int nextSeed(void)
 {
     static boost::mutex rngMutex;
     rngMutex.lock();
-    static boost::lagged_fibonacci607 sGen((boost::posix_time::microsec_clock::universal_time() -
+    static boost::lagged_fibonacci607 sGen((boost::uint32_t)(boost::posix_time::microsec_clock::universal_time() -
 					    boost::posix_time::ptime(boost::date_time::min_date_time)).total_microseconds());
     static boost::uniform_int<>       sDist(1, 1000000000);
     static boost::variate_generator<boost::lagged_fibonacci607, boost::uniform_int<> > s(sGen, sDist);
@@ -85,7 +86,7 @@ void ompl::RNG::quaternion(double value[4])
 {
     double x0 = uni_();    
     double r1 = sqrt(1.0 - x0), r2 = sqrt(x0);
-    double t1 = 2.0 * M_PI * uni_(), t2 = 2.0 * M_PI * uni_();
+    double t1 = 2.0 * boost::math::constants::pi<double>() * uni_(), t2 = 2.0 * boost::math::constants::pi<double>() * uni_();
     double c1 = cos(t1), s1 = sin(t1);
     double c2 = cos(t2), s2 = sin(t2);
     value[0] = s1 * r1;

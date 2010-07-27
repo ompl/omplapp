@@ -58,5 +58,5 @@ void ompl::base::ProjectionEvaluator::computeCoordinates(const EuclideanProjecti
     unsigned int dim = getDimension();
     coord.resize(dim);
     for (unsigned int i = 0 ; i < dim ; ++i)
-	coord[i] = (int)trunc(projection.values[i]/cellDimensions_[i]);
+	coord[i] = (int)floor(projection.values[i]/cellDimensions_[i]);
 }

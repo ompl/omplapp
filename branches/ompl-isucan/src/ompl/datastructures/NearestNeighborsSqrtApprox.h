@@ -67,7 +67,7 @@ namespace ompl
 	{
 	    data_.push_back(data);
 	    active_.push_back(true);
-	    checks_ = 1 + (int)floor(sqrt(data_.size()));
+		checks_ = 1 + (int)floor(sqrt((double)data_.size()));
 	}
 
 	virtual bool remove(_T &data)

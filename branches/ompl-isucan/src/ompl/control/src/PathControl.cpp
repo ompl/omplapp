@@ -99,7 +99,7 @@ void ompl::control::PathControl::print(std::ostream &out) const
 	si_->printState(states[i], out);
 	out << "  apply control ";
 	si->printControl(controls[i], out);
-	out << "  for " << (int)round(controlDurations[i]/res) << " steps" << std::endl;
+	out << "  for " << (int)floor(0.5 + controlDurations[i]/res) << " steps" << std::endl;
     }
     out << "Arrive at state ";
     si_->printState(states[controls.size()], out);
@@ -116,7 +116,7 @@ void ompl::control::PathControl::interpolate(void)
     double res = si->getPropagationStepSize();
     for (unsigned int  i = 0 ; i < controls.size() ; ++i)
     {
-	int steps = (int)round(controlDurations[i] / res);
+	int steps = (int)floor(0.5 + controlDurations[i] / res);
 	assert(steps >= 0);
 	if (steps <= 1)
 	{
@@ -157,7 +157,7 @@ bool ompl::control::PathControl::check(void) const
     base::State *dummy = si_->allocState();
     for (unsigned int  i = 0 ; i < controls.size() ; ++i)
     {
-	unsigned int steps = (unsigned int)round(controlDurations[i] / res);
+	unsigned int steps = (unsigned int)floor(0.5 + controlDurations[i] / res);
 	if (si->propagateWhileValid(states[i], controls[i], steps, dummy) != steps)
 	{
 	    valid = false;

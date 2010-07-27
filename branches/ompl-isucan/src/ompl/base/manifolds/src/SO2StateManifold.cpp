@@ -39,9 +39,11 @@
 #include <limits>
 #include <cmath>
 
+#include <boost/math/constants/constants.hpp>
+
 void ompl::base::SO2StateUniformSampler::sample(State *state)
 {
-    state->as<SO2StateManifold::StateType>()->value = rng_.uniformReal(-M_PI, M_PI);
+    state->as<SO2StateManifold::StateType>()->value = rng_.uniformReal(-boost::math::constants::pi<double>(), boost::math::constants::pi<double>());
 }
 
 void ompl::base::SO2StateUniformSampler::sampleNear(State *state, const State *near, const double distance)
@@ -50,11 +52,11 @@ void ompl::base::SO2StateUniformSampler::sampleNear(State *state, const State *n
     v = rng_.uniformReal(near->as<SO2StateManifold::StateType>()->value - distance,
 			 near->as<SO2StateManifold::StateType>()->value + distance);
     // we don't need something as general as enforceBounds() since we know the input states are within bounds
-    if (v < -M_PI)
-	v += 2.0 * M_PI;
+    if (v < -boost::math::constants::pi<double>())
+	v += 2.0 * boost::math::constants::pi<double>();
     else
-	if (v > M_PI)
-	    v -= 2.0 * M_PI;    
+	if (v > boost::math::constants::pi<double>())
+	    v -= 2.0 * boost::math::constants::pi<double>();    
 }
 
 unsigned int ompl::base::SO2StateManifold::getDimension(void) const
@@ -64,19 +66,19 @@ unsigned int ompl::base::SO2StateManifold::getDimension(void) const
 
 void ompl::base::SO2StateManifold::enforceBounds(State *state) const
 {
-    double v = fmod(state->as<StateType>()->value, 2.0 * M_PI);
-    if (v < -M_PI)
-	v += 2.0 * M_PI;
+    double v = fmod(state->as<StateType>()->value, 2.0 * boost::math::constants::pi<double>());
+    if (v < -boost::math::constants::pi<double>())
+	v += 2.0 * boost::math::constants::pi<double>();
     else
-	if (v > M_PI)
-	    v -= 2.0 * M_PI;
+	if (v > boost::math::constants::pi<double>())
+	    v -= 2.0 * boost::math::constants::pi<double>();
     state->as<StateType>()->value = v;
 }    
 	    	    
 bool ompl::base::SO2StateManifold::satisfiesBounds(const State *state) const
 {
-    return (state->as<StateType>()->value < M_PI + std::numeric_limits<double>::epsilon()) && 
-	    (state->as<StateType>()->value > -M_PI - std::numeric_limits<double>::epsilon());
+    return (state->as<StateType>()->value < boost::math::constants::pi<double>() + std::numeric_limits<double>::epsilon()) && 
+	    (state->as<StateType>()->value > -boost::math::constants::pi<double>() - std::numeric_limits<double>::epsilon());
 }
 
 void ompl::base::SO2StateManifold::copyState(State *destination, const State *source) const
@@ -88,7 +90,7 @@ double ompl::base::SO2StateManifold::distance(const State *state1, const State *
 {
     // assuming the states 1 & 2 are within bounds
     double d = fabs(state1->as<StateType>()->value - state2->as<StateType>()->value);
-    return (d > M_PI) ? 2.0 * M_PI - d : d;
+    return (d > boost::math::constants::pi<double>()) ? 2.0 * boost::math::constants::pi<double>() - d : d;
 }
 
 bool ompl::base::SO2StateManifold::equalStates(const State *state1, const State *state2) const
@@ -99,22 +101,22 @@ bool ompl::base::SO2StateManifold::equalStates(const State *state1, const State 
 void ompl::base::SO2StateManifold::interpolate(const State *from, const State *to, const double t, State *state) const
 {
     double diff = to->as<StateType>()->value - from->as<StateType>()->value;
-    if (fabs(diff) <= M_PI)
+    if (fabs(diff) <= boost::math::constants::pi<double>())
 	state->as<StateType>()->value = from->as<StateType>()->value + diff * t;
     else
     {
 	double &v = state->as<StateType>()->value;
 	if (diff > 0.0)
-	    diff = 2.0 * M_PI - diff;
+	    diff = 2.0 * boost::math::constants::pi<double>() - diff;
 	else
-	    diff = -2.0 * M_PI - diff;
+	    diff = -2.0 * boost::math::constants::pi<double>() - diff;
 	v = from->as<StateType>()->value - diff * t;
 	// input states are within bounds, so the following check is sufficient
-	if (v > M_PI)
-	    v -= 2.0 * M_PI;
+	if (v > boost::math::constants::pi<double>())
+	    v -= 2.0 * boost::math::constants::pi<double>();
 	else
-	    if (v < -M_PI)
-		v += 2.0 * M_PI;	
+	    if (v < -boost::math::constants::pi<double>())
+		v += 2.0 * boost::math::constants::pi<double>();	
     }
 }
 
