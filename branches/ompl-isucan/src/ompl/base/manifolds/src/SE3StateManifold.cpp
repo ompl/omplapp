@@ -37,6 +37,18 @@
 #include "ompl/base/manifolds/SE3StateManifold.h"
 #include <cstring>
 
+ompl::base::State* ompl::base::SE3StateManifold::allocState(void) const
+{
+    StateType *state = new StateType();
+    allocStateComponents(state);
+    return state;
+}
+
+void ompl::base::SE3StateManifold::freeState(State *state) const
+{
+    CompoundStateManifold::freeState(state);
+}
+
 void ompl::base::SE3StateManifold::setup(void)
 {
     class SE3DefaultProjection : public ProjectionEvaluator

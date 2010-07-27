@@ -50,6 +50,52 @@ namespace ompl
 	class SE3StateManifold : public CompoundStateManifold
 	{
 	public:
+	    
+	    class StateType : public CompoundStateManifold::StateType
+	    {
+	    public:
+
+		double getX(void) const
+		{
+		    return as<RealVectorStateManifold::StateType>(0)->values[0];
+		}
+		
+		double getY(void) const
+		{
+		    return as<RealVectorStateManifold::StateType>(0)->values[1];
+		}
+
+		double getZ(void) const
+		{
+		    return as<RealVectorStateManifold::StateType>(0)->values[2];
+		}
+		
+		const SO3StateManifold::StateType& getRotation(void) const
+		{
+		    return *as<SO3StateManifold::StateType>(1);
+		}
+		
+		SO3StateManifold::StateType& getRotation(void)
+		{
+		    return *as<SO3StateManifold::StateType>(1);
+		}
+
+		void setX(double x)
+		{
+		    as<RealVectorStateManifold::StateType>(0)->values[0] = x;
+		}
+		
+		void setY(double y)
+		{
+		    as<RealVectorStateManifold::StateType>(0)->values[1] = y;
+		}
+		
+		void setZ(double z)
+		{
+		    as<RealVectorStateManifold::StateType>(0)->values[2] = z;
+		}
+		
+	    };	    
 
 	    SE3StateManifold(void) : CompoundStateManifold()
 	    {
@@ -73,6 +119,9 @@ namespace ompl
 	    {
 		return as<RealVectorStateManifold>(0)->getBounds();
 	    }
+
+	    virtual State* allocState(void) const;
+	    virtual void freeState(State *state) const;
 
 	    virtual void setup(void);
 	};	

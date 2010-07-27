@@ -39,6 +39,16 @@
 #include <limits>
 #include <cmath>
 
+void ompl::base::SO3StateManifold::StateType::setAxisAngle(double ax, double ay, double az, double angle)
+{
+    double norm = sqrt(ax * ax + ay * ay + az * az);
+    double s = sin(angle / 2.0);
+    x = s * ax / norm;
+    y = s * ay / norm;
+    z = s * az / norm;
+    w = cos(angle / 2.0);    
+}
+
 void ompl::base::SO3StateUniformSampler::sample(State *state)
 {
     rng_.quaternion(&state->as<SO3StateManifold::StateType>()->x);

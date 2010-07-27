@@ -77,6 +77,9 @@ namespace ompl
 	    {
 	    public:
 		
+		/** \brief Set the quaternion from axis-angle representation */
+		void setAxisAngle(double ax, double ay, double az, double angle);
+		
 		double x, y, z, w;
 	    };
 	
