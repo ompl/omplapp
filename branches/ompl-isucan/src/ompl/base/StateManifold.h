@@ -69,10 +69,7 @@ namespace ompl
 	   StateManifold::allocState() function, it should also
 	   provide a StateManifold::freeState() function and define
 	   (or typedef) @b StateType to the type of the state that is
-	   allocated/freed. For ease of use, the new manifold should
-	   also define a @b Mapper class. The base class
-	   (StateManifold) should be the only one that does not define
-	   these subtypes.
+	   allocated/freed. 
 	   
 	   @par Inheriting from CompoundStateManifold
 	   Another option is to inherit from a CompoundStateManifold

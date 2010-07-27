@@ -49,18 +49,19 @@ namespace ompl
 	    \li The simple version:\n
 	    \code
 	    ompl::base::StateManifoldPtr manifold(new T());
-	    ompl::base::ScopedState state(manifold);
+	    ompl::base::ScopedState<> state(manifold);
 	    \endcode
 	    or
 	    \code
 	    ompl::base::SpaceInformationPtr si(manifold);
-	    ompl::base::ScopedState state(si);
+	    ompl::base::ScopedState<T> state(si);
 	    \endcode
 	    The ompl::base::ScopedState class will do the necessary
 	    memory operations to allocate a state from the correct
 	    manifold. This is the recommended way of allocating states
 	    for code other than ompl internals. Convenience operators such
-	    as = and == are provided.
+	    as = and == are provided. If a type T is provided, where T is 
+	    a manifold type, the maintained state is cast as T::StateType.
 
 	    \li The expert version:\n
 	    \code
@@ -78,10 +79,10 @@ namespace ompl
 	    freed using ompl::base::StateManifold::freeState(). For
 	    convenience, ompl::base::SpaceInformation::allocState()
 	    and ompl::base::SpaceInformation::freeState() are defined
-	    as well. Using the calls from the SpaceInformation class is better since they certainly
-	    use the same manifold as the one used for planning.  This
-	    is the lowest level of operating on states and only
-	    recomended for expert users.
+	    as well. Using the calls from the SpaceInformation class
+	    is better since they certainly use the same manifold as
+	    the one used for planning.  This is the lowest level of
+	    operating on states and only recomended for expert users.
 
 	    See \ref stateOps for how to fill the contents of the
 	    allocated states.
@@ -100,17 +101,8 @@ namespace ompl
 	    allow access to the state's members.
 	    \code
 	    ompl::base::StateManifoldPtr manifold(new ompl::base::SE2StateManifold());
-	    ompl::base::ScopedState state(manifold);
-	    ompl::base::SE2StateManifold::Mapper mapper(state);
-	    mapper.setX(...);
-	    \endcode
-	    A further simplification of this code can be used: the
-	    ompl::base::MappedState<T> class will create an instance
-	    of a ScopedState and a T::Mapper simultaneously:
-	    \code
-	    ompl::base::StateManifoldPtr manifold(new ompl::base::SE2StateManifold());
-	    ompl::base::MappedState<ompl::base::SE2StateManifold> mstate(manifold);
-	    mstate.setX(...);
+	    ompl::base::ScopedState<SE2StateManifold> state(manifold);
+	    state->setX(...);
 	    \endcode
 
 	    \li Expert version:\n	    

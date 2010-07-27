@@ -228,7 +228,8 @@
    We then set the bounds for the R<sup>3</sup> component of this manifold:
    @skip RealVectorBounds
    @until setBounds
-   Create an instance of ompl::geometric::SimpleSetup
+   Create an instance of ompl::geometric::SimpleSetup. Instances of ompl::base::SpaceInformation,
+   and ompl::base::ProblemDefinition are created internally.
    @skipline SimpleSetup
    Set the state validity checker
    @skipline setStateValidityChecker
@@ -238,8 +239,7 @@
    And a random goal state:
    @skip goal(manifold)
    @until goal.random
-   Set these states as start and goal for SimpleSetup. This allows inference of the manifold
-   we are planning in, and this creation of instances of ompl::base::SpaceInformation, ompl::base::ProblemDefinition, etc.
+   Set these states as start and goal for SimpleSetup.
    @skipline setStartAndGoalStates
    We can now try to solve the problem. This will also trigger a call to ompl::geometric::SimpleSetup::setup() and create a default instance of a planner,
    since we have not specified one. Furthermore, ompl::base::Planner::setup() is called, which in turn calls ompl::base::SpaceInformation::setup(). This chain
