@@ -136,6 +136,12 @@ namespace ompl
 		return goal_;
 	    }
 	    
+	    /** \brief Get all the input states. This includes start
+		states and states that are part of goal regions that
+		can be casted as ompl::base::GoalState or
+		ompl::base::GoalStates. */
+	    void getInputStates(std::vector<const State*> &states) const;
+	    
 	    /** \brief In the simplest case possible, we have a single
 		starting state and a goal state.
 

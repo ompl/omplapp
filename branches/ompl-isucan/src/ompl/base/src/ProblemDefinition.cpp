@@ -99,6 +99,7 @@ bool ompl::base::ProblemDefinition::fixInvalidInputState(State *state, double di
     return result;    
 }
 
+
 bool ompl::base::ProblemDefinition::fixInvalidInputStates(double distStart, double distGoal, unsigned int attempts)
 {
     bool result = true;
@@ -126,6 +127,22 @@ bool ompl::base::ProblemDefinition::fixInvalidInputStates(double distStart, doub
     }
     
     return result;    
+}
+
+void ompl::base::ProblemDefinition::getInputStates(std::vector<const State*> &states) const
+{
+    states.clear();
+    for (unsigned int i = 0 ; i < startStates_.size() ; ++i)
+	states.push_back(startStates_[i]);
+
+    GoalState *goal = dynamic_cast<GoalState*>(goal_.get());
+    if (goal)
+	states.push_back(goal->state);
+
+    GoalStates *goals = dynamic_cast<GoalStates*>(goal_.get());
+    if (goals)
+	for (unsigned int i = 0 ; i < goals->states.size() ; ++i)
+	    states.push_back(goals->states[i]);
 }
 
 bool ompl::base::ProblemDefinition::isTrivial(unsigned int *startIndex, double *distance) const
