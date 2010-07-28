@@ -62,7 +62,7 @@ namespace ompl
 		pdef_.reset(new base::ProblemDefinition(si_));
 	    }
 	    
-	    ~SimpleSetup(void)
+	    virtual ~SimpleSetup(void)
 	    {
 	    }
 	    
@@ -164,17 +164,17 @@ namespace ompl
 	    }
 	    	    
 	    /** \brief Run the planner for a specified amount of time */
-	    bool solve(double time)
+	    virtual bool solve(double time)
 	    {
 		setup();
 		return planner_->solve(time);
 	    }
 	    
 	    /** \brief Clear all planning data */
-	    void clear(void);
+	    virtual void clear(void);
 
 	    /** \brief Print information about the current setup */
-	    void print(std::ostream &out = std::cout) const
+	    virtual void print(std::ostream &out = std::cout) const
 	    {
 		if (si_)
 		    si_->print(out);
@@ -185,7 +185,7 @@ namespace ompl
 	    /** \brief This method will create the necessary classes
 		for planning. The solve() method will call this
 		function automatically. */
-	    void setup(void);
+	    virtual void setup(void);
 
 	protected:
 
