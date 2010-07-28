@@ -164,8 +164,8 @@ namespace ompl
 		pa_ = pa;
 	    }
 	    	    
-	    /** \brief Run the planner for a specified amount of time */
-	    virtual bool solve(double time)
+	    /** \brief Run the planner for a specified amount of time (default is 1 second) */
+	    virtual bool solve(double time = 1.0)
 	    {
 		setup();
 		return planner_->solve(time);
