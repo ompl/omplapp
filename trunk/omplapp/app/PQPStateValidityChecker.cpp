@@ -6,14 +6,21 @@ ompl::app::PQPStateValidityChecker::PQPStateValidityChecker(const base::SpaceInf
 {
     environment_ = getPQPModelFromMeshes(obstacles);
     if (!environment_)
-	throw ompl::Exception("Invalid environment specification");	
+	msg_.inform("Empty environment loaded");
+    else
+	msg_.inform("Loaded environment model with %d triangles", environment_->num_tris);
     robot_ = getPQPModelFromMeshes(robot);
     if (!robot_)
 	throw ompl::Exception("Invalid robot mesh");
+    else
+	msg_.inform("Loaded robot model with %d triangles", robot_->num_tris);
 }
 
 bool ompl::app::PQPStateValidityChecker::isValid(const base::State *state) const
 {
+    if (!environment_)
+	return true;
+    
     const base::SE3StateManifold::StateType *s = state->as<base::SE3StateManifold::StateType>();
     PQP_REAL robTrans[3] = {s->getX(), s->getY(), s->getZ()};
     PQP_REAL robRot[3][3];
@@ -59,6 +66,9 @@ void ompl::app::PQPStateValidityChecker::quaternionToMatrix(const base::SO3State
 ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromMeshes(const std::vector<const aiMesh*> &meshes) const
 {	
     PQPModelPtr model;
+    
+    if (meshes.empty())
+	return model;
     
     // make sure we can create a model
     for (unsigned int j = 0 ; j < meshes.size() ; ++j)
