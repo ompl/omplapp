@@ -56,7 +56,7 @@ namespace ompl
 	{
 	public:
 
-	    SimpleSetup(const ControlManifoldPtr &manifold) : configured_(false), msg_("SimpleSetup")
+	    SimpleSetup(const ControlManifoldPtr &manifold) : configured_(false), planTime_(0.0), msg_("SimpleSetup")
 	    {
 		si_.reset(new SpaceInformation(manifold->getStateManifold(), manifold));
 		pdef_.reset(new base::ProblemDefinition(si_));
@@ -167,7 +167,16 @@ namespace ompl
 	    virtual bool solve(double time = 1.0)
 	    {
 		setup();
-		return planner_->solve(time);
+		time::point start = time::now();
+		bool result = planner_->solve(time);
+		planTime_ = time::seconds(time::now() - start);
+		return result;
+	    }
+	    
+	    /** \brief Get the amount of time (in seconds) spent during the last planning step */
+	    double getLastPlanComputationTime(void) const
+	    {
+		return planTime_;
 	    }
 	    
 	    /** \brief Clear all planning data */
@@ -203,8 +212,12 @@ namespace ompl
 	    
 	    /// flag indicating whether the classes needed for planning are set up
 	    bool                          configured_;
-	    msg::Interface                msg_;
+
+	    /// the amount of time the last planning step took
+	    double                        planTime_;
 	    
+	    /// interface for console output
+	    msg::Interface                msg_;	    
 	};
     }
     

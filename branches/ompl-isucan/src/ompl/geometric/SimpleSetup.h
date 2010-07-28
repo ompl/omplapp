@@ -58,7 +58,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Provide the manifold needed for planning. */
-	    SimpleSetup(const base::StateManifoldPtr &manifold) : configured_(false), msg_("SimpleSetup")
+	    SimpleSetup(const base::StateManifoldPtr &manifold) : configured_(false), planTime_(0.0), msg_("SimpleSetup")
 	    {
 		useManifold(manifold);
 	    }
@@ -168,7 +168,16 @@ namespace ompl
 	    virtual bool solve(double time = 1.0)
 	    {
 		setup();
-		return planner_->solve(time);
+		time::point start = time::now();
+		bool result = planner_->solve(time);
+		planTime_ = time::seconds(time::now() - start);
+		return result;
+	    }
+	    
+	    /** \brief Get the amount of time (in seconds) spent during the last planning step */
+	    double getLastPlanComputationTime(void) const
+	    {
+		return planTime_;
 	    }
 	    
 	    /** \brief Attempt to simplify the current solution path */
@@ -212,6 +221,11 @@ namespace ompl
 
 	    /// flag indicating whether the classes needed for planning are set up
 	    bool                          configured_;
+	    
+	    /// the amount of time the last planning step took
+	    double                        planTime_;
+	    
+	    /// interface for console output
 	    msg::Interface                msg_;
 	    
 	};
