@@ -65,6 +65,6 @@ void ompl::base::RealVectorBounds::check(void) const
     if (low.size() != high.size())
 	throw Exception("Lower and upper bounds are not of same dimension");
     for (unsigned int i = 0 ; i < low.size() ; ++i)
-	if (low[i] + std::numeric_limits<double>::epsilon() > high[i])
+	if (low[i] > high[i])
 	    throw Exception("Bounds for real vector manifold seem to be incorrect (lower bound must be stricly less than upper bound). Sampling will not be possible");
 }
