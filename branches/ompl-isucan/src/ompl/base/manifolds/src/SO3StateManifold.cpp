@@ -65,29 +65,28 @@ unsigned int ompl::base::SO3StateManifold::getDimension(void) const
     return 3;
 }
 
-double ompl::base::SO3StateManifold::norm(const State *state) const
+double ompl::base::SO3StateManifold::norm(const StateType *state) const
 {
-    const StateType *qstate = static_cast<const StateType*>(state);
-    double nrmSqr = qstate->x * qstate->x + qstate->y * qstate->y + qstate->z * qstate->z + qstate->w * qstate->w;
+    double nrmSqr = state->x * state->x + state->y * state->y + state->z * state->z + state->w * state->w;
     return (fabs(nrmSqr - 1.0) > std::numeric_limits<double>::epsilon()) ? sqrt(nrmSqr) : 1.0;
 }
 
 void ompl::base::SO3StateManifold::enforceBounds(State *state) const
 {
-    double nrm = norm(state);
+    StateType *qstate = static_cast<StateType*>(state);
+    double nrm = norm(qstate);
     if (fabs(nrm - 1.0) > std::numeric_limits<double>::epsilon())
     {
-	StateType *qstate = static_cast<StateType*>(state);
 	qstate->x /= nrm;
 	qstate->y /= nrm;
 	qstate->z /= nrm;
-	qstate->w /= nrm;	
+	qstate->w /= nrm;
     }
 }    
 	    	    
 bool ompl::base::SO3StateManifold::satisfiesBounds(const State *state) const
 {
-    return fabs(norm(state) - 1.0) < std::numeric_limits<double>::epsilon();
+    return fabs(norm(static_cast<const StateType*>(state)) - 1.0) < std::numeric_limits<double>::epsilon();
 }
 
 void ompl::base::SO3StateManifold::copyState(State *destination, const State *source) const

@@ -92,7 +92,7 @@ namespace ompl
 	    }
 
 	    /** \brief Compute the norm of a state */
-	    double norm(const State *state) const;
+	    double norm(const StateType *state) const;
 	    
 	    /** \brief Get the dimension of the space */
 	    virtual unsigned int getDimension(void) const;

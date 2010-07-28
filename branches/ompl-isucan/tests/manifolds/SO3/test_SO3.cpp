@@ -41,8 +41,14 @@
 
 #include "ompl/base/ScopedState.h"
 #include "ompl/base/manifolds/SO3StateManifold.h"
+#include "ompl/base/SpaceInformation.h"
 
 using namespace ompl;
+
+bool isValid(const base::State *)
+{
+    return true;
+}
 
 TEST(SO3, Simple)
 {
@@ -55,6 +61,22 @@ TEST(SO3, Simple)
 
     EXPECT_NEAR(m->distance(s1.get(), s2.get()), 0.0, 1e-3);
     
+    s2.random();
+
+    base::SpaceInformation si(m);
+    si.setStateValidityChecker(boost::bind(&isValid, _1));
+    si.setup();
+    
+    std::vector<base::State*> states;
+    unsigned int count = si.getMotionStates(s1.get(), s2.get(), states, 0.1, true, true);
+    EXPECT_TRUE(states.size() == count);
+    
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+    {
+	double nrm = m->as<base::SO3StateManifold>()->norm(states[i]->as<base::SO3StateManifold::StateType>());
+	EXPECT_NEAR(nrm, 1.0, 1e-15);
+	si.freeState(states[i]);
+    }
 }
 
 int main(int argc, char **argv)
