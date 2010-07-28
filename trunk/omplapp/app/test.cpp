@@ -1,5 +1,6 @@
 #include "ompl/base/SpaceInformation.h"
 #include "ompl/base/manifolds/SE3StateManifold.h"
+#include "ompl/geometric/SimpleSetup.h"
 #include "aiMesh.h"
 #include "PQP.h"
 #include <boost/shared_ptr.hpp>
@@ -135,6 +136,17 @@ namespace ompl
 	    
 	};
 	
+	class RigidBodyPlanning : public geometric::SimpleSetup
+	{
+	public:
+	    RigidBodyPlanning(void) : geometric::SimpleSetup(base::StateManifoldPtr(new SE3StateManifold()))
+	    {
+		//		getSpaceInformation()->setStateValidityChecker();
+		
+	    }
+	    
+	};	
+	    
     }
 }
 
