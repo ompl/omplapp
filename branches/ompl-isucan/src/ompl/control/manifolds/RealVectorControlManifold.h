@@ -38,39 +38,17 @@
 #define OMPL_CONTROL_MANIFOLDS_REAL_VECTOR_CONTROL_MANIFOLD_
 
 #include "ompl/control/ControlManifold.h"
-#include <algorithm>
+#include "ompl/base/manifolds/RealVectorBounds.h"
 #include <vector>
 
 namespace ompl
 {
     namespace control
     {
-	
-	class RealVectorBounds
-	{
-	public:
-	    RealVectorBounds(unsigned int dim)
-	    {
-		low.resize(dim, 0.0);
-		high.resize(dim, 0.0);
-	    }
 
-	    /** \brief Set the lower bound in each dimension to a specific value */
-	    void setLow(double value)
-	    {
-		std::fill(low.begin(), low.end(), value);
-	    }
+	/** \brief The real vector bounds are the same for a control manifold as they are for a state manifold */
+	typedef base::RealVectorBounds RealVectorBounds;
 
-	    /** \brief Set the upper bound in each dimension to a specific value */
-	    void setHigh(double value)
-	    {
-		std::fill(high.begin(), high.end(), value);
-	    }
-	    
-	    std::vector<double> low;
-	    std::vector<double> high;
-	};
-	
 	/** \brief Uniform sampler for the R<sup>n</sup> manifold */
 	class RealVectorControlUniformSampler : public ControlSampler
 	{

@@ -68,19 +68,19 @@ void ompl::base::RealVectorStateUniformSampler::sampleNear(State *state, const S
 void ompl::base::RealVectorStateManifold::setup(void)
 {
     StateManifold::setup();
-    double md = std::numeric_limits<double>::infinity();
-    for (unsigned int i = 0 ; i < dimension_ ; ++i)
-    {
-	if (bounds_.low[i] + std::numeric_limits<double>::epsilon() > bounds_.high[i])
-	    throw Exception("Bounds for real vector state manifold seem to be incorrect (lower bound must be stricly less than upper bound). Sampling will not be possible");
-	double d = bounds_.high[i] - bounds_.low[i];
-	if (d < md)
-	    md = d;
-    }
+    bounds_.check();
     
     // compute a default random projection
     if (dimension_ > 0)
     {
+	double md = std::numeric_limits<double>::infinity();
+	for (unsigned int i = 0 ; i < dimension_ ; ++i)
+	{
+	    double d = bounds_.high[i] - bounds_.low[i];
+	    if (d < md)
+		md = d;
+	}
+
 	if (dimension_ > 2)
 	{
 	    int p = std::max(2, (int)ceil(log((double)getDimension())));
@@ -97,8 +97,7 @@ void ompl::base::RealVectorStateManifold::setup(void)
 
 void ompl::base::RealVectorStateManifold::setBounds(const RealVectorBounds &bounds)
 {
-    if (bounds.low.size() != bounds.high.size())
-	throw Exception("Lower and upper bounds are not of same dimension");
+    bounds.check();
     if (bounds.low.size() != dimension_)
 	throw Exception("Bounds do not match dimension of manifold");
     bounds_ = bounds;

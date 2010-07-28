@@ -31,6 +31,7 @@ set(OMPL_BASE_HEADERS
 	base/Planner.h
 	base/ProblemDefinition.h
 	base/ProjectionEvaluator.h
+	base/manifolds/RealVectorBounds.h
 	base/manifolds/RealVectorStateManifold.h
 	base/manifolds/SO2StateManifold.h
 	base/manifolds/SO3StateManifold.h

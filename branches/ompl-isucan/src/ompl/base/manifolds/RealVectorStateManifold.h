@@ -38,42 +38,13 @@
 #define OMPL_BASE_MANIFOLDS_REAL_VECTOR_STATE_MANIFOLD_
 
 #include "ompl/base/StateManifold.h"
-#include <algorithm>
+#include "ompl/base/manifolds/RealVectorBounds.h"
 #include <vector>
 
 namespace ompl
 {
     namespace base
     {
-	
-	/** \brief The lower and upper bounds for an R<sup>n</sup> manifold */
-	class RealVectorBounds
-	{
-	public:
-	    RealVectorBounds(unsigned int dim)
-	    {
-		low.resize(dim, 0.0);
-		high.resize(dim, 0.0);
-	    }
-	    
-	    /** \brief Set the lower bound in each dimension to a specific value */
-	    void setLow(double value)
-	    {
-		std::fill(low.begin(), low.end(), value);
-	    }
-
-	    /** \brief Set the upper bound in each dimension to a specific value */
-	    void setHigh(double value)
-	    {
-		std::fill(high.begin(), high.end(), value);
-	    }
-	    
-	    /** \brief Lower bound */
-	    std::vector<double> low;
-
-	    /** \brief Upper bound */
-	    std::vector<double> high;
-	};
 	
 	/** \brief Uniform sampler for the R<sup>n</sup> manifold */
 	class RealVectorStateUniformSampler : public StateSampler
