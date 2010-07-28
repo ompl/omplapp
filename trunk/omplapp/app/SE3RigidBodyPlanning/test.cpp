@@ -16,10 +16,11 @@ int main()
     goal->setY(3);
     
     setup.setStartAndGoalStates(start, goal);
-    setup.setup();
-    setup.print();
-    
-    setup.solve();
+
+    if (setup.solve())
+    {
+	setup.getSolutionPath().print(std::cout);
+    }
     
     return 0;
 }
