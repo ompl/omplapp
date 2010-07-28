@@ -14,7 +14,8 @@ namespace ompl
 	{
 	public:
 	    
-	    PQPStateValidityChecker(const base::SpaceInformationPtr &si, const aiMesh* robot,
+	    PQPStateValidityChecker(const base::SpaceInformationPtr &si,
+				    const std::vector<const aiMesh*> &robot,
 				    const std::vector<const aiMesh*> &obstacles);
 	    
 	    virtual bool isValid(const base::State *state) const;

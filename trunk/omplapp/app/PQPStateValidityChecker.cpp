@@ -1,14 +1,13 @@
 #include "PQPStateValidityChecker.h"
 
-ompl::app::PQPStateValidityChecker::PQPStateValidityChecker(const base::SpaceInformationPtr &si, const aiMesh* robot,
+ompl::app::PQPStateValidityChecker::PQPStateValidityChecker(const base::SpaceInformationPtr &si, 
+							    const std::vector<const aiMesh*> &robot,
 							    const std::vector<const aiMesh*> &obstacles) : base::StateValidityChecker(si)
 {
     environment_ = getPQPModelFromMeshes(obstacles);
     if (!environment_)
 	throw ompl::Exception("Invalid environment specification");	
-    std::vector<const aiMesh*> r(1);
-    r[0] = robot;	
-    robot_ = getPQPModelFromMeshes(r);
+    robot_ = getPQPModelFromMeshes(robot);
     if (!robot_)
 	throw ompl::Exception("Invalid robot mesh");
 }
