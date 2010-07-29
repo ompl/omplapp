@@ -72,9 +72,11 @@ namespace ompl
 	    /** \brief Return true if the state statisfies the goal
 	     *  constraints and compute the distance between the state
 	     *  given as argument and the goal (even if the goal is
-	     *  not satisfied). This distance can be an approximation.
-	     *  Note: if this function returns true,
-	     *  isStartGoalPairValid() need not be called. */
+	     *  not satisfied). This distance can be an
+	     *  approximation. It can even be set to a constant, if
+	     *  such a computation is not possible. Note: if this
+	     *  function returns true, isStartGoalPairValid() need not
+	     *  be called. */
 	    virtual bool isSatisfied(const State *st, double *distance) const = 0;
 
 	    /** \brief Return true if the state statisfies the goal

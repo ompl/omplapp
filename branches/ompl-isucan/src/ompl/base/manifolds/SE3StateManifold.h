@@ -50,7 +50,8 @@ namespace ompl
 	class SE3StateManifold : public CompoundStateManifold
 	{
 	public:
-	    
+
+	    /** \brief A state in SE(3) */	    
 	    class StateType : public CompoundStateManifold::StateType
 	    {
 	    public:

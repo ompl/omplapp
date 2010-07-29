@@ -49,7 +49,8 @@ namespace ompl
 	class GoalSampleableRegion : public GoalRegion
 	{
 	public:
-	    
+
+	    /** \brief Create a goal region that can be sampled */	    
 	    GoalSampleableRegion(const SpaceInformationPtr &si) : GoalRegion(si)
 	    {
 	    }

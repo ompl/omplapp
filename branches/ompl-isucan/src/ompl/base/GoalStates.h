@@ -50,7 +50,8 @@ namespace ompl
 	class GoalStates : public GoalSampleableRegion
 	{
 	public:
-	    
+
+	    /** \brief Create a goal representation that is in fact a set of states  */	    
 	    GoalStates(const SpaceInformationPtr &si) : GoalSampleableRegion(si), samplePosition(0)
 	    {
 	    }

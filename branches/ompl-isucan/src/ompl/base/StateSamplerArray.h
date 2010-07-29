@@ -48,6 +48,7 @@ namespace ompl
 
 	ClassForward(SpaceInformation);
 	
+	/** \brief Class to ease the creation of a set of samplers */
 	class StateSamplerArray 
 	{
 	public:

@@ -51,6 +51,7 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief A state in SE(2) */
 	    class StateType : public CompoundStateManifold::StateType
 	    {
 	    public:

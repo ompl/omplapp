@@ -44,26 +44,35 @@
 namespace ompl
 {
     
-    /** This class provides an implementation of an updatable
+    /** \brief This class provides an implementation of an updatable
 	min-heap. Using it is a bit cumbersome, as it requires keeping
-	track of the Element* type, however, it should be as fast as
-	it gets with an updatable heap. */
+	track of the BinaryHeap::Element* type, however, it should be
+	as fast as it gets with an updatable heap. */
     template <typename _T, 
 	      class LessThan = std::less<_T> >
     class BinaryHeap
     {
     public:
-	
-        class Element
+    
+	/** \brief When an element is added to the heap, an instance
+	    of Element* is created. This instance contains the data
+	    that was added and internal information about the position
+	    of the data in the heap's internal storage. */
+	class Element
 	{
 	    friend class BinaryHeap;
 	private:
+	    /** \brief The location of the data in the heap's storage */
 	    unsigned int position;
 	public:
+	    /** \brief The data of this element */
 	    _T           data;
 	};
-	
+    
+	/** \brief Event that gets called after an insertion */
 	typedef void (*EventAfterInsert) (Element*, void*);
+
+	/** \brief Event that gets called just before a removal */
 	typedef void (*EventBeforeRemove)(Element*, void*);
 	
 	BinaryHeap(void)
@@ -77,18 +86,21 @@ namespace ompl
 	    clear();
 	}
 	
+	/** \brief Set the event that gets called after insertion */
 	void onAfterInsert(EventAfterInsert event, void *arg)
 	{
 	    eventAfterInsert_ = event;
 	    eventAfterInsertData_ = arg;
 	}
 
+	/** \brief Set the event that gets called before a removal */
 	void onBeforeRemove(EventBeforeRemove event, void *arg)
 	{
 	    eventBeforeRemove_ = event;
 	    eventBeforeRemoveData_ = arg;
 	}	
 
+	/** \brief Clear the heap */
 	void clear(void)
 	{
 	    for (typename std::vector<Element*>::iterator i = vector_.begin() ;
@@ -97,16 +109,19 @@ namespace ompl
 	    vector_.clear();
 	}
 	
+	/** \brief Return the top element. NULL for an empty heap. */
 	Element* top(void) const
 	{
 	    return vector_.empty() ? NULL : vector_.at(0);
 	}
 
+	/** \brief Remove the top element */
 	void pop(void)
 	{
 	    removePos(0);
 	}
 	
+	/** \brief Remove a specific element */
 	void remove(Element* element)
 	{
 	    if (eventBeforeRemove_)
@@ -114,6 +129,7 @@ namespace ompl
 	    removePos(element->position);
 	}
 	
+	/** \brief Add a new element */
 	Element* insert(const _T& data)
 	{
 	    Element* element = new Element();
@@ -127,6 +143,7 @@ namespace ompl
 	    return element;
 	}
 	
+	/** \brief Add a set of elements to the heap */
 	void insert(const std::vector<_T>& list)
 	{
 	    const unsigned int n = vector_.size();
@@ -142,6 +159,7 @@ namespace ompl
 	    }
 	}
 	
+	/** \brief Add a set of elements to the heap and rebuild it afterwards. */
 	void buildFrom(const std::vector<_T>& list)
 	{
 	    const unsigned int m = list.size();
@@ -150,11 +168,13 @@ namespace ompl
 	    build();
 	}
 
+	/** \brief Rebuild the heap */
 	void rebuild(void)
 	{	    
 	    build();
 	}
 
+	/** \brief Update an element in the heap */
 	void update(Element* element)
 	{
 	    const unsigned int pos = element->position;
@@ -163,16 +183,19 @@ namespace ompl
 	    percolateDown(pos);
 	}
 	
+	/** \brief Check if the heap is empty */
 	bool empty(void) const
 	{
 	    return vector_.empty();
 	}
 	
+	/** \brief Get the number of elements in the heap */
 	unsigned int size(void) const
 	{
 	    return vector_.size();
 	}
 	
+	/** \brief Get the data stored in this heap */
 	void getContent(std::vector<_T> &content) const
 	{
 	    for (typename std::vector<Element*>::const_iterator i = vector_.begin();
@@ -180,6 +203,7 @@ namespace ompl
 		content.push_back((*i)->data);
 	}
 	
+	/** \brief Sort an array of elements. This does not affect the content of the heap */
 	void sort(std::vector<_T>& list)
 	{	    
 	    const unsigned int n         = list.size();

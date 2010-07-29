@@ -65,7 +65,8 @@ namespace ompl
 	class ProblemDefinition : private boost::noncopyable
 	{
 	public:
-	    
+
+	    /** \brief Create a problem definition given the SpaceInformation it is part of */
 	    ProblemDefinition(const SpaceInformationPtr &si) : si_(si)
 	    {
 	    }
@@ -75,7 +76,7 @@ namespace ompl
 		clearStartStates();
 	    }
 	    
-	    /** \brief Add a start state */
+	    /** \brief Add a start state. The state is copied. */
 	    void addStartState(const State *state)
 	    {
 		startStates_.push_back(si_->cloneState(state));
@@ -118,7 +119,7 @@ namespace ompl
 		return startStates_[index];
 	    }
 
-	    /** \brief Set the goal. The memory for a previous goal is freed. */
+	    /** \brief Set the goal. */
 	    void setGoal(const GoalPtr &goal)
 	    {
 		goal_ = goal;
@@ -157,7 +158,7 @@ namespace ompl
 		setStartAndGoalStates(start.get(), goal.get(), threshold);
 	    }
 	    
-	    /** \brief A problem is trivial if the given starting state already
+	    /** \brief A problem is trivial if a given starting state already
 		in the goal region, so we need no motion planning. startID
 		will be set to the index of the starting state that
 		satisfies the goal. The distance to the goal can
@@ -178,10 +179,16 @@ namespace ompl
 	    /** \brief Helper function for fixInvalidInputStates(). Attempts to fix an individual state */
 	    bool fixInvalidInputState(State *state, double dist, bool start, unsigned int attempts);
 
+	    /** \brief The space information this problem definition is for */
 	    SpaceInformationPtr  si_;
+
+	    /** \brief The set of start states */
 	    std::vector<State*>  startStates_;
+
+	    /** \brief The goal representation */
 	    GoalPtr              goal_;
 	    
+	    /** \brief Interface for console output */
 	    msg::Interface       msg_;
 	};
     }    

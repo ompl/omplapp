@@ -71,6 +71,7 @@ namespace ompl
 	/** \brief A function that achieves state propagation.*/
 	typedef boost::function4<PropagationResult, const base::State*, const Control*, const double, base::State*> StatePropagationFn;
 	
+	/** \brief A manifold representing the space of applicable controls */
 	class ControlManifold : private boost::noncopyable
 	{
 	public:
@@ -173,6 +174,7 @@ namespace ompl
 	    
 	};
 	
+	/** \brief A manifold to allow the composition of control manifolds */
 	class CompoundControlManifold : public ControlManifold
 	{
 	public:

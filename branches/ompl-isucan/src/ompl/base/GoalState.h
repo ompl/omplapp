@@ -51,6 +51,7 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief Create a goal representation that is in fact a state  */
 	    GoalState(const SpaceInformationPtr &si) : GoalSampleableRegion(si), state(NULL)
 	    {
 	    }

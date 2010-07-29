@@ -207,6 +207,7 @@ namespace ompl
 	    
 	};
 	
+	/** \brief A manifold to allow the composition of state manifolds */
     	class CompoundStateManifold : public StateManifold
 	{
 	public:

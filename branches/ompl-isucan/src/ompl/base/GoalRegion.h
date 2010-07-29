@@ -50,7 +50,8 @@ namespace ompl
 	class GoalRegion : public Goal
 	{
 	public:
-	   
+
+	    /** \brief Create a goal region */
 	    GoalRegion(const SpaceInformationPtr &si);
 	    
 	    virtual ~GoalRegion(void)
@@ -62,7 +63,10 @@ namespace ompl
 		less than the threshold */
 	    virtual bool isSatisfied(const State *st, double *distance = NULL) const;
 	    
-	    /** \brief Compute the distance to the goal (heuristic) */
+	    /** \brief Compute the distance to the goal
+		(heuristic). This function is the one used in
+		computing the distance to the goal in a call to
+		isSatisfied() */
 	    virtual double distanceGoal(const State *st) const = 0;
 	    
 	    /** \brief Print information about the goal data structure
