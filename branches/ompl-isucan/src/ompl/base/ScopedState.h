@@ -103,8 +103,8 @@ namespace ompl
 	    ScopedState(const ScopedState<T> &other) : manifold_(other.getManifold())
 	    { 
 		State *s = manifold_->allocState();
-		state_ = dynamic_cast<StateType*>(s);
-		manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
+		state_ = static_cast<StateType*>(s);
+		manifold_->copyState(s, static_cast<const State*>(other.get()));
 	    }
 
 	    /** \brief Copy constructor that allows instantiation from states of other type */
@@ -118,8 +118,8 @@ namespace ompl
 		    throw Exception("Unable to copy state");
 		
 		State *s = manifold_->allocState();
-		state_ = dynamic_cast<StateType*>(s);
-		manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
+		state_ = static_cast<StateType*>(s);
+		manifold_->copyState(s, static_cast<const State*>(other.get()));
 	    }
 
 
@@ -144,8 +144,8 @@ namespace ompl
 		    manifold_ = other.getManifold();
 		    
 		    State *s = manifold_->allocState();
-		    state_ = dynamic_cast<StateType*>(s);
-		    manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
+		    state_ = static_cast<StateType*>(s);
+		    manifold_->copyState(s, static_cast<const State*>(other.get()));
 		}
 		return *this;
 	    }
@@ -153,12 +153,12 @@ namespace ompl
 	    /** \brief Assignment operator */
 	    ScopedState<T>& operator=(const State *other)
 	    {
-		if (other != dynamic_cast<State*>(state_))
+		if (other != static_cast<State*>(state_))
 		{
 		    if (!dynamic_cast<const StateType*>(other))
 			throw Exception("Unable to copy state");
 		    
-		    manifold_->copyState(dynamic_cast<State*>(state_), other);
+		    manifold_->copyState(static_cast<State*>(state_), other);
 		}
 		return *this;
 	    }
@@ -166,12 +166,12 @@ namespace ompl
 	    /** \brief Assignment operator */
 	    ScopedState<T>& operator=(const State &other)
 	    {
-		if (&other != dynamic_cast<State*>(state_))
+		if (&other != static_cast<State*>(state_))
 		{
 		    if (!dynamic_cast<const StateType*>(&other))
 			throw Exception("Unable to copy state");
 		    
-		    manifold_->copyState(dynamic_cast<State*>(state_), &other);
+		    manifold_->copyState(static_cast<State*>(state_), &other);
 		}
 		return *this;
 	    }
@@ -192,8 +192,8 @@ namespace ompl
 		    manifold_ = other.getManifold();
 		    
 		    State *s = manifold_->allocState();
-		    state_ = dynamic_cast<StateType*>(s);
-		    manifold_->copyState(s, dynamic_cast<const State*>(other.get()));
+		    state_ = static_cast<StateType*>(s);
+		    manifold_->copyState(s, static_cast<const State*>(other.get()));
 		}
 		return *this;
 	    }
@@ -208,7 +208,7 @@ namespace ompl
 		if (!dynamic_cast<const StateType*>(other.get()))
 		    throw Exception("Unable to compare states");
 		
-		return manifold_->equalStates(dynamic_cast<const State*>(state_), dynamic_cast<const State*>(other.get()));
+		return manifold_->equalStates(static_cast<const State*>(state_), static_cast<const State*>(other.get()));
 	    }
 
 	    /** \brief Checks equality of two states */	    
