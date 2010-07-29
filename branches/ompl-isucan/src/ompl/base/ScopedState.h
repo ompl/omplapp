@@ -38,7 +38,6 @@
 #define OMPL_BASE_SCOPED_STATE_
 
 #include "ompl/base/SpaceInformation.h"
-#include "ompl/util/Exception.h"
 #include <boost/concept_check.hpp>
 
 namespace ompl
@@ -75,12 +74,12 @@ namespace ompl
 	    ScopedState(const SpaceInformationPtr &si) : manifold_(si->getStateManifold())
 	    {	
 		State *s = manifold_->allocState();
-		state_ = dynamic_cast<StateType*>(s);
-		if (!state_)
-		{
-		    manifold_->freeState(s);
-		    throw Exception("StateManifold does not allocate states of desired type");
-		}
+
+		// ideally, this should be a dynamic_cast and we
+		// should throw an exception in case of
+		// failure. However, RTTI may not be available across
+		// shared library boundaries, so we do not use it
+		state_ = static_cast<StateType*>(s);
 	    }
 	    
 	    /** \brief Given the manifold that we are working with,
@@ -91,12 +90,12 @@ namespace ompl
 	    ScopedState(const StateManifoldPtr &manifold) : manifold_(manifold)
 	    {
 		State *s = manifold_->allocState();
-		state_ = dynamic_cast<StateType*>(s);
-		if (!state_)
-		{
-		    manifold_->freeState(s);
-		    throw Exception("StateManifold does not allocate states of desired type");
-		}
+		
+		// ideally, this should be a dynamic_cast and we
+		// should throw an exception in case of
+		// failure. However, RTTI may not be available across
+		// shared library boundaries, so we do not use it
+		state_ = static_cast<StateType*>(s);
 	    }
 
 	    /** \brief Copy constructor */
@@ -113,9 +112,12 @@ namespace ompl
 	    { 
 		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, StateManifold*>));
 		BOOST_CONCEPT_ASSERT((boost::Convertible<typename O::StateType*, State*>));
-		
-		if (!dynamic_cast<const StateType*>(other.get()))
-		    throw Exception("Unable to copy state");
+
+		// ideally, we should use a dynamic_cast and throw an
+		// exception in case other.get() does not cast to
+		// const StateType*. However, RTTI may not be
+		// available across shared library boundaries, so we
+		// do not use it
 		
 		State *s = manifold_->allocState();
 		state_ = static_cast<StateType*>(s);
@@ -155,8 +157,11 @@ namespace ompl
 	    {
 		if (other != static_cast<State*>(state_))
 		{
-		    if (!dynamic_cast<const StateType*>(other))
-			throw Exception("Unable to copy state");
+		    // ideally, we should use a dynamic_cast and throw an
+		    // exception in case other does not cast to
+		    // const StateType*. However, RTTI may not be
+		    // available across shared library boundaries, so we
+		    // do not use it
 		    
 		    manifold_->copyState(static_cast<State*>(state_), other);
 		}
@@ -168,8 +173,11 @@ namespace ompl
 	    {
 		if (&other != static_cast<State*>(state_))
 		{
-		    if (!dynamic_cast<const StateType*>(&other))
-			throw Exception("Unable to copy state");
+		    // ideally, we should use a dynamic_cast and throw an
+		    // exception in case &other does not cast to
+		    // const StateType*. However, RTTI may not be
+		    // available across shared library boundaries, so we
+		    // do not use it
 		    
 		    manifold_->copyState(static_cast<State*>(state_), &other);
 		}
@@ -182,9 +190,12 @@ namespace ompl
 	    {
 		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, StateManifold*>));
 		BOOST_CONCEPT_ASSERT((boost::Convertible<typename O::StateType*, State*>));
-
-		if (!dynamic_cast<const StateType*>(other.get()))
-		    throw Exception("Unable to copy state");
+		
+		// ideally, we should use a dynamic_cast and throw an
+		// exception in case other.get() does not cast to
+		// const StateType*. However, RTTI may not be
+		// available across shared library boundaries, so we
+		// do not use it
 		
 		if (reinterpret_cast<const void*>(&other) != reinterpret_cast<const void*>(this))
 		{
@@ -205,8 +216,11 @@ namespace ompl
 		BOOST_CONCEPT_ASSERT((boost::Convertible<O*, StateManifold*>));	
 		BOOST_CONCEPT_ASSERT((boost::Convertible<typename O::StateType*, State*>));
 
-		if (!dynamic_cast<const StateType*>(other.get()))
-		    throw Exception("Unable to compare states");
+		// ideally, we should use a dynamic_cast and throw an
+		// exception in case other.get() does not cast to
+		// const StateType*. However, RTTI may not be
+		// available across shared library boundaries, so we
+		// do not use it
 		
 		return manifold_->equalStates(static_cast<const State*>(state_), static_cast<const State*>(other.get()));
 	    }
