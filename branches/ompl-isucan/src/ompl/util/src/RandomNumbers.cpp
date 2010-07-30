@@ -35,26 +35,57 @@
 /* Author: Ioan Sucan */
 
 #include "ompl/util/RandomNumbers.h"
+#include "ompl/util/Exception.h"
 #include <boost/random/lagged_fibonacci.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/math/constants/constants.hpp>
 
+    
+/// flag indicating whether the user asked for a seed or not
+static bool            userDefinedSeed = false;
+
+/// the seed the user asked for
+static boost::uint32_t userSetSeed = 0;
+
+/// flag indicating whether the first seed has already been generated or not
+static bool            firstSeedGenerated = false;
+
+/// compute the first seed to be used; this function should be called only once
+static boost::uint32_t firstSeed(void)
+{
+    firstSeedGenerated = true;
+    if (userDefinedSeed)
+	return userSetSeed;
+    else
+	return 
+	    (boost::uint32_t)(boost::posix_time::microsec_clock::universal_time() -
+			      boost::posix_time::ptime(boost::date_time::min_date_time)).total_microseconds();
+}
+
 /// We use a different random number generator for the seeds of the
 /// other random generators. The root seed is from the number of
 /// nano-seconds in the current time.
-static unsigned int nextSeed(void)
+static boost::uint32_t nextSeed(void)
 {
     static boost::mutex rngMutex;
     rngMutex.lock();
-    static boost::lagged_fibonacci607 sGen((boost::uint32_t)(boost::posix_time::microsec_clock::universal_time() -
-					    boost::posix_time::ptime(boost::date_time::min_date_time)).total_microseconds());
+    static boost::lagged_fibonacci607 sGen(firstSeed());
     static boost::uniform_int<>       sDist(1, 1000000000);
     static boost::variate_generator<boost::lagged_fibonacci607, boost::uniform_int<> > s(sGen, sDist);
-    unsigned int v = s();
+    boost::uint32_t v = s();
     rngMutex.unlock();
     return v;
+}
+
+void ompl::RNG::setSeed(boost::uint32_t seed)
+{
+    if (firstSeedGenerated)
+	throw Exception("Random number generation already started. Changing seed now will not lead to deterministic sampling.");
+
+    userDefinedSeed = true;
+    userSetSeed = seed;
 }
 
 ompl::RNG::RNG(void) : generator_(nextSeed()),

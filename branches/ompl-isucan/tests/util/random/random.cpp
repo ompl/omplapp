@@ -53,7 +53,7 @@ TEST(Random, DifferentSeeds)
 	int v2 = r2.uniformInt(0, 100);
 	int v3 = r3.uniformInt(0, 100);
 	int v4 = r4.uniformInt(0, 100);
-	//	printf("%d %d %d %d\n", v1, v2, v3, v4);
+	printf("%d %d %d %d\n", v1, v2, v3, v4);
 	
 	if (v1 == v2 && v2 == v3 && v3 == v4)
 	    eq++;
@@ -72,7 +72,7 @@ TEST(Random, DifferentSeeds)
 
 TEST(Random, ValidRangeInts)
 {
-    RNG r;
+    RNG r;  
     const int N = 100;
     const int V = 10000 * N;
     std::vector<int> c(N + 1, 0);
@@ -90,6 +90,7 @@ TEST(Random, ValidRangeInts)
 
 int main(int argc, char **argv)
 {
+    ompl::RNG::setSeed(1);
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

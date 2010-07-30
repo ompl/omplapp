@@ -96,6 +96,11 @@ namespace ompl
 	/** \brief Uniform random unit quaternion sampling. The returned value has the order (x,y,z,w) */	
 	void   quaternion(double value[4]);
 	
+	/** \brief Set the seed for random number generation. Use this
+	    function to ensure the same sequence of random numbers is
+	    generated. */
+	static void setSeed(boost::uint32_t seed);
+	
     private:
 	
 	boost::mt19937                                                          generator_;
