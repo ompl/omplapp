@@ -58,9 +58,10 @@ namespace ompl
         typedef typename GridN<_T>::Coord     Coord;
     
     protected:
-    
-	/// the type of cell here needs an extra pointer to allow the updatable heap to work fast
-	/// however, this stays hidden from the user
+	
+	/// \cond IGNORE
+	// the type of cell here needs an extra pointer to allow the updatable heap to work fast
+	// however, this stays hidden from the user
         struct CellX : public Cell
 	{
 	    CellX(void) : Cell()
@@ -73,6 +74,8 @@ namespace ompl
 
 	    void *heapElement;
 	};
+
+	/// \endcond
 
     public:
 	
