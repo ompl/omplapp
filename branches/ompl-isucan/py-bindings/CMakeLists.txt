@@ -52,6 +52,7 @@ set(OMPL_GEOMETRIC_HEADERS
 	geometric/PathGeometric.h
 	geometric/PathSimplifier.h
 	geometric/SimpleSetup.h
+	geometric/planners/prm/PRM.h
 	geometric/planners/est/EST.h
 	geometric/planners/kpiece/KPIECE1.h
 	geometric/planners/kpiece/LBKPIECE1.h
