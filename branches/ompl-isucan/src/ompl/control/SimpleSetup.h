@@ -55,7 +55,9 @@ namespace ompl
 	class SimpleSetup
 	{
 	public:
-
+	    
+	    /** \brief Constructor needs the manifold needed for planning. */
+	    explicit
 	    SimpleSetup(const ControlManifoldPtr &manifold) : configured_(false), planTime_(0.0), msg_("SimpleSetup")
 	    {
 		si_.reset(new SpaceInformation(manifold->getStateManifold(), manifold));

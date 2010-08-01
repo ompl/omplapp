@@ -57,7 +57,8 @@ namespace ompl
 	{
 	public:
 	    
-	    /** \brief Provide the manifold needed for planning. */
+	    /** \brief Constructor needs the manifold needed for planning. */
+	    explicit
 	    SimpleSetup(const base::StateManifoldPtr &manifold) : configured_(false), planTime_(0.0), msg_("SimpleSetup")
 	    {
 		useManifold(manifold);

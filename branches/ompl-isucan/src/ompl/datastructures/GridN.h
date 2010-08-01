@@ -97,7 +97,7 @@ namespace ompl
 	void setDimension(unsigned int dimension)
 	{
 	    static const unsigned short MAX_GRID_NEIGHBORS = 255;
-	    assert(Grid<_T>::empty() == 0);
+	    assert(Grid<_T>::empty() == true);
 	    Grid<_T>::dimension_ = dimension;
 	    Grid<_T>::maxNeighbors_ = 2 * dimension;
 	    assert(Grid<_T>::maxNeighbors_ < MAX_GRID_NEIGHBORS);

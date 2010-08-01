@@ -43,6 +43,7 @@
    - @ref gEST "Expansive Space Trees (EST)"
    - @ref gKPIECE1 "Geometric Planning by Interior-Exterior Cell Exploration (KPIECE)"
    - @ref gLBKPIECE1 "Lazy Bi-directional KPIECE (LBKPIECE)"	
+   - @ref gPRM "Probabilistic RoadMaps (PRM)"
 
    Other tools:
 
