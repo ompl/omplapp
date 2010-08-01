@@ -63,7 +63,7 @@ namespace ompl
 	    /// the number of neighbors
 	    unsigned short      neighbors;
 
-	    /// a flag indicating whether this cell is on the border or not (less than 2n neighbors, where n is the dimension)
+	    /// a flag indicating whether this cell is on the border or not
 	    bool                border;
 	    
 	    Cell(void) : BaseCell(), neighbors(0), border(true)
@@ -97,6 +97,7 @@ namespace ompl
 	void setDimension(unsigned int dimension)
 	{
 	    static const unsigned short MAX_GRID_NEIGHBORS = 255;
+	    assert(Grid<_T>::empty() == 0);
 	    Grid<_T>::dimension_ = dimension;
 	    Grid<_T>::maxNeighbors_ = 2 * dimension;
 	    assert(Grid<_T>::maxNeighbors_ < MAX_GRID_NEIGHBORS);
@@ -105,7 +106,14 @@ namespace ompl
 	}
 	
 
-	/// if bounds for the grid need to be considered, we can set them here
+	/// If bounds for the grid need to be considered, we can set them here.
+	/// When the number of neighbors are counted, whether the
+	/// space is bounded matters, in the sense that if a cell is on
+	/// the boundary, we know some of its neighbors cannot exist. 
+	/// In order to allow such a cell to reflect the fact it has
+	/// achieved its maximal number of neighbors, the boundary is 
+	/// counted as the number of neighbors it prevents from
+	/// existing.
 	void setBounds(const Coord &low, const Coord &up)
 	{
 	    lowBound_  = low;
@@ -224,10 +232,22 @@ namespace ompl
 	    return result;
 	}	
 
+	/// flag indicating whether bounds are in effect for this grid
 	bool             hasBounds_;
+	
+	/// if bounds are set, this defines the lower corner cell
 	Coord            lowBound_;
+
+	/// if bounds are set, this defines the upper corner cell
 	Coord            upBound_;
+
+	/// by default, cells are considered on the border if 2n
+	/// neighbors are created, for a space of dimension n.
+	/// this value is overridden and set in this member variable
 	unsigned int     interiorCellNeighborsLimit_;
+
+	/// flag indicating whether the neighbor count used to determine whether
+	/// a cell is on the border or not
 	bool             overrideCellNeighborsLimit_;
     };
 }

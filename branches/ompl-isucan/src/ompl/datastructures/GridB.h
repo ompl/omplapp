@@ -43,18 +43,22 @@
 namespace ompl
 {
     
-    /** This class defines a grid that keeps track of its boundary:
-     * it distinguishes between interior and exterior cells */
+    /** \brief This class defines a grid that keeps track of its boundary:
+     * it distinguishes between interior and exterior cells.  */
     template < typename _T,
 	       class LessThanExternal = std::less<_T>,
 	       class LessThanInternal = LessThanExternal >
-    
     class GridB : public GridN<_T>
     {
     public:
-
+	
+	/// definition of a cell in this grid
         typedef typename GridN<_T>::Cell      Cell;
+
+	/// the datatype for arrays of cells 
         typedef typename GridN<_T>::CellArray CellArray;
+
+	/// datatype for cell coordinates
         typedef typename GridN<_T>::Coord     Coord;
     
     protected:
@@ -79,9 +83,10 @@ namespace ompl
 
     public:
 	
-	/// event to be called when a cell's priority is to be updated
+	/// Event to be called when a cell's priority is to be updated
 	typedef void (*EventCellUpdate)(Cell*, void*);
 
+	/// Constructor
         explicit
 	GridB(unsigned int dimension) : GridN<_T>(dimension)
 	{
@@ -279,18 +284,21 @@ namespace ompl
 	EventCellUpdate          eventCellUpdate_;
 	void                    *eventCellUpdateData_;
 
+	/// default no-op update routine for a cell
         static void noCellUpdate(Cell*, void*)
 	{
 	}
     
+	/// set the update procedure for the heaps of internal and external cells
 	void setupHeaps(void)
 	{
 	    eventCellUpdate_     = &noCellUpdate;
 	    eventCellUpdateData_ = NULL;
-	    internal_.onAfterInsert(setHeapElementI, NULL);
-	    external_.onAfterInsert(setHeapElementE, NULL);
+	    internal_.onAfterInsert(&setHeapElementI, NULL);
+	    external_.onAfterInsert(&setHeapElementE, NULL);
 	}
 	
+	/// clear the data from both heaps
 	void clearHeaps(void)
 	{
 	    internal_.clear();
@@ -318,7 +326,10 @@ namespace ompl
 	    LessThanExternal lt_;
 	};
 	
+	/// datatype for a heap of cells containing interior cells
 	typedef BinaryHeap< CellX*, LessThanInternalCell > internalBHeap;
+
+	/// datatype for a heap of cells containing exterior cells
 	typedef BinaryHeap< CellX*, LessThanExternalCell > externalBHeap;
 	
 	static void setHeapElementI(typename internalBHeap::Element* element, void *)
@@ -331,7 +342,10 @@ namespace ompl
 	    element->data->heapElement = reinterpret_cast<void*>(element);
 	}	
 
+	/// the heap of interior cells
 	internalBHeap internal_;
+
+	/// the heap of boundary cells
 	externalBHeap external_;
     };
     

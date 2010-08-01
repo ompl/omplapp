@@ -307,9 +307,13 @@ namespace ompl
 	
     protected:
 
+	/// the dimension of the grid 
 	unsigned int     dimension_;
+
+	/// the maximum number of neighbors a cell can have (2 * dimension)
 	unsigned int     maxNeighbors_;
 	
+	/// the hash holding the cells
 	CoordHash        hash_;
     };
 }
