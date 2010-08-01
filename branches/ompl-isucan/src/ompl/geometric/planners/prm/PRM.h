@@ -106,11 +106,6 @@ namespace ompl
 		return maxNearestNeighbors_;
 	    }
 	    	    
-	    /** \brief Set the problem definition for the planner. The
-		problem needs to be set before calling solve(). This
-		does not clear the internal datastructures of the planner. */
-	    virtual void setProblemDefinition(const base::ProblemDefinitionPtr &pdef);
-
 	    virtual void getPlannerData(base::PlannerData &data) const;
 
 	    virtual bool solve(double solveTime);

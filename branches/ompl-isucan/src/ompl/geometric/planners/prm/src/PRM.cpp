@@ -66,11 +66,6 @@ void ompl::geometric::PRM::freeMemory(void)
     }
 }
 
-void ompl::geometric::PRM::setProblemDefinition(const base::ProblemDefinitionPtr &pdef)
-{
-    pdef_ = pdef;
-}
-
 void ompl::geometric::PRM::growRoadmap(const std::vector<Milestone*> &start,
 				       const std::vector<Milestone*> &goal,
 				       double growTime, base::State *workState)

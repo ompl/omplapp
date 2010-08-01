@@ -55,7 +55,6 @@ const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinitio
 
 void ompl::base::Planner::setProblemDefinition(const ProblemDefinitionPtr &pdef)
 {
-    clear();
     pdef_ = pdef;
 }
 
