@@ -21,10 +21,13 @@ else(ROS)
 		add_definitions(-W -Wall -Wextra -Wno-missing-field-initializers)
 	endif(CMAKE_COMPILER_IS_GNUCXX)
 	
+	find_package(doxygen)
+	
 	enable_testing()
 endif(ROS)
 
 include_directories(src)
+add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(py-bindings)
 add_subdirectory(tests)

@@ -55,7 +55,10 @@ namespace ompl
 	    class StateType : public CompoundStateManifold::StateType
 	    {
 	    public:
-
+		StateType() : CompoundStateManifold::StateType()
+		{
+		}
+		
 		double getX(void) const
 		{
 		    return as<RealVectorStateManifold::StateType>(0)->values[0];

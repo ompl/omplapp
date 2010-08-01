@@ -55,6 +55,9 @@ namespace ompl
 	    class StateType : public CompoundStateManifold::StateType
 	    {
 	    public:
+		StateType() : CompoundStateManifold::StateType()
+		{
+		}
 
 		double getX(void) const
 		{

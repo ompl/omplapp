@@ -96,7 +96,7 @@ struct PropagatePyWrapper
 {
 	PropagatePyWrapper( bp::object callable ) : callable_( callable ) {}
 
-    ompl::control::PropagationResult operator()(const ompl::base::State *start, const ompl::control::Control *control, const double duration, ompl::base::State *result)
+    ompl::control::PropagationResult operator()(const ompl::base::State* start, const ompl::control::Control* control, const double duration, ompl::base::State* result)
     {
 		PyGILState_STATE gstate = PyGILState_Ensure();
 		ompl::control::PropagationResult ret = bp::extract<ompl::control::PropagationResult>(callable_(bp::ptr(start), bp::ptr(control), duration, bp::ptr(result)));
@@ -121,7 +121,7 @@ class code_generator_t(object):
 	def __init__(self, name, dep=None):
 		module_builder.set_logger_level( logging.INFO )
 		self.mb = module_builder.module_builder_t(
-			files = [ name + '.h', '@CMAKE_CURRENT_SOURCE_DIR@/ompl_py_util.h' ],
+			files = [ name + '.h' ],
 			cache = 'pygccxml_'+name+'_cache',
 			gccxml_path = "@GCCXML@",
 			include_paths=[ "@OMPL_INCLUDE_DIR@",
@@ -148,13 +148,16 @@ class code_generator_t(object):
 	
 	def filter_declarations(self):
 		self.mb.calldefs( 
-			declarations.access_type_matcher_t('protected' )).exclude()
+			declarations.access_type_matcher_t('private')).exclude()
+		self.mb.calldefs( 
+			declarations.access_type_matcher_t('protected')).exclude()
 		self.ompl_ns.member_functions(lambda decl: decl.has_ellipsis).exclude()	
 		self.std_ns.class_('ios_base').exclude()
 		self.std_ns.free_functions().exclude()
 		self.std_ns.operators().exclude()
 		
 	def replace_member_function(self, decl):
+		decl.exclude()
 		cls = decl.parent
 		self.mb.logger.info('Replacing member function ' + cls.decl_string+'::'+decl.name)
 		try:
@@ -166,7 +169,6 @@ class code_generator_t(object):
 		#cls.add_wrapper_code(wrapper)
 	
 	def replace_member_functions(self, decls):
-		decls.exclude()
 		for decl in decls:
 		 	self.replace_member_function(decl)
 			
@@ -191,21 +193,38 @@ class ompl_base_generator_t(code_generator_t):
 		self.std_ns.class_('vector< unsigned int >').rename('vectorUint')
 		self.std_ns.class_('vector< double >').rename('vectorDouble')
 		self.std_ns.class_('vector< std::valarray<double> >').rename('vectorValarrayDouble')
-		self.ompl_ns.operators(lambda decl: decl.return_type.decl_string[-1]=='*')
-		self.ompl_ns.member_functions(lambda decl: decl.return_type.decl_string[-1]=='*').exclude()	
 		self.ompl_ns.variables(lambda decl: decl.is_wrapper_needed()).exclude()	
 		allocStateFn = self.ompl_ns.class_('StateManifold').member_function('allocState')
 		allocStateFn.include()
 		allocStateFn.call_policies = \
 			call_policies.return_value_policy(call_policies.reference_existing_object)
-		self.ompl_ns.class_('State').rename('AbstractState')
-		self.ompl_ns.class_('CompoundState').exclude()
-		self.ompl_ns.class_('ScopedState').rename('State')
-		self.ompl_ns.class_('ScopedState').operator('->').exclude()
+
+		state = self.ompl_ns.class_('State')
+		state.rename('AbstractState')
+		
+		self.ompl_ns.class_('CompoundState').variable('components').exclude()
+
+		bstate = self.ompl_ns.class_('ScopedState< ompl::base::StateManifold >')
+		bstate.rename('State')
+		bstate.operator('=', arg_types=['::ompl::base::State const &']).exclude()
+		
+		for stype in ['RealVector', 'SO2', 'SO3', 'SE2', 'SE3']:
+			state = self.ompl_ns.class_('ScopedState< ompl::base::%sStateManifold >' % stype)
+			state.rename(stype+'State')
+			state.operator('=', arg_types=['::ompl::base::State const &']).exclude()
+			state.add_registration_code(
+				'def(bp::init<ompl::base::ScopedState<ompl::base::StateManifold> const &>(( bp::arg("other") )))')
+			self.ompl_ns.class_(stype + 'StateManifold').class_('StateType').rename(
+				stype + 'StateInternal')
+			bstate.add_registration_code(
+				'def(bp::init<ompl::base::ScopedState<ompl::base::%sStateManifold> const &>(( bp::arg("other") )))' % stype)
+		self.ompl_ns.class_('RealVectorStateManifold').class_(
+			'StateType').variable('values').exclude()
+		self.add_array_access(self.ompl_ns.class_('RealVectorStateManifold').class_('StateType'))
+		
 		self.replace_member_functions(self.ompl_ns.member_functions('print'))
 		self.replace_member_functions(self.ompl_ns.member_functions('printSettings'))
 		self.ompl_ns.member_functions('printState').exclude()
-		self.add_array_access(self.ompl_ns.class_('RealVectorStateManifold').class_('StateType'))
 		self.ompl_ns.class_('Path').include()
 		
 class ompl_control_generator_t(code_generator_t):
@@ -217,8 +236,6 @@ class ompl_control_generator_t(code_generator_t):
 		self.std_ns.class_('vector< int >').rename('vectorInt')
 		self.std_ns.class_('vector< double >').rename('vectorDouble')
 		self.std_ns.class_('vector< ompl::control::Control* >').rename('vectorControlPtr')
-		self.ompl_ns.operators(lambda decl: decl.return_type.decl_string[-1]=='*')
-		#self.ompl_ns.member_functions(lambda decl: decl.return_type.decl_string[-1]=='*').exclude()	
 		self.ompl_ns.variables(lambda decl: decl.is_wrapper_needed()).exclude()	
 		allocControlFn = self.ompl_ns.class_('ControlManifold').member_function('allocControl')
 		allocControlFn.include()
@@ -230,6 +247,7 @@ class ompl_control_generator_t(code_generator_t):
 		self.replace_member_functions(self.ompl_ns.member_functions('print'))
 		self.replace_member_functions(self.ompl_ns.member_functions('printSettings'))
 		self.ompl_ns.member_functions('printControl').exclude()
+		self.add_array_access(self.ompl_ns.class_('RealVectorControlManifold').class_('ControlType'))
 		self.replace_member_functions(self.ompl_ns.namespace('control').class_(
 			'SimpleSetup').member_functions('setStateValidityChecker', arg_types=['::ompl::base::StateValidityCheckerFn const &']))
 		self.replace_member_functions(self.ompl_ns.namespace('control').class_(

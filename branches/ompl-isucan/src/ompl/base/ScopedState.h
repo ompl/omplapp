@@ -258,12 +258,12 @@ namespace ompl
 		return state_;
 	    }
 
-	    /** \brief Returns a reference to the contained state */
-	    StateType& reference(void) const
+	    /** \brief Returns a pointer to the contained state */
+	    StateType* operator()(void) const
 	    {
-		return *state_;
+		return state_;
 	    }
-	    
+
 	private:
 	    
 	    StateManifoldPtr     manifold_;

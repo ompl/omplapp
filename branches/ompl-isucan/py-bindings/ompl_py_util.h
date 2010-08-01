@@ -38,6 +38,16 @@
 #define PY_BINDINGS_OMPL_PY_UTIL_
 
 #include <valarray>
+#include "ompl/base/ScopedState.h"
+#include "ompl/base/manifolds/SE2StateManifold.h"
+#include "ompl/base/manifolds/SE3StateManifold.h"
+
+#define DeclareStateType(T) \
+	inline int __dummy##T() \
+	{ \
+		return sizeof(ompl::base::ScopedState<T##StateManifold>) + \
+			sizeof(ompl::base::T##StateManifold::StateType); \
+	}
 
 namespace std
 {
@@ -48,6 +58,19 @@ namespace std
             if (a[i]!=b[i]) return false;
         return true;
     }
+}
+
+namespace ompl
+{
+	namespace base
+	{
+		DeclareStateType();
+		DeclareStateType(RealVector);
+		DeclareStateType(SO2);
+		DeclareStateType(SO3);
+		DeclareStateType(SE2);
+		DeclareStateType(SE3);
+	}
 }
 
 #endif

@@ -4,28 +4,30 @@ from ompl import base as ob
 from ompl import geometric as og
 
 def isStateValid(spaceInformation, state):
-	return True
+	return state.getX() < .6
 	
 def plan():
-	manifold = ob.SE3StateManifold()
+	manifold = ob.SE2StateManifold()
 	
-	bounds = ob.RealVectorBounds(3)
+	bounds = ob.RealVectorBounds(2)
 	bounds.setLow(-1)
 	bounds.setHigh(1)
 	
 	manifold.setBounds(bounds)
 	
-	ss = og.SimpleSetup()
+	ss = og.SimpleSetup(manifold)
 	
 	ss.setStateValidityChecker(isStateValid)
 	
-	start = ob.State(manifold)
+	start = ob.SE2State(manifold)
 	start.random()
+	start().setX(.5)
 	
-	goal = ob.State(manifold)
+	goal = ob.SE2State(manifold)
 	goal.random()
+	goal().setY(-.5)
 	
-	ss.setStartAndGoalStates(start, goal)
+	ss.setStartAndGoalStates(ob.State(start), ob.State(goal))
 	
 	solved = ss.solve(1.0)
 	

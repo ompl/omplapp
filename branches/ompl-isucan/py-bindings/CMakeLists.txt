@@ -92,6 +92,8 @@ if(PY_OMPL_GENERATE)
 			file(READ "${CMAKE_SOURCE_DIR}/src/ompl/${header}" _header_txt)
 			file(APPEND "${module_header}" "${_header_txt}")
 		endforeach(header)
+		file(READ "${CMAKE_CURRENT_SOURCE_DIR}/ompl_py_util.h" _header_txt)
+		file(APPEND "${module_header}" "${_header_txt}")
 		
 		# bootstrap code generation
 		find_file(BINDINGS_${module_upper}_MAIN "_${module}.main.cpp" 

@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from math import sin, cos
 from ompl import base as ob
 from ompl import control as oc
 
@@ -7,7 +8,9 @@ def isStateValid(spaceInformation, state):
 	return True #spaceInformation.satiesfiesBounds(state)
 
 def propagate(start, control, duration, state):
-	state = start
+	state.setX( start.getX() + control[0] * cos(start.getYaw()) )
+	state.setY( start.getY() + control[0] * sin(start.getYaw()) )
+	state.setYaw( start.getYaw() + control[1] )
 	return oc.PROPAGATION_START_UNKNOWN
 	
 def plan():
@@ -32,24 +35,22 @@ def plan():
 	ss = oc.SimpleSetup(cmanifold)
 	ss.setStateValidityChecker(isStateValid)
 	
-	start = ob.State(manifold)
-	mapper = ob.SE2StateManifold.Mapper(start)
-	mapper.setX(-0.5);
-	mapper.setY(0.0);
-	mapper.setYaw(0.0);
+	start = ob.SE2State(manifold)
+	start().setX(-0.5);
+	start().setY(0.0);
+	start().setYaw(0.0);
 	
-	goal = ob.State(start);
-	mapper.use(goal.reference());
-	mapper.setX(0.5);
+	goal = ob.SE2State(manifold);
+	goal().setX(0.0);
+	goal().setY(0.5);
+	goal().setYaw(0.0);
 	
-	ss.setStartAndGoalStates(start, goal, 0.05)
+	ss.setStartAndGoalStates(ob.State(start), ob.State(goal), 0.05)
 	
 	solved = ss.solve(10.0)
 	
 	if solved:
-		solution = ss.getSolutionPath()
-		path = solution.asGeometric()
-		print "Found solution:", path
+		print "Found solution:", ss.getSolutionPath().asGeometric()
 	
 if __name__ == "__main__":
 	plan()

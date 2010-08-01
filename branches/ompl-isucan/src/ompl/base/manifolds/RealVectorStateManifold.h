@@ -69,6 +69,9 @@ namespace ompl
 	    class StateType : public State
 	    {
 	    public:
+		StateType() : State()
+		{
+		}
 		
 		/** \brief Access element i of values.  This does not
 		    check whether the index is within bounds */
