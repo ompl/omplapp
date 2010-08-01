@@ -112,7 +112,7 @@ namespace ompl
 	    /** \brief Set the problem definition for the planner. The
 		problem needs to be set before calling solve(). This
 		also clears the internal datastructures of the planner. */
-	    void setProblemDefinition(const ProblemDefinitionPtr &pdef);
+	    virtual void setProblemDefinition(const ProblemDefinitionPtr &pdef);
 	    
 	    /** \brief Function that can solve the motion planning
 		problem. This function can be called multiple times on
