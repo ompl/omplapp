@@ -41,19 +41,6 @@
 #include "ompl/geometric/planners/kpiece/LBKPIECE1.h"
 #include "ompl/geometric/planners/kpiece/KPIECE1.h"
 
-void ompl::geometric::SimpleSetup::useManifold(const base::StateManifoldPtr &manifold)
-{
-    if (manifold && !si_)
-    {
-	si_.reset(new base::SpaceInformation(manifold));
-	pdef_.reset(new base::ProblemDefinition(si_));
-	psk_.reset(new PathSimplifier(si_));
-
-	psk_->setMaxSteps(50);
-	psk_->setMaxEmptySteps(5);
-    }
-}
-
 void ompl::geometric::SimpleSetup::setup(void)
 {
     if (!configured_)

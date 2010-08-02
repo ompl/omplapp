@@ -61,7 +61,12 @@ namespace ompl
 	    explicit
 	    SimpleSetup(const base::StateManifoldPtr &manifold) : configured_(false), planTime_(0.0), msg_("SimpleSetup")
 	    {
-		useManifold(manifold);
+		si_.reset(new base::SpaceInformation(manifold));
+		pdef_.reset(new base::ProblemDefinition(si_));
+		psk_.reset(new PathSimplifier(si_));
+		
+		psk_->setMaxSteps(50);
+		psk_->setMaxEmptySteps(5);
 	    }
 	    
 	    virtual ~SimpleSetup(void)
@@ -202,8 +207,6 @@ namespace ompl
 	    virtual void setup(void);
 
 	protected:
-
-	    void useManifold(const base::StateManifoldPtr &manifold);
 	    
 	    /// the created space information 
 	    base::SpaceInformationPtr     si_;
