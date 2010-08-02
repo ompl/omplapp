@@ -72,7 +72,10 @@ namespace ompl
 
 	/** \brief Forward declaration of ompl::base::ProjectionEvaluator */
 	ClassForward(ProjectionEvaluator);
-	
+
+	/** \class ompl::base::ProjectionEvaluatorPtr
+	    A boost shared pointer wrapper for ompl::base::ProjectionEvaluator */
+
 	/** \brief Abstract definition for a class computing
 	    projections to R<sup>n</sup>. Implicit integer grids are
 	    imposed on this projection space by setting cell

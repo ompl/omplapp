@@ -57,6 +57,9 @@ namespace ompl
 	/** \brief Forward declaration of ompl::control::ControlManifold */	
 	ClassForward(ControlManifold);
 	
+	/** \class ompl::control::ControlManifoldPtr
+	    A boost shared pointer wrapper for ompl::control::ControlManifold */
+
 	/** \brief The return value of a propagation step executed by a ControlManifold */
 	enum PropagationResult
 	{

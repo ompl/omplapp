@@ -50,6 +50,9 @@ namespace ompl
 
 	/** \brief Forward declaration of ompl::geometric::PathSimplifier */
 	ClassForward(PathSimplifier);
+
+	/** \class ompl::geometric::PathSimplifierPtr
+	    A boost shared pointer wrapper for ompl::geometric::PathSimplifier */
 	
 	/** \brief This class contains smoothers that can be applied to geometric paths.
 

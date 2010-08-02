@@ -75,7 +75,10 @@ namespace ompl
 	
 	/** \brief Forward declaration of ompl::base::Planner */
 	ClassForward(Planner);
-	
+
+	/** \class ompl::base::PlannerPtr
+	    A boost shared pointer wrapper for ompl::base::Planner */
+
 	/** \brief Datatype holding data a planner can expose for debug purposes. */
 	class PlannerData
 	{

@@ -52,7 +52,10 @@ namespace ompl
 	
 	/** \brief Forward declaration of ompl::base::Goal */
 	ClassForward(Goal);
-	
+
+	/** \class ompl::base::GoalPtr
+	    A boost shared pointer wrapper for ompl::base::Goal */
+
 	/** \brief Abstract definition of goals. Will contain solutions, if found */
 	class Goal : private boost::noncopyable
 	{

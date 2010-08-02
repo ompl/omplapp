@@ -53,7 +53,10 @@ namespace ompl
 
 	/** \brief Forward declaration of ompl::base::StateSampler */
 	ClassForward(StateSampler);
-	
+
+	/** \class ompl::base::StateSamplerPtr
+	    A boost shared pointer wrapper for ompl::base::StateSampler */
+
 	/** \brief Abstract definition of a state sampler. */
 	class StateSampler : private boost::noncopyable
 	{	    

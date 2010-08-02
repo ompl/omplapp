@@ -54,6 +54,9 @@ namespace ompl
 	/** \brief Forward declaration of ompl::control::SpaceInformation */
 	ClassForward(SpaceInformation);
 	
+	/** \class ompl::control::SpaceInformationPtr
+	    A boost shared pointer wrapper for ompl::control::SpaceInformation */
+
 	/** \brief Space information containing necessary information for planning with controls. setup() needs to be called before use. */
 	class SpaceInformation : public base::SpaceInformation
 	{

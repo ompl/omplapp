@@ -68,6 +68,9 @@ namespace ompl
 	/** \brief Forward declaration of ompl::base::SpaceInformation */
 	ClassForward(SpaceInformation);
 
+	/** \class ompl::base::SpaceInformationPtr
+	    A boost shared pointer wrapper for ompl::base::SpaceInformation */
+
 	/** \brief If no state validity checking class is specified
 	    (StateValidityChecker), a boost function can be specified
 	    instead */

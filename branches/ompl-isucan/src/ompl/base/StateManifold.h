@@ -57,6 +57,8 @@ namespace ompl
 	/** \brief Forward declaration of ompl::base::StateManifold */
 	ClassForward(StateManifold);
 
+	/** \class ompl::base::StateManifoldPtr A boost shared pointer
+	    wrapper for ompl::base::StateManifold */
 
 	/** \page implementStateManifold Implementing a state manifold
 

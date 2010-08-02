@@ -15,6 +15,8 @@
    - the problem definition (ompl::base::ProblemDefinition)
    - the planner (ompl::base::Planner)
 
+   These components can be easily used with
+   ompl::geometric::SimpleSetup or ompl::control::SimpleSetup.
 
    <hr> 
 
