@@ -24,6 +24,7 @@ include_directories(
 	"${Boost_INCLUDE_DIR}" 
 	"${ASSIMP_INCLUDE_DIR}" 
 	"${PQP_INCLUDE_DIR}"
+	${CMAKE_CURRENT_SOURCE_DIR}/app
 	ompl/src)
 
 set(OMPL_APP_LIBRARIES 
