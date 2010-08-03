@@ -26,16 +26,12 @@ find_program(PYTHON_EXEC_ "python${Python_FIND_VERSION}"
 	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\2.6\\InstallPath]
 	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\2.5\\InstallPath]
 	DOC "Location of python executable to use")
-if(APPLE)
-	# On OS X the python executable might be symlinked to the "real" location
-	# of the python executable. The header files and libraries are found relative
-	# to that path.
-	get_filename_component(PYTHON_EXEC "${PYTHON_EXEC_}" REALPATH)
-	string(REGEX REPLACE "/bin/python.*" "" PYTHON_PREFIX
-		"${PYTHON_EXEC}")
-else()
-	set(PYTHON_EXEC "${PYTHON_EXEC_}")
-endif()
+
+# On OS X the python executable might be symlinked to the "real" location
+# of the python executable. The header files and libraries are found relative
+# to that path.
+get_filename_component(PYTHON_EXEC "${PYTHON_EXEC_}" REALPATH)
+string(REGEX REPLACE "/bin/python.*" "" PYTHON_PREFIX "${PYTHON_EXEC}")
 
 execute_process(COMMAND "${PYTHON_EXEC}" "-c"
 	"import sys; print '%d.%d' % (sys.version_info[0],sys.version_info[1])"

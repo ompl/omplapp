@@ -20,7 +20,7 @@ else(ROS)
 			add_definitions(-W -Wall -Wextra -Wno-missing-field-initializers)
 		endif(CMAKE_COMPILER_IS_GNUCXX)
 	
-		find_package(doxygen)
+		find_package(Doxygen)
 		add_subdirectory(doc)
 
 		enable_testing()
