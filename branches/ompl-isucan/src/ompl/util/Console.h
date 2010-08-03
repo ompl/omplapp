@@ -92,9 +92,6 @@ namespace ompl
 	    void debug(const char *msg, ...) const;
 
 	protected:
-	    
-	    /** \brief Used internally to transform formatted messages to strings */
-	    std::string combine(const char *msg, va_list ap) const;
 
 	    /** \brief The string that appears in front of very forwarded message. */
 	    std::string prefix_;	    

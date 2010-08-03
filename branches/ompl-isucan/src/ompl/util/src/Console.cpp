@@ -39,6 +39,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
+#include <cstdarg>
 
 static ompl::msg::OutputHandlerSTD _defaultOutputHandler;
 static ompl::msg::OutputHandler   *OUTPUT_HANDLER = static_cast<ompl::msg::OutputHandler*>(&_defaultOutputHandler);
@@ -79,6 +80,18 @@ void ompl::msg::Interface::setPrefix(const std::string &prefix)
 	prefix_ += ": ";
 }
 
+// the maximum buffer size to use when printing a message
+#define MAX_BUFFER_SIZE 1024
+
+// macro that combines the set of arguments into a single string
+#define COMBINE(m, buf, size)						\
+    va_list __ap;							\
+    va_start(__ap, m);							\
+    char buf##_chr[size];						\
+    vsnprintf(buf##_chr, sizeof(buf##_chr), m, __ap);			\
+    va_end(__ap);							\
+    std::string buf(buf##_chr)
+
 void ompl::msg::Interface::debug(const std::string &text) const
 {
     if (OUTPUT_HANDLER)
@@ -91,10 +104,8 @@ void ompl::msg::Interface::debug(const std::string &text) const
 
 void ompl::msg::Interface::debug(const char *msg, ...) const
 {
-    va_list ap;
-    va_start(ap, msg);
-    debug(combine(msg, ap));
-    va_end(ap);
+    COMBINE(msg, buf, MAX_BUFFER_SIZE);
+    debug(buf);
 }
 
 void ompl::msg::Interface::inform(const std::string &text) const
@@ -108,11 +119,9 @@ void ompl::msg::Interface::inform(const std::string &text) const
 }
 
 void ompl::msg::Interface::inform(const char *msg, ...) const
-{
-    va_list ap; 
-    va_start(ap, msg);
-    inform(combine(msg, ap));
-    va_end(ap);
+{ 
+    COMBINE(msg, buf, MAX_BUFFER_SIZE);
+    inform(buf);
 }
 
 void ompl::msg::Interface::warn(const std::string &text) const
@@ -127,10 +136,8 @@ void ompl::msg::Interface::warn(const std::string &text) const
 
 void ompl::msg::Interface::warn(const char *msg, ...) const
 {
-    va_list ap; 
-    va_start(ap, msg);
-    warn(combine(msg, ap));
-    va_end(ap);
+    COMBINE(msg, buf, MAX_BUFFER_SIZE);
+    warn(buf);
 }
 
 void ompl::msg::Interface::error(const std::string &text) const
@@ -144,20 +151,9 @@ void ompl::msg::Interface::error(const std::string &text) const
 }
 
 void ompl::msg::Interface::error(const char *msg, ...) const
-{
-    va_list ap;
-    va_start(ap, msg);
-    error(combine(msg, ap));
-    va_end(ap);
-}
-std::string ompl::msg::Interface::combine(const char *msg, va_list va) const
-{
-    va_list ap;
-    va_copy(ap, va);
-    char buf[1024];
-    vsnprintf(buf, sizeof(buf), msg, ap);
-    va_end(ap);
-    return buf;
+{ 
+    COMBINE(msg, buf, MAX_BUFFER_SIZE);
+    error(buf);
 }
 
 void ompl::msg::OutputHandlerSTD::error(const std::string &text)

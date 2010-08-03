@@ -213,7 +213,7 @@ bool ompl::geometric::GAIK::tryToImprove(const base::GoalRegion &goal, base::Sta
     hcik_.tryToImprove(goal, state, si_->getStateValidityCheckingResolution() * 100.0, &distance);
     hcik_.tryToImprove(goal, state, si_->getStateValidityCheckingResolution() * 10.0, &distance);
     hcik_.tryToImprove(goal, state, si_->getStateValidityCheckingResolution(), &distance);
-    msg_.debug("Improvement took  %g ms", (time::now() - start).total_milliseconds());
+    msg_.debug("Improvement took  %u ms", (time::now() - start).total_milliseconds());
     msg_.debug("Distance to goal after improvement: %g", distance);
     return true;
 }
