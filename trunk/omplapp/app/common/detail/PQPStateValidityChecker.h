@@ -1,5 +1,5 @@
 #include <ompl/base/SpaceInformation.h>
-#include <ompl/base/manifolds/SE3StateManifold.h>
+#include <ompl/base/manifolds/SO3StateManifold.h>
 #include <PQP.h>
 #include <aiMesh.h>
 #include <boost/shared_ptr.hpp>
@@ -10,6 +10,11 @@ namespace ompl
     namespace app
     {
 	
+	/** \brief Define a onpl::base::StateValidityChecker that can
+	    construct PQP models internally.  The instance is still
+	    abstract however, as the isValid() function is not
+	    implemented (knowledge of the manifold is needed for this
+	    function to be implemented) */
 	class PQPStateValidityChecker : public base::StateValidityChecker
 	{
 	public:
@@ -17,8 +22,6 @@ namespace ompl
 	    PQPStateValidityChecker(const base::SpaceInformationPtr &si,
 				    const std::vector<const aiMesh*> &robot,
 				    const std::vector<const aiMesh*> &obstacles);
-	    
-	    virtual bool isValid(const base::State *state) const;
 	    
 	protected:
 	    
