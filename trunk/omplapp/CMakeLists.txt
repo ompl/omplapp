@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
 
@@ -15,7 +15,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 include(UsePQP)
 include(UseAssimp)
-find_package(doxygen)
+find_package(Doxygen)
 find_package(Boost COMPONENTS date_time thread filesystem system REQUIRED)
 
 enable_testing()
