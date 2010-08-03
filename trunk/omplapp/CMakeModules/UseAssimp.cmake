@@ -1,0 +1,7 @@
+set(ASSIMP_ROOT_DIR "${CMAKE_SOURCE_DIR}/external/assimp")
+set(ASSIMP_INCLUDE_DIR "${ASSIMP_ROOT_DIR}/include")
+set(LIB_INSTALL_DIR "lib")
+set(INCLUDE_INSTALL_DIR "include")
+set(BIN_INSTALL_DIR "bin")
+add_subdirectory("${ASSIMP_ROOT_DIR}/code")
+set(ASSIMP_LIBRARY "assimp")
