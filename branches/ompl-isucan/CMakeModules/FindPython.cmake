@@ -19,23 +19,48 @@
 #	find_python_module(numpy REQUIRED)
 
 find_program(PYTHON_EXEC_ "python${Python_FIND_VERSION}" 
+	PATHS
+	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\3.1\\InstallPath]
+	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\3.0\\InstallPath]
+	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\2.7\\InstallPath]
+	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\2.6\\InstallPath]
+	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\2.5\\InstallPath]
 	DOC "Location of python executable to use")
-# On OS X the python executable might be symlinked to the "real" location
-# of the python executable. The header files and libraries are found relative
-# to that path.
-get_filename_component(PYTHON_EXEC "${PYTHON_EXEC_}" REALPATH)
-string(REGEX REPLACE "/bin/python${Python_FIND_VERSION}$" "" PYTHON_PREFIX
-	"${PYTHON_EXEC}")
+if(APPLE)
+	# On OS X the python executable might be symlinked to the "real" location
+	# of the python executable. The header files and libraries are found relative
+	# to that path.
+	get_filename_component(PYTHON_EXEC "${PYTHON_EXEC_}" REALPATH)
+	string(REGEX REPLACE "/bin/python.*" "" PYTHON_PREFIX
+		"${PYTHON_EXEC}")
+else()
+	set(PYTHON_EXEC "${PYTHON_EXEC_}")
+endif()
+
 execute_process(COMMAND "${PYTHON_EXEC}" "-c"
 	"import sys; print '%d.%d' % (sys.version_info[0],sys.version_info[1])"
 	OUTPUT_VARIABLE PYTHON_VERSION
 	OUTPUT_STRIP_TRAILING_WHITESPACE)
-find_library(PYTHON_LIBRARIES "python${PYTHON_VERSION}" PATHS "${PYTHON_PREFIX}" 
-	PATH_SUFFIXES "lib" "lib/python${PYTHON_VERSION}/config" 
-	DOC "Python libraries" NO_DEFAULT_PATH)
+	
+find_library(PYTHON_LIBRARIES "python${PYTHON_VERSION}" 
+	PATHS 
+		"${PYTHON_PREFIX}/lib"
+		[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${PYTHON_VERSION}\\InstallPath]/libs
+	DOC "Python libraries" NO_SYSTEM_ENVIRONMENT_PATH)
+find_library(PYTHON_LIBRARIES "python${PYTHON_VERSION}" 
+	PATHS 
+		"${PYTHON_PREFIX}/lib"
+		[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${PYTHON_VERSION}\\InstallPath]/libs
+	PATH_SUFFIXES "" "python${PYTHON_VERSION}/config" 
+	DOC "Python libraries" NO_SYSTEM_ENVIRONMENT_PATH)
+	
 find_path(PYTHON_INCLUDE_DIRS "Python.h"
-	PATHS "${PYTHON_PREFIX}/include/python${PYTHON_VERSION}"
+	PATHS 
+		"${PYTHON_PREFIX}/include"
+		[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${PYTHON_VERSION}\\InstallPath]/include
+	PATH_SUFFIXES python${PYTHON_VERSION}
 	DOC "Python include directories" NO_DEFAULT_PATH)
+	
 execute_process(COMMAND "${PYTHON_EXEC}" "-c" 
 	"from distutils.sysconfig import get_python_lib; print get_python_lib()"
 	OUTPUT_VARIABLE PYTHON_SITE_MODULES

@@ -1,8 +1,15 @@
 #!/bin/env python
 
 from math import sin, cos
-from ompl import base as ob
-from ompl import control as oc
+from os.path import basename, abspath, dirname
+import sys
+try:
+	from ompl import base as ob
+	from ompl import control as oc
+except:
+	sys.path.insert(0, dirname(dirname(abspath(__file__))))
+	from ompl import base as ob
+	from ompl import control as oc
 
 def isStateValid(spaceInformation, state):
 	return True #spaceInformation.satiesfiesBounds(state)

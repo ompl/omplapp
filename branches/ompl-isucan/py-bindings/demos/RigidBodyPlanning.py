@@ -1,8 +1,15 @@
 #!/bin/env python
 
-from ompl import base as ob
-from ompl import geometric as og
-
+from os.path import basename, abspath, dirname
+import sys
+try:
+	from ompl import base as ob
+	from ompl import geometric as og
+except:
+	sys.path.insert(0, dirname(dirname(abspath(__file__))))
+	from ompl import base as ob
+	from ompl import geometric as og
+	
 def isStateValid(spaceInformation, state):
 	return state.getX() < .6
 	

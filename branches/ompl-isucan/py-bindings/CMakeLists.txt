@@ -1,6 +1,6 @@
 find_package(Boost COMPONENTS python)
 # The python version needs to match the one used to build Boost.Python
-find_package(Python 2.6)
+find_package(Python)
 find_python_module(pyplusplus)
 find_python_module(pygccxml)
 find_package(GCCXML)
@@ -68,7 +68,6 @@ set(OMPL_UTIL_HEADERS
 	util/RandomNumbers.h)
 		
 set(OMPL_MODULES base control geometric util)
-set(OMPL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src")
 include_directories(${PYTHON_INCLUDE_DIRS} "${CMAKE_CURRENT_SOURCE_DIR}/bindings" ".")	
 if(APPLE)
 	# For some reason gccxml generates 32-bit binaries by default on OS X
@@ -90,10 +89,10 @@ if(PY_OMPL_GENERATE)
 		set(module_header "${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}.h")
 		file(WRITE "${module_header}" "")
 		foreach(header ${OMPL_${module_upper}_HEADERS})
-			file(READ "${CMAKE_SOURCE_DIR}/src/ompl/${header}" _header_txt)
+			file(READ "${OMPL_INCLUDE_DIR}/ompl/${header}" _header_txt)
 			file(APPEND "${module_header}" "${_header_txt}")
 		endforeach(header)
-		file(READ "${CMAKE_CURRENT_SOURCE_DIR}/ompl_py_util.h" _header_txt)
+		file(READ "ompl_py_util.h" _header_txt)
 		file(APPEND "${module_header}" "${_header_txt}")
 		
 		# bootstrap code generation
