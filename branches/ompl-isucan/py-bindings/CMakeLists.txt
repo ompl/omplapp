@@ -96,12 +96,10 @@ if(PY_OMPL_GENERATE)
 		file(APPEND "${module_header}" "${_header_txt}")
 		
 		# bootstrap code generation
-		find_file(BINDINGS_${module_upper}_MAIN "_${module}.main.cpp" 
-			"${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}" NO_DEFAULT_PATH)
-		if(NOT BINDINGS_${module_upper}_MAIN)
+		if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}/_${module}.main.cpp")
 		 	execute_process(COMMAND ${PYTHON_EXEC} "../generate_bindings.py" "${module}"
 		 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
-		endif(NOT BINDINGS_${module_upper}_MAIN)
+		endif()
 		
 		# target for regenerating code
 		add_custom_target(update_${module}_bindings 

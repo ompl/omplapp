@@ -57,41 +57,9 @@ namespace ompl
 	/** \brief Forward declaration of ompl::base::StateManifold */
 	ClassForward(StateManifold);
 
-	/** \class ompl::base::StateManifoldPtr A boost shared pointer
-	    wrapper for ompl::base::StateManifold */
+	/** \class ompl::base::StateManifoldPtr 
+	    A boost shared pointer wrapper for ompl::base::StateManifold */
 
-	/** \page implementStateManifold Implementing a state manifold
-
-	   @par Inheriting from existing manifolds
-	   In order to implement a new state manifold it is necessary
-	   to define a class that inherits from an existing manifold
-	   class. All manifold specific functions (pure virtual in the
-	   StateManifold class) need to be implemented accordingly. If
-	   the implementation of the new manifold defines a
-	   StateManifold::allocState() function, it should also
-	   provide a StateManifold::freeState() function and define
-	   (or typedef) @b StateType to the type of the state that is
-	   allocated/freed. 
-	   
-	   @par Inheriting from CompoundStateManifold
-	   Another option is to inherit from a CompoundStateManifold
-	   and call CompoundStateManifold::addSubManifold() in the
-	   constructor of the new class for other existing
-	   manifolds. This is the easiest way to create new manifolds
-	   -- only the constructor needs to be provided. For example,
-	   see SE2StateManifold. Optionally, the
-	   CompoundStateManifold::lock() function can be called after
-	   the components have been set in order to prevent the user
-	   of the manifold from adding further components.
-	   
-	   Optionally, if there exist projections to Euclidean spaces
-	   (ProjectionEvaluator) for the defined manifold, these can
-	   be registered by the StateManifold::setup() function (by
-	   calling StateManifold::registerProjection()). Registering a
-	   projection under the empty string name makes it the default
-	   projection. Planners that need a projection but do not have
-	   one defined will attempt using this default projection
-	   during planning. */
 
 	/** \brief Representation of a space in which planning can be
 	    performed. Topology specific sampling, interpolation and distance

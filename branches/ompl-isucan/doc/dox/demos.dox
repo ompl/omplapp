@@ -1,8 +1,8 @@
 
 /**
-   @page demos Demos
+   @page examples Examples
 
-   @subsection gplanRigidBody Geometric planning for a rigid body in 3D
+   @section gplanRigidBody Geometric planning for a rigid body in 3D
 
    \li Using ompl::geometric::SimpleSetup :\n\n
    @dontinclude RigidBodyPlanning.cpp

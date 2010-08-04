@@ -14,7 +14,7 @@ messages.disable( messages.W1023 )
 messages.disable( messages.W1040 )
 
 replacement = {}
-replacement['print'] = ('def("__str__", &__str__);', """
+replacement['print'] = ('def("__str__", &__str__)', """
 std::string __str__(%s* obj)
 {
 	std::ostringstream s;
@@ -22,7 +22,7 @@ std::string __str__(%s* obj)
 	return s.str();
 }
 """)
-replacement['printSettings'] = ('def("settings", &__printSettings);', """
+replacement['printSettings'] = ('def("settings", &__printSettings)', """
 std::string __printSettings(%s* obj)
 {
 	std::ostringstream s;

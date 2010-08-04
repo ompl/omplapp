@@ -18,7 +18,7 @@
 # module. If the module is required add the keyword "REQUIRED":
 #	find_python_module(numpy REQUIRED)
 
-find_program(PYTHON_EXEC_ "python${Python_FIND_VERSION}" 
+find_program(PYTHON_EXEC "python${Python_FIND_VERSION}" 
 	PATHS
 	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\3.1\\InstallPath]
 	[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\3.0\\InstallPath]
@@ -30,8 +30,8 @@ find_program(PYTHON_EXEC_ "python${Python_FIND_VERSION}"
 # On OS X the python executable might be symlinked to the "real" location
 # of the python executable. The header files and libraries are found relative
 # to that path.
-get_filename_component(PYTHON_EXEC "${PYTHON_EXEC_}" REALPATH)
-string(REGEX REPLACE "/bin/python.*" "" PYTHON_PREFIX "${PYTHON_EXEC}")
+get_filename_component(PYTHON_EXEC_ "${PYTHON_EXEC}" REALPATH)
+string(REGEX REPLACE "/bin/python.*" "" PYTHON_PREFIX "${PYTHON_EXEC_}")
 
 execute_process(COMMAND "${PYTHON_EXEC}" "-c"
 	"import sys; print '%d.%d' % (sys.version_info[0],sys.version_info[1])"
@@ -42,13 +42,13 @@ find_library(PYTHON_LIBRARIES "python${PYTHON_VERSION}"
 	PATHS 
 		"${PYTHON_PREFIX}/lib"
 		[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${PYTHON_VERSION}\\InstallPath]/libs
-	DOC "Python libraries" NO_SYSTEM_ENVIRONMENT_PATH)
+	DOC "Python libraries" NO_DEFAULT_PATH)
 find_library(PYTHON_LIBRARIES "python${PYTHON_VERSION}" 
 	PATHS 
 		"${PYTHON_PREFIX}/lib"
 		[HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${PYTHON_VERSION}\\InstallPath]/libs
 	PATH_SUFFIXES "" "python${PYTHON_VERSION}/config" 
-	DOC "Python libraries" NO_SYSTEM_ENVIRONMENT_PATH)
+	DOC "Python libraries" NO_DEFAULT_PATH)
 	
 find_path(PYTHON_INCLUDE_DIRS "Python.h"
 	PATHS 
