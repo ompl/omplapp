@@ -16,6 +16,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 include(UsePQP)
 include(UseAssimp)
 find_package(Doxygen)
+find_package(Ruby)
 find_package(Boost COMPONENTS date_time thread filesystem system REQUIRED)
 
 enable_testing()
@@ -34,5 +35,6 @@ set(OMPL_APP_LIBRARIES
 	${PQP_LIBRARY}
 	ompl)
 
+add_subdirectory(doc)
 add_subdirectory(ompl)
 add_subdirectory(app)

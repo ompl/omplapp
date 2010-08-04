@@ -10,7 +10,7 @@ namespace ompl
     namespace app
     {
 	
-	/** \brief Define a onpl::base::StateValidityChecker that can
+	/** \brief Define an ompl::base::StateValidityChecker that can
 	    construct PQP models internally.  The instance is still
 	    abstract however, as the isValid() function is not
 	    implemented (knowledge of the manifold is needed for this
