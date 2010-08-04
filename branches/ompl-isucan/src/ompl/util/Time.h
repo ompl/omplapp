@@ -69,7 +69,7 @@ namespace ompl
 	/** \brief Return the number of seconds that a time duration represents */
 	inline double seconds(duration d)
 	{
-	    return (double)d.total_microseconds() / 1000000;
+	    return (double)d.total_microseconds() / 1000000.0;
 	}
 	
     }
