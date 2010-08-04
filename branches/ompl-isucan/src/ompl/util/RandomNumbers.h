@@ -44,7 +44,12 @@
 
 namespace ompl
 {
-    /** \brief Random number generation based on a state */
+    /** \brief Random number generation. An instance of this class
+	cannot be used by multiple threads at once (member functions
+	are not const). However, the constructor is thread safe and
+	different instances can be safely in any number of threads. It
+	is also guaranteed that all created instances will have a
+	random seed. */
     class RNG
     {
     public:
@@ -89,8 +94,18 @@ namespace ompl
 	    return normal_() * stddev + mean;
 	}
 	
-	/** \brief Generate a random real using a normal distribution with given mean and variance */	
+	/** \brief Generate a random real using a half-normal
+	    distribution. The value is within specified bounds, but
+	    with a bias towards r_max.  The higher the focus, the more
+	    probable it is that generated numbers are close to
+	    r_max. */
 	double halfNormalReal(double r_min, double r_max, double focus = 3.0);
+
+	/** \brief Generate a random integer using a half-normal
+	    distribution. The value is within specified bounds, but
+	    with a bias towards r_max.  The higher the focus, the more
+	    probable it is that generated numbers are close to
+	    r_max. */
 	int    halfNormalInt(int r_min, int r_max, double focus = 3.0);
 	
 	/** \brief Uniform random unit quaternion sampling. The returned value has the order (x,y,z,w) */	
