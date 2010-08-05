@@ -79,6 +79,7 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief Construct a control manifold, given the state manifold */
 	    ControlManifold(const base::StateManifoldPtr &stateManifold) : stateManifold_(stateManifold)
 	    {
 	    }

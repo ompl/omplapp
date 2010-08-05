@@ -64,6 +64,7 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief Construct an instance of a genetic algorithm for inverse kinematics given the space information to search within */
 	    GAIK(const base::SpaceInformationPtr &si) : hcik_(si), msg_("GAIK")
 	    {
 		si_ = si;
@@ -145,8 +146,10 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief Use hill climbing to attempt to get a state closer to the goal */
 	    bool tryToImprove(const base::GoalRegion &goal, base::State *state, double distance);
-
+	    
+	    /** \brief Return true if the state is to be considered valid. This function always returns true if checking of validity is disabled. */
 	    bool valid(const base::State *state) const
 	    {
 		return checkValidity_ ? si_->isValid(state) : true;

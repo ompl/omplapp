@@ -55,10 +55,12 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief Construct a path instance for a given space information */
 	    PathGeometric(const base::SpaceInformationPtr &si) : base::Path(si)
 	    {
 	    }
-	    
+
+	    /** \brief Copy constructor */
 	    PathGeometric(const PathGeometric &path);
 	    
 	    virtual ~PathGeometric(void)
@@ -88,6 +90,8 @@ namespace ompl
 	    
 	    /** \brief Free the memory corresponding to the states on this path */
 	    void freeMemory(void);
+
+	    /** \brief Copy data to this path from another path instance */
 	    void copyFrom(const PathGeometric& other);
 	};
 	

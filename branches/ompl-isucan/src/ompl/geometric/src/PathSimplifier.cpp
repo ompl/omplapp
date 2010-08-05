@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include "ompl/geometric/PathSimplifier.h"
+#include <algorithm>
 #include <cstdlib>
 
 void ompl::geometric::PathSimplifier::reduceVertices(PathGeometric &path)

@@ -54,13 +54,15 @@ namespace ompl
 	/** \class ompl::geometric::PathSimplifierPtr
 	    A boost shared pointer wrapper for ompl::geometric::PathSimplifier */
 	
-	/** \brief This class contains smoothers that can be applied to geometric paths.
+	/** \brief This class contains routines that attempt to simplify geometric paths.
 
-	 These are in fact routines that shorten the path, and do not
-	 necessarily make it smoother.*/
+	    These are in fact routines that shorten the path, and do not
+	    necessarily make it smoother. */
 	class PathSimplifier
 	{
 	public:
+
+	    /** \brief Create an instance for a specified space information */
 	    PathSimplifier(const base::SpaceInformationPtr &si)
 	    {
 		si_ = si;
@@ -73,44 +75,76 @@ namespace ompl
 	    {
 	    }
 	    
+	    /** \brief The implementation of reduceVertices() attempts
+		to directly connnect non-consecutive states along the
+		path. This function returns the maximum distance
+		between states a connection is attempted, as a
+		percentage relative to the path length (between 0 and
+		1). */
 	    double getRangeRatio(void) const
 	    {
 		return rangeRatio_;
 	    }
-	    
+
+	    /** \brief The implementation of reduceVertices() attempts
+		to directly connnect non-consecutive states along the
+		path. This function sets the maximum distance between
+		states a connection is attempted, as a percentage
+		relative to the path length (between 0 and 1). */
 	    void setRangeRatio(double rangeRatio)
 	    {
 		rangeRatio_ = rangeRatio;
 	    }
-	    
+
+	    /** \brief The implementation of reduceVertices() is
+		iterative. This function gets the maximum number of
+		steps reduceVertices() runs for */
 	    unsigned int getMaxSteps(void) const
 	    {
 		return maxSteps_;
 	    }
 	    
+	    /** \brief The implementation of reduceVertices() is
+		iterative. This function sets the maximum number of
+		steps reduceVertices() runs for */
 	    void setMaxSteps(unsigned int maxSteps)
 	    {
 		maxSteps_ = maxSteps;
 	    }
 	    
+	    /** \brief The path simplification implemented by
+		reduceVertices() is iterative. Not all iterations
+		produce a simplification. If an iteration does not
+		produce a simplification, it is called an empty
+		step. This function gets the maximum number of
+		consecutive empty steps before the simplification
+		terminates */
 	    unsigned int getMaxEmptySteps(void) const
 	    {
 		return maxEmptySteps_;
 	    }
-	    
+
+	    /** \brief The path simplification implemented by
+		reduceVertices() is iterative. Not all iterations
+		produce a simplification. If an iteration does not
+		produce a simplification, it is called an empty
+		step. This function sets the maximum number of
+		consecutive empty steps before the simplification
+		terminates */
 	    void setMaxEmptySteps(unsigned int maxEmptySteps)
 	    {
 		maxEmptySteps_ = maxEmptySteps;
 	    }
 	    
-	    /** \brief Given a path, attempt to remove vertices from it while keeping the path valid */
+	    /** \brief Given a path, attempt to remove vertices from
+		it while keeping the path valid. This is an iterative
+		process that runs for at most getMaxSteps() steps */
 	    virtual void reduceVertices(PathGeometric &path);
 	    
-	    /** \brief Given a path, attempt to remove vertices from it while
-	     * keeping the path valid.  Then, interpolate the path, to add
-	     * more vertices and try to remove them again. This should
-	     * produce smoother solutions. removeRedundantCommands is also
-	     * called.  */
+	    /** \brief Given a path, attempt to remove vertices from
+		it while keeping the path valid.  Then, interpolate
+		the path, to add more vertices and try to remove them
+		again. This should produce smoother solutions.  */
 	    virtual void simplifyMax(PathGeometric &path);
 	    
 	protected:
