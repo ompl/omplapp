@@ -115,15 +115,20 @@ void ompl::control::RealVectorControlManifold::nullControl(Control *control) con
 
 void ompl::control::RealVectorControlManifold::printControl(const Control *control, std::ostream &out) const
 {
+    out << "RealVectorControl [";
     if (control)
     {
 	const ControlType *rcontrol = static_cast<const ControlType*>(control);
 	for (unsigned int i = 0 ; i < dimension_ ; ++i)
-	    out << rcontrol->values[i] << " ";
-	out << std::endl;
+	{
+	    out << rcontrol->values[i];
+	    if (i + 1 < dimension_) 
+		out << ' ';
+	}
     }
     else
-	out << "NULL" << std::endl;
+	out << "NULL";
+    out << ']' << std::endl;
 }
 
 void ompl::control::RealVectorControlManifold::printSettings(std::ostream &out) const
