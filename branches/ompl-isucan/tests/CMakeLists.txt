@@ -54,7 +54,4 @@ if(BUILD_TESTS)
 	# Test planning with controls on a 2D map
 	add_ompl_test(test_2dmap_control control/2dmap/2dmap.cpp)
 
-	# Test compilation
-#	add_ompl_test(test_compile compile/compile.cpp)
-
 endif(BUILD_TESTS)

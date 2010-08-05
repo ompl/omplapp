@@ -53,7 +53,6 @@ void ompl::geometric::pRRT::clear(void)
 {
     freeMemory();
     nn_.clear();
-    addedStartStates_ = 0;
 }
 
 void ompl::geometric::pRRT::freeMemory(void)
@@ -150,17 +149,11 @@ bool ompl::geometric::pRRT::solve(double solveTime)
     
     time::point endTime = time::now() + time::seconds(solveTime);
 
-    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
+    while (const base::State *st = pis_.nextStart())
     {
-	const base::State *st = pdef_->getStartState(i);
-	if (si_->satisfiesBounds(st) && si_->isValid(st))
-	{
-	    Motion *motion = new Motion(si_);
-	    si_->copyState(motion->state, st);
-	    nn_.add(motion);
-	}
-	else
-	    msg_.error("Initial state is invalid!");
+	Motion *motion = new Motion(si_);
+	si_->copyState(motion->state, st);
+	nn_.add(motion);
     }
     
     if (nn_.size() == 0)

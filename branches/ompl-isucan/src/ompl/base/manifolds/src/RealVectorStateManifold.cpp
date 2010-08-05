@@ -194,15 +194,20 @@ void ompl::base::RealVectorStateManifold::freeState(State *state) const
 
 void ompl::base::RealVectorStateManifold::printState(const State *state, std::ostream &out) const
 {
+    out << "RealVectorState ["; 
     if (state)
     {
 	const StateType *rstate = static_cast<const StateType*>(state);
-	for (unsigned int i = 0 ; i < dimension_ ; ++i)
-	    out << rstate->values[i] << " ";
-	out << std::endl;
+        for (unsigned int i = 0 ; i < dimension_ ; ++i)
+	{
+	    out << rstate->values[i];
+	    if (i + 1 < dimension_) 
+		out << ' ';
+	}
     }
     else
 	out << "NULL" << std::endl;
+    out << ']' << std::endl;
 }
 
 void ompl::base::RealVectorStateManifold::printSettings(std::ostream &out) const

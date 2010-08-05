@@ -76,8 +76,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("EST");
 		
-		addedStartStates_ = 0;
-
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;
 	    }
@@ -185,7 +183,6 @@ namespace ompl
 	    base::StateSamplerPtr        sampler_;
 	    
 	    TreeData                     tree_;
-	    unsigned int                 addedStartStates_;
 	    
 	    base::ProjectionEvaluatorPtr projectionEvaluator_;
 	    

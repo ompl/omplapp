@@ -80,7 +80,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("pRRT");
 		
-		addedStartStates_ = 0;
 		nn_.setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));
 		setThreadCount(2);
 		goalBias_ = 0.05;
@@ -186,7 +185,6 @@ namespace ompl
 	    base::StateSamplerArray             samplerArray_;
 	    NearestNeighborsSqrtApprox<Motion*> nn_;
 	    boost::mutex                        nnLock_;
-	    unsigned int                        addedStartStates_;
 	    
 	    unsigned int                        threadCount_;
 	    
@@ -198,4 +196,3 @@ namespace ompl
 }
 
 #endif
-    

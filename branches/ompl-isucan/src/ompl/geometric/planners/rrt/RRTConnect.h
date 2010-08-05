@@ -74,9 +74,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("RRTConnect");
 		
-		addedStartStates_ = 0;
-		sampledGoalsCount_ = 0;
-		
 		tStart_.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
 		tGoal_.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
 		maxDistance_ = 0.0;
@@ -163,8 +160,6 @@ namespace ompl
 	    
 	    TreeData                   tStart_;
 	    TreeData                   tGoal_;
-	    unsigned int               addedStartStates_;
-	    unsigned int               sampledGoalsCount_;
 	    
 	    double                     maxDistance_;
 	    RNG                        rng_;

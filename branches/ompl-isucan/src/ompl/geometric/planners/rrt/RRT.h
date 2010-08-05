@@ -79,7 +79,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("RRT");
 		
-		addedStartStates_ = 0;
 		nn_.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;
@@ -98,7 +97,6 @@ namespace ompl
 	    {
 		freeMemory();
 		nn_.clear();
-		addedStartStates_ = 0;
 	    }
 	    
 	    /** \brief Set the goal bias
@@ -177,7 +175,6 @@ namespace ompl
 	    base::StateSamplerPtr                sampler_;
 
 	    NearestNeighborsSqrtApprox<Motion*>  nn_;
-	    unsigned int                         addedStartStates_;
 	    
 	    double                               goalBias_;
 	    double                               maxDistance_;

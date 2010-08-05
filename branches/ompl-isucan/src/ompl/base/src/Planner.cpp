@@ -56,6 +56,7 @@ const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinitio
 void ompl::base::Planner::setProblemDefinition(const ProblemDefinitionPtr &pdef)
 {
     pdef_ = pdef;
+    pis_.use(si_, pdef_);
 }
 
 void ompl::base::Planner::setup(void)

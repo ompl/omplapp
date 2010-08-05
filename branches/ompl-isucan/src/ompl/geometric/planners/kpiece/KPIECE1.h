@@ -91,7 +91,6 @@ namespace ompl
 		maxDistance_ = 0.0;
 		tree_.grid.onCellUpdate(computeImportance, NULL);
 		hcik_.setMaxImproveSteps(50);
-		addedStartStates_ = 0;
 	    }
 	    
 	    virtual ~KPIECE1(void)
@@ -238,7 +237,6 @@ namespace ompl
 	    
 	    HCIK                                       hcik_;
 	    TreeData                                   tree_;
-	    unsigned int                               addedStartStates_;
 	    
 	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    

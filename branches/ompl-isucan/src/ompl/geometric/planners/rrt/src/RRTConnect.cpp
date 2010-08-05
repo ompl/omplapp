@@ -72,8 +72,6 @@ void ompl::geometric::RRTConnect::clear(void)
     freeMemory();
     tStart_.clear();
     tGoal_.clear();
-    addedStartStates_ = 0;
-    sampledGoalsCount_ = 0;
 }
 
 ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion)
@@ -125,19 +123,13 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 
     time::point endTime = time::now() + time::seconds(solveTime);
 
-    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
+    while (const base::State *st = pis_.nextStart())
     {
-	const base::State *st = pdef_->getStartState(i);
-	if (si_->satisfiesBounds(st) && si_->isValid(st))
-	{
-	    Motion *motion = new Motion(si_);
-	    si_->copyState(motion->state, st);
-	    motion->root = st;
-	    tStart_.add(motion);
-	}
-	else
-	    msg_.error("Initial state is invalid!");
-    }    
+	Motion *motion = new Motion(si_);
+	si_->copyState(motion->state, st);
+	motion->root = st;
+	tStart_.add(motion);
+    }
     
     if (tStart_.size() == 0)
     {
@@ -158,7 +150,6 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
     
     Motion   *rmotion   = new Motion(si_);
     base::State *rstate = rmotion->state;
-    base::State *gstate = si_->allocState();
     bool   startTree    = true;
 
     while (time::now() < endTime)
@@ -167,36 +158,24 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	startTree = !startTree;
 	TreeData &otherTree = startTree ? tStart_ : tGoal_;
 		
-	// if there are any goals left to sample
-	if (sampledGoalsCount_ < goal->maxSampleCount())
+	if (tGoal_.size() == 0 || pis_.getSampledGoalsCount() < tGoal_.size() / 2)
 	{
-	    // if we have not sampled too many goals already
-	    if (tGoal_.size() == 0 || sampledGoalsCount_ < tGoal_.size() / 2)
+	    const base::State *st = tGoal_.size() == 0 ? pis_.nextGoal(endTime) : pis_.nextGoal();
+	    if (st)
 	    {
-		bool firstAttempt = true;
-		
-		while ((tGoal_.size() == 0 || firstAttempt) && sampledGoalsCount_ < goal->maxSampleCount() && time::now() < endTime)
-		{
-		    firstAttempt = false;
-		    goal->sampleGoal(gstate);
-		    sampledGoalsCount_++;
-		    if (si_->satisfiesBounds(gstate) && si_->isValid(gstate))
-		    {
-			Motion* motion = new Motion(si_);
-			si_->copyState(motion->state, gstate);
-			motion->root = motion->state;
-			tGoal_.add(motion);
-		    }
-		}
-		
-		if (tGoal_.size() == 0)
-		{
-		    msg_.error("Unable to sample any valid states for goal tree");
-		    break;
-		}
+		Motion* motion = new Motion(si_);
+		si_->copyState(motion->state, st);
+		motion->root = motion->state;
+		tGoal_.add(motion);
+	    }
+	    
+	    if (tGoal_.size() == 0)
+	    {
+		msg_.error("Unable to sample any valid states for goal tree");
+		break;
 	    }
 	}
-	
+
 	/* sample random state */
 	sampler_->sample(rstate);
 	
@@ -260,7 +239,6 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
     si_->freeState(tgi.xstate);
     si_->freeState(rstate);
     delete rmotion;
-    si_->freeState(gstate);
     
     msg_.inform("Created %u states (%u start + %u goal)", tStart_.size() + tGoal_.size(), tStart_.size(), tGoal_.size());
     

@@ -81,7 +81,6 @@ namespace ompl
 		msg_.setPrefix("KPIECE1");
 		
 		siC_ = si.get();
-		addedStartStates_ = 0;		
 		goalBias_ = 0.05;
 		selectBorderPercentage_ = 0.7;
 		badScoreFactor_ = 0.3;
@@ -216,7 +215,6 @@ namespace ompl
 	    ControlSamplerPtr          cCore_;
 	    
 	    TreeData                   tree_;
-	    unsigned int               addedStartStates_;
 	    
 	    const SpaceInformation    *siC_;
 	    

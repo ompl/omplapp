@@ -137,10 +137,12 @@ void ompl::base::SO2StateManifold::freeState(State *state) const
 
 void ompl::base::SO2StateManifold::printState(const State *state, std::ostream &out) const
 {
+    out << "SO2State [";
     if (state)
-	out << state->as<StateType>()->value << std::endl;
+	out << state->as<StateType>()->value;
     else
-	out << "NULL" << std::endl;
+	out << "NULL";
+    out << ']' << std::endl;
 }
 
 void ompl::base::SO2StateManifold::printSettings(std::ostream &out) const

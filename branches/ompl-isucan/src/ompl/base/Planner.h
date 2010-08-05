@@ -150,10 +150,22 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief The space information for which planning is done */
 	    SpaceInformationPtr  si_;
+
+	    /** \brief The user set problem definition */
 	    ProblemDefinitionPtr pdef_;
+
+	    /** \brief Utility class to extract valid input states  */
+	    PlannerInputStates   pis_;
+	    
+	    /** \brief The planner type: defines the type of goals this planner can handle */
 	    PlannerType          type_;	
+
+	    /** \brief Flag indicating whether setup() has been called */
 	    bool                 setup_;
+
+	    /** \brief Console interface */
 	    msg::Interface       msg_;
 	};
 

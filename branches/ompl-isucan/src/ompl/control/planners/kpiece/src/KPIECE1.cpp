@@ -60,7 +60,6 @@ void ompl::control::KPIECE1::clear(void)
     tree_.grid.clear();
     tree_.size = 0;
     tree_.iteration = 1;
-    addedStartStates_ = 0;
 }
 
 void ompl::control::KPIECE1::freeMemory(void)
@@ -122,18 +121,12 @@ bool ompl::control::KPIECE1::solve(double solveTime)
     
     time::point endTime = time::now() + time::seconds(solveTime);
 
-    for (unsigned int i = addedStartStates_ ; i < pdef_->getStartStateCount() ; ++i, ++addedStartStates_)
-    {
-	const base::State *st = pdef_->getStartState(i);
-	if (si_->satisfiesBounds(st) && si_->isValid(st))
-	{
-	    Motion *motion = new Motion(siC_);
-	    si_->copyState(motion->state, st);
-	    siC_->nullControl(motion->control);
-	    addMotion(motion, 1.0);
-	}
-	else
-	    msg_.error("Initial state is invalid!");
+    while (const base::State *st = pis_.nextStart())
+    { 
+	Motion *motion = new Motion(siC_);
+	si_->copyState(motion->state, st);
+	siC_->nullControl(motion->control);
+	addMotion(motion, 1.0);
     }
     
     if (tree_.grid.size() == 0)

@@ -55,7 +55,7 @@ ompl::base::StateSamplerPtr ompl::base::StateManifold::allocStateSampler(void) c
 
 void ompl::base::StateManifold::printState(const State *state, std::ostream &out) const
 {
-    out << "State instance: " << state << std::endl;
+    out << "State instance [" << state << ']' << std::endl;
 }
 
 void ompl::base::StateManifold::printSettings(std::ostream &out) const

@@ -82,7 +82,6 @@ namespace ompl
 		
 		nn_.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
 		goalBias_ = 0.05;
-		addedStartStates_ = 0;
 	    }
 	    
 	    virtual ~RRT(void)
@@ -100,7 +99,6 @@ namespace ompl
 	    {
 		freeMemory();
 		nn_.clear();
-		addedStartStates_ = 0;
 	    }
 	    
 	    /** In the process of randomly selecting states in the state
@@ -171,8 +169,7 @@ namespace ompl
 	    const SpaceInformation             *siC_;
 	    
 	    NearestNeighborsSqrtApprox<Motion*> nn_;
-	    unsigned int                        addedStartStates_;
-	    
+
 	    double                              goalBias_;
 	    RNG                                 rng_;	
 	};

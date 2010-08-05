@@ -82,8 +82,7 @@ namespace ompl
 		
 		selectBorderPercentage_ = 0.9;
 		maxDistance_ = 0.0;
-		sampledGoalsCount_ = 0;
-		addedStartStates_ = 0;
+		
 		tStart_.grid.onCellUpdate(computeImportance, NULL);
 		tGoal_.grid.onCellUpdate(computeImportance, NULL);
 	    }
@@ -232,17 +231,6 @@ namespace ompl
 	    
 	    TreeData                                   tStart_;
 	    TreeData                                   tGoal_;
-	    
-	    /// number of goal states that have been sampled already;
-	    /// helps the planner know when to stop sampling the goal
-	    /// region
-	    unsigned int                               sampledGoalsCount_;
-
-	    /// number of added start states; if between subsequent
-	    /// calls to solve() start states have been added to the
-	    /// problem definition, this variable helps in determining
-	    /// which ones to add to the start tree
-	    unsigned int                               addedStartStates_;
 	    
 	    double                                     selectBorderPercentage_;
 	    double                                     maxDistance_;

@@ -93,7 +93,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_STATE;
 		msg_.setPrefix("pSBL");
 		maxDistance_ = 0.0;
-		addedStartStates_ = 0;
 		setThreadCount(2);
 	    }
 	    
@@ -233,8 +232,6 @@ namespace ompl
 	    
 	    TreeData                                   tStart_;
 	    TreeData                                   tGoal_;
-	    
-	    unsigned int                               addedStartStates_;
 
 	    MotionsToBeRemoved                         removeList_;
 	    boost::mutex                               loopLock_;

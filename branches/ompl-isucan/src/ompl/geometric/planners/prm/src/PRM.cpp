@@ -122,14 +122,8 @@ bool ompl::geometric::PRM::solve(double solveTime)
     std::vector<Milestone*> goalM;
 
     // add the valid start states as milestones
-    for (unsigned int i = 0 ; i < pdef_->getStartStateCount() ; ++i)
-    {
-	const base::State *st = pdef_->getStartState(i);
-	if (si_->satisfiesBounds(st) && si_->isValid(st))
-	    startM.push_back(addMilestone(si_->cloneState(st)));
-	else
-	    msg_.error("Initial state is invalid!");
-    }
+    while (const base::State *st = pis_.nextStart())
+	startM.push_back(addMilestone(si_->cloneState(st)));
     
     if (startM.size() == 0)
     {
@@ -153,22 +147,17 @@ bool ompl::geometric::PRM::solve(double solveTime)
 	// find at least one valid goal state
 	if (goal->maxSampleCount() > goalM.size())
 	{
-	    while (time::now() < endTime)
-	    {
-		goal->sampleGoal(xstate);
-		if (si_->satisfiesBounds(xstate) && si_->isValid(xstate))
-		{
-		    goalM.push_back(addMilestone(si_->cloneState(xstate)));
-		    break;
-		}
-	    }
+	    const base::State *st = goalM.empty() ? pis_.nextGoal(endTime) : pis_.nextGoal();
+	    if (st)
+		goalM.push_back(addMilestone(si_->cloneState(st)));
 	    if (goalM.empty())
 	    {
 		msg_.error("Unable to find any valid goal states");
 		break;
 	    }
 	}
-
+	
+	
 	// if there already is a solution, construct it
 	if (haveSolution(startM, goalM))
 	{

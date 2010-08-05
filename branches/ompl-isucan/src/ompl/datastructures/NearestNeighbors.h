@@ -100,8 +100,6 @@ namespace ompl
 	DistanceFunction distFun_;
 	
     };
-    
-    
 }
 
 #endif

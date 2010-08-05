@@ -91,8 +91,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("SBL");
 		
-		sampledGoalsCount_ = 0;
-		addedStartStates_ = 0;
 		maxDistance_ = 0.0;
 	    }
 	    
@@ -200,17 +198,6 @@ namespace ompl
 	    TreeData                                   tStart_;
 	    TreeData                                   tGoal_;
 
-	    /// number of goal states that have been sampled already;
-	    /// helps the planner know when to stop sampling the goal
-	    /// region
-	    unsigned int                               sampledGoalsCount_;
-
-	    /// number of added start states; if between subsequent
-	    /// calls to solve() start states have been added to the
-	    /// problem definition, this variable helps in determining
-	    /// which ones to add to the start tree
-	    unsigned int                               addedStartStates_;
-	    
 	    double                                     maxDistance_;	
 	    RNG                                        rng_;	
 	};

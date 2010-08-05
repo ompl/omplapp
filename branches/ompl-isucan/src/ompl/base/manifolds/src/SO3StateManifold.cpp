@@ -171,13 +171,15 @@ void ompl::base::SO3StateManifold::freeState(State *state) const
 
 void ompl::base::SO3StateManifold::printState(const State *state, std::ostream &out) const
 {
+    out << "SO3State [";
     if (state)
     {
 	const StateType *qstate = static_cast<const StateType*>(state);
-	out << qstate->x << " " << qstate->y << " " << qstate->z << " " << qstate->w << std::endl;
+	out << qstate->x << " " << qstate->y << " " << qstate->z << " " << qstate->w;
     }
     else
-	out << "NULL" << std::endl;
+	out << "NULL";
+    out << ']' << std::endl;
 }
 
 void ompl::base::SO3StateManifold::printSettings(std::ostream &out) const
