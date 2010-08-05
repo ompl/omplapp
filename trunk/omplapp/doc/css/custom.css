@@ -1,12 +1,8 @@
-.container {width: 950px; }
-table {width:auto; margin: 4px;}
+.container { width: 950px; }
+table { width:auto; margin: 4px;}
 table, td, th {vertical-align:top;padding: 2px;}
 th { text-align: center; }
 pre, code, tt {font:1em monospace; line-height:1.5;}
-ul.fixedwidthtab li { width: 120px; }
-ul.fixedwidthfill { width: 950px; background-color:#f6f6f6; margin-bottom: 20px;}
-ul.fixedwidthfill li { min-width: 100px; }
-ul.dropdown li ul { font-size: 12px; }
 body { font-size: 13px; }
 a.anchor, a.el { text-decoration: none; color: #119; }
 h1 { font-size: 2em; color: #119; }
@@ -44,7 +40,6 @@ ul, ol {margin:0em 0em .5em 0em; padding-left:2em;}
 .leftalign { text-align: left;}
 .rightalign { text-align: right;}
 .centeralign {text-align: center;}
-input[type=text].resid { margin-right: 3em; }
 .attention { 
 	background-color: #f8f8ff; 
 	border: 1px solid #ddf;
