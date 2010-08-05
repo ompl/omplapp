@@ -11,3 +11,8 @@ set(OMPL_APP_LIBRARIES ${OMPL_APP_LIBRARIES} ${COMMON_LIB})
 aux_source_directory(SE3RigidBodyPlanning SE3RigidBodyPlanning_SRC)
 add_executable(SE3RigidBodyPlanning ${SE3RigidBodyPlanning_SRC}) 
 target_link_libraries(SE3RigidBodyPlanning ${OMPL_APP_LIBRARIES})
+
+# create executable for SE2 rigid body planning application
+aux_source_directory(SE2RigidBodyPlanning SE2RigidBodyPlanning_SRC)
+add_executable(SE2RigidBodyPlanning ${SE2RigidBodyPlanning_SRC}) 
+target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_LIBRARIES})
