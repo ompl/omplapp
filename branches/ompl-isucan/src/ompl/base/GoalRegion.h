@@ -73,7 +73,9 @@ namespace ompl
 		to a stream */
 	    virtual void print(std::ostream &out = std::cout) const;
 	    
-	    /** \brief The maximum distance that is allowed to the goal */
+	    /** \brief The maximum distance that is allowed to the
+		goal. By default, this is initialized to the minimum
+		epsilon value a double can represent */
 	    double threshold;
 	};
     }
