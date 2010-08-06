@@ -15,4 +15,9 @@ if(DOXYGEN)
 		add_dependencies(doc update_css)
 	endif()
 
+	# add "website" target
+	add_custom_target(website
+		COMMAND mkwebdocs.sh
+		DEPENDS doc
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endif(DOXYGEN)
