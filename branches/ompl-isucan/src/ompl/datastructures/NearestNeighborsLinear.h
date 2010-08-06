@@ -48,7 +48,7 @@ namespace ompl
     class NearestNeighborsLinear : public NearestNeighbors<_T>
     {
     public:
-        NearestNeighborsLinear(void) : NearestNeighbors<_T>()
+        NearestNeighborsLinear(void) : NearestNeighbors<_T>(), removed_(0)
 	{
 	}
 	
@@ -60,6 +60,7 @@ namespace ompl
 	{
 	    data_.clear();
 	    active_.clear();
+	    removed_ = 0;
 	}
 
 	virtual void add(_T &data)
@@ -74,6 +75,7 @@ namespace ompl
 		if (data_[i] == data)
 		{
 		    active_[i] = false;
+		    removed_++;
 		    return true;
 		}
 	    return false;
@@ -114,19 +116,24 @@ namespace ompl
 	
 	virtual unsigned int size(void) const
 	{
-	    return data_.size();
+	    return data_.size() - removed_;
 	}
 	
 	virtual void list(std::vector<_T> &data) const
 	{
-	    data = data_;
+	    data.clear();
+	    data.reserve(data_.size() - removed_);
+	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
+		if (active_[i])
+		    data.push_back(data_[i]);
 	}
 	
     protected:
 	
 	std::vector<_T>   data_;
 	std::vector<bool> active_;
-
+	unsigned int      removed_;
+	
     private:
 	
 	struct MySort

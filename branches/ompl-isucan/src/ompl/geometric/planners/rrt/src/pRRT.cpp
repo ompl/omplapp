@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include "ompl/geometric/planners/rrt/pRRT.h"
+#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 #include "ompl/base/GoalSampleableRegion.h"
 #include <boost/thread/thread.hpp>
 #include <limits>
@@ -47,18 +48,21 @@ void ompl::geometric::pRRT::setup(void)
 	maxDistance_ = si_->estimateExtent() / 5.0;
 	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
+    if (!nn_)
+	nn_.reset(new NearestNeighborsSqrtApprox<Motion*>());
+    nn_->setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));
 }
 
 void ompl::geometric::pRRT::clear(void)
 {
     freeMemory();
-    nn_.clear();
+    nn_->clear();
 }
 
 void ompl::geometric::pRRT::freeMemory(void)
 {
     std::vector<Motion*> motions;
-    nn_.list(motions);
+    nn_->list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
 	si_->freeState(motions[i]->state);
@@ -85,7 +89,7 @@ void ompl::geometric::pRRT::threadSolve(unsigned int tid, time::point endTime, S
 	
 	/* find closest state in the tree */
 	nnLock_.lock();
-	Motion *nmotion = nn_.nearest(rmotion);
+	Motion *nmotion = nn_->nearest(rmotion);
 	nnLock_.unlock();
 	base::State *dstate = rstate;
 
@@ -105,7 +109,7 @@ void ompl::geometric::pRRT::threadSolve(unsigned int tid, time::point endTime, S
 	    motion->parent = nmotion;
 	    
 	    nnLock_.lock();
-	    nn_.add(motion);
+	    nn_->add(motion);
 	    nnLock_.unlock();
 	    
 	    double dist = 0.0;
@@ -153,16 +157,16 @@ bool ompl::geometric::pRRT::solve(double solveTime)
     {
 	Motion *motion = new Motion(si_);
 	si_->copyState(motion->state, st);
-	nn_.add(motion);
+	nn_->add(motion);
     }
     
-    if (nn_.size() == 0)
+    if (nn_->size() == 0)
     {
 	msg_.error("There are no valid initial states!");
 	return false;	
     }    
 
-    msg_.inform("Starting with %u states", nn_.size());
+    msg_.inform("Starting with %u states", nn_->size());
     
     SolutionInfo sol;
     sol.solution = NULL;
@@ -207,7 +211,7 @@ bool ompl::geometric::pRRT::solve(double solveTime)
 	    msg_.warn("Found approximate solution");
     }
 
-    msg_.inform("Created %u states", nn_.size());
+    msg_.inform("Created %u states", nn_->size());
     
     return goal->isAchieved();
 }
@@ -215,7 +219,7 @@ bool ompl::geometric::pRRT::solve(double solveTime)
 void ompl::geometric::pRRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    nn_.list(motions);
+    nn_->list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;

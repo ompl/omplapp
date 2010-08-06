@@ -38,7 +38,7 @@
 #define OMPL_GEOMETRIC_PLANNERS_RRT_RRT_
 
 #include "ompl/geometric/planners/PlannerIncludes.h"
-#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
+#include "ompl/datastructures/NearestNeighbors.h"
 
 namespace ompl
 {
@@ -73,13 +73,11 @@ namespace ompl
 	{
 	public:
 	    
-	    RRT(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       sampler_(si->allocStateSampler())
+	    RRT(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("RRT");
 		
-		nn_.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;
 	    }
@@ -96,7 +94,7 @@ namespace ompl
 	    virtual void clear(void)
 	    {
 		freeMemory();
-		nn_.clear();
+		nn_->clear();
 	    }
 	    
 	    /** \brief Set the goal bias
@@ -133,6 +131,13 @@ namespace ompl
 	    double getRange(void) const
 	    {
 		return maxDistance_;
+	    }
+
+	    /** \brief Set a different nearest neighbors datastructure */
+	    template<template<typename T> class NN>
+	    void setNearestNeighbors(void)
+	    {
+		nn_.reset(new NN<Motion*>());
 	    }
 	    
 	    virtual void setup(void);
@@ -172,13 +177,12 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr                sampler_;
-
-	    NearestNeighborsSqrtApprox<Motion*>  nn_;
+	    base::StateSamplerPtr                          sampler_;
+	    boost::shared_ptr< NearestNeighbors<Motion*> > nn_;
 	    
-	    double                               goalBias_;
-	    double                               maxDistance_;
-	    RNG                                  rng_;	
+	    double                                         goalBias_;
+	    double                                         maxDistance_;
+	    RNG                                            rng_;	
 	};
 	
     }

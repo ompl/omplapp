@@ -48,9 +48,8 @@ namespace ompl
     class NearestNeighborsSqrtApprox : public NearestNeighbors<_T>
     {
     public:
-        NearestNeighborsSqrtApprox(void) : NearestNeighbors<_T>()
+        NearestNeighborsSqrtApprox(void) : NearestNeighbors<_T>(), checks_(0), removed_(0)
 	{
-	    checks_ = 0;
 	}
 	
 	virtual ~NearestNeighborsSqrtApprox(void)
@@ -61,13 +60,15 @@ namespace ompl
 	{
 	    data_.clear();
 	    active_.clear();
+	    checks_ = 0;
+	    removed_ = 0;
 	}
 
 	virtual void add(_T &data)
 	{
 	    data_.push_back(data);
 	    active_.push_back(true);
-		checks_ = 1 + (int)floor(sqrt((double)data_.size()));
+	    checks_ = 1 + (int)floor(sqrt((double)data_.size()));
 	}
 
 	virtual bool remove(_T &data)
@@ -76,6 +77,7 @@ namespace ompl
 		if (data_[i] == data)
 		{
 		    active_[i] = false;
+		    removed_++;
 		    return true;
 		}
 	    return false;
@@ -129,12 +131,16 @@ namespace ompl
 	
 	virtual unsigned int size(void) const
 	{
-	    return data_.size();
+	    return data_.size() - removed_;
 	}
 	
 	virtual void list(std::vector<_T> &data) const
 	{
-	    data = data_;
+	    data.clear();
+	    data.reserve(data_.size() - removed_);
+	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
+		if (active_[i])
+		    data.push_back(data_[i]);
 	}
 	
     protected:
@@ -142,7 +148,8 @@ namespace ompl
 	std::vector<_T>   data_;
 	std::vector<bool> active_;
 	unsigned int      checks_;
-
+	unsigned int      removed_;
+	
     private:
 	
 	struct MySort

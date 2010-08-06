@@ -39,7 +39,7 @@
 
 #include "ompl/geometric/planners/PlannerIncludes.h"
 #include "ompl/base/StateSamplerArray.h"
-#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
+#include "ompl/datastructures/NearestNeighbors.h"
 #include <boost/thread/mutex.hpp>
 
 namespace ompl
@@ -79,8 +79,7 @@ namespace ompl
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("pRRT");
-		
-		nn_.setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));
+
 		setThreadCount(2);
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;
@@ -140,6 +139,13 @@ namespace ompl
 	    {
 		return threadCount_;
 	    }
+
+	    /** \brief Set a different nearest neighbors datastructure */
+	    template<template<typename T> class NN>
+	    void setNearestNeighbors(void)
+	    {
+		nn_.reset(new NN<Motion*>());
+	    }
 	    
 	    virtual void setup(void);
 	    
@@ -182,14 +188,14 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerArray             samplerArray_;
-	    NearestNeighborsSqrtApprox<Motion*> nn_;
-	    boost::mutex                        nnLock_;
+	    base::StateSamplerArray                        samplerArray_;
+	    boost::shared_ptr< NearestNeighbors<Motion*> > nn_;
+	    boost::mutex                                   nnLock_;
 	    
-	    unsigned int                        threadCount_;
+	    unsigned int                                   threadCount_;
 	    
-	    double                              goalBias_;
-	    double                              maxDistance_;
+	    double                                         goalBias_;
+	    double                                         maxDistance_;
 	};
 	
     }

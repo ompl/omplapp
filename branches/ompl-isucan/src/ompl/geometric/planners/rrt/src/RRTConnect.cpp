@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include "ompl/geometric/planners/rrt/RRTConnect.h"
+#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 #include "ompl/base/GoalSampleableRegion.h"
 
 void ompl::geometric::RRTConnect::setup(void)
@@ -45,12 +46,21 @@ void ompl::geometric::RRTConnect::setup(void)
 	maxDistance_ = si_->estimateExtent() / 5.0;
 	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
+   
+    sampler_ = si_->allocStateSampler();
+    
+    if (!tStart_)
+	tStart_.reset(new NearestNeighborsSqrtApprox<Motion*>());
+    if (!tGoal_)
+	tGoal_.reset(new NearestNeighborsSqrtApprox<Motion*>());
+    tStart_->setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
+    tGoal_->setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
 }
 
 void ompl::geometric::RRTConnect::freeMemory(void)
 {
     std::vector<Motion*> motions;
-    tStart_.list(motions);
+    tStart_->list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
 	if (motions[i]->state)
@@ -58,7 +68,7 @@ void ompl::geometric::RRTConnect::freeMemory(void)
 	delete motions[i];
     }
     
-    tGoal_.list(motions);
+    tGoal_->list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
 	if (motions[i]->state)
@@ -70,14 +80,14 @@ void ompl::geometric::RRTConnect::freeMemory(void)
 void ompl::geometric::RRTConnect::clear(void)
 {
     freeMemory();
-    tStart_.clear();
-    tGoal_.clear();
+    tStart_->clear();
+    tGoal_->clear();
 }
 
 ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi, Motion *rmotion)
 {
     /* find closest state in the tree */
-    Motion *nmotion = tree.nearest(rmotion);
+    Motion *nmotion = tree->nearest(rmotion);
 
     /* assume we can reach the state we go towards */
     bool reach = true;
@@ -101,7 +111,7 @@ ompl::geometric::RRTConnect::GrowState ompl::geometric::RRTConnect::growTree(Tre
 	motion->root = nmotion->root;
 	tgi.xmotion = motion;
 	
-	tree.add(motion);
+	tree->add(motion);
 	if (reach)
 	    return REACHED;
 	else
@@ -128,10 +138,10 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	Motion *motion = new Motion(si_);
 	si_->copyState(motion->state, st);
 	motion->root = st;
-	tStart_.add(motion);
+	tStart_->add(motion);
     }
     
-    if (tStart_.size() == 0)
+    if (tStart_->size() == 0)
     {
 	msg_.error("Motion planning start tree could not be initialized!");
 	return false;
@@ -143,7 +153,7 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	return false;
     }
     
-    msg_.inform("Starting with %d states", (int)(tStart_.size() + tGoal_.size()));
+    msg_.inform("Starting with %d states", (int)(tStart_->size() + tGoal_->size()));
 
     TreeGrowingInfo tgi;
     tgi.xstate = si_->allocState();
@@ -158,18 +168,18 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 	startTree = !startTree;
 	TreeData &otherTree = startTree ? tStart_ : tGoal_;
 		
-	if (tGoal_.size() == 0 || pis_.getSampledGoalsCount() < tGoal_.size() / 2)
+	if (tGoal_->size() == 0 || pis_.getSampledGoalsCount() < tGoal_->size() / 2)
 	{
-	    const base::State *st = tGoal_.size() == 0 ? pis_.nextGoal(endTime) : pis_.nextGoal();
+	    const base::State *st = tGoal_->size() == 0 ? pis_.nextGoal(endTime) : pis_.nextGoal();
 	    if (st)
 	    {
 		Motion* motion = new Motion(si_);
 		si_->copyState(motion->state, st);
 		motion->root = motion->state;
-		tGoal_.add(motion);
+		tGoal_->add(motion);
 	    }
 	    
-	    if (tGoal_.size() == 0)
+	    if (tGoal_->size() == 0)
 	    {
 		msg_.error("Unable to sample any valid states for goal tree");
 		break;
@@ -240,7 +250,7 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
     si_->freeState(rstate);
     delete rmotion;
     
-    msg_.inform("Created %u states (%u start + %u goal)", tStart_.size() + tGoal_.size(), tStart_.size(), tGoal_.size());
+    msg_.inform("Created %u states (%u start + %u goal)", tStart_->size() + tGoal_->size(), tStart_->size(), tGoal_->size());
     
     return goal->isAchieved();
 }
@@ -248,11 +258,11 @@ bool ompl::geometric::RRTConnect::solve(double solveTime)
 void ompl::geometric::RRTConnect::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    tStart_.list(motions);
+    tStart_->list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;
-    tGoal_.list(motions);
+    tGoal_->list(motions);
     unsigned int s = data.states.size();
     data.states.resize(s + motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)

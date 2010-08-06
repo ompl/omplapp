@@ -36,6 +36,7 @@
 
 #include "ompl/geometric/planners/rrt/LazyRRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
+#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 #include <limits>
 #include <cassert>
 
@@ -47,18 +48,22 @@ void ompl::geometric::LazyRRT::setup(void)
 	maxDistance_ = si_->estimateExtent() / 5.0;
 	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
+    sampler_ = si_->allocStateSampler();
+    if (!nn_)
+	nn_.reset(new NearestNeighborsSqrtApprox<Motion*>());   
+    nn_->setDistanceFunction(boost::bind(&LazyRRT::distanceFunction, this, _1, _2));
 }
 
 void ompl::geometric::LazyRRT::clear(void)
 {
     freeMemory();
-    nn_.clear();
+    nn_->clear();
 }
 
 void ompl::geometric::LazyRRT::freeMemory(void)
 {
     std::vector<Motion*> motions;
-    nn_.list(motions);
+    nn_->list(motions);
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
     {
 	if (motions[i]->state)
@@ -85,16 +90,16 @@ bool ompl::geometric::LazyRRT::solve(double solveTime)
 	Motion *motion = new Motion(si_);
 	si_->copyState(motion->state, st);
 	motion->valid = true;
-	nn_.add(motion);
+	nn_->add(motion);
     }
     
-    if (nn_.size() == 0)
+    if (nn_->size() == 0)
     {
 	msg_.error("There are no valid initial states!");
 	return false;	
     }    
 
-    msg_.inform("Starting with %u states", nn_.size());
+    msg_.inform("Starting with %u states", nn_->size());
 
     Motion *solution = NULL;
     double  distsol  = -1.0;
@@ -113,7 +118,7 @@ bool ompl::geometric::LazyRRT::solve(double solveTime)
 	    sampler_->sample(rstate);
 
 	/* find closest state in the tree */
-	Motion *nmotion = nn_.nearest(rmotion);
+	Motion *nmotion = nn_->nearest(rmotion);
 	assert(nmotion != rmotion);
 	base::State *dstate = rstate;
 	
@@ -130,7 +135,7 @@ bool ompl::geometric::LazyRRT::solve(double solveTime)
 	si_->copyState(motion->state, dstate);
 	motion->parent = nmotion;
 	nmotion->children.push_back(motion);
-	nn_.add(motion);
+	nn_->add(motion);
 	
 	double dist = 0.0;
 	if (goal->isSatisfied(motion->state, &dist))
@@ -178,14 +183,14 @@ bool ompl::geometric::LazyRRT::solve(double solveTime)
     si_->freeState(rstate);
     delete rmotion;
     
-    msg_.inform("Created %u states", nn_.size());
+    msg_.inform("Created %u states", nn_->size());
 
     return goal->isAchieved();
 }
 
 void ompl::geometric::LazyRRT::removeMotion(Motion *motion)
 {
-    nn_.remove(motion);
+    nn_->remove(motion);
     
     /* remove self from parent list */
     
@@ -205,12 +210,16 @@ void ompl::geometric::LazyRRT::removeMotion(Motion *motion)
 	motion->children[i]->parent = NULL;
 	removeMotion(motion->children[i]);
     }
+
+    if (motion->state)
+	si_->freeState(motion->state);
+    delete motion;
 }
 
 void ompl::geometric::LazyRRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    nn_.list(motions);
+    nn_->list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;

@@ -38,7 +38,7 @@
 #define OMPL_GEOMETRIC_PLANNERS_RRT_RRT_CONNECT_
 
 #include "ompl/geometric/planners/PlannerIncludes.h"
-#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
+#include "ompl/datastructures/NearestNeighbors.h"
 
 namespace ompl
 {
@@ -68,14 +68,11 @@ namespace ompl
 	{
 	public:
 	    
-	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si),
-							      sampler_(si->allocStateSampler())
+	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("RRTConnect");
 		
-		tStart_.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
-		tGoal_.setDistanceFunction(boost::bind(&RRTConnect::distanceFunction, this, _1, _2));
 		maxDistance_ = 0.0;
 	    }
 	    
@@ -106,6 +103,14 @@ namespace ompl
 		return maxDistance_;
 	    }
 
+	    /** \brief Set a different nearest neighbors datastructure */
+	    template<template<typename T> class NN>
+	    void setNearestNeighbors(void)
+	    {
+		tStart_.reset(new NN<Motion*>());
+		tGoal_.reset(new NN<Motion*>());
+	    }
+	    
 	    virtual void setup(void);
 
 	protected:
@@ -134,7 +139,7 @@ namespace ompl
 		
 	    };
 	    
-	    typedef NearestNeighborsSqrtApprox<Motion*> TreeData;
+	    typedef boost::shared_ptr< NearestNeighbors<Motion*> > TreeData;
 
 	    struct TreeGrowingInfo
 	    {

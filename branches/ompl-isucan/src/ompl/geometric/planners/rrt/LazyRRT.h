@@ -38,7 +38,7 @@
 #define OMPL_GEOMETRIC_PLANNERS_RRT_LAZY_RRT_
 
 #include "ompl/geometric/planners/PlannerIncludes.h"
-#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
+#include "ompl/datastructures/NearestNeighbors.h"
 #include <vector>
 
 namespace ompl
@@ -77,13 +77,11 @@ namespace ompl
 	{
 	public:
 	    
-	    LazyRRT(const base::SpaceInformationPtr &si) : base::Planner(si),
-							   sampler_(si->allocStateSampler())
+	    LazyRRT(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("LazyRRT");
 		
-		nn_.setDistanceFunction(boost::bind(&LazyRRT::distanceFunction, this, _1, _2));
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;
 	    }
@@ -134,6 +132,13 @@ namespace ompl
 	    {
 		return maxDistance_;
 	    }
+
+	    /** \brief Set a different nearest neighbors datastructure */
+	    template<template<typename T> class NN>
+	    void setNearestNeighbors(void)
+	    {
+		nn_.reset(new NN<Motion*>());
+	    }
 	    
 	    virtual void setup(void);
 
@@ -170,13 +175,12 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr               sampler_;
+	    base::StateSamplerPtr                          sampler_;
+	    boost::shared_ptr< NearestNeighbors<Motion*> > nn_;	    
 	    
-	    NearestNeighborsSqrtApprox<Motion*> nn_;
-	    
-	    double                              goalBias_;
-	    double                              maxDistance_;	
-	    RNG                                 rng_;
+	    double                                         goalBias_;
+	    double                                         maxDistance_;	
+	    RNG                                            rng_;
 	
 	};
 	
