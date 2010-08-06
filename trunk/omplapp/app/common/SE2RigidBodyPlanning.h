@@ -1,5 +1,7 @@
 #include <ompl/geometric/SimpleSetup.h>
+#include <ompl/control/SimpleSetup.h>
 #include <ompl/base/manifolds/SE2StateManifold.h>
+#include <ompl/control/manifolds/RealVectorControlManifold.h>
 #include <string>
 
 namespace ompl
@@ -17,6 +19,16 @@ namespace ompl
 	    void setMeshes(const std::string &robot, const std::string &env);
 	    
 	    virtual void setup(void);
+	};
+
+	class SE2RigidBodyPlanningWithControls : public control::SimpleSetup
+	{
+	public:
+	    SE2RigidBodyPlanningWithControls(void) : control::SimpleSetup(control::ControlManifoldPtr(new control::RealVectorControlManifold
+												      (base::StateManifoldPtr(new base::SE2StateManifold()), 2)))
+	    {
+	    }
+	    
 	};	
 	
     }
