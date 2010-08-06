@@ -48,22 +48,22 @@ namespace ompl
     {
     public:
 	
-	/// datatype for cell in base class 
+	/// Datatype for cell in base class 
 	typedef typename Grid<_T>::Cell      BaseCell;
 
-	/// datatype for array of cells in base class 
+	/// Datatype for array of cells in base class 
 	typedef typename Grid<_T>::CellArray BaseCellArray;
 
-	/// datatype for cell coordinates
+	/// Datatype for cell coordinates
         typedef typename Grid<_T>::Coord     Coord;
     
-	/// definition of a cell in this grid
+	/// Definition of a cell in this grid
 	struct Cell : public BaseCell
 	{
-	    /// the number of neighbors
+	    /// The number of neighbors
 	    unsigned short      neighbors;
 
-	    /// a flag indicating whether this cell is on the border or not
+	    /// A flag indicating whether this cell is on the border or not
 	    bool                border;
 	    
 	    Cell(void) : BaseCell(), neighbors(0), border(true)
@@ -75,11 +75,11 @@ namespace ompl
 	    }
 	};
 	
-	/// the datatype for arrays of cells 
+	/// The datatype for arrays of cells 
 	typedef std::vector<Cell*> CellArray;	
 	
 
-	/// the constructor takes the dimension of the grid as argument
+	/// The constructor takes the dimension of the grid as argument
        	explicit 
 	GridN(unsigned int dimension) : Grid<_T>(dimension)
 	{
@@ -92,7 +92,7 @@ namespace ompl
 	{
 	}
 	
-	/// update the dimension of the grid; this should not be done
+	/// Update the dimension of the grid; this should not be done
 	/// unless the grid is empty
 	void setDimension(unsigned int dimension)
 	{
@@ -108,10 +108,10 @@ namespace ompl
 
 	/// If bounds for the grid need to be considered, we can set them here.
 	/// When the number of neighbors are counted, whether the
-	/// space is bounded matters, in the sense that if a cell is on
+	/// Space is bounded matters, in the sense that if a cell is on
 	/// the boundary, we know some of its neighbors cannot exist. 
 	/// In order to allow such a cell to reflect the fact it has
-	/// achieved its maximal number of neighbors, the boundary is 
+	/// Achieved its maximal number of neighbors, the boundary is 
 	/// counted as the number of neighbors it prevents from
 	/// existing.
 	void setBounds(const Coord &low, const Coord &up)
@@ -121,7 +121,7 @@ namespace ompl
 	    hasBounds_ = true;
 	}
 
-	/// set the limit of neighboring cells to determine when a cell becomes interior
+	/// Set the limit of neighboring cells to determine when a cell becomes interior
 	/// by default, this is 2 * dimension of grid
 	void setInteriorCellNeighborLimit(unsigned int count)
 	{
@@ -130,27 +130,27 @@ namespace ompl
 	    overrideCellNeighborsLimit_ = true;
 	}
 	
-	/// get the cell at a specified coordinate
+	/// Get the cell at a specified coordinate
 	Cell* getCell(const Coord &coord) const
 	{
 	    return static_cast<Cell*>(Grid<_T>::getCell(coord));
 	}
 
-	/// get the list of neighbors for a given cell 
+	/// Get the list of neighbors for a given cell 
 	void    neighbors(const Cell* cell, CellArray& list) const
 	{
 	    Coord test = cell->coord;
 	    neighbors(test, list);	    
 	}
 	
-	/// get the list of neighbors for a given coordinate
+	/// Get the list of neighbors for a given coordinate
 	void    neighbors(const Coord& coord, CellArray& list) const
 	{
 	    Coord test = coord;
 	    neighbors(test, list);
 	}
 
-	/// get the list of neighbors for a given coordinate
+	/// Get the list of neighbors for a given coordinate
 	void    neighbors(Coord& coord, CellArray& list) const
 	{
 	    BaseCellArray baselist;
@@ -160,8 +160,8 @@ namespace ompl
 		list.push_back(static_cast<Cell*>(baselist[i]));
 	}
 	
-	/// \brief Instantiate a new cell at given coordinates;
-	/// optionally return the list of future neighbors.  Note:
+	/// Instantiate a new cell at given coordinates;
+	/// Optionally return the list of future neighbors.  Note:
 	/// this call only creates the cell, but does not add it to
 	/// the grid.  It however updates the neighbor count for
 	/// neighboring cells
@@ -192,7 +192,7 @@ namespace ompl
 	}
 	
 	/// Remove a cell from the grid. If the cell has not been
-	/// added to the grid, only update the neighbor list
+	/// Added to the grid, only update the neighbor list
 	virtual bool remove(BaseCell *cell)
 	{
 	    if (cell)
@@ -219,7 +219,7 @@ namespace ompl
 	
     protected:
 
-	/// compute how many sides of a coordinate touch the boundaries of the grid 
+	/// Compute how many sides of a coordinate touch the boundaries of the grid 
 	unsigned int numberOfBoundaryDimensions(const Coord &coord) const
 	{
 	    unsigned int result = 0;
@@ -232,21 +232,21 @@ namespace ompl
 	    return result;
 	}	
 
-	/// flag indicating whether bounds are in effect for this grid
+	/// Flag indicating whether bounds are in effect for this grid
 	bool             hasBounds_;
 	
-	/// if bounds are set, this defines the lower corner cell
+	/// If bounds are set, this defines the lower corner cell
 	Coord            lowBound_;
 
-	/// if bounds are set, this defines the upper corner cell
+	/// If bounds are set, this defines the upper corner cell
 	Coord            upBound_;
 
-	/// by default, cells are considered on the border if 2n
+	/// By default, cells are considered on the border if 2n
 	/// neighbors are created, for a space of dimension n.
 	/// this value is overridden and set in this member variable
 	unsigned int     interiorCellNeighborsLimit_;
 
-	/// flag indicating whether the neighbor count used to determine whether
+	/// Flag indicating whether the neighbor count used to determine whether
 	/// a cell is on the border or not
 	bool             overrideCellNeighborsLimit_;
     };

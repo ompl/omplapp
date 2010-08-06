@@ -63,11 +63,11 @@ namespace ompl
 	/** \brief The return value of a propagation step executed by a ControlManifold */
 	enum PropagationResult
 	{
-	    /** \brief the initial state of the propagation is valid */
+	    /** \brief The initial state of the propagation is valid */
 	    PROPAGATION_START_VALID,
-	    /** \brief the initial state of the propagation is invalid */
+	    /** \brief The initial state of the propagation is invalid */
 	    PROPAGATION_START_INVALID,
-	    /** \brief it is unknown whether the initial state of the propagation is valid or invalid */
+	    /** \brief It is unknown whether the initial state of the propagation is valid or invalid */
 	    PROPAGATION_START_UNKNOWN
 	};
 

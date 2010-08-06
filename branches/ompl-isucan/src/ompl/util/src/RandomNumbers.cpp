@@ -43,16 +43,16 @@
 #include <boost/math/constants/constants.hpp>
 
     
-/// flag indicating whether the user asked for a seed or not
+/// Flag indicating whether the user asked for a seed or not
 static bool            userDefinedSeed = false;
 
-/// the seed the user asked for
+/// The seed the user asked for
 static boost::uint32_t userSetSeed = 0;
 
-/// flag indicating whether the first seed has already been generated or not
+/// Flag indicating whether the first seed has already been generated or not
 static bool            firstSeedGenerated = false;
 
-/// compute the first seed to be used; this function should be called only once
+/// Compute the first seed to be used; this function should be called only once
 static boost::uint32_t firstSeed(void)
 {
     firstSeedGenerated = true;
@@ -65,7 +65,7 @@ static boost::uint32_t firstSeed(void)
 }
 
 /// We use a different random number generator for the seeds of the
-/// other random generators. The root seed is from the number of
+/// Other random generators. The root seed is from the number of
 /// nano-seconds in the current time.
 static boost::uint32_t nextSeed(void)
 {

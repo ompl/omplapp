@@ -208,28 +208,28 @@ namespace ompl
 
 	protected:
 	    
-	    /// the created space information 
+	    /// The created space information 
 	    base::SpaceInformationPtr     si_;
 
-	    /// the created problem definition 
+	    /// The created problem definition 
 	    base::ProblemDefinitionPtr    pdef_;
 
-	    /// the maintained planner instance
+	    /// The maintained planner instance
 	    base::PlannerPtr              planner_;
 
-	    /// the optional planner allocator
+	    /// The optional planner allocator
 	    base::PlannerAllocator        pa_;
 
-	    /// the instance of the path simplifier 
+	    /// The instance of the path simplifier 
 	    PathSimplifierPtr             psk_;
 
-	    /// flag indicating whether the classes needed for planning are set up
+	    /// Flag indicating whether the classes needed for planning are set up
 	    bool                          configured_;
 	    
-	    /// the amount of time the last planning step took
+	    /// The amount of time the last planning step took
 	    double                        planTime_;
 	    
-	    /// interface for console output
+	    /// Interface for console output
 	    msg::Interface                msg_;
 	    
 	};

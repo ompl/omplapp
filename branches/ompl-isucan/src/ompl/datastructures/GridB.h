@@ -52,13 +52,13 @@ namespace ompl
     {
     public:
 	
-	/// definition of a cell in this grid
+	/// Definition of a cell in this grid
         typedef typename GridN<_T>::Cell      Cell;
 
-	/// the datatype for arrays of cells 
+	/// The datatype for arrays of cells 
         typedef typename GridN<_T>::CellArray CellArray;
 
-	/// datatype for cell coordinates
+	/// Datatype for cell coordinates
         typedef typename GridN<_T>::Coord     Coord;
     
     protected:
@@ -98,7 +98,7 @@ namespace ompl
 	    clearHeaps();
 	}
 	
-	/// set the function callback and to be called when a cell's
+	/// Set the function callback and to be called when a cell's
 	/// priority is updated
 	void onCellUpdate(EventCellUpdate event, void *arg)
 	{
@@ -106,45 +106,45 @@ namespace ompl
 	    eventCellUpdateData_ = arg;
 	}
 
-	/// return the cell that is at the top of the heap maintaining internal cells 
+	/// Return the cell that is at the top of the heap maintaining internal cells 
 	Cell* topInternal(void) const
 	{
 	    Cell* top = static_cast<Cell*>(internal_.top()->data);
 	    return top ? top : topExternal();
 	}
 	
-	/// return the cell that is at the top of the heap maintaining external cells 
+	/// Return the cell that is at the top of the heap maintaining external cells 
 	Cell* topExternal(void) const
 	{
 	    Cell* top = static_cast<Cell*>(external_.top()->data);
 	    return top ? top : topInternal();
 	}
 
-	/// return the number of internal cells
+	/// Return the number of internal cells
 	unsigned int countInternal(void) const
 	{
 	    return internal_.size();
 	}
 	
-	/// return the number of external cells
+	/// Return the number of external cells
 	unsigned int countExternal(void) const
 	{
 	    return external_.size();
 	}
 
-	/// return the fraction of external cells
+	/// Return the fraction of external cells
 	double fracExternal(void) const
 	{
 	    return external_.empty() ? 0.0 : (double)(external_.size()) / (double)(external_.size() + internal_.size());
 	}
 
-	/// return the fraction of internal cells
+	/// Return the fraction of internal cells
 	double fracInternal(void) const
 	{
 	    return 1.0 - fracExternal();
 	}
 	
-	/// update the position in the heaps for a particular cell. 
+	/// Update the position in the heaps for a particular cell. 
 	void update(Cell* cell)
 	{
 	    eventCellUpdate_(cell, eventCellUpdateData_);
@@ -156,7 +156,7 @@ namespace ompl
 				  (static_cast<CellX*>(cell)->heapElement));
 	}
 
-    	/// update all cells and reconstruct the heaps 
+    	/// Update all cells and reconstruct the heaps 
 	void updateAll(void)
 	{
 	    std::vector< Cell* > cells;
@@ -167,7 +167,7 @@ namespace ompl
 	    internal_.rebuild();
 	}
 	
-	/// create a cell but do not add it to the grid; update neighboring cells however
+	/// Create a cell but do not add it to the grid; update neighboring cells however
         virtual Cell* createCell(const Coord& coord, CellArray *nbh = NULL)
 	{
 	    CellX* cell = new CellX();
@@ -210,7 +210,7 @@ namespace ompl
 	    return static_cast<Cell*>(cell);
 	}
 	
-	/// add the cell to the grid
+	/// Add the cell to the grid
 	virtual void add(Cell* cell)
 	{
 	    CellX* ccell = static_cast<CellX*>(cell);
@@ -224,7 +224,7 @@ namespace ompl
 		internal_.insert(ccell);
 	}
 
-	/// remove a cell from the grid
+	/// Remove a cell from the grid
 	virtual bool remove(Cell* cell)
 	{
 	    if (cell)
@@ -284,12 +284,12 @@ namespace ompl
 	EventCellUpdate          eventCellUpdate_;
 	void                    *eventCellUpdateData_;
 
-	/// default no-op update routine for a cell
+	/// Default no-op update routine for a cell
         static void noCellUpdate(Cell*, void*)
 	{
 	}
     
-	/// set the update procedure for the heaps of internal and external cells
+	/// Set the update procedure for the heaps of internal and external cells
 	void setupHeaps(void)
 	{
 	    eventCellUpdate_     = &noCellUpdate;
@@ -298,7 +298,7 @@ namespace ompl
 	    external_.onAfterInsert(&setHeapElementE, NULL);
 	}
 	
-	/// clear the data from both heaps
+	/// Clear the data from both heaps
 	void clearHeaps(void)
 	{
 	    internal_.clear();
@@ -326,10 +326,10 @@ namespace ompl
 	    LessThanExternal lt_;
 	};
 	
-	/// datatype for a heap of cells containing interior cells
+	/// Datatype for a heap of cells containing interior cells
 	typedef BinaryHeap< CellX*, LessThanInternalCell > internalBHeap;
 
-	/// datatype for a heap of cells containing exterior cells
+	/// Datatype for a heap of cells containing exterior cells
 	typedef BinaryHeap< CellX*, LessThanExternalCell > externalBHeap;
 	
 	static void setHeapElementI(typename internalBHeap::Element* element, void *)
@@ -342,10 +342,10 @@ namespace ompl
 	    element->data->heapElement = reinterpret_cast<void*>(element);
 	}	
 
-	/// the heap of interior cells
+	/// The heap of interior cells
 	internalBHeap internal_;
 
-	/// the heap of boundary cells
+	/// The heap of boundary cells
 	externalBHeap external_;
     };
     

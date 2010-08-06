@@ -51,16 +51,16 @@ namespace ompl
     {
     public:
 	
-	/// definition of a coordinate within this grid
+	/// Definition of a coordinate within this grid
 	typedef std::vector<int> Coord;
 	
-	/// definition of a cell in this grid
+	/// Definition of a cell in this grid
 	struct Cell
 	{
-	    /// the data we store in the cell
+	    /// The data we store in the cell
 	    _T                  data;
 
-	    /// the coordinate of the cell
+	    /// The coordinate of the cell
 	    Coord               coord;
 	    
 	    Cell(void)
@@ -72,36 +72,36 @@ namespace ompl
 	    }
 	};
 	
-	/// the datatype for arrays of cells 
+	/// The datatype for arrays of cells 
 	typedef std::vector<Cell*> CellArray;	
 	
 
-	/// the constructor takes the dimension of the grid as argument
+	/// The constructor takes the dimension of the grid as argument
        	explicit
 	Grid(unsigned int dimension)
 	{
 	    setDimension(dimension);
 	}
 	
-	/// destructor
+	/// Destructor
 	virtual ~Grid(void)
 	{
 	    freeMemory();
 	}
 	
-	/// clear all cells in the grid
+	/// Clear all cells in the grid
 	virtual void clear(void)
 	{
 	    freeMemory();
 	}
 	
-	/// return the dimension of the grid
+	/// Return the dimension of the grid
 	unsigned int getDimension(void) const
 	{
 	    return dimension_;
 	}
 	
-	/// update the dimension of the grid; this should not be done
+	/// Update the dimension of the grid; this should not be done
 	/// unless the grid is empty
 	void setDimension(unsigned int dimension)
 	{
@@ -109,13 +109,13 @@ namespace ompl
 	    maxNeighbors_ = 2 * dimension_;
 	}
 
-	/// check if a cell exists at the specified coordinate
+	/// Check if a cell exists at the specified coordinate
 	bool has(const Coord &coord) const
 	{
 	    return getCell(coord) != NULL;
 	}
 	
-	/// get the cell at a specified coordinate
+	/// Get the cell at a specified coordinate
 	Cell* getCell(const Coord &coord) const
 	{ 
 	    iterator pos = hash_.find(const_cast<Coord*>(&coord));
@@ -123,21 +123,21 @@ namespace ompl
 	    return c;
 	}	
 	
-	/// get the list of neighbors for a given cell 
+	/// Get the list of neighbors for a given cell 
 	void    neighbors(const Cell* cell, CellArray& list) const
 	{
 	    Coord test = cell->coord;
 	    neighbors(test, list);
 	}
 	
-	/// get the list of neighbors for a given coordinate
+	/// Get the list of neighbors for a given coordinate
 	void    neighbors(const Coord& coord, CellArray& list) const
 	{
 	    Coord test = coord;
 	    neighbors(test, list);
 	}
 
-	/// get the list of neighbors for a given coordinate
+	/// Get the list of neighbors for a given coordinate
 	void    neighbors(Coord& coord, CellArray& list) const
 	{
 	    list.reserve(list.size() + maxNeighbors_);
@@ -163,7 +163,7 @@ namespace ompl
 	}
 	
 	/// Instantiate a new cell at given coordinates; optionally
-	/// return the list of future neighbors.
+	/// Return the list of future neighbors.
 	/// Note: this call only creates the cell, but does not add it to the grid.
 	/// It however updates the neighbor count for neighboring cells
 	virtual Cell* createCell(const Coord& coord, CellArray *nbh = NULL)
@@ -176,7 +176,7 @@ namespace ompl
 	}
 
 	/// Remove a cell from the grid. If the cell has not been
-	/// added to the grid, only update the neighbor list
+	/// Added to the grid, only update the neighbor list
 	virtual bool remove(Cell *cell)
 	{
 	    if (cell)
@@ -191,40 +191,40 @@ namespace ompl
 	    return false;
 	}
 	
-	/// add an instantiated cell to the grid
+	/// Add an instantiated cell to the grid
 	virtual void add(Cell *cell)
 	{
 	    hash_.insert(std::make_pair(&cell->coord, cell));
 	}
 	
-	/// clear the memory occupied by a cell; do not call this function unless remove() was called first
+	/// Clear the memory occupied by a cell; do not call this function unless remove() was called first
 	virtual void destroyCell(Cell *cell) const
 	{
 	    delete cell;
 	}
 	
-	/// get the data stored in the cells we are aware of
+	/// Get the data stored in the cells we are aware of
 	void getContent(std::vector<_T> &content) const
 	{
 	    for (iterator i = hash_.begin() ; i != hash_.end() ; i++)
 		content.push_back(i->second->data);
 	}
 	
-	/// get the set of coordinates where there are cells
+	/// Get the set of coordinates where there are cells
 	void getCoordinates(std::vector<Coord*> &coords) const
 	{
 	    for (iterator i = hash_.begin() ; i != hash_.end() ; i++)
 		coords.push_back(i->first);
 	}
 	
-	/// get the set of instantiated cells in the grid
+	/// Get the set of instantiated cells in the grid
 	void getCells(CellArray &cells) const
 	{
 	    for (iterator i = hash_.begin() ; i != hash_.end() ; i++)
 		cells.push_back(i->second);
 	}
 	
-	/// print the value of a coordinate to a stream 
+	/// Print the value of a coordinate to a stream 
 	void printCoord(Coord& coord, std::ostream &out = std::cout) const
 	{
 	    out << "[ ";
@@ -233,13 +233,13 @@ namespace ompl
 	    out << "]" << std::endl;
 	}
 
-	/// check if the grid is empty
+	/// Check if the grid is empty
 	bool empty(void) const
 	{
 	    return hash_.empty();
 	}
 	
-	/// check the size of the grid 
+	/// Check the size of the grid 
 	unsigned int size(void) const
 	{
 	    return hash_.size();	    
@@ -247,7 +247,7 @@ namespace ompl
 
     protected:
 
-	/// free the allocated memory
+	/// Free the allocated memory
 	void freeMemory(void)
 	{
 	    CellArray content;
@@ -258,7 +258,7 @@ namespace ompl
 		delete content[i];	    
 	}
 
-	/// hash function for coordinates
+	/// Hash function for coordinates
 	struct HashFunCoordPtr
 	{
 	    std::size_t operator()(const Coord* const s) const
@@ -276,7 +276,7 @@ namespace ompl
 	};
 
 
-	/// equality operator for coordinate pointers
+	/// Equality operator for coordinate pointers
 	struct EqualCoordPtr
 	{
 	    bool operator()(const Coord* const c1, const Coord* const c2) const
@@ -285,21 +285,21 @@ namespace ompl
 	    }
 	};
 	
-	/// define the datatype for the used hash structure
+	/// Define the datatype for the used hash structure
 	typedef boost::unordered_map<Coord*, Cell*, HashFunCoordPtr, EqualCoordPtr> CoordHash;
 
     public:
 	
-	/// we only allow const iterators
+	/// We only allow const iterators
 	typedef typename CoordHash::const_iterator iterator;
 
-	/// return the begin() iterator for the grid 
+	/// Return the begin() iterator for the grid 
 	iterator begin(void) const
 	{
 	    return hash_.begin();
 	}
 	
-	/// return the end() iterator for the grid 
+	/// Return the end() iterator for the grid 
 	iterator end(void) const
 	{
 	    return hash_.end();
@@ -307,13 +307,13 @@ namespace ompl
 	
     protected:
 
-	/// the dimension of the grid 
+	/// The dimension of the grid 
 	unsigned int     dimension_;
 
-	/// the maximum number of neighbors a cell can have (2 * dimension)
+	/// The maximum number of neighbors a cell can have (2 * dimension)
 	unsigned int     maxNeighbors_;
 	
-	/// the hash holding the cells
+	/// The hash holding the cells
 	CoordHash        hash_;
     };
 }
