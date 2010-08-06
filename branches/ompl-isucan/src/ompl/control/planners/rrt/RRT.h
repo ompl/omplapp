@@ -38,7 +38,7 @@
 #define OMPL_CONTROL_PLANNERS_RRT_RRT_
 
 #include "ompl/control/planners/PlannerIncludes.h"
-#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
+#include "ompl/datastructures/NearestNeighbors.h"
 
 namespace ompl
 {
@@ -72,15 +72,12 @@ namespace ompl
 	{
 	public:
 	    
-	    RRT(const SpaceInformationPtr &si) : base::Planner(si),
-						 sampler_(si->allocStateSampler()),
-						 cCore_(si->allocControlSampler())
+	    RRT(const SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("RRT");
 		siC_ = si.get();
-		
-		nn_.setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
+
 		goalBias_ = 0.05;
 	    }
 	    
@@ -95,11 +92,7 @@ namespace ompl
 	    /** \brief Clear datastructures. Call this function if the
 		input data to the planner has changed and you do not
 		want to continue planning */
-	    virtual void clear(void)
-	    {
-		freeMemory();
-		nn_.clear();
-	    }
+	    virtual void clear(void);
 	    
 	    /** In the process of randomly selecting states in the state
 		space to attempt to go towards, the algorithm may in fact
@@ -120,6 +113,15 @@ namespace ompl
 	    }
 
 	    virtual void getPlannerData(base::PlannerData &data) const;
+
+	    /** \brief Set a different nearest neighbors datastructure */
+	    template<template<typename T> class NN>
+	    void setNearestNeighbors(void)
+	    {
+		nn_.reset(new NN<Motion*>());
+	    }
+	    
+	    virtual void setup(void);
 	    
 	protected:
 	    
@@ -148,7 +150,7 @@ namespace ompl
 	    void freeMemory(void)
 	    {
 		std::vector<Motion*> motions;
-		nn_.list(motions);
+		nn_->list(motions);
 		for (unsigned int i = 0 ; i < motions.size() ; ++i)
 		{
 		    if (motions[i]->state)
@@ -164,14 +166,14 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr               sampler_;
-	    ControlSamplerPtr                   cCore_;
-	    const SpaceInformation             *siC_;
+	    base::StateSamplerPtr                          sampler_;
+	    ControlSamplerPtr                              controlSampler_;
+	    const SpaceInformation                        *siC_;
 	    
-	    NearestNeighborsSqrtApprox<Motion*> nn_;
+	    boost::shared_ptr< NearestNeighbors<Motion*> > nn_;
 
-	    double                              goalBias_;
-	    RNG                                 rng_;	
+	    double                                         goalBias_;
+	    RNG                                            rng_;
 	};
 	
     }

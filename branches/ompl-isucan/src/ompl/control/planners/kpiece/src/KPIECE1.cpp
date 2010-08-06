@@ -52,6 +52,8 @@ void ompl::control::KPIECE1::setup(void)
 	throw Exception("No projection evaluator specified");
     projectionEvaluator_->checkCellDimensions();
     tree_.grid.setDimension(projectionEvaluator_->getDimension());
+    sampler_ = si_->allocStateSampler();
+    controlSampler_ = siC_->allocControlSampler();
 }
 
 void ompl::control::KPIECE1::clear(void)
@@ -183,10 +185,10 @@ bool ompl::control::KPIECE1::solve(double solveTime)
 	assert(existing);
 
 	/* sample a random control */
-	cCore_->sample(rctrl);
+	controlSampler_->sample(rctrl);
 	
 	/* propagate */
-	unsigned int cd = cCore_->sampleStepCount(siC_->getMinControlDuration(), siC_->getMaxControlDuration());
+	unsigned int cd = controlSampler_->sampleStepCount(siC_->getMinControlDuration(), siC_->getMaxControlDuration());
 	cd = siC_->propagateWhileValid(existing->state, rctrl, cd, states, false);
 
 	/* if we have enough steps */

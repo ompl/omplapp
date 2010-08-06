@@ -57,6 +57,7 @@ void ompl::geometric::EST::setup(void)
 	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
     }
     tree_.grid.setDimension(projectionEvaluator_->getDimension());
+    sampler_ = si_->allocStateSampler();
 }
 
 void ompl::geometric::EST::clear(void)

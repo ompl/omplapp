@@ -36,7 +36,24 @@
 
 #include "ompl/control/planners/rrt/RRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
+#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 #include <limits>
+
+void ompl::control::RRT::setup(void)
+{
+    base::Planner::setup();	    
+    sampler_ = si_->allocStateSampler();
+    controlSampler_ = siC_->allocControlSampler();
+    if (!nn_)
+	nn_.reset(new NearestNeighborsSqrtApprox<Motion*>());
+    nn_->setDistanceFunction(boost::bind(&RRT::distanceFunction, this, _1, _2));
+}
+
+void ompl::control::RRT::clear(void)
+{
+    freeMemory();
+    nn_->clear();
+}
 
 bool ompl::control::RRT::solve(double solveTime)
 {
@@ -56,16 +73,16 @@ bool ompl::control::RRT::solve(double solveTime)
 	Motion *motion = new Motion(siC_);
 	si_->copyState(motion->state, st);
 	siC_->nullControl(motion->control);
-	nn_.add(motion);
+	nn_->add(motion);
     }
     
-    if (nn_.size() == 0)
+    if (nn_->size() == 0)
     {
 	msg_.error("There are no valid initial states!");
 	return false;	
     }    
 
-    msg_.inform("Starting with %u states", nn_.size());
+    msg_.inform("Starting with %u states", nn_->size());
     
     Motion *solution  = NULL;
     Motion *approxsol = NULL;
@@ -85,11 +102,11 @@ bool ompl::control::RRT::solve(double solveTime)
 	    sampler_->sample(rstate);
 	
 	/* find closest state in the tree */
-	Motion *nmotion = nn_.nearest(rmotion);
+	Motion *nmotion = nn_->nearest(rmotion);
 	
 	/* sample a random control */
-	cCore_->sample(rctrl);
-	unsigned int cd = cCore_->sampleStepCount(siC_->getMinControlDuration(), siC_->getMaxControlDuration());
+	controlSampler_->sample(rctrl);
+	unsigned int cd = controlSampler_->sampleStepCount(siC_->getMinControlDuration(), siC_->getMaxControlDuration());
 	cd = siC_->propagateWhileValid(nmotion->state, rctrl, cd, xstate);
 
 	if (cd >= siC_->getMinControlDuration())
@@ -101,7 +118,7 @@ bool ompl::control::RRT::solve(double solveTime)
 	    motion->steps = cd;
 	    motion->parent = nmotion;
 	    
-	    nn_.add(motion);
+	    nn_->add(motion);
 	    double dist = 0.0;
 	    bool solved = goal->isSatisfied(motion->state, &dist);
 	    if (solved)
@@ -160,7 +177,7 @@ bool ompl::control::RRT::solve(double solveTime)
     delete rmotion;
     si_->freeState(xstate);
     
-    msg_.inform("Created %u states", nn_.size());
+    msg_.inform("Created %u states", nn_->size());
     
     return goal->isAchieved();
 }
@@ -168,7 +185,7 @@ bool ompl::control::RRT::solve(double solveTime)
 void ompl::control::RRT::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Motion*> motions;
-    nn_.list(motions);
+    nn_->list(motions);
     data.states.resize(motions.size());
     for (unsigned int i = 0 ; i < motions.size() ; ++i)
 	data.states[i] = motions[i]->state;

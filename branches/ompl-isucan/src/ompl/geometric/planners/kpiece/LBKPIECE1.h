@@ -74,8 +74,7 @@ namespace ompl
 	{
 	public:
 	    
-	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
-							     sampler_(si->allocStateSampler())
+	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("LBKPIECE1");

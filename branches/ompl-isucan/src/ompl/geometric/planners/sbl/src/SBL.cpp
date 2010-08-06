@@ -57,6 +57,7 @@ void ompl::geometric::SBL::setup(void)
     }
     tStart_.grid.setDimension(projectionEvaluator_->getDimension());
     tGoal_.grid.setDimension(projectionEvaluator_->getDimension());
+    sampler_ = si_->allocStateSampler();
 }
 
 void ompl::geometric::SBL::freeGridMotions(Grid<MotionSet> &grid)

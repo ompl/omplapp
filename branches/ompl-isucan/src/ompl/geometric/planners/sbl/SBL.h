@@ -85,8 +85,7 @@ namespace ompl
 	{
 	public:
 	    
-	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       sampler_(si->allocStateSampler())
+	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		msg_.setPrefix("SBL");

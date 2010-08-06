@@ -70,8 +70,7 @@ namespace ompl
 	{
 	public:
 	    
-	    EST(const base::SpaceInformationPtr &si) : base::Planner(si),
-						       sampler_(si->allocStateSampler())
+	    EST(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
 		msg_.setPrefix("EST");

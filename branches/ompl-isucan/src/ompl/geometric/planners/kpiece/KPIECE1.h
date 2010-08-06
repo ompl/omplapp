@@ -77,7 +77,6 @@ namespace ompl
 	public:
 	    
 	    KPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
-							   sampler_(si->allocStateSampler()),
 							   hcik_(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
