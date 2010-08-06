@@ -1,3 +1,4 @@
+
 /*********************************************************************
 * Software License Agreement (BSD License)
 * 
@@ -143,7 +144,8 @@ namespace ompl
 	    virtual void setup(void);
 
 	protected:
-	    
+
+	    /** \brief Representation of a motion */
 	    class Motion
 	    {
 	    public:
@@ -165,9 +167,9 @@ namespace ompl
 		bool                  valid;
 		std::vector<Motion*>  children;
 	    };
-	    
+
 	    void freeMemory(void);
-	    
+
 	    void removeMotion(Motion *motion);	
 	    
 	    double distanceFunction(const Motion* a, const Motion* b) const

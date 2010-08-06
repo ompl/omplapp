@@ -85,6 +85,7 @@ namespace ompl
 	{
 	public:
 	    
+	    /** \brief The constructor needs the instance of the space information */
 	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
@@ -141,16 +142,21 @@ namespace ompl
 	protected:
 	    
 	    class Motion;	    
-	    typedef std::vector<Motion*> MotionSet;	
 	    
+	    /** \brief An array of motions */
+	    typedef std::vector<Motion*> MotionSet;	
+
+	    /** \brief Representation of a motion */
 	    class Motion
 	    {
 	    public:
-		
+
+		/** \brief Default constructor. Allocates no memory */
 		Motion(void) : root(NULL), state(NULL), parent(NULL), valid(false)
 		{
 		}
 		
+		/** \brief Constructor that allocates storage for a state */
 		Motion(const base::SpaceInformationPtr &si) : root(NULL), state(si->allocState()), parent(NULL), valid(false)
 		{
 		}
@@ -159,45 +165,80 @@ namespace ompl
 		{
 		}
 		
+		/** \brief The root of the tree this motion would get to, if we were to follow parent pointers */
 		const base::State *root;
+		/** \brief The state this motion leads to */
 		base::State       *state;
+
+		/** \brief The parent motion -- it contains the state this motion originates at */
 		Motion            *parent;
+		
+		/** \brief Flag indicating whether this motion has been checked for validity. */
 		bool               valid;
+		
+		/** \brief The set of motions descending from the current motion */
 		MotionSet          children;
 	    };
 	    
+	    /** \brief Representation of a search tree. Two instances will be used. One for start and one for goal */
 	    struct TreeData
 	    {
 		TreeData(void) : grid(0), size(0)
 		{
 		}
 		
+		/** \brief The grid of motions corresponding to this tree */
 		Grid<MotionSet> grid;
+
+		/** \brief The number of motions (in total) from the tree */
 		unsigned int    size;
 	    };
 	    
+	    /** \brief Free the memory allocated by the planner */
 	    void freeMemory(void)
 	    {
 		freeGridMotions(tStart_.grid);
 		freeGridMotions(tGoal_.grid);
 	    }
 	    
+	    /** \brief Free the memory used by the motions contained in a grid */
 	    void freeGridMotions(Grid<MotionSet> &grid);
 	    
+	    /** \brief Add a motion to a tree */
 	    void addMotion(TreeData &tree, Motion *motion);
-	    Motion* selectMotion(TreeData &tree);	
+
+	    /** \brief Select a motion from a tree */
+	    Motion* selectMotion(TreeData &tree);
+
+	    /** \brief Remove a motion from a tree */
 	    void removeMotion(TreeData &tree, Motion *motion);
+
+	    /** \brief Since solutions are computed in a lazy fashion,
+		once trees are connected, the solution found needs to
+		be checked for validity. This function checks whether
+		the reverse path from a given motion to a root is
+		valid */
 	    bool isPathValid(TreeData &tree, Motion *motion);
+
+	    /** \brief Check if a solution can be obtained by connecting two trees using a specified motion */
 	    bool checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution);
 	    
+	    /** \brief The employed state sampler */
 	    base::StateSamplerPtr                      sampler_;
 	    
+	    /** \brief The employed projection evaluator */
 	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
+	    /** \brief The start tree */
 	    TreeData                                   tStart_;
+
+	    /** \brief The goal tree */
 	    TreeData                                   tGoal_;
 
-	    double                                     maxDistance_;	
+	    /** \brief The maximum length of a motion to be added in the tree */
+	    double                                     maxDistance_;
+
+	    /** \brief The random number generator to be used */
 	    RNG                                        rng_;	
 	};
 	
