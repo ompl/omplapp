@@ -1,5 +1,10 @@
 /**
 \page download Download
 
-Redirect to download page at SourceForge.
+The source code for the different versions of ompl is available on <a
+href ="http://sourceforge.net/projects/ompl/files/">SourceForge</a>.
+
+Alternatively, you can use the version included in <a
+href="http://www.ros.org/wiki/ompl">ROS</a>.
+
 */

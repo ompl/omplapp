@@ -1,0 +1,16 @@
+/**
+\page FAQ FAQ
+
+- Q: How do I specify collision checking for a planner?
+  <br>
+  A: See ompl::base::SpaceInformation::setStateValidityChecker() and
+  ompl::base::StateValidityChecker.
+
+<br>
+If your question is still not answered, another good place to check is
+the <a
+href="http://sourceforge.net/mailarchive/forum.php?forum_name=ompl-users">mailing
+list archive</a>.
+
+
+*/
