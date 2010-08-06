@@ -47,9 +47,9 @@ namespace ompl
     /** \brief Random number generation. An instance of this class
 	cannot be used by multiple threads at once (member functions
 	are not const). However, the constructor is thread safe and
-	different instances can be safely in any number of threads. It
-	is also guaranteed that all created instances will have a
-	random seed. */
+	different instances can be used safely in any number of
+	threads. It is also guaranteed that all created instances will
+	have a different random seed. */
     class RNG
     {
     public:

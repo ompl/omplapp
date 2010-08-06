@@ -8,16 +8,16 @@
    the system.  Infinite accelerations and velocities are assumed.
 
 
-   - @ref gRRT "Rapidly-exploring Random Trees (RRT)"
-   - @ref gLazyRRT "Lazy RRT (LazyRRT)"
-   - @ref gRRTC "RRT Connect (RRTConnect)"
-   - @ref gpRRT "Parallel Rapidly-exploring Random Trees (pRRT)"
+   - @ref gLBKPIECE1 "Lazy Bi-directional KPIECE (LBKPIECE)"	
    - @ref gSBL "Single-query Bi-directional Lazy collision checking planner (SBL)"
    - @ref gpSBL "Parallel Single-query Bi-directional Lazy collision checking planner (pSBL)"
-   - @ref gEST "Expansive Space Trees (EST)"
+   - @ref gRRTC "RRT Connect (RRTConnect)"
    - @ref gKPIECE1 "Geometric Planning by Interior-Exterior Cell Exploration (KPIECE)"
-   - @ref gLBKPIECE1 "Lazy Bi-directional KPIECE (LBKPIECE)"	
+   - @ref gEST "Expansive Space Trees (EST)"
    - @ref gPRM "Probabilistic RoadMaps (PRM)"
+   - @ref gRRT "Rapidly-exploring Random Trees (RRT)"
+   - @ref gpRRT "Parallel Rapidly-exploring Random Trees (pRRT)"
+   - @ref gLazyRRT "Lazy RRT (LazyRRT)"
 
    Other tools:
 
@@ -26,9 +26,8 @@
 
    @section dynamic_planners Planning under differential constraints
    
-   - @ref cRRT "Rapidly-exploring Random Trees (RRT)"
    - @ref cKPIECE1 "Kinodynamic Planning by Interior-Exterior Cell Exploration (KPIECE)"
-
+   - @ref cRRT "Rapidly-exploring Random Trees (RRT)"
 
    @section usage Usage
 

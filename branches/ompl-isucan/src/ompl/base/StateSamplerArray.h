@@ -48,11 +48,12 @@ namespace ompl
 
 	ClassForward(SpaceInformation);
 	
-	/** \brief Class to ease the creation of a set of samplers */
+	/** \brief Class to ease the creation of a set of samplers. This is especially for multi-threaded planners */
 	class StateSamplerArray 
 	{
 	public:
 	    
+	    /** \brief Constructor */
 	    StateSamplerArray(const SpaceInformationConstPtr &si) : si_(si)
 	    {
 	    }
@@ -61,13 +62,17 @@ namespace ompl
 	    {
 	    }
 	    
+	    /** \brief Access operator for a specific sampler. For
+		performance reasons, the bounds are not checked. */
 	    StateSampler* operator[](std::size_t index)
 	    {
 		return samplers_[index].get();
 	    }
 
+	    /** \brief Create or release some state samplers */
 	    void resize(std::size_t count);
 	    
+	    /** \brief Get the count of samplers currently available */
 	    std::size_t size(void) const
 	    {
 		return samplers_.size();

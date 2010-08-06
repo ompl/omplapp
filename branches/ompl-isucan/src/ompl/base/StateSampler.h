@@ -61,7 +61,8 @@ namespace ompl
 	class StateSampler : private boost::noncopyable
 	{	    
 	public:
-
+	    
+	    /** \brief Constructor */
 	    StateSampler(const StateManifold *manifold) : manifold_(manifold)
 	    {
 	    }
@@ -84,7 +85,10 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief The manifold this sampler samples */
 	    const StateManifold *manifold_;
+	    
+	    /** \brief An instance of a random number generator */
 	    RNG                  rng_;
 	};
 
@@ -93,6 +97,7 @@ namespace ompl
 	{	    
 	public:
 
+	    /** \brief Constructor */
 	    CompoundStateSampler(const StateManifold* manifold) : StateSampler(manifold) 
 	    {
 	    }
@@ -118,8 +123,13 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief The samplers that are composed */
 	    std::vector<StateSamplerPtr> samplers_;
+	    
+	    /** \brief The weight of each sampler (used when sampling near a state) */
 	    std::vector<double>          weightImportance_;
+
+	    /** \brief The number of samplers that are composed */
 	    unsigned int                 samplerCount_;
 	    
 	};
