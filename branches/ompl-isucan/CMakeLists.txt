@@ -31,6 +31,6 @@ set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 include_directories(${OMPL_INCLUDE_DIR})
 add_subdirectory(src)
-#add_subdirectory(py-bindings)
+add_subdirectory(py-bindings)
 add_subdirectory(tests)
 add_subdirectory(demos)
