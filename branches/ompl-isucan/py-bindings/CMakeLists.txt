@@ -68,7 +68,9 @@ set(OMPL_UTIL_HEADERS
 	util/RandomNumbers.h)
 		
 set(OMPL_MODULES base control geometric util)
-include_directories(${PYTHON_INCLUDE_DIRS} "${CMAKE_CURRENT_SOURCE_DIR}/bindings" ".")	
+if(PYTHON_INCLUDE_DIRS)
+  include_directories(${PYTHON_INCLUDE_DIRS} "${CMAKE_CURRENT_SOURCE_DIR}/bindings" ".")
+endif(PYTHON_INCLUDE_DIRS)
 if(APPLE)
 	# For some reason gccxml generates 32-bit binaries by default on OS X
 	# (maybe because the kernel is still 32-bit?)
