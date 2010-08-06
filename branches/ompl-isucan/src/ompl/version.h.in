@@ -37,6 +37,7 @@
 #ifndef OMPL_VERSION_
 #define OMPL_VERSION_
 
+/** \brief The ompl version */
 #define OMPL_VERSION "@OMPL_VERSION@"
 
 #endif
