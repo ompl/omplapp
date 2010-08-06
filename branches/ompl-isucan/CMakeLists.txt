@@ -21,6 +21,7 @@ else(ROS)
 		endif(CMAKE_COMPILER_IS_GNUCXX)
 	
 		find_package(Doxygen)
+		find_package(Ruby)
 		add_subdirectory(doc)
 
 		enable_testing()
