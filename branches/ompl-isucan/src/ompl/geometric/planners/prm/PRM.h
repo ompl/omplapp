@@ -38,7 +38,7 @@
 #define OMPL_GEOMETRIC_PLANNERS_PRM_PRM_
 
 #include "ompl/geometric/planners/PlannerIncludes.h"
-#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
+#include "ompl/datastructures/NearestNeighbors.h"
 #include <vector>
 #include <map>
 
@@ -80,7 +80,6 @@ namespace ompl
 		type_ = base::PLAN_TO_GOAL_STATE;
 		msg_.setPrefix("PRM");
 		
-		nn_.setDistanceFunction(boost::bind(&PRM::distanceFunction, this, _1, _2));
 		maxNearestNeighbors_ = 10;
 		componentCount_ = 0;
 	    }
@@ -111,6 +110,13 @@ namespace ompl
 	    virtual bool solve(double solveTime);
 	    
 	    virtual void clear(void);
+
+	    /** \brief Set a different nearest neighbors datastructure */
+	    template<template<typename T> class NN>
+	    void setNearestNeighbors(void)
+	    {
+		nn_.reset(new NN<Milestone*>());
+	    }
 
 	    virtual void setup(void);
 	    
@@ -153,12 +159,12 @@ namespace ompl
 		return si_->distance(a->state, b->state);
 	    }
 	    
-	    base::StateSamplerPtr                  sampler_;
-	    NearestNeighborsSqrtApprox<Milestone*> nn_;
-	    unsigned int                           maxNearestNeighbors_;
-	    std::map<unsigned long, unsigned long> componentSizes_;
-	    unsigned long                          componentCount_;
-	    RNG                                    rng_;
+	    base::StateSamplerPtr                             sampler_;
+	    boost::shared_ptr< NearestNeighbors<Milestone*> > nn_;
+	    unsigned int                                      maxNearestNeighbors_;
+	    std::map<unsigned long, unsigned long>            componentSizes_;
+	    unsigned long                                     componentCount_;
+	    RNG                                               rng_;
 	};
 	
     }

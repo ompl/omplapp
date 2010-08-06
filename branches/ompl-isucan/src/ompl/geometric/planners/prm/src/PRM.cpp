@@ -36,6 +36,7 @@
 
 #include "ompl/geometric/planners/prm/PRM.h"
 #include "ompl/base/GoalSampleableRegion.h"
+#include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
 #include <algorithm>
 #include <queue>
 #include <limits>
@@ -43,13 +44,16 @@
 void ompl::geometric::PRM::setup(void)
 {
     Planner::setup();
+    if (!nn_)
+	nn_.reset(new NearestNeighborsSqrtApprox<Milestone*>());
+    nn_->setDistanceFunction(boost::bind(&PRM::distanceFunction, this, _1, _2));
     sampler_ = si_->allocStateSampler();
 }
 
 void ompl::geometric::PRM::clear(void)
 {
     freeMemory();
-    nn_.clear();
+    nn_->clear();
     componentCount_ = 0;
     componentSizes_.clear();
 }
@@ -57,7 +61,7 @@ void ompl::geometric::PRM::clear(void)
 void ompl::geometric::PRM::freeMemory(void)
 {
     std::vector<Milestone*> milestones;
-    nn_.list(milestones);
+    nn_->list(milestones);
     for (unsigned int i = 0 ; i < milestones.size() ; ++i)
     {
 	if (milestones[i]->state)
@@ -137,7 +141,7 @@ bool ompl::geometric::PRM::solve(double solveTime)
 	return false;
     }
     
-    unsigned int nrStartStates = nn_.size();
+    unsigned int nrStartStates = nn_->size();
     msg_.inform("Starting with %u states", nrStartStates);
     
     base::State *xstate = si_->allocState();
@@ -183,7 +187,7 @@ bool ompl::geometric::PRM::solve(double solveTime)
     }
     si_->freeState(xstate);
     
-    msg_.inform("Created %u states", nn_.size() - nrStartStates);
+    msg_.inform("Created %u states", nn_->size() - nrStartStates);
     
     return goal->isAchieved();
 }
@@ -197,7 +201,7 @@ ompl::geometric::PRM::Milestone* ompl::geometric::PRM::addMilestone(base::State 
     
     // connect to nearest neighbors
     std::vector<Milestone*> nbh;
-    nn_.nearest(m, maxNearestNeighbors_, nbh);
+    nn_->nearest(m, maxNearestNeighbors_, nbh);
     for (unsigned int i = 0 ; i < nbh.size() ; ++i)
 	if (si_->checkMotion(m->state, nbh[i]->state))
 	{	    
@@ -212,7 +216,7 @@ ompl::geometric::PRM::Milestone* ompl::geometric::PRM::addMilestone(base::State 
     // increase the number of components
     if (m->component == componentCount_)
 	componentCount_++;
-    nn_.add(m);
+    nn_->add(m);
     return m;    
 }
 
@@ -284,7 +288,7 @@ void ompl::geometric::PRM::constructSolution(const std::vector<Milestone*> &star
 void ompl::geometric::PRM::getPlannerData(base::PlannerData &data) const
 {
     std::vector<Milestone*> milestones;
-    nn_.list(milestones);
+    nn_->list(milestones);
     data.states.resize(milestones.size());
     for (unsigned int i = 0 ; i < milestones.size() ; ++i)
 	data.states[i] = milestones[i]->state;
