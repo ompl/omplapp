@@ -32,10 +32,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Mark Moll */
+/* Author: Ioan Sucan */
 
-#ifndef OMPL_TEST_RESOURCES_CONFIG_
-#define OMPL_TEST_RESOURCES_CONFIG_
+#ifndef OMPL_VERSION_
+#define OMPL_VERSION_
 
-#define TEST_RESOURCES_DIR "@TEST_RESOURCES_DIR@"
+#define OMPL_VERSION "@OMPL_VERSION@"
+
 #endif
