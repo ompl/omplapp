@@ -53,9 +53,11 @@ namespace ompl
 	class PathControl : public base::Path
 	{
 	public:
-	    
+	   
+	    /** \brief Constructor */
 	    PathControl(const base::SpaceInformationPtr &si);
 	    
+	    /** \brief Copy constructor */
 	    PathControl(const PathControl &path);
 	    
 	    virtual ~PathControl(void)
@@ -92,7 +94,10 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief Free the memory allocated by the path */
 	    void freeMemory(void);
+
+	    /** \brief Copy the content of a path to this one */
 	    void copyFrom(const PathControl& other);
 	    
 	};

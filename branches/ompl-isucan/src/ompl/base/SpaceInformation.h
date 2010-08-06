@@ -69,7 +69,7 @@ namespace ompl
 	ClassForward(SpaceInformation);
 
 	/** \class ompl::base::SpaceInformationPtr
-	    A boost shared pointer wrapper for ompl::base::SpaceInformation */
+	    \brief A boost shared pointer wrapper for ompl::base::SpaceInformation */
 
 	/** \brief If no state validity checking class is specified
 	    (StateValidityChecker), a boost function can be specified
@@ -88,7 +88,6 @@ namespace ompl
 		to plan on. */
 	    SpaceInformation(const StateManifoldPtr &manifold);
 	    
-	    /** \brief Destructor */
 	    virtual ~SpaceInformation(void)
 	    {
 	    }
@@ -207,14 +206,18 @@ namespace ompl
 	    
 	    /** \brief Estimate the maximum (underapproximation)
 		extent of the space we are planning in. This is done
-		through random sampling. */
+		through random sampling. Computation is performed only
+		the first time a call is made to this function (result
+		is cached). */
 	    virtual double estimateExtent(unsigned int samples = 100);
 
 	    /** \brief Estimate the maximum (overapproximation)
 		resolution at which states should be checked for
 		validity. This is done through random sampling and
 		returning the shortest distance between the closest
-		pair of valid and invalid states. */
+		pair of valid and invalid states. Computation is
+		performed only the first time a call is made to this
+		function (result is cached). */
 	    virtual double estimateMaxResolution(unsigned int samples = 100);
 	    
 	    /** \brief Find a valid state near a given one. If the given state is valid, it will be returned itself.
@@ -239,14 +242,22 @@ namespace ompl
 	    /** \brief Get the states that make up a motion. Returns the number of states that were added.
 
 		The states are added at the distance specified by the collision checking resolution times the factor
-		specified. A factor larger than 1 will result in fewer states per motion. The endpoints (s1 and s2) can 
-		optionally be part of the computed set of states. */
+		specified. A factor larger than 1 will result in fewer states per motion.
+		\param s1 the start state of the considered motion
+		\param s2 the end state of the considered motion
+		\param states the computed set of states along the specified motion
+		\param factor the factor to use when computing the resolution at which intermmediate states are added
+		\param endpoints flag indicating whether s1 and s2 are to be included in states
+		\param alloc flag indicating whether memory is to be allocated automatically */
 	    virtual unsigned int getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const;
 
 	    /** \brief Print information about the current instance of the state space */
 	    virtual void print(std::ostream &out = std::cout) const;
 	    
-	    /** \brief Perform additional setup tasks (run once, before use) */
+	    /** \brief Perform additional setup tasks (run once,
+		before use). If state validity checking resolution has
+		not been set, estimateMaxResolution() is called to
+		estimate it. */
 	    virtual void setup(void);
 	    
 	    /** \brief Return true if setup was called */
@@ -254,14 +265,25 @@ namespace ompl
 	    
 	protected:
 	    
+	    /** \brief The instance of the state validity checker used for determinig the validity of states in the planning process */
 	    StateValidityCheckerPtr stateValidityChecker_;
+	    
+	    /** \brief The manifold planning is to be performed in */
 	    StateManifoldPtr        stateManifold_;
+
+	    /** \brief The resolution (maximum distance between states) at which state validity checks are performed */
 	    double                  resolution_;
+
+	    /** \brief If estimateExtent() has been called, this value is filled in with the computed maximum extent */
 	    double                  maxExtent_;
+
+	    /** \brief If estimateMaxResolution() has been called, this value is filled with the estimated maximum resolution */
 	    double                  maxResolution_;
 	    
+	    /** \brief Flag indicating whether setup() has been called on this instance */
 	    bool                    setup_;
 
+	    /** \brief The console interface */
 	    msg::Interface          msg_;
 	};
 	

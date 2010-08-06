@@ -52,7 +52,7 @@ namespace ompl
 	ClassForward(StateValidityChecker);
 
 	/** \class ompl::base::StateValidityCheckerPtr
-	    A boost shared pointer wrapper for ompl::base::StateValidityChecker */
+	    \brief A boost shared pointer wrapper for ompl::base::StateValidityChecker */
 
 	/** \brief Abstract definition for a class checking the
 	    validity of states. The implementation of this class must

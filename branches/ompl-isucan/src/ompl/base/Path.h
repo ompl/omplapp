@@ -53,7 +53,7 @@ namespace ompl
 	ClassForward(Path);
 
 	/** \class ompl::base::PathPtr
-	    A boost shared pointer wrapper for ompl::base::Path */
+	    \brief A boost shared pointer wrapper for ompl::base::Path */
 
 	/** \brief Abstract definition of a path */
 	class Path : private boost::noncopyable

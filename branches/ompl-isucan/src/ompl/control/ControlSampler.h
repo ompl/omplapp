@@ -54,7 +54,7 @@ namespace ompl
 	ClassForward(ControlSampler);
 
 	/** \class ompl::control::ControlSamplerPtr
-	    A boost shared pointer wrapper for ompl::control::ControlSampler */
+	    \brief A boost shared pointer wrapper for ompl::control::ControlSampler */
 
 	/** \brief Abstract definition of a control sampler. */
 	class ControlSampler

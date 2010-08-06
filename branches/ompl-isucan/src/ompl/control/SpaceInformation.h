@@ -55,7 +55,7 @@ namespace ompl
 	ClassForward(SpaceInformation);
 	
 	/** \class ompl::control::SpaceInformationPtr
-	    A boost shared pointer wrapper for ompl::control::SpaceInformation */
+	    \brief A boost shared pointer wrapper for ompl::control::SpaceInformation */
 
 	/** \brief Space information containing necessary information for planning with controls. setup() needs to be called before use. */
 	class SpaceInformation : public base::SpaceInformation
@@ -140,6 +140,7 @@ namespace ompl
 		    resolution_ = stepSize_;
 	    }
 	    
+	    /** \brief Propagation is performed at integer multiples of a specified step size. This function returns the value of this step size. */
 	    double getPropagationStepSize(void) const
 	    {
 		return stepSize_;
@@ -164,20 +165,26 @@ namespace ompl
 		return maxSteps_;
 	    }
 	    
-	    /** \brief Propagate the model of the system forward,
-		starting a a given state, with a given control, for a
-		given number of steps. 
+	    /** \brief Propagate the model of the system forward, starting a a given state, with a given control, for a given number of steps. 
 		\param state the state to start at
 		\param control the control to apply
 		\param steps the number of time steps to apply the control for. Each time step is of length getPropagationStepSize()
-		\param result the state at the end of the propagation
-		\param stopBeforeInvalid if this is true, every state is checked for validity. If an invalid state is found, propagation is stopped and result is filled with the last valid state. It is assumed that the starting state is valid if stopBeforeInvalid is true
-		The function returns the number of propagation steps it performed. If stopBeforeInvalid is false, this is always equal to steps. Otherwise, the return value may be less.*/
+		\param result the state at the end of the propagation */
 	    void propagate(const base::State *state, const Control* control, unsigned int steps, base::State *result) const;
+
+	    /** \brief Propagate the model of the system forward, starting a a given state, with a given control, for a given number of steps.
+		Stop if a collision is found and return the number of steps actually performed. If no collision is found, the returned value is 
+		equal to the steps argument. 
+		\param state the state to start at
+		\param control the control to apply
+		\param steps the maximum number of time steps to apply the control for. Each time step is of length getPropagationStepSize()
+		\param result the state at the end of the propagation or the last valid state if a collision is found */
 	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, base::State *result) const;
 	    
-	    /** \brief Same as above except that all intermediate states are returned (and optionally, memory for them is allocated) */
+	    /** \brief Same as propagate() except that all intermediate states are returned (and optionally, memory for them is allocated) */
 	    void propagate(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const;
+
+	    /** \brief Same as propagateWhileValid() except that all intermediate states are returned (and optionally, memory for them is allocated) */
 	    unsigned int propagateWhileValid(const base::State *state, const Control* control, unsigned int steps, std::vector<base::State*> &result, bool alloc) const;
 	    
 	    /** \brief Print information about the current instance of the state space */
@@ -187,10 +194,17 @@ namespace ompl
 	    virtual void setup(void);
 	    
 	protected:
-	    
+
+	    /** \brief The manifold describing the space of controls applicable to states in the state manifold */
 	    ControlManifoldPtr controlManifold_;
+	    
+	    /** \brief The minimum number of steps to apply a control for */
 	    unsigned int       minSteps_;
+	    
+	    /** \brief The maximum number of steps to apply a control for */
 	    unsigned int       maxSteps_;
+
+	    /** \brief The actual duration of each step */
 	    double             stepSize_;
 	    
 	};

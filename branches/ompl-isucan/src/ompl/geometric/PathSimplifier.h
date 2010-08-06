@@ -52,7 +52,7 @@ namespace ompl
 	ClassForward(PathSimplifier);
 
 	/** \class ompl::geometric::PathSimplifierPtr
-	    A boost shared pointer wrapper for ompl::geometric::PathSimplifier */
+	    \brief A boost shared pointer wrapper for ompl::geometric::PathSimplifier */
 	
 	/** \brief This class contains routines that attempt to simplify geometric paths.
 

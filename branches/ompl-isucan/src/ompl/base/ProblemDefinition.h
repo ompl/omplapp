@@ -61,7 +61,7 @@ namespace ompl
 	ClassForward(ProblemDefinition);
 	
 	/** \class ompl::base::ProblemDefinitionPtr
-	    A boost shared pointer wrapper for ompl::base::ProblemDefinition */
+	    \brief A boost shared pointer wrapper for ompl::base::ProblemDefinition */
 
 	/** \brief Definition of a problem to be solved. This includes
 	    the start state(s) for the system and a goal specification */

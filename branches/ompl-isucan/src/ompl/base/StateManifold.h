@@ -58,7 +58,7 @@ namespace ompl
 	ClassForward(StateManifold);
 
 	/** \class ompl::base::StateManifoldPtr 
-	    A boost shared pointer wrapper for ompl::base::StateManifold */
+	    \brief A boost shared pointer wrapper for ompl::base::StateManifold */
 
 
 	/** \brief Representation of a space in which planning can be
