@@ -86,7 +86,10 @@ namespace ompl
 	virtual _T nearest(const _T &data) const = 0;
 
 	/** \brief Get the k-nearest neighbors of a point */
-	virtual void nearest(const _T &data, unsigned int k, std::vector<_T> &nbh) const = 0;
+	virtual void nearestK(const _T &data, unsigned int k, std::vector<_T> &nbh) const = 0;
+
+	/** \brief Get the nearest neighbors of a point, within a specified radius */
+	virtual void nearestR(const _T &data, double radius, std::vector<_T> &nbh) const = 0;
 
 	/** \brief Get the number of elements in the datastructure */
 	virtual unsigned int size(void) const = 0;

@@ -118,7 +118,7 @@ namespace ompl
 	    throw Exception("No elements found");
 	}
 	
-	virtual void nearest(const _T &data, unsigned int k, std::vector<_T> &nbh) const
+	virtual void nearestK(const _T &data, unsigned int k, std::vector<_T> &nbh) const
 	{
 	    nbh.clear();
 	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
@@ -127,6 +127,15 @@ namespace ompl
 	    std::sort(nbh.begin(), nbh.end(), MySort(data, NearestNeighbors<_T>::distFun_));
 	    if (nbh.size() > k)
 		nbh.resize(k);
+	}
+	
+	virtual void nearestR(const _T &data, double radius, std::vector<_T> &nbh) const
+	{
+	    nbh.clear();
+	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
+		if (active_[i] && NearestNeighbors<_T>::distFun_(data_[i], data) <= radius)
+		    nbh.push_back(data_[i]);
+	    std::sort(nbh.begin(), nbh.end(), MySort(data, NearestNeighbors<_T>::distFun_));
 	}
 	
 	virtual unsigned int size(void) const

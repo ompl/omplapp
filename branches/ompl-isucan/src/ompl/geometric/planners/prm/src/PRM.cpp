@@ -201,7 +201,7 @@ ompl::geometric::PRM::Milestone* ompl::geometric::PRM::addMilestone(base::State 
     
     // connect to nearest neighbors
     std::vector<Milestone*> nbh;
-    nn_->nearest(m, maxNearestNeighbors_, nbh);
+    nn_->nearestK(m, maxNearestNeighbors_, nbh);
     for (unsigned int i = 0 ; i < nbh.size() ; ++i)
 	if (si_->checkMotion(m->state, nbh[i]->state))
 	{	    
