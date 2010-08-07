@@ -7,6 +7,8 @@ try:
 	from ompl import base as ob
 	from ompl import control as oc
 except:
+	# if the ompl module is not in the PYTHONPATH assume it is installed in the
+	# parent directory
 	sys.path.insert(0, dirname(dirname(abspath(__file__))))
 	from ompl import base as ob
 	from ompl import control as oc

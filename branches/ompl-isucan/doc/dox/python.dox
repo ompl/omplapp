@@ -1,4 +1,82 @@
 /**
 \page python Python Bindings
 
+Almost all of the functionality of the C++ OMPL library is accessible through Python using more or less the same API. Some important differences will be described below. The Python bindings are generated with <a href="http://www.language-binding.net/pyplusplus/pyplusplus.html">Py++</a>, which relies on <a href="www.boost.org/doc/libs/release/libs/python/doc">Boost.Python</a>. The bindings are packaged in the ompl module. The main namespaces (ompl::base, ompl::control, ompl::geometric, and ompl::util) are available as sub-modules.
+
+\section cpp_py_diffs Important differences between C++ and Python:
+- There are no templates in Python, so templated classes and functions need to be fully instantiated to allow them to be exposed to python.
+- There are no C-style pointers in python, and no "new" or "delete" operators. This could be a problem, but can be dealt with mostly by using Boost <a href="http://www.boost.org/doc/libs/release/libs/smart_ptr/shared_ptr.htm">shared_ptr</a>'s. If a C++ function takes pointer input/output parameters, \em usually a reference to the object is passed in the python bindings. In other words, you should be able to get and set the current value of an object through its methods.
+.
+
+
+\section py_api_diffs Differences between the C++ and Python API's
+- An STL vector of int's is of type vectorInt in Python (analogously for other types).
+- The C++ class State has been renamed AbstractState, while the C++ class ScopedState\<\> is called State in Python.
+- The C++ class ScopedState<RealVectorManifold> is called RealVectorState. The ScopedState's for the other pre-defined manifolds have been renamed analogously.
+- The C++ class RealVectorManifold::StateType has been renamed to RealVectorStateInternal (analogously for the other manifold types), to emphasize that an end user should really be using RealVectorState.
+- The print method (for classes that have one) is mapped to the special python method __str__, so a C++ call like <tt>foo.print(std::cout)</tt> becomes <tt>print foo</tt> in python. Similarly, a C++ call like <tt>foo.printSettings(std::cout)</tt> becomes <tt>print foo.settings()</tt> in python.
+- The signature of the state validity checker is changed. In python the state validity checker has the following form:
+\code
+def isStateValid(spaceInformation, state):
+	return spaceInformation.satiesfiesBounds(state)
+\endcode
+.
+
+\section py_example A simple example
+
+Below is a simple annotated example. It is available in ompl/py-bindings/demos/RigidBodyPlanning.py.
+
+\code
+from ompl import base as ob
+from ompl import geometric as og
+	
+def isStateValid(spaceInformation, state):
+	# Some arbitrary condition on the state (note that thanks to 
+	# dynamic type checking we can just call getX() and do not need
+	# to convert state to an SE2State.)
+	return state.getX() < .6
+	
+def plan():
+	# create an SE2 manifold
+	manifold = ob.SE2StateManifold()
+
+	# set lower and upper bounds
+	bounds = ob.RealVectorBounds(2)
+	bounds.setLow(-1)
+	bounds.setHigh(1)
+	manifold.setBounds(bounds)
+
+	# create a simple setup object
+	ss = og.SimpleSetup(manifold)
+	ss.setStateValidityChecker(isStateValid)
+
+	start = ob.SE2State(manifold)
+	# we can pick a random start state...
+	start.random()
+	# ... or set specific values
+	start().setX(.5)
+
+	goal = ob.SE2State(manifold)
+	# we can pick a random goal state...
+	goal.random()
+	# ... or set specific values
+	goal().setY(-.5)
+
+	ss.setStartAndGoalStates(ob.State(start), ob.State(goal))
+
+	# this will automatically choose a default planner with 
+	# default parameters
+	solved = ss.solve(1.0)
+
+	if solved:
+		# try to shorten the path
+		ss.simplifySolution()
+		# print the simplified path
+		print ss.getSolutionPath()
+
+
+if __name__ == "__main__":
+	plan()
+\endcode
+
 */

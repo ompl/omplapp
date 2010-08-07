@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* \author Mark Moll */
+/* Author: Mark Moll */
 
 #ifndef PY_BINDINGS_OMPL_PY_UTIL_
 #define PY_BINDINGS_OMPL_PY_UTIL_

@@ -18,6 +18,8 @@ chmod -R a+rX ${ASSET_DIR}
 
 # copy everything to web server
 tar cf - --exclude .svn ${ASSET_DIR} | ssh ${SERVER} 'cd '${ASSETS_ROOT}'; tar xf -'
+# fix permissions
+ssh ${SERVER} 'chgrp -R ompl '${ASSETS_ROOT}'/'${ASSET_DIR}'; chmod -R g+w '${ASSETS_ROOT}'/'${ASSET_DIR}
 
 # clean up
 rm -rf ${ASSET_DIR}
