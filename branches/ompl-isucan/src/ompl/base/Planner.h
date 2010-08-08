@@ -92,7 +92,11 @@ namespace ompl
 	    }
 	    
 	    /** \brief The list of states in the current exploration datastructure */
-	    std::vector<const State*> states;
+	    std::vector< const State* >              states;
+
+	    /** \brief For each i, edges[i] contains the values edges[i][j] such that states[i] connects to every states[edges[i][j]] */
+	    std::vector< std::vector<unsigned int> > edges;
+	    
 	};
 	
 	/** \brief Base class for a planner */

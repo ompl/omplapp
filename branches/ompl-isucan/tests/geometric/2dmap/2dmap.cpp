@@ -52,6 +52,7 @@
 #include "ompl/geometric/planners/sbl/pSBL.h"
 #include "ompl/geometric/planners/rrt/pRRT.h"
 #include "ompl/geometric/planners/rrt/LazyRRT.h"
+#include "ompl/geometric/planners/rrt/OptRRT.h"
 #include "ompl/geometric/planners/est/EST.h"
 #include "ompl/geometric/planners/prm/PRM.h"
 
@@ -180,6 +181,7 @@ public:
 	gstate->values[1] = env.goal.second;
 	goal->setState(gstate);
 	goal->threshold = 1e-3; // this is basically 0, but we want to account for numerical instabilities 
+	goal->setMaximumPathLength(30.0);
 	pdef->setGoal(base::GoalPtr(goal));
 	
 	/* start counting time */
@@ -301,6 +303,20 @@ protected:
 	rrt->setRange(10.0);
 	return base::PlannerPtr(rrt);
     }    
+};
+
+class OptRRTTest : public TestPlanner 
+{
+protected:
+
+    base::PlannerPtr newPlanner(const base::SpaceInformationPtr &si)
+    {
+	geometric::OptRRT *rrt = new geometric::OptRRT(si);
+	rrt->setRange(10.0);
+	rrt->setMaxBallRadius(2.0);
+	rrt->setBallRadiusConstant(1.0);
+	return base::PlannerPtr(rrt);
+    }
 };
 
 class SBLTest : public TestPlanner 
@@ -614,6 +630,23 @@ TEST_F(PlanTest, geometric_EST)
     EXPECT_TRUE(avgruntime < 0.1);
     EXPECT_TRUE(avglength < 100.0);
 }
+
+/*
+TEST_F(PlanTest, geometric_OptRRT)
+{
+    double success    = 0.0;
+    double avgruntime = 0.0;
+    double avglength  = 0.0;
+    
+    TestPlanner *p = new OptRRTTest();
+    runPlanTest(p, &success, &avgruntime, &avglength);
+    delete p;
+    
+    EXPECT_TRUE(success >= 70.0);
+    EXPECT_TRUE(avgruntime < 1.0);
+    EXPECT_TRUE(avglength < 100.0);
+}
+*/
 
 TEST_F(PlanTest, geometric_LazyRRT)
 {
