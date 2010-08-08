@@ -44,6 +44,7 @@
 #include "ompl/util/ClassForward.h"
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
+#include <iostream>
 #include <vector>
 
 namespace ompl
@@ -90,6 +91,12 @@ namespace ompl
 	    virtual ~PlannerData(void)
 	    {
 	    }
+	    
+	    /** \brief Print this data to a stream */
+	    virtual void print(std::ostream &out = std::cout) const;
+	    
+	    /** \brief The space information containing the states of the exploration datastructure */
+	    SpaceInformationPtr                      si;
 	    
 	    /** \brief The list of states in the current exploration datastructure */
 	    std::vector< const State* >              states;

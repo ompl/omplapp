@@ -421,6 +421,7 @@ void ompl::geometric::pSBL::addMotion(TreeData &tree, Motion *motion)
 
 void ompl::geometric::pSBL::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     data.states.resize(0);
     data.states.reserve(tStart_.size + tGoal_.size);
     

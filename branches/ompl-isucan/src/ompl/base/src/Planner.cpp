@@ -77,3 +77,24 @@ bool ompl::base::Planner::isSetup(void) const
 {
     return setup_;
 }
+
+void ompl::base::PlannerData::print(std::ostream &out) const
+{
+    out << states.size() << std::endl;
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+    {
+	out << i << ": ";
+	if (si)
+	    si->printState(states[i], out);
+	else
+	    out << states[i] << std::endl;
+    }
+    
+    for (unsigned int i = 0 ; i < edges.size() ; ++i)
+    {
+	out << i << ": ";
+	for (unsigned int j = 0 ; j < edges[i].size() ; ++j)
+	    out << edges[i][j] << ' ';
+	out << std::endl;
+    }    
+}

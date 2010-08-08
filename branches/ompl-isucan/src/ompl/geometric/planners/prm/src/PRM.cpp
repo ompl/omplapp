@@ -287,6 +287,7 @@ void ompl::geometric::PRM::constructSolution(const std::vector<Milestone*> &star
 
 void ompl::geometric::PRM::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     std::vector<Milestone*> milestones;
     nn_->list(milestones);
     data.states.resize(milestones.size());

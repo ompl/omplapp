@@ -221,6 +221,7 @@ void ompl::geometric::EST::addMotion(Motion *motion)
 
 void ompl::geometric::EST::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     std::vector<MotionSet> motions;
     tree_.grid.getContent(motions);
     data.states.resize(0);

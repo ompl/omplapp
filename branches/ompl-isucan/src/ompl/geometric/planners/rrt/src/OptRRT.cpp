@@ -268,6 +268,7 @@ bool ompl::geometric::OptRRT::solve(double solveTime)
 
 void ompl::geometric::OptRRT::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     std::map<Motion*, unsigned int> index;
     
     std::vector<Motion*> motions;

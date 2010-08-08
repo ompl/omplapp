@@ -218,6 +218,7 @@ bool ompl::geometric::pRRT::solve(double solveTime)
 
 void ompl::geometric::pRRT::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     std::vector<Motion*> motions;
     nn_->list(motions);
     data.states.resize(motions.size());

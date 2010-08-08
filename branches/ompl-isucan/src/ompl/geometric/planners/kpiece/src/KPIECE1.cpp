@@ -277,6 +277,7 @@ unsigned int ompl::geometric::KPIECE1::addMotion(Motion *motion, double dist)
 
 void ompl::geometric::KPIECE1::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     data.states.resize(0);
     data.states.reserve(tree_.size);
     

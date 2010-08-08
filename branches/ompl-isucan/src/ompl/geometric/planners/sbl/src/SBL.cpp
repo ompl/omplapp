@@ -344,6 +344,7 @@ void ompl::geometric::SBL::clear(void)
 
 void ompl::geometric::SBL::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     data.states.resize(0);
     data.states.reserve(tStart_.size + tGoal_.size);
     

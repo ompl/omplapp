@@ -218,6 +218,7 @@ void ompl::geometric::LazyRRT::removeMotion(Motion *motion)
 
 void ompl::geometric::LazyRRT::getPlannerData(base::PlannerData &data) const
 {
+    data.si = si_;
     std::vector<Motion*> motions;
     nn_->list(motions);
     data.states.resize(motions.size());
