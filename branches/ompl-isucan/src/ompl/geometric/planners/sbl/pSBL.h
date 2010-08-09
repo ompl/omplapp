@@ -87,11 +87,10 @@ namespace ompl
 	{
 	public:
 	    
-	    pSBL(const base::SpaceInformationPtr &si) : base::Planner(si),
+	    pSBL(const base::SpaceInformationPtr &si) : base::Planner(si, "pSBL"),
 							samplerArray_(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_STATE;
-		msg_.setPrefix("pSBL");
 		maxDistance_ = 0.0;
 		setThreadCount(2);
 	    }

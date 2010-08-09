@@ -75,10 +75,9 @@ namespace ompl
 	{
 	public:
 	    
-	    PRM(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    PRM(const base::SpaceInformationPtr &si) : base::Planner(si, "PRM")
 	    {
 		type_ = base::PLAN_TO_GOAL_STATE;
-		msg_.setPrefix("PRM");
 		
 		maxNearestNeighbors_ = 10;
 		componentCount_ = 0;

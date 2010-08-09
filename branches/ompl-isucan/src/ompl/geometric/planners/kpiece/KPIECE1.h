@@ -76,11 +76,10 @@ namespace ompl
 	{
 	public:
 	    
-	    KPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si),
+	    KPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si, "KPIECE1"),
 							   hcik_(si)
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
-		msg_.setPrefix("KPIECE1");
 		
 		goalBias_ = 0.05;
 		selectBorderPercentage_ = 0.9;

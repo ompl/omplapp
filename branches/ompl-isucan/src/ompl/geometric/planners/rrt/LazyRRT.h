@@ -78,10 +78,9 @@ namespace ompl
 	{
 	public:
 	    
-	    LazyRRT(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    LazyRRT(const base::SpaceInformationPtr &si) : base::Planner(si, "LazyRRT")
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
-		msg_.setPrefix("LazyRRT");
 		
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;

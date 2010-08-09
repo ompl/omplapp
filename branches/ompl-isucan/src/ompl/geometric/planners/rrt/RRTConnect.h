@@ -68,11 +68,9 @@ namespace ompl
 	{
 	public:
 	    
-	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    RRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si, "RRTConnect")
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
-		msg_.setPrefix("RRTConnect");
-		
 		maxDistance_ = 0.0;
 	    }
 	    

@@ -69,10 +69,9 @@ namespace ompl
 	{
 	public:
 	    
-	    OptRRT(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    OptRRT(const base::SpaceInformationPtr &si) : base::Planner(si, "OptRRT")
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
-		msg_.setPrefix("OptRRT");
 		
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;

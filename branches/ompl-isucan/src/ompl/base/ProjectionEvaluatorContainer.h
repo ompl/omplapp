@@ -34,49 +34,65 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef OMPL_UTIL_EXCEPTION_
-#define OMPL_UTIL_EXCEPTION_
+#ifndef OMPL_BASE_PROJECTION_EVALUATOR_CONTAINER_
+#define OMPL_BASE_PROJECTION_EVALUATOR_CONTAINER_
 
-#include "ompl/util/Console.h"
-#include <stdexcept>
+#include "ompl/base/ProjectionEvaluator.h"
+#include "ompl/util/ClassForward.h"
+#include <boost/noncopyable.hpp>
+#include <string>
 
 namespace ompl
 {
-  
-    /** \brief The exception type for ompl */
-    class Exception : public std::runtime_error
-    {
-    public:
-	
-	/** \brief This is just a wrapper on std::runtime_error with
-	    the addition that the what() message of the exception is
-	    sent to the console as well (in case some logging is
-	    performed). */
-	explicit
-	Exception(const std::string& what) : std::runtime_error(what)
-	{
-	    msg_.error(what);
-	}
-
-	/** \brief This is just a wrapper on std::runtime_error with
-	    the addition that the what() message of the exception is
-	    sent to the console as well (in case some logging is
-	    performed). A prefix is also specified when sending the
-	    message to the console. */
-	Exception(const std::string &prefix, const std::string& what) : std::runtime_error(what), msg_(prefix)
-	{
-	    msg_.error(what);
-	}
-	
-	virtual ~Exception(void) throw()
-	{
-	}
-	
-    private:
-	
-	msg::Interface msg_;
-    };
     
+    namespace base
+    {
+	
+	ClassForward(SpaceInformation);
+	
+	class ProjectionEvaluatorContainer : private boost::noncopyable
+	{
+	public:
+	    
+	    ProjectionEvaluatorContainer(const SpaceInformationPtr &si, const std::string &prefix = "") : si_(si.get()), msg_(prefix)
+	    {
+	    }
+	    
+	    ProjectionEvaluatorContainer(const SpaceInformation *si, const std::string &prefix = "") : si_(si), msg_(prefix)
+	    {
+	    }
+	    
+	    ~ProjectionEvaluatorContainer(void)
+	    {
+	    }
+	    
+	    ProjectionEvaluator& operator*(void) const
+	    {
+		return *proj_;
+	    }
+
+	    ProjectionEvaluator* operator->(void) const
+	    {
+		return proj_.get();
+	    }
+
+	    ProjectionEvaluator* get(void) const
+	    {
+		return proj_.get();
+	    }
+	    
+	    void set(const std::string &projectionName);
+	    void set(const ProjectionEvaluatorPtr &proj);
+	    
+	    void setup(void);
+	    
+	private:
+	    
+	    const SpaceInformation *si_;
+	    msg::Interface          msg_;
+	    ProjectionEvaluatorPtr  proj_;
+	};
+    }
 }
 
 #endif

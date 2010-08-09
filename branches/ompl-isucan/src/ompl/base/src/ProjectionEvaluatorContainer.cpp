@@ -34,49 +34,31 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef OMPL_UTIL_EXCEPTION_
-#define OMPL_UTIL_EXCEPTION_
+#include "ompl/base/SpaceInformation.h"
+#include "ompl/base/ProjectionEvaluatorContainer.h"
+#include "ompl/util/Exception.h"
 
-#include "ompl/util/Console.h"
-#include <stdexcept>
-
-namespace ompl
+void ompl::base::ProjectionEvaluatorContainer::set(const std::string &projectionName)
 {
-  
-    /** \brief The exception type for ompl */
-    class Exception : public std::runtime_error
-    {
-    public:
-	
-	/** \brief This is just a wrapper on std::runtime_error with
-	    the addition that the what() message of the exception is
-	    sent to the console as well (in case some logging is
-	    performed). */
-	explicit
-	Exception(const std::string& what) : std::runtime_error(what)
-	{
-	    msg_.error(what);
-	}
-
-	/** \brief This is just a wrapper on std::runtime_error with
-	    the addition that the what() message of the exception is
-	    sent to the console as well (in case some logging is
-	    performed). A prefix is also specified when sending the
-	    message to the console. */
-	Exception(const std::string &prefix, const std::string& what) : std::runtime_error(what), msg_(prefix)
-	{
-	    msg_.error(what);
-	}
-	
-	virtual ~Exception(void) throw()
-	{
-	}
-	
-    private:
-	
-	msg::Interface msg_;
-    };
-    
+    const ProjectionEvaluatorPtr &proj = si_->getStateManifold()->getProjection(projectionName);
+    if (!proj)
+	msg_.warn("Projection %s not found", projectionName.c_str());
+    set(proj);
 }
 
-#endif
+void ompl::base::ProjectionEvaluatorContainer::set(const ProjectionEvaluatorPtr &proj)
+{
+    proj_ = proj;
+}
+
+void ompl::base::ProjectionEvaluatorContainer::setup(void)
+{   
+    if (!proj_)
+    {
+	proj_ = si_->getStateManifold()->getProjection();
+	msg_.inform("Attempt to use default projection");
+    }
+    if (!proj_)
+	throw Exception("No projection evaluator specified");
+    proj_->checkCellDimensions();
+}

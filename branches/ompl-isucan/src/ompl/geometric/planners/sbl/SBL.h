@@ -86,10 +86,9 @@ namespace ompl
 	public:
 	    
 	    /** \brief The constructor needs the instance of the space information */
-	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si, "SBL")
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
-		msg_.setPrefix("SBL");
 		
 		maxDistance_ = 0.0;
 	    }

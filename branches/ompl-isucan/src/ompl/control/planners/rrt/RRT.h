@@ -72,10 +72,9 @@ namespace ompl
 	{
 	public:
 	    
-	    RRT(const SpaceInformationPtr &si) : base::Planner(si)
+	    RRT(const SpaceInformationPtr &si) : base::Planner(si, "RRT")
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
-		msg_.setPrefix("RRT");
 		siC_ = si.get();
 
 		goalBias_ = 0.05;

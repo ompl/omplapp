@@ -37,10 +37,10 @@
 #include "ompl/base/Planner.h"
 #include "ompl/util/Exception.h"
 
-ompl::base::Planner::Planner(const SpaceInformationPtr &si) : si_(si), type_(PLAN_UNKNOWN), setup_(false)
+ompl::base::Planner::Planner(const SpaceInformationPtr &si, const std::string &name) : si_(si), name_(name), type_(PLAN_UNKNOWN), setup_(false), msg_(name)
 {
     if (!si_)
-	throw Exception("Invalid space information instance");
+	throw Exception(name_, "Invalid space information instance for planner");
 }
 
 ompl::base::PlannerType ompl::base::Planner::getType(void) const

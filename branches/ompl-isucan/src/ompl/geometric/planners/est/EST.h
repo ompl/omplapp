@@ -70,10 +70,9 @@ namespace ompl
 	{
 	public:
 	    
-	    EST(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    EST(const base::SpaceInformationPtr &si) : base::Planner(si, "EST")
 	    {
 		type_ = base::PLAN_TO_GOAL_ANY;
-		msg_.setPrefix("EST");
 		
 		goalBias_ = 0.05;
 		maxDistance_ = 0.0;

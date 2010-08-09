@@ -74,10 +74,9 @@ namespace ompl
 	{
 	public:
 	    
-	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si)
+	    LBKPIECE1(const base::SpaceInformationPtr &si) : base::Planner(si, "LBKPIECE1")
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
-		msg_.setPrefix("LBKPIECE1");
 		
 		selectBorderPercentage_ = 0.9;
 		maxDistance_ = 0.0;

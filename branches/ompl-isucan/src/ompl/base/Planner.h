@@ -46,6 +46,7 @@
 #include <boost/noncopyable.hpp>
 #include <iostream>
 #include <vector>
+#include <string>
 
 namespace ompl
 {
@@ -113,7 +114,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief Constructor */
-	    Planner(const SpaceInformationPtr &si);
+	    Planner(const SpaceInformationPtr &si, const std::string &name);
 	    
 	    /** \brief Destructor */
 	    virtual ~Planner(void)
@@ -169,6 +170,9 @@ namespace ompl
 
 	    /** \brief Utility class to extract valid input states  */
 	    PlannerInputStates   pis_;
+	    
+	    /** \brief The name of this planner */
+	    std::string          name_;
 	    
 	    /** \brief The planner type: defines the type of goals this planner can handle */
 	    PlannerType          type_;	
