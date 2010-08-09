@@ -1,11 +1,13 @@
 /** 
-	\page changelog
+	
+\page changelog
 
 
 
 
 	
-August 9, 2010:
+\section aug_09_2010 August 9, 2010
+
 	Sampling-based motion planning library for 
 
 	- planning under geometric constraints: KPIECE, LBKPIECE, SBL,
