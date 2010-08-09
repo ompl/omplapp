@@ -79,4 +79,7 @@ if __name__ == "__main__":
 	plan()
 \endcode
 
+\section Updating the Python bindings
+
+
 */

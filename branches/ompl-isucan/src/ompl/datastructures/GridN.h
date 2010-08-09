@@ -96,7 +96,9 @@ namespace ompl
 	/// unless the grid is empty
 	void setDimension(unsigned int dimension)
 	{
+#ifndef NDEBUG
 	    static const unsigned short MAX_GRID_NEIGHBORS = 255;
+#endif
 	    assert(Grid<_T>::empty() == true);
 	    Grid<_T>::dimension_ = dimension;
 	    Grid<_T>::maxNeighbors_ = 2 * dimension;
