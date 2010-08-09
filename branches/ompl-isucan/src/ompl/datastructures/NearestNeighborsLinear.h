@@ -106,12 +106,20 @@ namespace ompl
 	virtual void nearestK(const _T &data, unsigned int k, std::vector<_T> &nbh) const
 	{
 	    nbh.clear();
+	    nbh.reserve(k);
 	    for (unsigned int i = 0 ; i < data_.size() ; ++i)
 		if (active_[i])
 		    nbh.push_back(data_[i]);
-	    std::sort(nbh.begin(), nbh.end(), MySort(data, NearestNeighbors<_T>::distFun_));
 	    if (nbh.size() > k)
+	    {
+		std::partial_sort(nbh.begin(), nbh.begin() + k, nbh.end(),
+		    MySort(data, NearestNeighbors<_T>::distFun_));
 		nbh.resize(k);
+	    }
+	    else
+	    {
+		std::sort(nbh.begin(), nbh.end(), MySort(data, NearestNeighbors<_T>::distFun_));
+	    }
 	}
 
 	virtual void nearestR(const _T &data, double radius, std::vector<_T> &nbh) const
