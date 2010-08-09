@@ -57,11 +57,14 @@ namespace ompl
 	    virtual ~GoalRegion(void)
 	    {
 	    }
-	    
+
+	    /** \brief Equivalent to calling isSatisfied(const State *, double *) with a NULL second argument. */
+	    virtual bool isSatisfied(const State *st) const;
+
 	    /** \brief Decide whether a given state is part of the
 		goal region. Returns true if the distance to goal is
 		less than the threshold (using distanceGoal()) */
-	    virtual bool isSatisfied(const State *st, double *distance = NULL) const;
+	    virtual bool isSatisfied(const State *st, double *distance) const;
 	    
 	    /** \brief Compute the distance to the goal
 		(heuristic). This function is the one used in
