@@ -143,7 +143,7 @@ void plan(void)
 
 
     /// print the settings for this space
-    si->print(std::cout);
+    si->printSettings(std::cout);
 
     /// print the problem settings
     pdef->print(std::cout);    

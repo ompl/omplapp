@@ -68,7 +68,7 @@ void ompl::base::Planner::setup(void)
 {
     if (!si_->isSetup())
     {
-	msg_.inform("Space information setup was not yet called. Calling now");
+	msg_.inform("Space information setup was not yet called. Calling now.");
 	si_->setup();
     }
     

@@ -321,7 +321,7 @@ protected:
 	cdim.push_back(1);
 	cdim.push_back(1);
 	
-	sbl->setProjectionEvaluator(base::ProjectionEvaluatorPtr(new base::RealVectorOrthogonalProjectionEvaluator(si->getStateManifold(), cdim, projection)));
+	sbl->proj.set(base::ProjectionEvaluatorPtr(new base::RealVectorOrthogonalProjectionEvaluator(si->getStateManifold(), cdim, projection)));
 
 	return base::PlannerPtr(sbl);
     }    

@@ -196,7 +196,7 @@ namespace ompl
 	    virtual void print(std::ostream &out = std::cout) const
 	    {
 		if (si_)
-		    si_->print(out);
+		    si_->printSettings(out);
 		if (pdef_)
 		    pdef_->print(out);
 	    }

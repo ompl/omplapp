@@ -252,7 +252,7 @@ namespace ompl
 	    virtual unsigned int getMotionStates(const State *s1, const State *s2, std::vector<State*> &states, double factor, bool endpoints, bool alloc) const;
 
 	    /** \brief Print information about the current instance of the state space */
-	    virtual void print(std::ostream &out = std::cout) const;
+	    virtual void printSettings(std::ostream &out = std::cout) const;
 	    
 	    /** \brief Perform additional setup tasks (run once,
 		before use). If state validity checking resolution has
