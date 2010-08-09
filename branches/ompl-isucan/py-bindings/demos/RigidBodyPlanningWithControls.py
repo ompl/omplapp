@@ -14,6 +14,8 @@ except:
 	from ompl import control as oc
 
 def isStateValid(spaceInformation, state):
+	# perform collision checking or check if other constraints are
+	# satisfied
 	return True #spaceInformation.satiesfiesBounds(state)
 
 def propagate(start, control, duration, state):

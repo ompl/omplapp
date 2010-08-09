@@ -8,8 +8,9 @@ find_python_module(pygccxml)
 find_package(GCCXML)
 
 if(PYTHON_FOUND AND Boost_PYTHON_LIBRARY)
-	SET(PY_OMPL_COMPILE ON CACHE BOOL
+	set(PY_OMPL_COMPILE ON CACHE BOOL
 		"Whether the OMPL Python modules should be built")
+	set(OMPL_PYTHON_INSTALL_DIR "lib/python${PYTHON_VERSION}/site-packages")
 endif()
 if(PYTHON_FOUND AND Boost_PYTHON_LIBRARY AND PY_PYPLUSPLUS
 	AND PY_PYGCCXML AND GCCXML AND NOT BUILD_PY_OMPL)
@@ -17,58 +18,6 @@ if(PYTHON_FOUND AND Boost_PYTHON_LIBRARY AND PY_PYPLUSPLUS
 		"Whether the C++ code for the OMPL Python module should be generated")
 endif()
 
-set(OMPL_BASE_HEADERS 
-	util/ClassForward.h
-	base/State.h
-	base/StateSampler.h
-	base/StateManifold.h
-	base/StateValidityChecker.h
-	base/SpaceInformation.h
-	base/ScopedState.h
-	base/Goal.h
-	base/GoalRegion.h
-	base/GoalSampleableRegion.h
-	base/GoalState.h
-	base/GoalStates.h
-	base/Planner.h
-	base/ProblemDefinition.h
-	base/ProjectionEvaluator.h
-	base/manifolds/RealVectorBounds.h
-	base/manifolds/RealVectorStateManifold.h
-	base/manifolds/SO2StateManifold.h
-	base/manifolds/SO3StateManifold.h
-	base/manifolds/SE2StateManifold.h
-	base/manifolds/SE3StateManifold.h
-	base/manifolds/RealVectorStateProjections.h)
-set(OMPL_CONTROL_HEADERS
-	control/Control.h
-	control/ControlSampler.h
-	control/ControlManifold.h
-	control/SpaceInformation.h
-	control/PathControl.h
-	control/SimpleSetup.h
-	control/manifolds/RealVectorControlManifold.h
-	control/planners/kpiece/KPIECE1.h
-	control/planners/rrt/RRT.h)
-set(OMPL_GEOMETRIC_HEADERS
-	geometric/PathGeometric.h
-	geometric/PathSimplifier.h
-	geometric/SimpleSetup.h
-	geometric/planners/prm/PRM.h
-	geometric/planners/est/EST.h
-	geometric/planners/kpiece/KPIECE1.h
-	geometric/planners/kpiece/LBKPIECE1.h
-	geometric/planners/rrt/RRT.h
-	geometric/planners/rrt/RRTConnect.h
-	geometric/planners/rrt/pRRT.h
-	geometric/planners/rrt/LazyRRT.h
-	geometric/planners/sbl/SBL.h
-	geometric/planners/sbl/pSBL.h)
-set(OMPL_UTIL_HEADERS
-	# util/Console.h
-	util/Exception.h
-	util/RandomNumbers.h)
-		
 set(OMPL_MODULES base control geometric util)
 if(PYTHON_INCLUDE_DIRS)
   include_directories(${PYTHON_INCLUDE_DIRS} "${CMAKE_CURRENT_SOURCE_DIR}/bindings" ".")
@@ -85,33 +34,40 @@ if(PY_OMPL_GENERATE)
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/generate_bindings.py.in"
 		"${CMAKE_CURRENT_SOURCE_DIR}/generate_bindings.py" @ONLY)
 
+	# target for updating all-in-one header file for each module
+	add_custom_target(generate_headers)
 	# target for regenerating code for all python modules
 	add_custom_target(update_bindings)
 
 	foreach(module ${OMPL_MODULES})
-		string(TOUPPER ${module} module_upper)
-		set(module_header "${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}.h")
-		file(WRITE "${module_header}" "")
-		foreach(header ${OMPL_${module_upper}_HEADERS})
-			file(READ "${OMPL_INCLUDE_DIR}/ompl/${header}" _header_txt)
-			file(APPEND "${module_header}" "${_header_txt}")
+		# create list of absolute paths to header files, which we
+		# will add as a list of dependencies for the next target
+		file(READ "headers_${module}.txt" headers_string)
+		separate_arguments(rel_headers UNIX_COMMAND "${headers_string}")
+		set(headers "")
+		foreach(header ${rel_headers})
+			list(APPEND headers "${OMPL_INCLUDE_DIR}/ompl/${header}")
 		endforeach(header)
-		file(READ "ompl_py_util.h" _header_txt)
-		file(APPEND "${module_header}" "${_header_txt}")
+		# target for all-in-one header for module
+		add_custom_target(${module}.h
+			COMMAND ${CMAKE_COMMAND}
+			-D module=${module} -D "OMPL_INCLUDE_DIR=${OMPL_INCLUDE_DIR}"
+			-P generate_header.cmake
+			DEPENDS ${headers}
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+		add_dependencies(generate_headers ${module}.h)
 		
-		# bootstrap code generation
-		if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}/_${module}.main.cpp")
-		 	execute_process(COMMAND ${PYTHON_EXEC} "../generate_bindings.py" "${module}"
-		 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
-		endif()
-		
-		# target for regenerating code
+		# target for regenerating code. Cmake is run so that the list of 
+		# sources for the py_ompl_${module} target (see below) is updated.
 		add_custom_target(update_${module}_bindings 
-			${PYTHON_EXEC} "../generate_bindings.py" "${module}"
-	 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
-		add_dependencies(update_${module}_bindings ${OMPL_${module_upper}_HEADERS})
+			COMMAND ${PYTHON_EXEC} 
+			"${CMAKE_CURRENT_SOURCE_DIR}/generate_bindings.py" "${module}"
+			COMMAND ${CMAKE_COMMAND} .
+	 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+		add_dependencies(update_${module}_bindings ${module}.h)
 		add_dependencies(update_bindings update_${module}_bindings)
 	endforeach(module)
+	
 endif(PY_OMPL_GENERATE)
 
 if(PY_OMPL_COMPILE)
@@ -134,10 +90,15 @@ if(PY_OMPL_COMPILE)
 		        WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
     		include_directories("${CMAKE_CURRENT_SOURCE_DIR}/bindings/${module}")
 		else(NUM_SOURCE_FILES GREATER 0)
-			message(STATUS "Skipping Python module ${module}: code for module not found")
+			message(STATUS "Code for module ${module} not found; type \"make update_bindings\"")
 		endif(NUM_SOURCE_FILES GREATER 0)
 	endforeach(module)
 	
 	# python unit tests
 	add_test(test_py_ompl "${PYTHON_EXEC}" "${CMAKE_CURRENT_SOURCE_DIR}/test.py")
+	
+	install(DIRECTORY demos/ DESTINATION ${OMPL_DEMO_INSTALL_DIR}/python
+		PATTERN .svn EXCLUDE)
+	install(DIRECTORY ompl DESTINATION ${OMPL_PYTHON_INSTALL_DIR}
+		PATTERN .svn EXCLUDE PATTERN "*.pyc" EXCLUDE)
 endif(PY_OMPL_COMPILE)
