@@ -42,12 +42,9 @@
 
 void ompl::geometric::pRRT::setup(void)
 {
-    Planner::setup();
-    if (maxDistance_ < std::numeric_limits<double>::epsilon())
-    {
-	maxDistance_ = si_->estimateExtent() / 5.0;
-	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
-    }
+    Planner::setup(); 
+    checkMotionLength(this, maxDistance_);
+
     if (!nn_)
 	nn_.reset(new NearestNeighborsSqrtApprox<Motion*>());
     nn_->setDistanceFunction(boost::bind(&pRRT::distanceFunction, this, _1, _2));

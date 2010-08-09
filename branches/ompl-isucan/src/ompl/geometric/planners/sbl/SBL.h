@@ -38,7 +38,7 @@
 #define OMPL_GEOMETRIC_PLANNERS_SBL_SBL_
 
 #include "ompl/geometric/planners/PlannerIncludes.h"
-#include "ompl/base/ProjectionEvaluatorContainer.h"
+#include "ompl/base/ProjectionEvaluator.h"
 #include "ompl/datastructures/Grid.h"
 #include <vector>
 
@@ -86,7 +86,7 @@ namespace ompl
 	public:
 	    
 	    /** \brief The constructor needs the instance of the space information */
-	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si, "SBL"), proj(si, name_)
+	    SBL(const base::SpaceInformationPtr &si) : base::Planner(si, "SBL")
 	    {
 		type_ = base::PLAN_TO_GOAL_SAMPLEABLE_REGION;
 		
@@ -98,9 +98,23 @@ namespace ompl
 		freeMemory();
 	    }
 	    
-	    /** \brief The projection evaluator.  */
-	    base::ProjectionEvaluatorContainer proj;
+	    /** \brief Set the projection evaluator.  
+
+		This class is able to compute the projection of a
+		given state. The simplest option is to use an
+		orthogonal projection; see
+		OrthogonalProjectionEvaluator */
+	    void setProjectionEvaluator(const base::ProjectionEvaluatorPtr &projectionEvaluator)
+	    {
+		projectionEvaluator_ = projectionEvaluator;
+	    }
 	    
+	    /** \brief Get the projection evaluator. */
+	    const base::ProjectionEvaluatorPtr& getProjectionEvaluator(void) const
+	    {
+		return projectionEvaluator_;
+	    }
+	    	    
 	    /** \brief Set the range the planner is supposed to use.
 
 		This parameter greatly influences the runtime of the
@@ -210,6 +224,9 @@ namespace ompl
 	    
 	    /** \brief The employed state sampler */
 	    base::StateSamplerPtr                      sampler_;
+	    
+	    /** \brief The employed projection evaluator */
+	    base::ProjectionEvaluatorPtr               projectionEvaluator_;
 	    
 	    /** \brief The start tree */
 	    TreeData                                   tStart_;

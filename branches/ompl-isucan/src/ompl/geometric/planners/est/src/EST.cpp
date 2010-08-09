@@ -41,21 +41,10 @@
 
 void ompl::geometric::EST::setup(void)
 {
-    Planner::setup();
-    if (!projectionEvaluator_)
-    {
-	projectionEvaluator_ = si_->getStateManifold()->getProjection();
-	msg_.inform("Attempt to use default projection");
-    }
-    if (!projectionEvaluator_)
-	throw Exception("No projection evaluator specified");
-    projectionEvaluator_->checkCellDimensions();
+    Planner::setup(); 
+    checkProjectionEvaluator(this, projectionEvaluator_);
+    checkMotionLength(this, maxDistance_);
 
-    if (maxDistance_ < std::numeric_limits<double>::epsilon())
-    {
-	maxDistance_ = si_->estimateExtent() / 5.0;
-	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
-    }
     tree_.grid.setDimension(projectionEvaluator_->getDimension());
     sampler_ = si_->allocStateSampler();
 }

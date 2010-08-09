@@ -120,7 +120,10 @@ namespace ompl
 	    virtual ~Planner(void)
 	    {
 	    }
-
+	    
+	    /** \brief Get the space information this planner is using */
+	    const SpaceInformationPtr& getSpaceInformation(void) const;
+	    
 	    /** \brief Get the problem definition the planner is trying to solve */
 	    const ProblemDefinitionPtr& getProblemDefinition(void) const;
 	    

@@ -37,17 +37,13 @@
 #include "ompl/geometric/planners/rrt/LazyRRT.h"
 #include "ompl/base/GoalSampleableRegion.h"
 #include "ompl/datastructures/NearestNeighborsSqrtApprox.h"
-#include <limits>
 #include <cassert>
 
 void ompl::geometric::LazyRRT::setup(void)
 {
     Planner::setup();
-    if (maxDistance_ < std::numeric_limits<double>::epsilon())
-    {
-	maxDistance_ = si_->estimateExtent() / 5.0;
-	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
-    }
+    checkMotionLength(this, maxDistance_);
+
     sampler_ = si_->allocStateSampler();
     if (!nn_)
 	nn_.reset(new NearestNeighborsSqrtApprox<Motion*>());   

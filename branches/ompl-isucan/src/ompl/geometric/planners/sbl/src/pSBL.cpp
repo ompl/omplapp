@@ -42,17 +42,10 @@
 
 void ompl::geometric::pSBL::setup(void)
 {
-    Planner::setup();
-    if (!projectionEvaluator_)
-	throw Exception("No projection evaluator specified");
-    projectionEvaluator_->checkCellDimensions();
-    if (projectionEvaluator_->getDimension() <= 0)
-	throw Exception("Dimension of projection needs to be larger than 0");
-    if (maxDistance_ < std::numeric_limits<double>::epsilon())
-    {
-	maxDistance_ = si_->estimateExtent() / 5.0;
-	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
-    }
+    Planner::setup();   
+    checkProjectionEvaluator(this, projectionEvaluator_);
+    checkMotionLength(this, maxDistance_);
+    
     tStart_.grid.setDimension(projectionEvaluator_->getDimension());
     tGoal_.grid.setDimension(projectionEvaluator_->getDimension());
 }

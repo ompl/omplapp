@@ -43,14 +43,8 @@
 void ompl::control::KPIECE1::setup(void)
 {
     Planner::setup();
-    if (!projectionEvaluator_)
-    {
-	projectionEvaluator_ = si_->getStateManifold()->getProjection();
-	msg_.inform("Attempt to use default projection");
-    }
-    if (!projectionEvaluator_)
-	throw Exception("No projection evaluator specified");
-    projectionEvaluator_->checkCellDimensions();
+    checkProjectionEvaluator(this, projectionEvaluator_);
+    
     tree_.grid.setDimension(projectionEvaluator_->getDimension());
     sampler_ = si_->allocStateSampler();
     controlSampler_ = siC_->allocControlSampler();

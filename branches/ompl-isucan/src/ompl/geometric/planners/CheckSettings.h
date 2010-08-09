@@ -34,13 +34,24 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef OMPL_CONTROL_PLANNERS_PLANNER_INCLUDES_
-#define OMPL_CONTROL_PLANNERS_PLANNER_INCLUDES_
+#ifndef OMPL_GEOMETRIC_PLANNERS_CHECK_SETTINGS_
+#define OMPL_GEOMETRIC_PLANNERS_CHECK_SETTINGS_
 
 #include "ompl/base/Planner.h"
-#include "ompl/control/SpaceInformation.h"
-#include "ompl/control/PathControl.h"
-#include "ompl/util/RandomNumbers.h"
-#include "ompl/control/planners/CheckSettings.h"
+
+namespace ompl
+{
+    
+    namespace geometric
+    {
+	/** \brief Check if motion length is strictly positive. If
+	    not, set it to a default value */
+	void checkMotionLength(const base::Planner *planner, double &length);
+
+	/** \brief Check if projection evaluator is defined properly. If not, attempt to use default. */
+	void checkProjectionEvaluator(const base::Planner *planner, base::ProjectionEvaluatorPtr &proj);
+    }
+    
+}
 
 #endif

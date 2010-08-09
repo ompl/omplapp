@@ -41,15 +41,12 @@
 
 void ompl::geometric::SBL::setup(void)
 {
-    Planner::setup();
-    proj.setup();
-    if (maxDistance_ < std::numeric_limits<double>::epsilon())
-    {
-	maxDistance_ = si_->estimateExtent() / 5.0;
-	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
-    }
-    tStart_.grid.setDimension(proj->getDimension());
-    tGoal_.grid.setDimension(proj->getDimension());
+    Planner::setup();   
+    checkProjectionEvaluator(this, projectionEvaluator_);
+    checkMotionLength(this, maxDistance_);
+
+    tStart_.grid.setDimension(projectionEvaluator_->getDimension());
+    tGoal_.grid.setDimension(projectionEvaluator_->getDimension());
     sampler_ = si_->allocStateSampler();
 }
 
@@ -167,7 +164,7 @@ bool ompl::geometric::SBL::solve(double solveTime)
 bool ompl::geometric::SBL::checkSolution(bool start, TreeData &tree, TreeData &otherTree, Motion *motion, std::vector<Motion*> &solution)
 {
     Grid<MotionSet>::Coord coord;
-    proj->computeCoordinates(motion->state, coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
     Grid<MotionSet>::Cell* cell = otherTree.grid.getCell(coord);
     
     if (cell && !cell->data.empty())
@@ -266,7 +263,7 @@ void ompl::geometric::SBL::removeMotion(TreeData &tree, Motion *motion)
     /* remove from grid */
     
     Grid<MotionSet>::Coord coord;
-    proj->computeCoordinates(motion->state, coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
     Grid<MotionSet>::Cell* cell = tree.grid.getCell(coord);
     if (cell)
     {
@@ -311,7 +308,7 @@ void ompl::geometric::SBL::removeMotion(TreeData &tree, Motion *motion)
 void ompl::geometric::SBL::addMotion(TreeData &tree, Motion *motion)
 {
     Grid<MotionSet>::Coord coord;
-    proj->computeCoordinates(motion->state, coord);
+    projectionEvaluator_->computeCoordinates(motion->state, coord);
     Grid<MotionSet>::Cell* cell = tree.grid.getCell(coord);
     if (cell)
 	cell->data.push_back(motion);

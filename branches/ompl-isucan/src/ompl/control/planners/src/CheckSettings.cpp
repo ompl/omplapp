@@ -34,31 +34,19 @@
 
 /* Author: Ioan Sucan */
 
-#include "ompl/base/SpaceInformation.h"
-#include "ompl/base/ProjectionEvaluatorContainer.h"
+#include "ompl/control/planners/CheckSettings.h"
 #include "ompl/util/Exception.h"
+#include "ompl/util/Console.h"
 
-void ompl::base::ProjectionEvaluatorContainer::set(const std::string &projectionName)
+void ompl::control::checkProjectionEvaluator(const base::Planner *planner, base::ProjectionEvaluatorPtr &proj)
 {
-    const ProjectionEvaluatorPtr &proj = si_->getStateManifold()->getProjection(projectionName);
     if (!proj)
-	msg_.warn("Projection %s not found", projectionName.c_str());
-    set(proj);
-}
-
-void ompl::base::ProjectionEvaluatorContainer::set(const ProjectionEvaluatorPtr &proj)
-{
-    proj_ = proj;
-}
-
-void ompl::base::ProjectionEvaluatorContainer::setup(void)
-{   
-    if (!proj_)
     {
-	proj_ = si_->getStateManifold()->getProjection();
-	msg_.inform("Attempt to use default projection");
+	msg::Interface msg(planner->getName());
+	msg.inform("Attempting to use default projection.");	
+	proj = planner->getSpaceInformation()->getStateManifold()->getProjection();
     }
-    if (!proj_)
-	throw Exception("No projection evaluator specified");
-    proj_->checkCellDimensions();
+    if (!proj)
+	throw Exception(planner->getName(), "No projection evaluator specified");
+    proj->checkCellDimensions();
 }

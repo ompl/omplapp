@@ -34,65 +34,37 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef OMPL_BASE_PROJECTION_EVALUATOR_CONTAINER_
-#define OMPL_BASE_PROJECTION_EVALUATOR_CONTAINER_
+#include "ompl/geometric/planners/CheckSettings.h"
+#include "ompl/util/Exception.h"
+#include "ompl/util/Console.h"
+#include <limits>
 
-#include "ompl/base/ProjectionEvaluator.h"
-#include "ompl/util/ClassForward.h"
-#include <boost/noncopyable.hpp>
-#include <string>
-
-namespace ompl
-{
-    
-    namespace base
+/** \brief If default values are to be used for the maximum
+    length of motions, this constant defines what fraction of
+    the space extent (computed with
+    ompl::base::SpaceInformation::estimateExtent()) is to be
+    used as the maximum length of a motion */
+static const double MAX_MOTION_LENGTH_AS_SPACE_EXTENT_FRACTION = 0.2;
+	
+void ompl::geometric::checkMotionLength(const base::Planner *planner, double &length)
+{ 
+    if (length < std::numeric_limits<double>::epsilon())
     {
-	
-	ClassForward(SpaceInformation);
-	
-	class ProjectionEvaluatorContainer : private boost::noncopyable
-	{
-	public:
-	    
-	    ProjectionEvaluatorContainer(const SpaceInformationPtr &si, const std::string &prefix = "") : si_(si.get()), msg_(prefix)
-	    {
-	    }
-	    
-	    ProjectionEvaluatorContainer(const SpaceInformation *si, const std::string &prefix = "") : si_(si), msg_(prefix)
-	    {
-	    }
-	    
-	    ~ProjectionEvaluatorContainer(void)
-	    {
-	    }
-	    
-	    ProjectionEvaluator& operator*(void) const
-	    {
-		return *proj_;
-	    }
-
-	    ProjectionEvaluator* operator->(void) const
-	    {
-		return proj_.get();
-	    }
-
-	    ProjectionEvaluator* get(void) const
-	    {
-		return proj_.get();
-	    }
-	    
-	    void set(const std::string &projectionName);
-	    void set(const ProjectionEvaluatorPtr &proj);
-	    
-	    void setup(void);
-	    
-	private:
-	    
-	    const SpaceInformation *si_;
-	    msg::Interface          msg_;
-	    ProjectionEvaluatorPtr  proj_;
-	};
+	length = planner->getSpaceInformation()->estimateExtent() * MAX_MOTION_LENGTH_AS_SPACE_EXTENT_FRACTION;
+	msg::Interface msg(planner->getName());
+	msg.inform("Maximum motion extension distance is assumed to be %f", length);
     }
 }
 
-#endif
+void ompl::geometric::checkProjectionEvaluator(const base::Planner *planner, base::ProjectionEvaluatorPtr &proj)
+{
+    if (!proj)
+    {
+	msg::Interface msg(planner->getName());
+	msg.inform("Attempting to use default projection.");	
+	proj = planner->getSpaceInformation()->getStateManifold()->getProjection();
+    }
+    if (!proj)
+	throw Exception(planner->getName(), "No projection evaluator specified");
+    proj->checkCellDimensions();
+}

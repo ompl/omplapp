@@ -44,15 +44,12 @@
 void ompl::geometric::OptRRT::setup(void)
 {
     Planner::setup();
-    if (maxDistance_ < std::numeric_limits<double>::epsilon())
-    {
-	maxDistance_ = si_->estimateExtent() / 5.0;
-	msg_.warn("Maximum motion extension distance is %f", maxDistance_);
-    }
+    checkMotionLength(this, maxDistance_);
+
     if (ballRadiusMax_ < std::numeric_limits<double>::epsilon())
 	ballRadiusMax_ = maxDistance_;    
     if (ballRadiusConst_ < std::numeric_limits<double>::epsilon())
-	throw Exception("The ball radius constant must be positive");
+	throw Exception(name_, "The ball radius constant must be positive");
     sampler_ = si_->allocStateSampler();
     if (!nn_)
 	nn_.reset(new NearestNeighborsSqrtApprox<Motion*>());
