@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef OMPL_CONTROL_PLANNER_INCLUDES_
-#define OMPL_CONTROL_PLANNER_INCLUDES_
+#ifndef OMPL_CONTROL_PLANNERS_PLANNER_INCLUDES_
+#define OMPL_CONTROL_PLANNERS_PLANNER_INCLUDES_
 
 #include "ompl/base/Planner.h"
 #include "ompl/control/SpaceInformation.h"
