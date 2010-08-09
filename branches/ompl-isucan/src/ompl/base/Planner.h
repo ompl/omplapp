@@ -149,6 +149,9 @@ namespace ompl
 	    /** \brief Get information about the current run of the motion planner  */
 	    virtual void getPlannerData(PlannerData &data) const = 0;
 	    
+	    /** \brief Get the name of the planner */
+	    const std::string& getName(void) const;
+	    
 	    /** \brief Return the type of the motion planner. This is useful if
 		the planner wants to advertise what type of problems it
 		can solve */

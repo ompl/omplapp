@@ -48,6 +48,11 @@ ompl::base::PlannerType ompl::base::Planner::getType(void) const
     return type_;
 }
 
+const std::string& ompl::base::Planner::getName(void) const
+{
+    return name_;
+}
+
 const ompl::base::ProblemDefinitionPtr& ompl::base::Planner::getProblemDefinition(void) const
 {
     return pdef_;
