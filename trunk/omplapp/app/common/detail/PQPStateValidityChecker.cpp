@@ -65,12 +65,17 @@ ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityCheck
 	    return model;
 	}
 	
+	unsigned int good = 0;
 	for (unsigned int i = 0 ; i < a->mNumFaces ; ++i)
 	    if (a->mFaces[i].mNumIndices != 3)
-	    {
-		msg_.error("Asset is not a triangle mesh");
-		return model;
-	    }
+		msg_.warn("Asset is not a triangle mesh: face %d has %d vertices", i, a->mFaces[i].mNumIndices);
+	    else
+		good++;
+	if (good == 0)
+	{
+	    msg_.error("Insufficient faces in mesh");
+	    return model;
+	}
     }
     
     // create the PQP model
@@ -82,6 +87,8 @@ ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityCheck
 	const aiMesh *a = meshes[j];
 	for (unsigned int i = 0 ; i < a->mNumFaces ; ++i)
 	{
+	    if (a->mFaces[i].mNumIndices != 3)
+		continue;
 	    const aiVector3D &v0 = a->mVertices[a->mFaces[i].mIndices[0]];
 	    const aiVector3D &v1 = a->mVertices[a->mFaces[i].mIndices[1]];
 	    const aiVector3D &v2 = a->mVertices[a->mFaces[i].mIndices[2]];

@@ -5,7 +5,7 @@ using namespace ompl;
 int main()
 {
     app::SE3RigidBodyPlanning setup;
-    setup.setMeshes("sphere.stl", "sphere.stl");
+    setup.setMeshes("robot.dae", "robot.dae");
     
     base::ScopedState<> start(setup.getSpaceInformation());
     start.random();
