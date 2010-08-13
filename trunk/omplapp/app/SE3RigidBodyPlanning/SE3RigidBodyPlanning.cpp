@@ -1,5 +1,4 @@
 #include "common/SE3RigidBodyPlanning.h"
-
 using namespace ompl;
 
 int main()

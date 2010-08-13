@@ -1,15 +1,15 @@
-#include "PQPStateValidityChecker.h"
+#include "common/detail/PQPStateValidityChecker.h"
+#include "common/detail/assimpUtil.h"
 
 ompl::app::PQPStateValidityChecker::PQPStateValidityChecker(const base::SpaceInformationPtr &si, 
-							    const std::vector<const aiMesh*> &robot,
-							    const std::vector<const aiMesh*> &obstacles) : base::StateValidityChecker(si)
+							    const aiScene *robot, const aiScene *obstacles) : base::StateValidityChecker(si)
 {
-    environment_ = getPQPModelFromMeshes(obstacles);
+    environment_ = getPQPModelFromScene(obstacles);
     if (!environment_)
 	msg_.inform("Empty environment loaded");
     else
 	msg_.inform("Loaded environment model with %d triangles", environment_->num_tris);
-    robot_ = getPQPModelFromMeshes(robot);
+    robot_ = getPQPModelFromScene(robot);
     if (!robot_)
 	throw ompl::Exception("Invalid robot mesh");
     else
@@ -42,61 +42,30 @@ void ompl::app::PQPStateValidityChecker::quaternionToMatrix(const base::SO3State
 }
 
 
-ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromMeshes(const std::vector<const aiMesh*> &meshes) const
+ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromScene(const aiScene *scene) const
 {	
     PQPModelPtr model;
     
-    if (meshes.empty())
-	return model;
+    std::vector<aiVector3D> triangles;
+    extractTriangles(scene, triangles);
     
-    // make sure we can create a model
-    for (unsigned int j = 0 ; j < meshes.size() ; ++j)
-    {
-	const aiMesh *a = meshes[j];
-	if (!a->HasFaces())
-	{
-	    msg_.error("Mesh asset has no faces");
-	    return model;
-	}
-	
-	if (!a->HasPositions())
-	{
-	    msg_.error("Mesh asset has no positions");
-	    return model;
-	}
-	
-	unsigned int good = 0;
-	for (unsigned int i = 0 ; i < a->mNumFaces ; ++i)
-	    if (a->mFaces[i].mNumIndices != 3)
-		msg_.warn("Asset is not a triangle mesh: face %d has %d vertices", i, a->mFaces[i].mNumIndices);
-	    else
-		good++;
-	if (good == 0)
-	{
-	    msg_.error("Insufficient faces in mesh");
-	    return model;
-	}
-    }
+    if (triangles.empty())
+	return model;
     
     // create the PQP model
     model.reset(new PQP_Model());	
     model->BeginModel();
     int id = 0;
-    for (unsigned int j = 0 ; j < meshes.size() ; ++j)
+    const int N = triangles.size() / 3;
+    for (unsigned int j = 0 ; j < N ; ++j)
     {	    
-	const aiMesh *a = meshes[j];
-	for (unsigned int i = 0 ; i < a->mNumFaces ; ++i)
-	{
-	    if (a->mFaces[i].mNumIndices != 3)
-		continue;
-	    const aiVector3D &v0 = a->mVertices[a->mFaces[i].mIndices[0]];
-	    const aiVector3D &v1 = a->mVertices[a->mFaces[i].mIndices[1]];
-	    const aiVector3D &v2 = a->mVertices[a->mFaces[i].mIndices[2]];
-	    PQP_REAL dV0[3] = {v0.x, v0.y, v0.z};
-	    PQP_REAL dV1[3] = {v1.x, v1.y, v1.z};
-	    PQP_REAL dV2[3] = {v2.x, v2.y, v2.z};
-	    model->AddTri(dV0, dV1, dV2, id++);
-	}	    
+	const aiVector3D &v0 = triangles[j * 3];
+	const aiVector3D &v1 = triangles[j * 3 + 1];
+	const aiVector3D &v2 = triangles[j * 3 + 2];
+	PQP_REAL dV0[3] = {v0.x, v0.y, v0.z};
+	PQP_REAL dV1[3] = {v1.x, v1.y, v1.z};
+	PQP_REAL dV2[3] = {v2.x, v2.y, v2.z};
+	model->AddTri(dV0, dV1, dV2, id++);
     }
     
     model->EndModel();

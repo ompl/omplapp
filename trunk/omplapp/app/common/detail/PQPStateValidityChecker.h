@@ -1,7 +1,7 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/manifolds/SO3StateManifold.h>
 #include <PQP.h>
-#include <aiMesh.h>
+#include <aiScene.h>
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
@@ -20,8 +20,7 @@ namespace ompl
 	public:
 	    
 	    PQPStateValidityChecker(const base::SpaceInformationPtr &si,
-				    const std::vector<const aiMesh*> &robot,
-				    const std::vector<const aiMesh*> &obstacles);
+				    const aiScene *robot, const aiScene *obstacles);
 	    
 	protected:
 	    
@@ -33,7 +32,7 @@ namespace ompl
 	    void quaternionToMatrix(const base::SO3StateManifold::StateType &q, PQP_REAL m[3][3]) const;
 
 	    /** \brief Convert a set of meshes to a PQP model */
-	    PQPModelPtr getPQPModelFromMeshes(const std::vector<const aiMesh*> &meshes) const;
+	    PQPModelPtr getPQPModelFromScene(const aiScene *scene) const;
 	    
 	    PQPModelPtr    robot_;
 	    PQPModelPtr    environment_;    

@@ -1,4 +1,4 @@
-#include "PQPStateValidityChecker.h"
+#include "common/detail/PQPStateValidityChecker.h"
 #include <ompl/base/manifolds/SE3StateManifold.h>
 
 namespace ompl
@@ -11,8 +11,7 @@ namespace ompl
 	public:
 	    
 	    PQPSE3StateValidityChecker(const base::SpaceInformationPtr &si,
-				       const std::vector<const aiMesh*> &robot,
-				       const std::vector<const aiMesh*> &obstacles):
+				       const aiScene *robot, const aiScene *obstacles):
 		PQPStateValidityChecker(si, robot, obstacles)
 	    {
 	    }

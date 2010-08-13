@@ -14,7 +14,7 @@ namespace ompl
 	    {
 	    }
 	    
-	    int setMeshes(const std::string &robot, const std::string &env, bool useOpenGL=false);
+	    int setMeshes(const std::string &robot, const std::string &env, bool useOpenGL = false);
 	    
 	    virtual void setup(void);
 	};	

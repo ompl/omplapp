@@ -1,9 +1,6 @@
-#include "SE2RigidBodyPlanning.h"
-#include "detail/PQPSE2StateValidityChecker.h"
-#include "detail/assimpGL.h"
-#include <assimp.hpp>     
-#include <aiScene.h>      
-#include <aiPostProcess.h>
+#include "common/SE2RigidBodyPlanning.h"
+#include "common/detail/PQPSE2StateValidityChecker.h"
+#include "common/detail/assimpUtil.h"
 #include <limits>
 
 namespace ompl
@@ -13,35 +10,18 @@ namespace ompl
 	
 	static void inferBounds(const base::StateManifoldPtr &m, const aiScene* scene)
 	{
-	    // infer some bounding box for state manifold if we have meshes and a valid bounding box has not been set
-	    if (scene->HasMeshes())
+	    base::RealVectorBounds bounds = m->as<base::SE2StateManifold>()->getBounds();
+	    
+	    // if bounds are not valid
+	    if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
 	    {
-		base::RealVectorBounds bounds = m->as<base::SE2StateManifold>()->getBounds();
-		
-		// if bounds are not valid
-		if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
-		{
-		    double minX = std::numeric_limits<double>::infinity();
-		    double minY = minX;
-		    double maxX = -minX;
-		    double maxY = maxX;
-		    for (unsigned int j = 0 ; j < scene->mNumMeshes ; ++j)
-		    {	    
-			const aiMesh *a = scene->mMeshes[j];
-			for (unsigned int i = 0 ; i < a->mNumVertices ; ++i)
-			{
-			    if (minX > a->mVertices[i].x) minX = a->mVertices[i].x;
-			    if (maxX < a->mVertices[i].x) maxX = a->mVertices[i].x;
-			    if (minY > a->mVertices[i].y) minY = a->mVertices[i].y;
-			    if (maxY < a->mVertices[i].y) maxY = a->mVertices[i].y;
-			}
-		    }
-		    double dx = (maxX - minX) * 0.10;
-		    double dy = (maxY - minY) * 0.10;
-		    bounds.low[0] = minX - dx; bounds.low[1] = minY - dy;
-		    bounds.high[0] = maxX + dx; bounds.high[1] = maxY + dy;
-		    m->as<base::SE2StateManifold>()->setBounds(bounds);
-		}
+		std::vector<aiVector3D> vertices;
+		extractVertices(scene, vertices);
+		base::RealVectorBounds b(3);
+		inferBounds(b, vertices, 1.1, 0.0);
+		bounds.low[0] = b.low[0]; bounds.low[1] = b.low[1];
+		bounds.high[0] = b.high[0]; bounds.high[1] = b.high[1];
+		m->as<base::SE2StateManifold>()->setBounds(bounds);
 	    }
 	}
 	
@@ -89,24 +69,20 @@ int ompl::app::SE2RigidBodyPlanning::setMeshes(const std::string &robot, const s
     
     assert(!robot.empty());
     assert(!env.empty());
-	const aiScene* envScene = importerE.ReadFile(env.c_str(),
-						     aiProcess_Triangulate            |
-						     aiProcess_JoinIdenticalVertices  |
-						     aiProcess_SortByPType);
-	if (envScene)
-	{
-	    if (envScene->HasMeshes())
-	    {
-		for (unsigned int i = 0 ; i < envScene->mNumMeshes ; ++i)
-		    envMesh.push_back(envScene->mMeshes[i]);
-		inferBounds(getStateManifold(), envScene);
-	    }
-	    else
-		msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
-	}
+    const aiScene* envScene = importerE.ReadFile(env.c_str(),
+						 aiProcess_Triangulate            |
+						 aiProcess_JoinIdenticalVertices  |
+						 aiProcess_SortByPType);
+    if (envScene)
+    {
+	if (envScene->HasMeshes())
+	    inferBounds(getStateManifold(), envScene);
 	else
-	    msg_.error("Unable to load environment scene: %s", env.c_str());
-
+	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
+    }
+    else
+	msg_.error("Unable to load environment scene: %s", env.c_str());
+    
     // load robot 
     Assimp::Importer importerR;
     const aiScene* robotScene = importerR.ReadFile(robot.c_str(),
@@ -116,12 +92,7 @@ int ompl::app::SE2RigidBodyPlanning::setMeshes(const std::string &robot, const s
     std::vector<const aiMesh*> robotMesh;
     if (robotScene)
     {
-	if (robotScene->HasMeshes())
-	{
-	    for (unsigned int i = 0 ; i < robotScene->mNumMeshes ; ++i)
-		robotMesh.push_back(robotScene->mMeshes[i]);
-	}
-	else
+	if (!robotScene->HasMeshes())
 	    msg_.error("There is no mesh specified in the indicated robot resource: %s", robot.c_str());
     }
     else
@@ -129,7 +100,7 @@ int ompl::app::SE2RigidBodyPlanning::setMeshes(const std::string &robot, const s
 
     // create state validity checker
     if (!robotMesh.empty())
-	setStateValidityChecker(base::StateValidityCheckerPtr(new PQPSE2StateValidityChecker(getSpaceInformation(), robotMesh, envMesh)));
+	setStateValidityChecker(base::StateValidityCheckerPtr(new PQPSE2StateValidityChecker(getSpaceInformation(), robotScene, envScene)));
 	
     return useOpenGL ? assimpRender(robotScene, envScene) : 0;
 }
