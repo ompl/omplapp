@@ -5,6 +5,7 @@
 #endif
 #include "assimp.h"
 #include "assimpGL.h"
+#include <cstdio>
 
 // Most of the code below is taken from external/assimp/samples/SimpleOpenGL/Sample_SimpleOpenGL.c
 
