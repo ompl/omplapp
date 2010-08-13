@@ -5,7 +5,7 @@ using namespace ompl;
 int main()
 {
     app::SE2RigidBodyPlanning setup;
-    setup.setMeshes("sphere.stl", "sphere.stl");
+    setup.setMeshes("Twistycool_robot.dae", "Twistycool_env.dae");
     
     base::ScopedState<> start(setup.getSpaceInformation());
     start.random();

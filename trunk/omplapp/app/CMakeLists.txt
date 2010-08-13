@@ -1,6 +1,5 @@
 
 # create a library with the common parts of applications
-SET(OMPL_APP_LIB ompl_app)
 file(GLOB_RECURSE COMMON_SRC common/*.cpp)
 
 add_library(${OMPL_APP_LIB} SHARED ${COMMON_SRC}) 

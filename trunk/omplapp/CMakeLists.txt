@@ -7,6 +7,11 @@ set(OMPLAPP_MINOR_VERSION 9)
 set(OMPLAPP_PATCH_VERSION 0)
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.{$OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 
+set(OMPL_APP_MODULE app)
+set(OMPL_APP_LIB ompl_app)
+set(OMPL_APP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app")
+set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+
 set(CMAKE_MODULE_PATH 
 	"${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
 	"${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
@@ -17,24 +22,31 @@ include(UsePQP)
 include(UseAssimp)
 find_package(Doxygen)
 find_package(Ruby)
-find_package(Boost COMPONENTS date_time thread filesystem system REQUIRED)
+find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(Python REQUIRED)
+find_python_module(PyQt4 REQUIRED)
+find_python_module(OpenGL REQUIRED)
 
 enable_testing()
 
 include_directories(
-	"${Boost_INCLUDE_DIR}" 
+	"${Boost_INCLUDE_DIR}"
+	"${OPENGL_INCLUDE_DIR}"
 	"${ASSIMP_INCLUDE_DIR}" 
 	"${PQP_INCLUDE_DIR}"
-	${CMAKE_CURRENT_SOURCE_DIR}/app
-	ompl/src)
+	"${OMPL_APP_INCLUDE_DIR}"
+	"${OMPL_INCLUDE_DIR}")
 
 set(OMPL_APP_LIBRARIES 
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}
+	${OPENGL_LIBRARIES}
 	${ASSIMP_LIBRARY} 
 	${PQP_LIBRARY}
 	ompl)
 
 add_subdirectory(doc)
+add_subdirectory(python)
 add_subdirectory(ompl)
 add_subdirectory(app)

@@ -1,5 +1,6 @@
 #include "SE3RigidBodyPlanning.h"
 #include "detail/PQPSE3StateValidityChecker.h"
+#include "detail/assimpGL.h"
 #include <assimp.hpp>     
 #include <aiScene.h>      
 #include <aiPostProcess.h>
@@ -92,15 +93,16 @@ namespace ompl
     }
 }
 
-void ompl::app::SE3RigidBodyPlanning::setMeshes(const std::string &robot, const std::string &env)
+int ompl::app::SE3RigidBodyPlanning::setMeshes(const std::string &robot, const std::string &env,
+    bool useOpenGL)
 {
 
     // load environment 
     std::vector<const aiMesh*> envMesh;
     Assimp::Importer importerE;
     
-    if (!env.empty())
-    {
+    assert(!robot.empty());
+    assert(!env.empty());
 	const aiScene* envScene = importerE.ReadFile(env.c_str(),
 						     aiProcess_Triangulate            |
 						     aiProcess_JoinIdenticalVertices  |
@@ -118,7 +120,6 @@ void ompl::app::SE3RigidBodyPlanning::setMeshes(const std::string &robot, const 
 	}
 	else
 	    msg_.error("Unable to load environment scene: %s", env.c_str());
-    }   
 
     // load robot 
     Assimp::Importer importerR;
@@ -143,6 +144,8 @@ void ompl::app::SE3RigidBodyPlanning::setMeshes(const std::string &robot, const 
     // create state validity checker
     if (!robotMesh.empty())
 	setStateValidityChecker(base::StateValidityCheckerPtr(new PQPSE3StateValidityChecker(getSpaceInformation(), robotMesh, envMesh)));
+	
+    return useOpenGL ? assimpRender(robotScene, envScene) : 0;
 }
 
 void ompl::app::SE3RigidBodyPlanning::setup(void)
