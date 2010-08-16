@@ -203,15 +203,15 @@ namespace ompl
 		{
 		    const aiFace* face = &mesh->mFaces[t];
 		    GLenum face_mode;
-		    /*
+		    
 		    switch(face->mNumIndices) 
 		    {
-                    case 1: face_mode = GL_POINTS; printf("point\n"); break;
-                    case 2: face_mode = GL_LINES; printf("line\n"); break;
-                    case 3: face_mode = GL_TRIANGLES; printf("triangle\n"); break;
-                    default: face_mode = GL_POLYGON; printf("polygon\n"); break;
+                    case 1: face_mode = GL_POINTS; break;
+                    case 2: face_mode = GL_LINES; break;
+                    case 3: face_mode = GL_TRIANGLES; break;
+                    default: face_mode = GL_POLYGON; break;
 		    }
-		    */
+		    
 		    glBegin(face_mode);
 		    for(i = 0; i < face->mNumIndices; i++)
 		    {
