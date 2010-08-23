@@ -1,0 +1,5 @@
+#ifndef __COMMON_CONFIG_H__
+#define __COMMON_CONFIG_H__
+
+#define OMPL_RESOURCE_DIR "@OMPL_RESOURCE_DIR@"
+#endif
