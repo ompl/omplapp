@@ -19,3 +19,6 @@ target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_LIBRARIES})
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
 	"${CMAKE_CURRENT_SOURCE_DIR}/headers_app.txt"
 	"${CMAKE_SOURCE_DIR}/ompl/py-bindings/")
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in" 
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/config.h")

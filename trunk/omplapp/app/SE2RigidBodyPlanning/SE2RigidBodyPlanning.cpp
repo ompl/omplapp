@@ -1,3 +1,4 @@
+#include "common/config.h"
 #include "common/SE2RigidBodyPlanning.h"
 
 using namespace ompl;

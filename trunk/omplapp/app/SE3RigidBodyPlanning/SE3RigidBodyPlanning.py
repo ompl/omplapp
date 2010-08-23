@@ -73,9 +73,10 @@ goal().setY(0)
 goal().setZ(100)
 
 setup.setStartAndGoalStates(start, goal);
+print start, goal
 
-if setup.solve(10):
+if setup.solve():
 	setup.simplifySolution()
 	path = setup.getSolutionPath()
-	path.interpolate(.1)
-	print path
+	#path.interpolate(.1)
+	print path, path.check()

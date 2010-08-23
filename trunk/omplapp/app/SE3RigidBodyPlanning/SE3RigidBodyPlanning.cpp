@@ -1,23 +1,32 @@
+#include "common/config.h"
 #include "common/SE3RigidBodyPlanning.h"
 using namespace ompl;
 
 int main()
 {
     app::SE3RigidBodyPlanning setup;
-    setup.setMeshes("robot.dae", "robot.dae");
+    std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_robot.dae";
+    std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_env.dae";
+    setup.setMeshes(robot_fname.c_str(), env_fname.c_str());
     
-    base::ScopedState<> start(setup.getSpaceInformation());
-    start.random();
-    
+    base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
+    start->setX(0);
+    start->setY(0);
+    start->setZ(0);
+    start->rotation().setAxisAngle(0,0,0,0);
+
     base::ScopedState<base::SE3StateManifold> goal(start);
-    goal.random();
-    goal->setX(2);
-    goal->setY(3);
+    goal->setX(0);
+    goal->setY(0);
+    goal->setZ(100);
+    goal->rotation().setAxisAngle(0,0,0,0);
     
     setup.setStartAndGoalStates(start, goal);
-
+    start.print();
+    goal.print();
     if (setup.solve())
     {
+	setup.simplifySolution();
 	setup.getSolutionPath().print(std::cout);
     }
     

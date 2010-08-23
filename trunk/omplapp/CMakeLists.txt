@@ -12,6 +12,7 @@ set(OMPL_APP_LIB ompl_app)
 set(OMPL_APP_ARCHIVE "${OMPL_APP_LIB}_static")
 set(OMPL_APP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+set(OMPL_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 set(CMAKE_MODULE_PATH 
 	"${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
@@ -53,6 +54,5 @@ set(OMPL_APP_LIBRARIES
 	ompl)
 
 add_subdirectory(doc)
-add_subdirectory(python)
 add_subdirectory(ompl)
 add_subdirectory(app)
