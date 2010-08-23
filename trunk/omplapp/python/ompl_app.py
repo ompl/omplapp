@@ -41,7 +41,7 @@ from os.path import abspath, dirname, join
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL, GLU
 import webbrowser
-from math import cos, sin
+from math import cos, sin, pi, pow
 
 try:
 	from ompl import base as ob
@@ -138,11 +138,10 @@ class MainWindow(QtGui.QMainWindow):
 		self.omplSetup.setPlanner(self.planner)
 			
 	def solve(self):
-		#self.omplSetup.clear()
+		self.omplSetup.clear()
 		startPose = self.convertToOmplPose(self.mainWidget.glViewer.startPose)
 		goalPose = self.convertToOmplPose(self.mainWidget.glViewer.goalPose)
 		self.omplSetup.setStartAndGoalStates(startPose, goalPose)
-		self.omplSetup.setup()
 		solved = self.omplSetup.solve(10.0)
 		if solved:
 			self.omplSetup.simplifySolution()
@@ -197,8 +196,8 @@ class MainWindow(QtGui.QMainWindow):
 		self.helpMenu.addAction(self.emailListAct)
 		
 	def convertToOmplPose(self, pose):
-		c = [ cos(angle/2) for angle in pose[:3] ]
-		s = [ sin(angle/2) for angle in pose[:3] ]
+		c = [ cos(angle*pi/360.) for angle in pose[:3] ]
+		s = [ sin(angle*pi/360.) for angle in pose[:3] ]
 		state = ob.State(self.omplSetup.getStateManifold())
 		rot = state().rotation()
 		rot.w = c[0]*c[1]*c[2] + s[0]*s[1]*s[2]
@@ -255,7 +254,7 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.solutionPath = None
 		self.pathIndex = 0
 		self.timer = QtCore.QTimer()
-		self.timer.start(1000)
+		self.timer.start(100.)
 		self.timer.timeout.connect(self.updatePathPose)
 		self.animate = True
 		
@@ -266,7 +265,6 @@ class GLViewer(QtOpenGL.QGLWidget):
 		return QtCore.QSize(500, 300)
 
 	def setRotationAngle(self, axisIndex, angle):
-		angle = self.normalizeAngle(angle)
 		if angle != self.cameraPose[axisIndex]:
 			self.cameraPose[axisIndex] = angle
 			self.updateGL()
@@ -293,12 +291,12 @@ class GLViewer(QtOpenGL.QGLWidget):
 		if value==0:
 			self.timer.stop()
 		else:
-			self.timer.start(1000.0/float(value))
+			self.timer.start(100.0/float(value))
 			self.updatePathPose()
 	def updatePathPose(self):
 		if self.solutionPath != None:
 			self.pathIndex = (self.pathIndex + 1) % len(self.solutionPath)
-		self.updateGL()
+			self.updateGL()
 	def setSolutionPath(self, path):
 		n = len(path.states)
 		self.solutionPath = [ self.getTransform(path.states[i]) for i in range(n) ]
@@ -322,9 +320,9 @@ class GLViewer(QtOpenGL.QGLWidget):
 	def transform(self, pose):
 		GL.glPushMatrix()
 		GL.glTranslatef(pose[3], pose[4], pose[5])
-		GL.glRotated(pose[0] / 16.0, 1.0, 0.0, 0.0)
-		GL.glRotated(pose[1] / 16.0, 0.0, 1.0, 0.0)
-		GL.glRotated(pose[2] / 16.0, 0.0, 0.0, 1.0)
+		GL.glRotated(pose[0], 1.0, 0.0, 0.0)
+		GL.glRotated(pose[1], 0.0, 1.0, 0.0)
+		GL.glRotated(pose[2], 0.0, 0.0, 1.0)
 	def getTransform(self, xform):
 		R = xform.rotation()
 		(w,x,y,z) = (R.w, R.x, R.y, R.z)
@@ -385,22 +383,34 @@ class GLViewer(QtOpenGL.QGLWidget):
 	def mouseMoveEvent(self, event):
 		dx = event.x() - self.lastPos.x()
 		dy = event.y() - self.lastPos.y()
-
-		if event.buttons() & QtCore.Qt.LeftButton:
-			self.setRotationAngle(0, self.cameraPose[0] + 8*dy)
-			self.setRotationAngle(1, self.cameraPose[1] + 8*dx)
-		elif event.buttons() & QtCore.Qt.RightButton:
-			self.setRotationAngle(0, self.cameraPose[0] + 8*dy)
-			self.setRotationAngle(2, self.cameraPose[2] + 8*dx)
+		buttons = event.buttons()
+		modifiers = event.modifiers()
+		if modifiers & QtCore.Qt.CTRL:
+			print 'foo!'
+		if buttons & QtCore.Qt.LeftButton and not (modifiers & QtCore.Qt.META):
+			if modifiers & QtCore.Qt.SHIFT:
+				self.center[0] = self.center[0] + dx/self.scale
+				self.center[1] = self.center[1] + dy/self.scale
+				self.updateGL()
+			else:
+				self.setRotationAngle(0, self.cameraPose[0] + dy)
+				self.setRotationAngle(1, self.cameraPose[1] + dx)
+		elif buttons & QtCore.Qt.RightButton or \
+			(buttons & QtCore.Qt.LeftButton and modifiers & QtCore.Qt.META):
+			self.setRotationAngle(0, self.cameraPose[0] + dy)
+			self.setRotationAngle(2, self.cameraPose[2] + dx)
+		elif buttons & QtCore.Qt.MidButton:
+			if dy>0:
+				self.scale = self.scale*(1. + .01*dy)
+			else:
+				self.scale = self.scale*(1. - .01*dy)
 		self.lastPos = event.pos()
-
-	def normalizeAngle(self, angle):
-		while angle < 0:
-			angle += 360*16
-		while angle > 360*16:
-			angle -= 360*16
-		return angle
-
+	
+	def wheelEvent(self, event):
+		self.scale = self.scale * pow(2.0, -event.delta() / 240.0)
+		self.lastPos = event.pos()
+		self.updateGL()
+		
 class ProblemWidget(QtGui.QWidget):
 	def __init__(self):
 		super(ProblemWidget, self).__init__()
@@ -494,10 +504,10 @@ class SolveWidget(QtGui.QWidget):
 		speedlabel = QtGui.QLabel('Speed:')
 		self.speedSlider = QtGui.QSlider(QtCore.Qt.Horizontal)
 		self.speedSlider.setTickPosition(QtGui.QSlider.TicksBothSides)
-		self.speedSlider.setTickInterval(10)
+		self.speedSlider.setTickInterval(1)
 		self.speedSlider.setSingleStep(1)
-		self.speedSlider.setValue(10)
-		self.speedSlider.setMaximum(100)
+		self.speedSlider.setValue(1)
+		self.speedSlider.setMaximum(11)
 		self.speedSlider.setMaximumSize(200, 30)
 		
 		layout = QtGui.QGridLayout()

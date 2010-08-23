@@ -581,10 +581,13 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = ../ompl/doc/dox/demos.dox \
- 			 ../ompl/doc/dox/planners.dox \
- 			 ../ompl/doc/dox/python.dox \
- 			 ../ompl/doc/dox/statesAndManifolds.dox \
+INPUT                  = ../ompl/doc/dox/acknowledgements.dox \
+			 ../ompl/doc/dox/demos.dox \
+			 ../ompl/doc/dox/download.dox \
+			 ../ompl/doc/dox/newplanner.dox \
+			 ../ompl/doc/dox/planners.dox \
+			 ../ompl/doc/dox/python.dox \
+			 ../ompl/doc/dox/statesAndManifolds.dox \
 			 ../ompl/src \
 			 ./dox
 

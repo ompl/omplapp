@@ -104,5 +104,5 @@ endif(MSVC_IDE)
 
 set(PQP_INCLUDE_DIR "${PQP_DIR}/PQP_v1.3/src")
 aux_source_directory(${PQP_INCLUDE_DIR} SRC_PQP)
-add_library(PQP SHARED ${SRC_PQP})
+add_shared_and_static_library(PQP ${SRC_PQP})
 set(PQP_LIBRARY "PQP")

@@ -43,12 +43,15 @@ ompl_app_root = dirname(dirname(dirname(abspath(__file__))))
 ompl_resources_dir = join(ompl_app_root, 'resources')
 
 try:
-	from ompl import app as oa
 	from ompl import base as ob
+	from ompl import geometric as og
+	from ompl import app as oa
 except:
 	sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings' ) )
-	from ompl import app as oa
 	from ompl import base as ob
+	from ompl import geometric as og
+	from ompl import app as oa
+
 
 setup = oa.SE3RigidBodyPlanning()
 setup.setMeshes(
@@ -67,7 +70,7 @@ rot = goal().rotation()
 (rot.w, rot.x, rot.y, rot.z) = (1,0,0,0)
 goal().setX(0)
 goal().setY(0)
-goal().setZ(50)
+goal().setZ(100)
 
 setup.setStartAndGoalStates(start, goal);
 
