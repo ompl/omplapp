@@ -14,3 +14,8 @@ target_link_libraries(SE3RigidBodyPlanning ${OMPL_APP_LIBRARIES})
 aux_source_directory(SE2RigidBodyPlanning SE2RigidBodyPlanning_SRC)
 add_executable(SE2RigidBodyPlanning ${SE2RigidBodyPlanning_SRC}) 
 target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_LIBRARIES})
+
+# copy file (if needed) for generation of python bindings
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+	"${CMAKE_CURRENT_SOURCE_DIR}/headers_app.txt"
+	"${CMAKE_SOURCE_DIR}/ompl/py-bindings/")
