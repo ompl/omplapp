@@ -13,7 +13,6 @@ namespace ompl
 	void inferBounds(base::RealVectorBounds &bounds, const std::vector<aiVector3D> &vertices, double multiply = 1.1, double add = 0.0);
 	void extractTriangles(const aiScene *scene, std::vector<aiVector3D> &triangles);
 	void extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices);
-	void extractMeshes(const aiScene *scene, std::vector<aiMesh*> &meshes);
 	int assimpRender(const aiScene* envScene, const aiScene* robotScene);
     }
 }

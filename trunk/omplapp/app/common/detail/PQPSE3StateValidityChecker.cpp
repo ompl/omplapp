@@ -18,5 +18,5 @@ bool ompl::app::PQPSE3StateValidityChecker::isValid(const base::State *state) co
     PQP_Collide(&cr, robRot,  robTrans, robot_.get(),
 		identityRotation, identityTranslation, environment_.get(), PQP_FIRST_CONTACT);
     
-    return cr.Colliding() != 0;
+    return !cr.Colliding();
 }

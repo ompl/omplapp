@@ -47,40 +47,62 @@ void ompl::app::inferBounds(base::RealVectorBounds &bounds, const std::vector<ai
     bounds.high[0] = maxX + dx; bounds.high[1] = maxY + dy; bounds.high[2] = maxZ + dz;	    
 }
 
-void ompl::app::extractMeshes(const aiScene *scene, std::vector<aiMesh*> &meshes)
+
+namespace ompl
 {
-    if (scene && scene->HasMeshes())
-	for (unsigned int i = 0 ; i < scene->mNumMeshes ; ++i)
-	    meshes.push_back(scene->mMeshes[i]);
+    namespace app
+    {
+
+	void extractVerticesAux(const aiScene *scene, const aiNode *node, aiMatrix4x4 transform,
+				std::vector<aiVector3D> &vertices)
+	{
+	    transform *= node->mTransformation;
+	    for (unsigned int i = 0 ; i < node->mNumMeshes; ++i)
+	    {
+		const aiMesh* a = scene->mMeshes[node->mMeshes[i]];
+		for (unsigned int i = 0 ; i < a->mNumVertices ; ++i)
+	    vertices.push_back(transform * a->mVertices[i]);
+	    }
+	    
+	    for (unsigned int n = 0; n < node->mNumChildren; ++n)
+		extractVerticesAux(scene, node->mChildren[n], transform, vertices);
+	}
+
+	void extractTrianglesAux(const aiScene *scene, const aiNode *node, aiMatrix4x4 transform,
+				 std::vector<aiVector3D> &triangles)
+	{
+	    transform *= node->mTransformation;
+	    for (unsigned int i = 0 ; i < node->mNumMeshes; ++i)
+	    {
+		const aiMesh* a = scene->mMeshes[node->mMeshes[i]];
+		for (unsigned int i = 0 ; i < a->mNumFaces ; ++i)
+		    if (a->mFaces[i].mNumIndices == 3)
+		    {
+			triangles.push_back(transform * a->mVertices[a->mFaces[i].mIndices[0]]);
+			triangles.push_back(transform * a->mVertices[a->mFaces[i].mIndices[1]]);
+			triangles.push_back(transform * a->mVertices[a->mFaces[i].mIndices[2]]);
+		    }
+	    }
+	    
+	    for (unsigned int n = 0; n < node->mNumChildren; ++n)
+		extractTrianglesAux(scene, node->mChildren[n], transform, triangles);
+	}
+    }
 }
+
 
 void ompl::app::extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices)
 {
-    std::vector<aiMesh*> meshes;
-    extractMeshes(scene, meshes);
-    for (unsigned int j = 0 ; j < meshes.size() ; ++j)
-    {	    
-	const aiMesh *a = meshes[j];
-	for (unsigned int i = 0 ; i < a->mNumVertices ; ++i)
-	    vertices.push_back(a->mVertices[i]);
-    }  
+    vertices.clear();
+    if (scene && scene->HasMeshes())
+	extractVerticesAux(scene, scene->mRootNode, aiMatrix4x4(), vertices);
 }
 
 void ompl::app::extractTriangles(const aiScene *scene, std::vector<aiVector3D> &triangles)
 {
-    std::vector<aiMesh*> meshes;
-    extractMeshes(scene, meshes);
-    for (unsigned int j = 0 ; j < meshes.size() ; ++j)
-    {	    
-	const aiMesh *a = meshes[j];
-	for (unsigned int i = 0 ; i < a->mNumFaces ; ++i)
-	    if (a->mFaces[i].mNumIndices == 3)
-	    {
-		triangles.push_back(a->mVertices[a->mFaces[i].mIndices[0]]);
-		triangles.push_back(a->mVertices[a->mFaces[i].mIndices[1]]);
-		triangles.push_back(a->mVertices[a->mFaces[i].mIndices[2]]);
-	    }
-    }
+    triangles.clear();
+    if (scene && scene->HasMeshes())
+	extractTrianglesAux(scene, scene->mRootNode, aiMatrix4x4(), triangles);
 }
 
 // Most of the code below is taken from external/assimp/samples/SimpleOpenGL/Sample_SimpleOpenGL.c
@@ -213,7 +235,7 @@ namespace ompl
 		    }
 		    
 		    glBegin(face_mode);
-		    for(i = 0; i < face->mNumIndices; i++)
+		    for(i = 0; i < (int)face->mNumIndices; i++)
 		    {
 			int index = face->mIndices[i];
 			if(mesh->mColors[0] != NULL)
