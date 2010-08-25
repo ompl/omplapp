@@ -54,6 +54,7 @@ except:
 
 
 setup = oa.SE3RigidBodyPlanning()
+print setup.getStateManifold().getBounds().low[0]
 setup.setMeshes(
 	join(ompl_resources_dir, 'Twistycool_robot.dae'),
 	join(ompl_resources_dir, 'Twistycool_env.dae'));
@@ -78,5 +79,5 @@ print start, goal
 if setup.solve():
 	setup.simplifySolution()
 	path = setup.getSolutionPath()
-	#path.interpolate(.1)
+	path.interpolate(.1)
 	print path, path.check()

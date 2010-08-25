@@ -58,7 +58,7 @@ set(ASSIMP_CONTRIB
 	${ASSIMP_ROOT_DIR}/contrib/unzip/ioapi.c
 	${ASSIMP_ROOT_DIR}/contrib/unzip/unzip.c)
 
-add_shared_and_static_library(assimp ${ASSIMP_CODE} ${ASSIMP_CONTRIB})
+add_library(assimp SHARED ${ASSIMP_CODE} ${ASSIMP_CONTRIB})
 
 add_definitions( -DASSIMP_BUILD_DLL_EXPORT )
 
@@ -67,6 +67,6 @@ if(WIN32)
 		add_definitions(-D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS)
 	endif(MSVC80 OR MSVC90)
 endif(WIN32)
-install(TARGETS assimp DESTINATION lib/)
 install(FILES ${ASSIMP_PUBLIC_HEADERS} DESTINATION include/assimp/ )
 install(FILES ${ASSIMP_COMPILER_HEADERS} DESTINATION include/assimp/Compiler/)
+install(TARGETS assimp DESTINATION lib/)

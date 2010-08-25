@@ -57,7 +57,7 @@ ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityCheck
     model->BeginModel();
     int id = 0;
     const int N = triangles.size() / 3;
-    for (unsigned int j = 0 ; j < N ; ++j)
+    for (int j = 0 ; j < N ; ++j)
     {	    
 	const aiVector3D &v0 = triangles[j * 3];
 	const aiVector3D &v1 = triangles[j * 3 + 1];
