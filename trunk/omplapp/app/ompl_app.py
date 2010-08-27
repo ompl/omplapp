@@ -40,7 +40,7 @@ import sys
 from os.path import abspath, dirname, join
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL, GLU
-import webbrowser
+import webbrowser, re, tempfile
 from math import cos, sin, pi, pow
 
 try:
@@ -63,6 +63,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.setWindowTitle('OMPL')
 		self.environmentFile = None
 		self.robotFile = None
+		self.path = None
 		self.omplSetup = oa.SE3RigidBodyPlanning()
 		self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
 		self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
@@ -89,13 +90,18 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.mainWidget.plannerWidget.ESTRange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.ESTGoalBias.valueChanged.connect(self.setGoalBias)
-		self.logWindow = LogWindow(self)
-		self.commandWindow = CommandWindow(self)
+
+		self.timeLimit = self.mainWidget.plannerWidget.timeLimit.value()
+		self.mainWidget.plannerWidget.timeLimit.valueChanged.connect(self.setTimeLimit)
+		# doesn't work yet
+		#self.logWindow = LogWindow(self)
+		# not implemented yet
+		#self.commandWindow = CommandWindow(self)
 		self.setPlanner(0)
 		
 	def openEnvironment(self):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self))
-		if fname!=self.environmentFile:
+		if len(fname)>0 and fname!=self.environmentFile:
 			self.environmentFile = fname
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.robotFile:
@@ -106,7 +112,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 	def openRobot(self):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self))
-		if fname!=self.robotFile:
+		if len(fname)>0 and fname!=self.robotFile:
 			self.robotFile = fname
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.environmentFile:
@@ -117,8 +123,38 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 				
 	def openPath(self):
-		self.mainWidget.glViewer.solutionPath = str(QtGui.QFileDialog.getOpenFileName(self))
-		
+		fname = str(QtGui.QFileDialog.getOpenFileName(self))
+		if len(fname)>0:
+			si = self.omplSetup.getSpaceInformation()
+			pathstr = open(fname,'r').read()
+			# Match whitespace-separated sequences of 3 or 4 numbers
+			regex = re.compile('(-?[0-9\.]+\s?){3,4}')
+			states = regex.finditer(pathstr)
+			self.path = []
+			self.mainWidget.glViewer.solutionPath = []
+			for state in states:
+				pos = [float(x) for x in state.group().split()]
+				state = next(states)
+				rot = [float(x) for x in state.group().split()]
+				s = ob.State(si)
+				s().setX(pos[0])
+				s().setY(pos[1])
+				s().setZ(pos[2])
+				R = s().rotation()
+				(R.x, R.y, R.z, R.w) = rot
+				self.path.append(s)
+				self.mainWidget.glViewer.solutionPath.append(
+					self.mainWidget.glViewer.getTransform(s()))
+	def savePath(self):
+		if self.path:
+			fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt'))
+			if len(fname)>0:
+				if isinstance(self.path, list):
+					pathstr = ''.join([str(s) for s in self.path])
+				else:
+					pathstr = str(self.path)
+				open(fname,'w').write(pathstr)
+			
 	def showMainWindow(self):
 		self.mainWidget.show()
 		self.mainWidget.raise_()
@@ -143,21 +179,34 @@ class MainWindow(QtGui.QMainWindow):
 		si = self.omplSetup.getSpaceInformation()
 		if value==0:
 			self.planner = og.KPIECE1(si)
+			self.planner.setRange(self.mainWidget.plannerWidget.KPIECERange.value())
+			self.planner.setGoalBias(self.mainWidget.plannerWidget.KPIECEGoalBias.value())
+			self.planner.setBorderPercentage(self.mainWidget.plannerWidget.KPIECEBorderFraction.value())
 		elif value==1:
 			self.planner = og.LBKPIECE1(si)
+			self.planner.setRange(self.mainWidget.plannerWidget.LBKPIECERange.value())
+			self.planner.setBorderPercentage(self.mainWidget.plannerWidget.LBKPIECEBorderFraction.value())
 		elif value==2:
 			self.planner = og.PRM(si)
+			self.planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.value())
 		elif value==3:
 			self.planner = og.SBL(si)
+			self.planner.setRange(self.mainWidget.plannerWidget.SBLRange.value())
 		elif value==4:
 			self.planner = og.RRTConnect(si)
+			self.planner.setRange(self.mainWidget.plannerWidget.RRTConnectRange.value())
 		elif value==5:
 			self.planner = og.RRT(si)
+			self.planner.setRange(self.mainWidget.plannerWidget.RRTRange.value())
+			self.planner.setGoalBias(self.mainWidget.plannerWidget.RRTGoalBias.value())
 		elif value==6:
 			self.planner = og.LazyRRT(si)
+			self.planner.setRange(self.mainWidget.plannerWidget.LazyRRTRange.value())
+			self.planner.setGoalBias(self.mainWidget.plannerWidget.LazyRRTGoalBias.value())
 		elif value==7:
 			self.planner = og.EST(si)
-		self.omplSetup.setPlanner(self.planner)
+			self.planner.setRange(self.mainWidget.plannerWidget.ESTRange.value())
+			self.planner.setGoalBias(self.mainWidget.plannerWidget.ESTGoalBias.value())
 	def setRange(self, value): 
 		print 'Changing range from %g to %g' %  (self.planner.getRange(), value)
 		self.planner.setRange(value)
@@ -170,18 +219,21 @@ class MainWindow(QtGui.QMainWindow):
 	def setMaxNearestNeighbors(self, value): 
 		print 'Changing max. nearest neighbors from %g to %g' %  (self.planner.getMaxNearestNeighbors(), value)
 		self.planner.setMaxNearestNeighbors(value)	
-			
+	def setTimeLimit(self, value):
+		print 'Changing time limit from %g to %g' % (self.timeLimit, value)
+		self.timeLimit = value
 	def solve(self):
 		self.omplSetup.clear()
 		startPose = self.convertToOmplPose(self.mainWidget.glViewer.startPose)
 		goalPose = self.convertToOmplPose(self.mainWidget.glViewer.goalPose)
+		self.omplSetup.setPlanner(self.planner)
 		self.omplSetup.setStartAndGoalStates(startPose, goalPose)
-		solved = self.omplSetup.solve(10.0)
+		solved = self.omplSetup.solve(self.timeLimit)
 		if solved:
 			self.omplSetup.simplifySolution()
-			path = self.omplSetup.getSolutionPath()
-			path.interpolate(1)
-			self.mainWidget.glViewer.setSolutionPath(path)
+			self.path = self.omplSetup.getSolutionPath()
+			self.path.interpolate(1)
+			self.mainWidget.glViewer.setSolutionPath(self.path)
 	
 	def clear(self):
 		self.omplSetup.clear()
@@ -189,22 +241,28 @@ class MainWindow(QtGui.QMainWindow):
 		
 	def createActions(self):
 		self.openEnvironmentAct = QtGui.QAction('Open &Environment', self,
-			statusTip='Open an environment model', triggered=self.openEnvironment)
+			shortcut='Ctrl+E', statusTip='Open an environment model', 
+			triggered=self.openEnvironment)
 		self.openRobotAct = QtGui.QAction('Open &Robot', self,
-			statusTip='Open a robot model', triggered=self.openRobot)
-		self.openPathAct = QtGui.QAction('Open &Path', self,
-			statusTip='Open a path', triggered=self.openPath)
+			shortcut='Ctrl+R', statusTip='Open a robot model',
+			triggered=self.openRobot)
+		self.openPathAct = QtGui.QAction('&Open Path', self,
+			shortcut='Ctrl+O', statusTip='Open a path', 
+			triggered=self.openPath)
+		self.savePathAct = QtGui.QAction('Save &Path', self,
+			shortcut='Ctrl+S', statusTip='Save a path', 
+			triggered=self.savePath)
 		self.exitAct = QtGui.QAction('E&xit', self, shortcut='Ctrl+Q',
 			statusTip='Exit the application', triggered=self.close)
 			
 		self.mainWindowAct = QtGui.QAction('Main Window', self,
-			triggered=self.showMainWindow)
+			shortcut='Ctrl+0', triggered=self.showMainWindow)
 		self.logWindowAct = QtGui.QAction('Log Window', self,
-			triggered=self.showLogWindow)
+			shortcut='Ctrl+1', triggered=self.showLogWindow)
 		self.commandWindowAct = QtGui.QAction('Command Window', self,
-			triggered=self.showCommandWindow)
+			shortcut='Ctrl+2', triggered=self.showCommandWindow)
 		
-		self.omplWebAct = QtGui.QAction('OMPL Web Wite', self,
+		self.omplWebAct = QtGui.QAction('OMPL Web Site', self,
 			triggered=self.omplWebSite)
 		self.contactDevsAct = QtGui.QAction('Contact Developers', self,
 			triggered=self.contactDevs)
@@ -216,13 +274,15 @@ class MainWindow(QtGui.QMainWindow):
 		self.fileMenu.addAction(self.openEnvironmentAct)
 		self.fileMenu.addAction(self.openRobotAct)
 		self.fileMenu.addAction(self.openPathAct)
+		self.fileMenu.addAction(self.savePathAct)
 		self.fileMenu.addSeparator()
 		self.fileMenu.addAction(self.exitAct)
-		
-		self.windowMenu = self.menuBar().addMenu('Window')
-		self.windowMenu.addAction(self.mainWindowAct)
-		self.windowMenu.addAction(self.logWindowAct)
-		self.windowMenu.addAction(self.commandWindowAct)
+
+		# commented out for now, since only the mainWindow works
+		# self.windowMenu = self.menuBar().addMenu('Window')
+		# self.windowMenu.addAction(self.mainWindowAct)
+		# self.windowMenu.addAction(self.logWindowAct)
+		# self.windowMenu.addAction(self.commandWindowAct)
 
 		self.helpMenu = self.menuBar().addMenu('Help')
 		self.helpMenu.addAction(self.omplWebAct)
@@ -266,6 +326,16 @@ class MainWidget(QtGui.QWidget):
 class LogWindow(QtGui.QWidget):
 	def __init__(self, parent=None, flags=QtCore.Qt.Tool):
 		super(LogWindow, self).__init__(parent, flags)
+		self.logFile = tempfile.NamedTemporaryFile()
+		sys.stdout = self.logFile
+		sys.stderr = self.logFile
+		self.logWatch = QtCore.QFileSystemWatcher()
+		self.logWatch.addPath(self.logFile.name)
+		self.logView = QtGui.QTextEdit(self)
+		self.logView.setReadOnly(True)
+		layout = QtGui.QGridLayout()
+		layout.addWidget(self.logView, 0, 0)
+		self.setLayout(layout)
 
 class CommandWindow(QtGui.QWidget):
 	def __init__(self, parent=None, flags=QtCore.Qt.Tool):
@@ -688,8 +758,8 @@ class PlannerWidget(QtGui.QWidget):
 		layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
 		layout.addWidget(self.timeLimit, 1, 1)
 		layout.addWidget(self.stackedWidget, 2, 0, 1, 2) 
-
 		self.setLayout(layout)
+
 
 class SolveWidget(QtGui.QWidget):
 	def __init__(self):
