@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(omplapp CXX C)
 
 set(OMPLAPP_MAJOR_VERSION 0)
-set(OMPLAPP_MINOR_VERSION 9)
+set(OMPLAPP_MINOR_VERSION 1)
 set(OMPLAPP_PATCH_VERSION 0)
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.{$OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 
@@ -55,3 +55,5 @@ set(OMPL_APP_LIBRARIES
 add_subdirectory(doc)
 add_subdirectory(ompl)
 add_subdirectory(app)
+
+include(CPackSettings)
