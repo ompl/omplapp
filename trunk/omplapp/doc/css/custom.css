@@ -21,13 +21,16 @@ h3 { font-style: italic; margin-top: 1em; }
 	margin:0px 1px 1px 0px;
 	width: 940px;
 }
-div.fragment {
-	margin: 0px;
-	border: 1px solid #ddf;
-	background-color: #f8f8ff;
-	padding: 2px 2px 2px 2em;
+pre.fragment {
+	border: 1px solid #C4CFE5;
+	background-color: #FBFCFD;
+	padding: 4px 6px;
+	margin: 4px 8px 4px 2px;
+	overflow: auto;
+	word-wrap: break-word;
+	font-size:  9pt;
+	line-height: 125%;
 }
-pre.fragment { margin:0px; padding: 0px; }
 .footer {
 	font-size: small;
 	font-weight: bold;

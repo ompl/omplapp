@@ -11,7 +11,7 @@ To compile OMPL and OMPL-app the following two packages are required:
 - <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt4</a> or <a href="http://www.pyside.org/">PySide</a> (which, in turn, require <a href="http://qt.nokia.com/downloads">Qt4</a>), and
 - <a href="http://pyopengl.sourceforge.net/">PyOpenGL</a>.
 .
-For running the tests, you will also need <a href="http://code.google.com/p/googletest/">GTest</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://www.language-binding.net/pyplusplus/pyplusplus.html">Py++</a> (which, in turn, requires pygccxml and GCC-XML). We use the versions of Py++, pygccxml, and GCC-XML that are taken directly from their respective repositories, but official releases may work as well. To generate the documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
+For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://www.language-binding.net/pyplusplus/pyplusplus.html">Py++</a> (which, in turn, requires pygccxml and GCC-XML). We use the versions of Py++, pygccxml, and GCC-XML that are taken directly from their respective repositories, but official releases may work as well. To generate the documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
 
 Below are installation instructions for <a href="#install_linux">Linux</a>, <a href="#install_osx">OS X</a>, and <a href="#install_windows">Windows</a>.
 <br>
@@ -68,7 +68,7 @@ If you want a debug version of ompl, change "Release" to "Debug" above.
 
 \section install_windows Installation on Windows
 
-- Download and install the dependencies listed above. For most dependencies, you can get a precompiled version. If you plan to use Microsoft Visual Studio, you can download Boost <a href="http://www.boostpro.com/download/">here</a>. If you want to use MinGW or Cygwin, follow the <a href="http://www.boost.org/doc/libs/1_43_0/more/getting_started/unix-variants.html">Unix installation instructions</a>.
+- Download and install the dependencies listed above. For most dependencies, you can get a precompiled version. If you plan to use Microsoft Visual Studio, you can download Boost <a href="http://www.boostpro.com/download/">here</a>. If you want to use MinGW or Cygwin, follow the <a href="http://www.boost.org/doc/libs/1_44_0/more/getting_started/unix-variants.html">Unix installation instructions</a>.
 - Run CMake (either the GUI or the command line version). From the GUI it is easy to generate project files for Visual Studio or Makefiles.
 - Build the "solution" ALL in Visual Studio, or run \c make if you use MinGW/Cygwin.
 .
