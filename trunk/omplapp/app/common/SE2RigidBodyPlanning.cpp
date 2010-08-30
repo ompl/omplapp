@@ -8,7 +8,7 @@ namespace ompl
     namespace app
     {
 	
-	static void inferBounds(const base::StateManifoldPtr &m, const aiScene* scene)
+	static void inferBounds(const base::StateManifoldPtr &m, const aiScene* scene, double factor, double add)
 	{
 	    base::RealVectorBounds bounds = m->as<base::SE2StateManifold>()->getBounds();
 	    
@@ -18,14 +18,14 @@ namespace ompl
 		std::vector<aiVector3D> vertices;
 		extractVertices(scene, vertices);
 		base::RealVectorBounds b(3);
-		inferBounds(b, vertices, 1.1, 0.0);
+		inferBounds(b, vertices, factor, add);
 		bounds.low[0] = b.low[0]; bounds.low[1] = b.low[1];
 		bounds.high[0] = b.high[0]; bounds.high[1] = b.high[1];
 		m->as<base::SE2StateManifold>()->setBounds(bounds);
 	    }
 	}
 	
-	static void inferBounds(const base::StateManifoldPtr &m, const base::ProblemDefinitionPtr &pdef)
+	static void inferBounds(const base::StateManifoldPtr &m, const base::ProblemDefinitionPtr &pdef, double factor, double add)
 	{
 	    // update the bounds based on start states, if needed
 	    base::RealVectorBounds bounds = m->as<base::SE2StateManifold>()->getBounds();
@@ -46,8 +46,8 @@ namespace ompl
 		if (minY > y) minY = y;
 		if (maxY < y) maxY = y;
 	    }
-	    double dx = (maxX - minX) * 0.10;
-	    double dy = (maxY - minY) * 0.10;
+	    double dx = (maxX - minX) * factor + add;
+	    double dy = (maxY - minY) * factor + add;
 	    
 	    if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
 	    if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
@@ -76,7 +76,10 @@ int ompl::app::SE2RigidBodyPlanning::setMeshes(const std::string &robot, const s
     if (envScene)
     {
 	if (envScene->HasMeshes())
-	    inferBounds(getStateManifold(), envScene);
+	{
+	    inferBounds(getStateManifold(), envScene, factor_, add_);
+	    si_->setStateValidityCheckingResolution(shortestEdge(envScene));
+	}
 	else
 	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
     }
@@ -101,12 +104,12 @@ int ompl::app::SE2RigidBodyPlanning::setMeshes(const std::string &robot, const s
     // create state validity checker
     if (!robotMesh.empty())
 	setStateValidityChecker(base::StateValidityCheckerPtr(new PQPSE2StateValidityChecker(getSpaceInformation(), robotScene, envScene)));
-	
+
     return useOpenGL ? assimpRender(robotScene, envScene) : 0;
 }
 
 void ompl::app::SE2RigidBodyPlanning::setup(void)
 {
-    inferBounds(getStateManifold(), getProblemDefinition());
+    inferBounds(getStateManifold(), getProblemDefinition(), factor_, add_);
     geometric::SimpleSetup::setup();    
 }

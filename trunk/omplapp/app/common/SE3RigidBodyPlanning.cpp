@@ -8,7 +8,7 @@ namespace ompl
     namespace app
     {
 	
-	static void inferBounds(const base::StateManifoldPtr &m, const aiScene* scene)
+	static void inferBounds(const base::StateManifoldPtr &m, const aiScene* scene, double factor, double add)
 	{
 	    base::RealVectorBounds bounds = m->as<base::SE3StateManifold>()->getBounds();
 	    
@@ -17,12 +17,12 @@ namespace ompl
 	    {
 		std::vector<aiVector3D> vertices;
 		extractVertices(scene, vertices);
-		inferBounds(bounds, vertices, 1.1, 0.0);
+		inferBounds(bounds, vertices, factor, add);
 		m->as<base::SE3StateManifold>()->setBounds(bounds);
 	    }
 	}
 	
-	static void inferBounds(const base::StateManifoldPtr &m, const base::ProblemDefinitionPtr &pdef)
+	static void inferBounds(const base::StateManifoldPtr &m, const base::ProblemDefinitionPtr &pdef, double factor, double add)
 	{
 	    // update the bounds based on start states, if needed
 	    base::RealVectorBounds bounds = m->as<base::SE3StateManifold>()->getBounds();
@@ -48,9 +48,9 @@ namespace ompl
 		if (minZ > z) minZ = z;
 		if (maxZ < z) maxZ = z;
 	    }
-	    double dx = (maxX - minX) * 0.10;
-	    double dy = (maxY - minY) * 0.10;
-	    double dz = (maxZ - minZ) * 0.10;
+	    double dx = (maxX - minX) * factor + add;
+	    double dy = (maxY - minY) * factor + add;
+	    double dz = (maxZ - minZ) * factor + add;
 	    
 	    if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
 	    if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
@@ -79,7 +79,10 @@ int ompl::app::SE3RigidBodyPlanning::setMeshes(const std::string &robot, const s
     if (envScene)
     {
 	if (envScene->HasMeshes())
-	    inferBounds(getStateManifold(), envScene);
+	{
+	    inferBounds(getStateManifold(), envScene, factor_, add_);
+	    si_->setStateValidityCheckingResolution(shortestEdge(envScene));
+	}
 	else
 	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
     }
@@ -109,6 +112,6 @@ int ompl::app::SE3RigidBodyPlanning::setMeshes(const std::string &robot, const s
 
 void ompl::app::SE3RigidBodyPlanning::setup(void)
 {
-    inferBounds(getStateManifold(), getProblemDefinition());
+    inferBounds(getStateManifold(), getProblemDefinition(), factor_, add_);
     geometric::SimpleSetup::setup();    
 }

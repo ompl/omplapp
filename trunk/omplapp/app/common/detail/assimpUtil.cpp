@@ -105,6 +105,24 @@ void ompl::app::extractTriangles(const aiScene *scene, std::vector<aiVector3D> &
 	extractTrianglesAux(scene, scene->mRootNode, aiMatrix4x4(), triangles);
 }
 
+double ompl::app::shortestEdge(const aiScene *scene)
+{
+    std::vector<aiVector3D> triangles;
+    extractTriangles(scene, triangles);
+    double s = std::numeric_limits<double>::infinity();
+    for (unsigned int i = 0 ; i < triangles.size() / 3 ; ++i)
+    {
+	double d = (triangles[3 * i] - triangles[3 * i + 1]).Length();
+	if (d < s) s = d;
+	d = (triangles[3 * i] - triangles[3 * i + 2]).Length();
+	if (d < s) s = d;
+	d = (triangles[3 * i + 1] - triangles[3 * i + 2]).Length();
+	if (d < s) s = d;
+    }
+    return s;
+}
+
+
 // Most of the code below is taken from external/assimp/samples/SimpleOpenGL/Sample_SimpleOpenGL.c
 
 
