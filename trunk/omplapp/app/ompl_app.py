@@ -68,31 +68,26 @@ class MainWindow(QtGui.QMainWindow):
 		self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
 		self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
 		self.mainWidget.plannerWidget.plannerSelect.activated.connect(self.setPlanner)
-
 		self.mainWidget.plannerWidget.KPIECERange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.KPIECEGoalBias.valueChanged.connect(self.setGoalBias)
 		self.mainWidget.plannerWidget.KPIECEBorderFraction.valueChanged.connect(self.setBorderFaction)
-
 		self.mainWidget.plannerWidget.LBKPIECERange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.LBKPIECEBorderFraction.valueChanged.connect(self.setBorderFaction)
-
 		self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.valueChanged.connect(self.setMaxNearestNeighbors)
-
 		self.mainWidget.plannerWidget.SBLRange.valueChanged.connect(self.setRange)
-
 		self.mainWidget.plannerWidget.RRTConnectRange.valueChanged.connect(self.setRange)
-
 		self.mainWidget.plannerWidget.RRTRange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.RRTGoalBias.valueChanged.connect(self.setGoalBias)
-
 		self.mainWidget.plannerWidget.LazyRRTRange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.LazyRRTGoalBias.valueChanged.connect(self.setGoalBias)
-
 		self.mainWidget.plannerWidget.ESTRange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.ESTGoalBias.valueChanged.connect(self.setGoalBias)
-
 		self.timeLimit = self.mainWidget.plannerWidget.timeLimit.value()
 		self.mainWidget.plannerWidget.timeLimit.valueChanged.connect(self.setTimeLimit)
+		self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(self.mainWidget.glViewer.setLowerBound)
+		self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(self.mainWidget.glViewer.setUpperBound)
+		self.mainWidget.glViewer.boundLowChanged.connect(self.mainWidget.boundsWidget.bounds_low.setBounds)
+		self.mainWidget.glViewer.boundHighChanged.connect(self.mainWidget.boundsWidget.bounds_high.setBounds)
 		# doesn't work yet
 		#self.logWindow = LogWindow(self)
 		# not implemented yet
@@ -106,6 +101,9 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.robotFile:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
+				self.omplSetup.setup()
+				self.mainWidget.plannerWidget.resolution.setValue(
+					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			else:
 				glid = self.omplSetup.setMeshes(self.environmentFile, self.environmentFile, True)
 			self.mainWidget.glViewer.GLlistid = glid
@@ -117,6 +115,9 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.environmentFile:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
+				self.omplSetup.setup()
+				self.mainWidget.plannerWidget.resolution.setValue(
+					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			else:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.robotFile, True)
 			self.mainWidget.glViewer.GLlistid = glid
@@ -221,13 +222,24 @@ class MainWindow(QtGui.QMainWindow):
 		self.planner.setMaxNearestNeighbors(value)	
 	def setTimeLimit(self, value):
 		print 'Changing time limit from %g to %g' % (self.timeLimit, value)
-		self.timeLimit = value
+		self.timeLimit = value		
 	def solve(self):
 		self.omplSetup.clear()
 		startPose = self.convertToOmplPose(self.mainWidget.glViewer.startPose)
 		goalPose = self.convertToOmplPose(self.mainWidget.glViewer.goalPose)
 		self.omplSetup.setPlanner(self.planner)
+		bounds = ob.RealVectorBounds(3)
+		(bounds.low[0],bounds.low[1],bounds.low[2]) = self.mainWidget.glViewer.bounds_low
+		(bounds.high[0],bounds.high[1],bounds.high[2]) = self.mainWidget.glViewer.bounds_high
+		self.omplSetup.getStateManifold().setBounds(bounds)
+		print [x for x in bounds.low ]
+		print [x for x in bounds.high ]
 		self.omplSetup.setStartAndGoalStates(startPose, goalPose)
+		self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
+			self.mainWidget.plannerWidget.resolution.value())
+		bounds = self.omplSetup.getStateManifold().getBounds()
+		
+		print self.omplSetup
 		solved = self.omplSetup.solve(self.timeLimit)
 		if solved:
 			self.omplSetup.simplifySolution()
@@ -309,10 +321,12 @@ class MainWidget(QtGui.QWidget):
 		self.glViewer = GLViewer()
 		self.problemWidget = ProblemWidget()
 		self.plannerWidget = PlannerWidget()
+		self.boundsWidget = BoundsWidget()
 		self.solveWidget = SolveWidget()
 		tabWidget = QtGui.QTabWidget()
 		tabWidget.addTab(self.problemWidget, "Problem")
 		tabWidget.addTab(self.plannerWidget, "Planner")
+		tabWidget.addTab(self.boundsWidget, "Bounding box")
 		layout = QtGui.QGridLayout()
 		layout.addWidget(self.glViewer, 0, 0)
 		layout.addWidget(tabWidget, 0, 1)
@@ -342,7 +356,8 @@ class CommandWindow(QtGui.QWidget):
 		super(CommandWindow, self).__init__(parent, flags)
 
 class GLViewer(QtOpenGL.QGLWidget):
-	startXChanged = QtCore.pyqtSignal(float)
+	boundLowChanged = QtCore.pyqtSignal(list)
+	boundHighChanged = QtCore.pyqtSignal(list)
 
 	def __init__(self, parent=None):
 		super(GLViewer, self).__init__(parent)
@@ -361,28 +376,57 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.timer.start(100.)
 		self.timer.timeout.connect(self.updatePathPose)
 		self.animate = True
+		self.bounds_low = None
+		self.bounds_high = None
 		
 	def minimumSizeHint(self):
 		return QtCore.QSize(500, 300)
 
 	def sizeHint(self):
 		return QtCore.QSize(500, 300)
+	def maximumSize(self):
+		return QtCore.QSize(1000, 1000)
 
 	def setRotationAngle(self, axisIndex, angle):
 		if angle != self.cameraPose[axisIndex]:
 			self.cameraPose[axisIndex] = angle
 			self.updateGL()
 	def setBounds(self, bounds):
-		cmin = [x for x in bounds.low ]
-		cmax = [x for x in bounds.high ]
-		self.center = [ .5*(p0+p1) for (p0,p1) in zip(cmin, cmax) ]
-		self.scale = 1. / max([p1-p0 for (p0,p1) in zip(cmin, cmax) ])
-		self.viewheight = (cmax[2]-cmin[2])*self.scale*3
+		self.bounds_low = [x for x in bounds.low ]
+		self.bounds_high = [x for x in bounds.high ]
+		bbox = zip(self.bounds_low, self.bounds_high)
+		self.center = [ .5*(p0+p1) for (p0,p1) in bbox ]
+		self.scale = 1. / max([p1-p0 for (p0,p1) in bbox ])
+		self.viewheight = (self.bounds_high[2]-self.bounds_low[2])*self.scale*3
+		self.boundLowChanged.emit(self.bounds_low)
+		self.boundHighChanged.emit(self.bounds_high)
+	def updateBounds(self, pos):
+		print "before:", pos, self.bounds_low, self.bounds_high
+		lo=False
+		hi=False
+		for i in range(3):
+			if pos[i]<self.bounds_low[i]:
+				self.bounds_low[i] = pos[i]
+				lo = True
+			elif pos[i]>self.bounds_high[i]:
+				self.bounds_high[i] = pos[i]
+				hi = True
+		if lo: self.boundLowChanged.emit(self.bounds_low)
+		if hi: self.boundHighChanged.emit(self.bounds_high)		
+		print "after:", self.bounds_low, self.bounds_high
+	def setLowerBound(self, bound):
+		self.bounds_low = bound
+		self.updateGL()
+	def setUpperBound(self, bound):
+		self.bounds_high = bound
+		self.updateGL()
 	def setStartPose(self, value):
 		self.startPose = value
+		self.updateBounds(value[3:])
 		self.updateGL()
 	def setGoalPose(self, value):
 		self.goalPose = value
+		self.updateBounds(value[3:])
 		self.updateGL()
 	def toggleAnimation(self, value):
 		self.animate = value
@@ -411,14 +455,16 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.solutionPath = None
 		self.updateGL()
 	def initializeGL(self):
-		GL.glClearColor(0.1,0.1,0.1,1.)
+		GL.glClearColor(0.5,0.5,0.5,1.)
 		GL.glEnable(GL.GL_LIGHTING)
 		GL.glEnable(GL.GL_LIGHT0)
+		GL.glEnable(GL.GL_LIGHT1)
 		GL.glEnable(GL.GL_DEPTH_TEST)
 		GL.glLightModeli(GL.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_TRUE)
 		GL.glEnable(GL.GL_NORMALIZE)
 		GL.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE)
-		#GL.glShadeModel(GL.GL_FLAT)
+		GL.glEnable(GL.GL_LINE_SMOOTH)
+		GL.glShadeModel(GL.GL_FLAT)
 		#GL.glEnable(GL.GL_CULL_FACE)
 		
 	def transform(self, pose):
@@ -434,7 +480,20 @@ class GLViewer(QtOpenGL.QGLWidget):
 			2*(x*y-w*z), w*w-x*x+y*y-z*z, 2*(y*z+w*x), 0, 
 			2*(x*z+w*y), 2*(y*z-w*x), w*w-x*x-y*y+z*z, 0,
 			xform.getX(), xform.getY(), xform.getZ(), 1 ]
-			
+	
+	def drawBounds(self):
+		lo = self.bounds_low
+		hi = self.bounds_high
+		p = [lo, [lo[0],lo[1],hi[2]], [lo[0],hi[1],lo[2]], [lo[0],hi[1],hi[2]],
+			[hi[0],lo[1],lo[2]], [hi[0],lo[1],hi[2]], [hi[0],hi[1],lo[2]], hi]
+		ind = [(0,1),(1,3),(3,2),(2,0),(4,5),(5,7),(7,6),(6,4),(0,4),(1,5),(2,6),(3,7)]
+		GL.glColor3f(1,1,1)
+		GL.glBegin(GL.GL_LINES)
+		for edge in ind:
+			GL.glVertex3fv(p[edge[0]])
+			GL.glVertex3fv(p[edge[1]])
+		GL.glEnd()
+		
 	def paintGL(self):
 		GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 		GL.glMatrixMode(GL.GL_MODELVIEW)
@@ -444,6 +503,9 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.transform(self.cameraPose)
 		GL.glScalef(self.scale, self.scale, self.scale)
 		GL.glTranslatef(-self.center[0],-self.center[1],-self.center[2])
+		# draw bounding box
+		if self.bounds_low:
+			self.drawBounds()
 		if (self.GLlistid):
 			# draw start pose
 			self.transform(self.startPose)
@@ -752,14 +814,74 @@ class PlannerWidget(QtGui.QWidget):
 		self.timeLimit.setRange(0, 1000)
 		self.timeLimit.setSingleStep(1)
 		self.timeLimit.setValue(10.0)
+		
+		resolutionLabel = QtGui.QLabel('Collision checking\nresolution')
+		resolutionLabel.setAlignment(QtCore.Qt.AlignRight)
+		self.resolution = QtGui.QDoubleSpinBox()
+		self.resolution.setRange(0, 1000)
+		self.resolution.setSingleStep(.1)
+		self.resolution.setValue(1.0)
+
 		layout = QtGui.QGridLayout()
 		layout.addWidget(plannerLabel, 0, 0, QtCore.Qt.AlignRight)
 		layout.addWidget(self.plannerSelect, 0, 1)
 		layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
 		layout.addWidget(self.timeLimit, 1, 1)
-		layout.addWidget(self.stackedWidget, 2, 0, 1, 2) 
+		layout.addWidget(resolutionLabel, 2, 0, QtCore.Qt.AlignRight)
+		layout.addWidget(self.resolution, 2, 1)
+		layout.addWidget(self.stackedWidget, 3, 0, 1, 2) 
 		self.setLayout(layout)
 
+
+class BoundsWidget(QtGui.QWidget):
+	def __init__(self):
+		super(BoundsWidget, self).__init__()
+		self.bounds_low = BoundsBox('Lower bounds')
+		self.bounds_high = BoundsBox('Upper bounds')
+		layout = QtGui.QGridLayout()
+		layout.addWidget(self.bounds_low, 0,0)
+		layout.addWidget(self.bounds_high, 1,0)
+		self.setLayout(layout)
+
+class BoundsBox(QtGui.QGroupBox):
+	valueChanged = QtCore.pyqtSignal(list)
+
+	def __init__(self, title):
+		super(BoundsBox, self).__init__(title)
+		xlabel = QtGui.QLabel('X')
+		ylabel = QtGui.QLabel('Y')
+		zlabel = QtGui.QLabel('Z')
+
+		self.posx = QtGui.QDoubleSpinBox()
+		self.posx.setRange(-1000, 1000)
+		self.posx.setSingleStep(1)
+		self.posy = QtGui.QDoubleSpinBox()
+		self.posy.setRange(-1000, 1000)
+		self.posy.setSingleStep(1)
+		self.posz = QtGui.QDoubleSpinBox()
+		self.posz.setRange(-1000, 1000)
+		self.posz.setSingleStep(1)
+
+		layout = QtGui.QGridLayout()
+		layout.addWidget(xlabel, 1, 0, QtCore.Qt.AlignRight)
+		layout.addWidget(ylabel, 2, 0, QtCore.Qt.AlignRight)
+		layout.addWidget(zlabel, 3, 0, QtCore.Qt.AlignRight)
+		layout.addWidget(self.posx, 1, 1)
+		layout.addWidget(self.posy, 2, 1)
+		layout.addWidget(self.posz, 3, 1)
+		self.setLayout(layout)
+
+		self.posx.valueChanged.connect(self.boundsChange)
+		self.posy.valueChanged.connect(self.boundsChange)
+		self.posz.valueChanged.connect(self.boundsChange)
+	
+	def setBounds(self, value):
+		self.posx.setValue(value[0])
+		self.posy.setValue(value[1])
+		self.posz.setValue(value[2])
+	
+	def boundsChange(self, value):
+		self.valueChanged.emit([ self.posx.value(), self.posy.value(), self.posz.value() ])
 
 class SolveWidget(QtGui.QWidget):
 	def __init__(self):
