@@ -1,7 +1,5 @@
-#include <ompl/geometric/SimpleSetup.h>
-#include <ompl/control/SimpleSetup.h>
+#include "common/RigidBodyPlanning.h"
 #include <ompl/base/manifolds/SE2StateManifold.h>
-#include <ompl/control/manifolds/RealVectorControlManifold.h>
 #include <string>
 
 namespace ompl
@@ -9,42 +7,20 @@ namespace ompl
     namespace app
     {
 	
-	class SE2RigidBodyPlanning : public geometric::SimpleSetup
+	class SE2RigidBodyPlanning : public RigidBodyPlanning
 	{
 	public:
 
-	    SE2RigidBodyPlanning(void) : geometric::SimpleSetup(base::StateManifoldPtr(new base::SE2StateManifold())), factor_(0.0), add_(0.0)
+	    SE2RigidBodyPlanning(void) : RigidBodyPlanning(base::StateManifoldPtr(new base::SE2StateManifold()))
 	    {
 	    }
 	    
-	    int setMeshes(const std::string &robot, const std::string &env, bool useOpenGL = false);
-
-	    void setBoundsFactor(double factor)
-	    {
-		factor_ = factor;
-	    }
-	    
-	    double getBoundsFactor(void)
-	    {
-		return factor_;
-	    }	    
-
-	    void setBoundsAddition(double add)
-	    {
-		add_ = add;
-	    }
-	    
-	    double getBoundsAddition(void)
-	    {
-		return add_;
-	    }
-	    
-	    virtual void setup(void);
-
 	protected:
-	    
-	    double factor_;
-	    double add_;
+
+	    virtual void inferEnvironmentBounds(const aiScene *scene);
+	    virtual void inferProblemDefinitionBounds(void);
+
+	    virtual base::StateValidityCheckerPtr allocStateValidityChecker(const aiScene *env, const aiScene *robot) const;
 	    
 	};
 	

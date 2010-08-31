@@ -19,8 +19,11 @@ namespace ompl
 	{
 	public:
 	    
-	    PQPStateValidityChecker(const base::SpaceInformationPtr &si,
-				    const aiScene *robot, const aiScene *obstacles);
+	    PQPStateValidityChecker(const base::SpaceInformationPtr &si) : base::StateValidityChecker(si)
+	    {
+	    }
+	    
+	    virtual aiVector3D configure(const aiScene *robot, const aiScene *obstacles, bool centerXYonly);
 	    
 	protected:
 	    
@@ -31,8 +34,14 @@ namespace ompl
 		http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm */
 	    void quaternionToMatrix(const base::SO3StateManifold::StateType &q, PQP_REAL m[3][3]) const;
 
-	    /** \brief Convert a set of meshes to a PQP model */
+	    /** \brief Convert a mesh to a PQP model */
 	    PQPModelPtr getPQPModelFromScene(const aiScene *scene) const;
+
+	    /** \brief Convert a mesh to a PQP model, but center it first. */
+	    PQPModelPtr getPQPModelFromScene(const aiScene *scene, bool centerXYonly, aiVector3D &center) const;
+
+	    /** \brief Convert a set of triangles to a PQP model */
+	    PQPModelPtr getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const;
 	    
 	    PQPModelPtr    robot_;
 	    PQPModelPtr    environment_;    

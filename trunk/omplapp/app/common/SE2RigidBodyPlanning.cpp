@@ -3,113 +3,63 @@
 #include "common/detail/assimpUtil.h"
 #include <limits>
 
-namespace ompl
+void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(const aiScene *scene)
 {
-    namespace app
+    base::RealVectorBounds bounds = getStateManifold()->as<base::SE2StateManifold>()->getBounds();
+    
+    // if bounds are not valid
+    if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
     {
-	
-	static void inferBounds(const base::StateManifoldPtr &m, const aiScene* scene, double factor, double add)
-	{
-	    base::RealVectorBounds bounds = m->as<base::SE2StateManifold>()->getBounds();
-	    
-	    // if bounds are not valid
-	    if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
-	    {
-		std::vector<aiVector3D> vertices;
-		extractVertices(scene, vertices);
-		base::RealVectorBounds b(3);
-		inferBounds(b, vertices, factor, add);
-		bounds.low[0] = b.low[0]; bounds.low[1] = b.low[1];
-		bounds.high[0] = b.high[0]; bounds.high[1] = b.high[1];
-		m->as<base::SE2StateManifold>()->setBounds(bounds);
-	    }
-	}
-	
-	static void inferBounds(const base::StateManifoldPtr &m, const base::ProblemDefinitionPtr &pdef, double factor, double add)
-	{
-	    // update the bounds based on start states, if needed
-	    base::RealVectorBounds bounds = m->as<base::SE2StateManifold>()->getBounds();
-	    
-	    std::vector<const base::State*> states;
-	    pdef->getInputStates(states);
-	    
-	    double minX = std::numeric_limits<double>::infinity();
-	    double minY = minX;
-	    double maxX = -minX;
-	    double maxY = maxX;
-	    for (unsigned int i = 0 ; i < states.size() ; ++i)
-	    {
-		double x = states[i]->as<base::SE2StateManifold::StateType>()->getX();
-		double y = states[i]->as<base::SE2StateManifold::StateType>()->getY();
-		if (minX > x) minX = x;
-		if (maxX < x) maxX = x;
-		if (minY > y) minY = y;
-		if (maxY < y) maxY = y;
-	    }
-	    double dx = (maxX - minX) * factor + add;
-	    double dy = (maxY - minY) * factor + add;
-	    
-	    if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
-	    if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
-	    
-	    if (bounds.high[0] < maxX + dx) bounds.high[0] = maxX + dx;
-	    if (bounds.high[1] < maxY + dy) bounds.high[1] = maxY + dy;
-	    
-	    m->as<base::SE2StateManifold>()->setBounds(bounds);
-	}
+	std::vector<aiVector3D> vertices;
+	scene::extractVertices(scene, vertices);
+	base::RealVectorBounds b(3);
+	scene::inferBounds(b, vertices, factor_, add_);
+	bounds.low[0] = b.low[0]; bounds.low[1] = b.low[1];
+	bounds.high[0] = b.high[0]; bounds.high[1] = b.high[1];
+	getStateManifold()->as<base::SE2StateManifold>()->setBounds(bounds);
     }
 }
 
-int ompl::app::SE2RigidBodyPlanning::setMeshes(const std::string &robot, const std::string &env, bool useOpenGL)
+void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
 {
-
-    // load environment 
-    std::vector<const aiMesh*> envMesh;
-    Assimp::Importer importerE;
+    // update the bounds based on start states, if needed
+    base::RealVectorBounds bounds = getStateManifold()->as<base::SE2StateManifold>()->getBounds();
     
-    assert(!robot.empty());
-    assert(!env.empty());
-    const aiScene* envScene = importerE.ReadFile(env.c_str(),
-						 aiProcess_Triangulate            |
-						 aiProcess_JoinIdenticalVertices  |
-						 aiProcess_SortByPType);
-    if (envScene)
-    {
-	if (envScene->HasMeshes())
-	{
-	    inferBounds(getStateManifold(), envScene, factor_, add_);
-	    si_->setStateValidityCheckingResolution(shortestEdge(envScene));
-	}
-	else
-	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
-    }
-    else
-	msg_.error("Unable to load environment scene: %s", env.c_str());
+    std::vector<const base::State*> states;
+    getProblemDefinition()->getInputStates(states);
     
-    // load robot 
-    Assimp::Importer importerR;
-    const aiScene* robotScene = importerR.ReadFile(robot.c_str(),
-						   aiProcess_Triangulate            |
-						   aiProcess_JoinIdenticalVertices  |
-						   aiProcess_SortByPType);
-    std::vector<const aiMesh*> robotMesh;
-    if (robotScene)
+    double minX = std::numeric_limits<double>::infinity();
+    double minY = minX;
+    double maxX = -minX;
+    double maxY = maxX;
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
     {
-	if (!robotScene->HasMeshes())
-	    msg_.error("There is no mesh specified in the indicated robot resource: %s", robot.c_str());
+	double x = states[i]->as<base::SE2StateManifold::StateType>()->getX();
+	double y = states[i]->as<base::SE2StateManifold::StateType>()->getY();
+	if (minX > x) minX = x;
+	if (maxX < x) maxX = x;
+	if (minY > y) minY = y;
+	if (maxY < y) maxY = y;
     }
-    else
-	msg_.error("Unable to load robot scene: %s", robot.c_str());
-
-    // create state validity checker
-    if (!robotMesh.empty())
-	setStateValidityChecker(base::StateValidityCheckerPtr(new PQPSE2StateValidityChecker(getSpaceInformation(), robotScene, envScene)));
-
-    return useOpenGL ? assimpRender(robotScene, envScene) : 0;
+    double dx = (maxX - minX) * factor_ + add_;
+    double dy = (maxY - minY) * factor_ + add_;
+    
+    if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
+    if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
+    
+    if (bounds.high[0] < maxX + dx) bounds.high[0] = maxX + dx;
+    if (bounds.high[1] < maxY + dy) bounds.high[1] = maxY + dy;
+    
+    getStateManifold()->as<base::SE2StateManifold>()->setBounds(bounds);
 }
 
-void ompl::app::SE2RigidBodyPlanning::setup(void)
-{
-    inferBounds(getStateManifold(), getProblemDefinition(), factor_, add_);
-    geometric::SimpleSetup::setup();    
+
+ompl::base::StateValidityCheckerPtr ompl::app::SE2RigidBodyPlanning::allocStateValidityChecker(const aiScene *env, const aiScene *robot) const
+{   
+    PQPSE2StateValidityChecker *svc = new PQPSE2StateValidityChecker(getSpaceInformation());
+    aiVector3D c = svc->configure(robot, env, true);
+    start_->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
+    start_->as<base::SE2StateManifold::StateType>()->setX(c.x);
+    start_->as<base::SE2StateManifold::StateType>()->setY(c.y);
+    return base::StateValidityCheckerPtr(svc);
 }

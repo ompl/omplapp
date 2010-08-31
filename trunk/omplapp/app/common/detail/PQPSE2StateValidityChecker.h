@@ -10,9 +10,7 @@ namespace ompl
 	{
 	public:
 	    
-	    PQPSE2StateValidityChecker(const base::SpaceInformationPtr &si,
-				       const aiScene *robot, const aiScene *obstacles):
-		PQPStateValidityChecker(si, robot, obstacles)
+	    PQPSE2StateValidityChecker(const base::SpaceInformationPtr &si): PQPStateValidityChecker(si)
 	    {
 	    }
 	    

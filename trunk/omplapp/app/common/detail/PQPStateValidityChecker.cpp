@@ -1,19 +1,21 @@
 #include "common/detail/PQPStateValidityChecker.h"
 #include "common/detail/assimpUtil.h"
 
-ompl::app::PQPStateValidityChecker::PQPStateValidityChecker(const base::SpaceInformationPtr &si, 
-							    const aiScene *robot, const aiScene *obstacles) : base::StateValidityChecker(si)
+aiVector3D ompl::app::PQPStateValidityChecker::configure(const aiScene *robot, const aiScene *obstacles, bool centerXYonly)
 {
     environment_ = getPQPModelFromScene(obstacles);
     if (!environment_)
 	msg_.inform("Empty environment loaded");
     else
 	msg_.inform("Loaded environment model with %d triangles", environment_->num_tris);
-    robot_ = getPQPModelFromScene(robot);
+
+    aiVector3D center;
+    robot_ = getPQPModelFromScene(robot, centerXYonly, center);
     if (!robot_)
 	throw ompl::Exception("Invalid robot mesh");
     else
 	msg_.inform("Loaded robot model with %d triangles", robot_->num_tris);
+    return center;
 }
 
 void ompl::app::PQPStateValidityChecker::quaternionToMatrix(const base::SO3StateManifold::StateType &q, PQP_REAL m[3][3]) const
@@ -42,12 +44,28 @@ void ompl::app::PQPStateValidityChecker::quaternionToMatrix(const base::SO3State
 }
 
 
+ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromScene(const aiScene *scene, bool centerXYonly, aiVector3D &center) const
+{ 
+    std::vector<aiVector3D> triangles;
+    scene::extractTriangles(scene, triangles);
+    scene::sceneCenter(scene, center);
+    if (centerXYonly)
+	center.z = 0.0;
+    for (unsigned int j = 0 ; j < triangles.size() ; ++j)
+	triangles[j] -= center;
+    return getPQPModelFromTris(triangles);
+}
+
 ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromScene(const aiScene *scene) const
 {	
-    PQPModelPtr model;
-    
     std::vector<aiVector3D> triangles;
-    extractTriangles(scene, triangles);
+    scene::extractTriangles(scene, triangles);
+    return getPQPModelFromTris(triangles);
+}	    
+
+ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const
+{
+    PQPModelPtr model;
     
     if (triangles.empty())
 	return model;
@@ -70,5 +88,6 @@ ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityCheck
     
     model->EndModel();
     
-    return model;	
-}	    
+    return model;  
+}
+

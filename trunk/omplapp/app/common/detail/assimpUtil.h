@@ -10,10 +10,17 @@ namespace ompl
     namespace app
     {
 
-	void inferBounds(base::RealVectorBounds &bounds, const std::vector<aiVector3D> &vertices, double multiply = 1.1, double add = 0.0);
-	void extractTriangles(const aiScene *scene, std::vector<aiVector3D> &triangles);
-	void extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices);
-	double shortestEdge(const aiScene *scene);
-	int assimpRender(const aiScene* envScene, const aiScene* robotScene);
+	namespace scene
+	{
+	    
+	    void inferBounds(base::RealVectorBounds &bounds, const std::vector<aiVector3D> &vertices, double multiply = 1.1, double add = 0.0);
+	    void extractTriangles(const aiScene *scene, std::vector<aiVector3D> &triangles);
+	    void extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices);
+	    double shortestEdge(const aiScene *scene);
+	    void sceneCenter(const aiScene *scene, aiVector3D &center);
+	    int assimpRender(const aiScene* envScene, const aiScene* robotScene);
+
+	}
+	
     }
 }
