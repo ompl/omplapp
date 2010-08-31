@@ -101,9 +101,9 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.robotFile:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
-				self.omplSetup.setup()
-				self.mainWidget.plannerWidget.resolution.setValue(
-					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
+				# self.omplSetup.setup()
+				# self.mainWidget.plannerWidget.resolution.setValue(
+				# 	self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			else:
 				glid = self.omplSetup.setMeshes(self.environmentFile, self.environmentFile, True)
 			self.mainWidget.glViewer.GLlistid = glid
@@ -115,9 +115,9 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.environmentFile:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
-				self.omplSetup.setup()
-				self.mainWidget.plannerWidget.resolution.setValue(
-					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
+				# self.omplSetup.setup()
+				# self.mainWidget.plannerWidget.resolution.setValue(
+				# 	self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			else:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.robotFile, True)
 			self.mainWidget.glViewer.GLlistid = glid
