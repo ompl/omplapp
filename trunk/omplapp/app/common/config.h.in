@@ -1,5 +1,5 @@
-#ifndef __COMMON_CONFIG_H__
-#define __COMMON_CONFIG_H__
+#ifndef OMPLAPP_COMMON_CONFIG_
+#define OMPLAPP_COMMON_CONFIG_
 
 #define OMPL_RESOURCE_DIR "@OMPL_RESOURCE_DIR@"
 #endif

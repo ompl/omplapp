@@ -17,7 +17,7 @@ if(DOXYGEN)
 
 	# add "website" target
 	add_custom_target(website
-		COMMAND mkwebdocs.sh
+		COMMAND ./mkwebdocs.sh
 		DEPENDS doc
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endif(DOXYGEN)

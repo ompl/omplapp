@@ -13,7 +13,7 @@
 
 The OMPL.app GUI is launched from the command line with the \c omplapp/app/ompl_app.py command. After the program launches, select <i>File>Open Environment</i> to read a file that contains a mesh for an environment. After the environment is loaded, select <i>File>Open Robot</i> to choose a robot mesh file. Example environment and robot files can also be found in \c omplapp/resources. At this point the GUI can only be used to solve motion planning problems involving static environments and free-flying rigid bodies in 3D, but this is likely to change in a future version of OMPL. After the meshes are loaded, you can specify the start and goal poses of the robot with the controls on the righthand side of the window. The image above shows an example query for the cubicles environment. 
 
-\section gui_planners Setting the planner and its parameters
+\section gui_planners Setting up the planner
 
 \htmlonly<img src="../images/gui_planner.png" class="span-15">\endhtmlonly
 
@@ -40,7 +40,7 @@ If you move the start or goal pose outside the bounding box, the bounding box wi
 
 \htmlonly<img src="../images/gui_path.png" class="span-15">\endhtmlonly
 
-After you have specified a motion planning, you can click on the \b Solve button to run the motion planner. Some diagnostic information is printed in the terminal window, which can be helpful in identifying problems. If all goes well, the planner finds a path. By default, OMPL.app will loop over an animation of the robot's pose along the path. The slider at the bottom of the window controls the speed of the animation. By unchecking the \b Animate checkbox, the entire path is shown at once (see figure above). Pressing the \b Clear button removes the solution path. It is possible to save the path with <i>File>Save Path</i>, so that it can be “played back” at a later time. Paths can be opened via the <i>File>Open Path dialog</i>. Paths do not necessarily need to produced by OMPL.app, but can be produced by, e.g., a command line program as well. However, only geometric paths consisting of SE(3) states can be loaded. The format of a path file is extremely simple. It consists of a sequence of states in this format:
+After you have specified a motion planning, you can click on the \b Solve button to run the motion planner. Some diagnostic information is printed in the terminal window, which can be helpful in identifying problems. If all goes well, the planner finds a path. By default, OMPL.app will loop over an animation of the robot's pose along the path. The slider at the bottom of the window controls the speed of the animation. By unchecking the \b Animate checkbox, the entire path is shown at once (see figure above). Pressing the \b Clear button removes the solution path. It is possible to save the path with <i>File>Save Path</i>, so that it can be “played back” at a later time. Paths can be opened via the <i>File>Open Path</i> dialog. Paths do not necessarily need to produced by OMPL.app, but can be produced by, e.g., a command line program as well. However, only geometric paths consisting of SE(3) states can be loaded. The format of a path file is extremely simple. It consists of a sequence of states in this format:
 \code
 Compound state [
 RealVectorState [7.20776 3.36397 90.5368]

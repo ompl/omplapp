@@ -1,3 +1,6 @@
+#ifndef OMPLAPP_COMMON_SE2_RIGID_BODY_PLANNING_
+#define OMPLAPP_COMMON_SE2_RIGID_BODY_PLANNING_
+
 #include "common/RigidBodyPlanning.h"
 #include <ompl/base/manifolds/SE2StateManifold.h>
 #include <string>
@@ -15,6 +18,10 @@ namespace ompl
 	    {
 	    }
 	    
+	    virtual ~SE2RigidBodyPlanning()
+	    {
+	    }
+
 	protected:
 
 	    virtual void inferEnvironmentBounds(const aiScene *scene);
@@ -27,3 +34,5 @@ namespace ompl
 	
     }
 }
+
+#endif

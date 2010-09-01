@@ -41,7 +41,7 @@ from os.path import abspath, dirname, join
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL, GLU
 import webbrowser, re, tempfile
-from math import cos, sin, pi, pow
+from math import cos, sin, asin, atan2, pi, pow
 
 try:
 	from ompl import base as ob
@@ -115,6 +115,8 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.deleteGLlists()
 			if self.environmentFile:
 				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
+				self.mainWidget.problemWidget.startPose.setPose(self.omplSetup.getEnvStartState())
+				self.mainWidget.problemWidget.goalPose.setPose(self.omplSetup.getEnvStartState())
 				self.omplSetup.setup()
 				self.mainWidget.plannerWidget.resolution.setValue(
 					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
@@ -401,7 +403,6 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.boundLowChanged.emit(self.bounds_low)
 		self.boundHighChanged.emit(self.bounds_high)
 	def updateBounds(self, pos):
-		print "before:", pos, self.bounds_low, self.bounds_high
 		lo=False
 		hi=False
 		for i in range(3):
@@ -412,8 +413,7 @@ class GLViewer(QtOpenGL.QGLWidget):
 				self.bounds_high[i] = pos[i]
 				hi = True
 		if lo: self.boundLowChanged.emit(self.bounds_low)
-		if hi: self.boundHighChanged.emit(self.bounds_high)		
-		print "after:", self.bounds_low, self.bounds_high
+		if hi: self.boundHighChanged.emit(self.bounds_high)
 	def setLowerBound(self, bound):
 		self.bounds_low = bound
 		self.updateGL()
@@ -421,12 +421,14 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.bounds_high = bound
 		self.updateGL()
 	def setStartPose(self, value):
+		print "start!"
 		self.startPose = value
-		self.updateBounds(value[3:])
+		self.updateBounds(self.startPose[3:])
 		self.updateGL()
 	def setGoalPose(self, value):
+		print "goal!"
 		self.goalPose = value
-		self.updateBounds(value[3:])
+		self.updateBounds(self.startPose[3:])
 		self.updateGL()
 	def toggleAnimation(self, value):
 		self.animate = value
@@ -638,6 +640,16 @@ class PoseBox(QtGui.QGroupBox):
 		self.roty.valueChanged.connect(self.poseChange)
 		self.rotz.valueChanged.connect(self.poseChange)
 
+	def setPose(self, value):
+		self.posx.setValue(value().getX())
+		self.posy.setValue(value().getY())
+		self.posz.setValue(value().getZ())
+		q = value().rotation()
+		rad2deg = 180/pi
+		self.rotx.setValue(rad2deg * atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y)))
+		self.roty.setValue(rad2deg * asin(2.*(q.w*q.y-q.z*q.x)))
+		self.rotz.setValue(rad2deg * atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)))
+		
 	def poseChange(self, value):
 		self.valueChanged.emit([self.rotx.value(), self.roty.value(), self.rotz.value(), 
 			self.posx.value(), self.posy.value(), self.posz.value() ])
@@ -836,11 +848,11 @@ class PlannerWidget(QtGui.QWidget):
 class BoundsWidget(QtGui.QWidget):
 	def __init__(self):
 		super(BoundsWidget, self).__init__()
-		self.bounds_low = BoundsBox('Lower bounds')
 		self.bounds_high = BoundsBox('Upper bounds')
+		self.bounds_low = BoundsBox('Lower bounds')
 		layout = QtGui.QGridLayout()
-		layout.addWidget(self.bounds_low, 0,0)
-		layout.addWidget(self.bounds_high, 1,0)
+		layout.addWidget(self.bounds_high, 0,0)
+		layout.addWidget(self.bounds_low, 1,0)
 		self.setLayout(layout)
 
 class BoundsBox(QtGui.QGroupBox):

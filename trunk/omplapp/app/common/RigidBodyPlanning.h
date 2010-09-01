@@ -1,7 +1,9 @@
-#include <ompl/geometric/SimpleSetup.h>
-#include <string>
+#ifndef OMPLAPP_COMMON_RIGID_BODY_PLANNING_
+#define OMPLAPP_COMMON_RIGID_BODY_PLANNING_
 
-class aiScene;
+#include <ompl/geometric/SimpleSetup.h>
+#include <aiScene.h>
+#include <string>
 
 namespace ompl
 {
@@ -15,6 +17,10 @@ namespace ompl
 	    RigidBodyPlanning(const base::StateManifoldPtr &manifold) : geometric::SimpleSetup(manifold), factor_(1.0), add_(0.0), start_(manifold)
 	    {
 		start_.random();
+	    }
+
+	    virtual ~RigidBodyPlanning()
+	    {
 	    }
 
 	    const base::ScopedState<>& getEnvStartState(void) const
@@ -68,3 +74,5 @@ namespace ompl
 	
     }
 }
+
+#endif
