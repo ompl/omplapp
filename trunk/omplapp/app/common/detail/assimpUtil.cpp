@@ -229,7 +229,7 @@ namespace ompl
 		glColor4f(color->r, color->g, color->b, color->a);
 	    }
 	    
-	    void recursive_render(const aiScene *scene, const aiScene *sc, const aiNode* nd)
+	    void recursive_render(const aiScene *scene, const aiNode* nd)
 	    {
 		int i;
 		unsigned int n = 0, t;
@@ -244,7 +244,7 @@ namespace ompl
 		for (; n < nd->mNumMeshes; ++n) {
 		    const aiMesh* mesh = scene->mMeshes[nd->mMeshes[n]];
 		    
-		    apply_material(sc->mMaterials[mesh->mMaterialIndex]);
+		    apply_material(scene->mMaterials[mesh->mMaterialIndex]);
 		    if(mesh->mNormals == NULL)
 			glDisable(GL_LIGHTING);
 		    else
@@ -282,13 +282,13 @@ namespace ompl
 		}
 		// draw all children
 		for (n = 0; n < nd->mNumChildren; ++n)
-		    recursive_render(scene, sc, nd->mChildren[n]);
+		    recursive_render(scene, nd->mChildren[n]);
 		glPopMatrix();
 	    }
 	    
-	    int assimpRender(const aiScene* robotScene, const aiScene* envScene, const aiVector3D &robotCenter)
+	    int assimpRender(const aiScene* scene, const aiVector3D &robotCenter)
 	    {
-		int result = glGenLists(2);
+		int result = glGenLists(1);
 		
 		// create display list for robot; we undo the translation of the robot
 		glNewList(result, GL_COMPILE);
@@ -297,13 +297,20 @@ namespace ompl
 		aiTransposeMatrix4(&t);
 		glPushMatrix();
 		glMultMatrixf((float*)&t);
-		recursive_render(robotScene, robotScene, robotScene->mRootNode);
+		recursive_render(scene, scene->mRootNode);
 		glPopMatrix();
 		glEndList();
+				
+		return result;
+	    }
+	    
+	    int assimpRender(const aiScene* scene)
+	    {
+		int result = glGenLists(1);
 		
 		// create display list for environment
-		glNewList(result+1, GL_COMPILE);
-		recursive_render(envScene, envScene, envScene->mRootNode);
+		glNewList(result, GL_COMPILE);
+		recursive_render(scene, scene->mRootNode);
 		glEndList();
 		
 		return result;

@@ -2,7 +2,9 @@
 #define OMPLAPP_COMMON_RIGID_BODY_PLANNING_
 
 #include <ompl/geometric/SimpleSetup.h>
+#include <boost/shared_ptr.hpp>
 #include <aiScene.h>
+#include <assimp.hpp>
 #include <string>
 
 namespace ompl
@@ -17,6 +19,7 @@ namespace ompl
 	    RigidBodyPlanning(const base::StateManifoldPtr &manifold) : geometric::SimpleSetup(manifold), factor_(1.0), add_(0.0), start_(manifold)
 	    {
 		start_.random();
+		robotCenter_.Set(0, 0, 0);
 	    }
 
 	    virtual ~RigidBodyPlanning()
@@ -33,7 +36,9 @@ namespace ompl
 		start_ = state;
 	    }
 	    
-	    virtual int setMeshes(const std::string &robot, const std::string &env, bool useOpenGL = false);
+	    virtual int setEnvironmentMesh(const std::string &env, bool useOpenGL = false);
+
+	    virtual int setRobotMesh(const std::string &robot, bool useOpenGL = false);
 	    
 	    void setBoundsFactor(double factor)
 	    {
@@ -59,7 +64,6 @@ namespace ompl
 	    
 	protected:
 	    
-	    
 	    virtual void inferEnvironmentBounds(const aiScene *scene) = 0;
 	    virtual void inferProblemDefinitionBounds(void) = 0;
 	    virtual void getRobotCenterAndStartState(const aiScene *robot) = 0;
@@ -71,6 +75,9 @@ namespace ompl
 	    
 	    base::ScopedState<> start_;
 	    aiVector3D          robotCenter_;
+	    
+	    boost::shared_ptr<Assimp::Importer> importerEnv_;
+	    boost::shared_ptr<Assimp::Importer> importerRobot_;
 	};
 	
     }

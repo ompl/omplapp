@@ -2,40 +2,17 @@
 #include "common/detail/assimpUtil.h"
 #include <limits>
 
-int ompl::app::RigidBodyPlanning::setMeshes(const std::string &robot, const std::string &env, bool useOpenGL)
+int ompl::app::RigidBodyPlanning::setRobotMesh(const std::string &robot, bool useOpenGL)
 {
-    // load environment 
-    Assimp::Importer importerE;
-    
     assert(!robot.empty());
-    assert(!env.empty());
-    const aiScene* envScene = importerE.ReadFile(env.c_str(),
-						 aiProcess_Triangulate            |
-						 aiProcess_JoinIdenticalVertices  |
-						 aiProcess_SortByPType            |
-						 aiProcess_OptimizeGraph          |
-						 aiProcess_OptimizeMeshes);
-    if (envScene)
-    {
-	if (envScene->HasMeshes())
-	{
-	    inferEnvironmentBounds(envScene);
-	    si_->setStateValidityCheckingResolution(scene::shortestEdge(envScene));
-	}
-	else
-	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
-    }
-    else
-	msg_.error("Unable to load environment scene: %s", env.c_str());
-    
-    // load robot 
-    Assimp::Importer importerR;
-    const aiScene* robotScene = importerR.ReadFile(robot.c_str(),
-						   aiProcess_Triangulate            |
-						   aiProcess_JoinIdenticalVertices  |
-						   aiProcess_SortByPType            |
-						   aiProcess_OptimizeGraph          |
-						   aiProcess_OptimizeMeshes);
+    importerRobot_.reset(new Assimp::Importer());
+
+    const aiScene* robotScene = importerRobot_->ReadFile(robot.c_str(),
+							 aiProcess_Triangulate            |
+							 aiProcess_JoinIdenticalVertices  |
+							 aiProcess_SortByPType            |
+							 aiProcess_OptimizeGraph          |
+							 aiProcess_OptimizeMeshes);
     if (robotScene)
     {
 	if (!robotScene->HasMeshes())
@@ -48,12 +25,44 @@ int ompl::app::RigidBodyPlanning::setMeshes(const std::string &robot, const std:
     if (robotScene->HasMeshes())
     {
 	getRobotCenterAndStartState(robotScene);
-	setStateValidityChecker(allocStateValidityChecker(envScene, robotScene));
 	msg_.debug("Start state based on loaded robot:");
 	start_.print();
+
+	if (importerEnv_)
+	    setStateValidityChecker(allocStateValidityChecker(importerEnv_->GetScene(), robotScene));
     }
-    
-    return useOpenGL ? scene::assimpRender(robotScene, envScene, robotCenter_) : 0;
+
+    return (useOpenGL && robotScene) ? scene::assimpRender(robotScene, robotCenter_) : 0;
+}
+
+int ompl::app::RigidBodyPlanning::setEnvironmentMesh(const std::string &env, bool useOpenGL)
+{
+    assert(!env.empty());
+    importerEnv_.reset(new Assimp::Importer());
+   
+    const aiScene* envScene = importerEnv_->ReadFile(env.c_str(),
+						     aiProcess_Triangulate            |
+						     aiProcess_JoinIdenticalVertices  |
+						     aiProcess_SortByPType            |
+						     aiProcess_OptimizeGraph          |
+						     aiProcess_OptimizeMeshes);
+    if (envScene)
+    {
+	if (envScene->HasMeshes())
+	{
+	    inferEnvironmentBounds(envScene);
+	    si_->setStateValidityCheckingResolution(scene::shortestEdge(envScene));
+	}
+	else
+	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
+    }
+    else
+	msg_.error("Unable to load environment scene: %s", env.c_str());
+
+    if (importerRobot_)
+	setStateValidityChecker(allocStateValidityChecker(envScene, importerRobot_->GetScene()));
+	
+    return (useOpenGL && envScene) ? scene::assimpRender(envScene) : 0;
 }
 
 void ompl::app::RigidBodyPlanning::setup(void)
