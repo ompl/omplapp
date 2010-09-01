@@ -53,7 +53,7 @@ set(OMPL_APP_LIBRARIES
 	${PQP_LIBRARY})
 
 add_subdirectory(doc)
-add_subdirectory(ompl)
 add_subdirectory(app)
+add_subdirectory(ompl)
 
 include(CPackSettings)

@@ -98,31 +98,25 @@ class MainWindow(QtGui.QMainWindow):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self))
 		if len(fname)>0 and fname!=self.environmentFile:
 			self.environmentFile = fname
-			self.mainWidget.glViewer.deleteGLlists()
+			self.mainWidget.glViewer.setEnvironment(
+				self.omplSetup.setEnvironmentMesh(self.environmentFile, True))
 			if self.robotFile:
-				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
 				self.omplSetup.setup()
 				self.mainWidget.plannerWidget.resolution.setValue(
 					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-			else:
-				glid = self.omplSetup.setMeshes(self.environmentFile, self.environmentFile, True)
-			self.mainWidget.glViewer.GLlistid = glid
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 	def openRobot(self):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self))
 		if len(fname)>0 and fname!=self.robotFile:
 			self.robotFile = fname
-			self.mainWidget.glViewer.deleteGLlists()
+			self.mainWidget.glViewer.setRobot(
+				self.omplSetup.setRobotMesh(self.robotFile, True))
+			self.mainWidget.problemWidget.startPose.setPose(self.omplSetup.getEnvStartState())
+			self.mainWidget.problemWidget.goalPose.setPose(self.omplSetup.getEnvStartState())
 			if self.environmentFile:
-				glid = self.omplSetup.setMeshes(self.robotFile, self.environmentFile, True)
-				self.mainWidget.problemWidget.startPose.setPose(self.omplSetup.getEnvStartState())
-				self.mainWidget.problemWidget.goalPose.setPose(self.omplSetup.getEnvStartState())
 				self.omplSetup.setup()
 				self.mainWidget.plannerWidget.resolution.setValue(
 					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-			else:
-				glid = self.omplSetup.setMeshes(self.robotFile, self.robotFile, True)
-			self.mainWidget.glViewer.GLlistid = glid
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 				
 	def openPath(self):
@@ -365,7 +359,8 @@ class GLViewer(QtOpenGL.QGLWidget):
 		super(GLViewer, self).__init__(parent)
 		self.setFocusPolicy(QtCore.Qt.StrongFocus)
 		self.lastPos = QtCore.QPoint()
-		self.GLlistid = None
+		self.environment = None
+		self.robot = None
 		self.center = [0,0,0]
 		self.scale = 1
 		self.viewheight = 1
@@ -450,9 +445,12 @@ class GLViewer(QtOpenGL.QGLWidget):
 	def setSolutionPath(self, path):
 		n = len(path.states)
 		self.solutionPath = [ self.getTransform(path.states[i]) for i in range(n) ]
-	def deleteGLlists(self):
-		if self.GLlistid:
-			GL.glDeleteLists(self.GLlistid, 2)
+	def setRobot(self, robot):
+		if self.robot: GL.glDeleteLists(self.robot, 1)
+		self.robot = robot
+	def setEnvironment(self, environment):
+		if self.environment: GL.glDeleteLists(self.environment, 1)
+		self.environment = environment
 	def clear(self):
 		self.solutionPath = None
 		self.updateGL()
@@ -508,10 +506,10 @@ class GLViewer(QtOpenGL.QGLWidget):
 		# draw bounding box
 		if self.bounds_low:
 			self.drawBounds()
-		if (self.GLlistid):
+		if (self.robot):
 			# draw start pose
 			self.transform(self.startPose)
-			GL.glCallList(self.GLlistid)
+			GL.glCallList(self.robot)
 			GL.glPopMatrix()
 
 			# draw path pose(s)
@@ -519,20 +517,22 @@ class GLViewer(QtOpenGL.QGLWidget):
 				if self.animate:
 					GL.glPushMatrix()
 					GL.glMultMatrixf(self.solutionPath[self.pathIndex])
-					GL.glCallList(self.GLlistid)
+					GL.glCallList(self.robot)
 					GL.glPopMatrix()
 				else:
 					for xform in self.solutionPath:
 						GL.glPushMatrix()
 						GL.glMultMatrixf(xform)
-						GL.glCallList(self.GLlistid)
+						GL.glCallList(self.robot)
 						GL.glPopMatrix()
 						
 			# draw goal pose
 			self.transform(self.goalPose)
-			GL.glCallList(self.GLlistid)
+			GL.glCallList(self.robot)
 			GL.glPopMatrix()
-			GL.glCallList(self.GLlistid+1)
+		
+		# draw environment
+		if self.environment: GL.glCallList(self.environment)
 			
 		GL.glPopMatrix()
 

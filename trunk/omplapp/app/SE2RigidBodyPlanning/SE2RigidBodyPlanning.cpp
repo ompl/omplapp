@@ -6,7 +6,10 @@ using namespace ompl;
 int main()
 {
     app::SE2RigidBodyPlanning setup;
-    setup.setMeshes("Twistycool_robot.dae", "Twistycool_env.dae");
+    std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_robot.dae";
+    std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_env.dae";
+    setup.setRobotMesh(robot_fname.c_str());
+    setup.setEnvironmentMesh(env_fname.c_str());
     
     base::ScopedState<> start(setup.getSpaceInformation());
     start.random();

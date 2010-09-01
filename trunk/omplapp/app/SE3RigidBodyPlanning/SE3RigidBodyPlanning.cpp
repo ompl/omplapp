@@ -7,7 +7,8 @@ int main()
     app::SE3RigidBodyPlanning setup;
     std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_robot.dae";
     std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_env.dae";
-    setup.setMeshes(robot_fname.c_str(), env_fname.c_str());
+    setup.setRobotMesh(robot_fname.c_str());
+    setup.setEnvironmentMesh(env_fname.c_str());
     
     base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
     start->setX(0);
