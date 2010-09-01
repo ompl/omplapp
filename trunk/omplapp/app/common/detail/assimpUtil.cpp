@@ -286,13 +286,19 @@ namespace ompl
 		glPopMatrix();
 	    }
 	    
-	    int assimpRender(const aiScene* robotScene, const aiScene* envScene)
+	    int assimpRender(const aiScene* robotScene, const aiScene* envScene, const aiVector3D &robotCenter)
 	    {
 		int result = glGenLists(2);
 		
-		// create display list for robot
+		// create display list for robot; we undo the translation of the robot
 		glNewList(result, GL_COMPILE);
+		aiMatrix4x4 t;
+		aiMatrix4x4::Translation(-robotCenter, t);
+		aiTransposeMatrix4(&t);
+		glPushMatrix();
+		glMultMatrixf((float*)&t);
 		recursive_render(robotScene, robotScene, robotScene->mRootNode);
+		glPopMatrix();
 		glEndList();
 		
 		// create display list for environment

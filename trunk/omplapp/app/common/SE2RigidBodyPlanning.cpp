@@ -53,13 +53,18 @@ void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
     getStateManifold()->as<base::SE2StateManifold>()->setBounds(bounds);
 }
 
+void ompl::app::SE2RigidBodyPlanning::getRobotCenterAndStartState(const aiScene *robot)
+{
+    scene::sceneCenter(robot, robotCenter_);
+    robotCenter_.z = 0.0;
+    start_->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
+    start_->as<base::SE2StateManifold::StateType>()->setX(robotCenter_.x);
+    start_->as<base::SE2StateManifold::StateType>()->setY(robotCenter_.y);
+}
 
 ompl::base::StateValidityCheckerPtr ompl::app::SE2RigidBodyPlanning::allocStateValidityChecker(const aiScene *env, const aiScene *robot) const
 {   
     PQPSE2StateValidityChecker *svc = new PQPSE2StateValidityChecker(getSpaceInformation());
-    aiVector3D c = svc->configure(robot, env, true);
-    start_->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
-    start_->as<base::SE2StateManifold::StateType>()->setX(c.x);
-    start_->as<base::SE2StateManifold::StateType>()->setY(c.y);
+    svc->configure(robot, env, robotCenter_);
     return base::StateValidityCheckerPtr(svc);
 }

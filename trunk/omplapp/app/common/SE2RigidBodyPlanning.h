@@ -26,6 +26,7 @@ namespace ompl
 
 	    virtual void inferEnvironmentBounds(const aiScene *scene);
 	    virtual void inferProblemDefinitionBounds(void);
+	    virtual void getRobotCenterAndStartState(const aiScene *robot);
 
 	    virtual base::StateValidityCheckerPtr allocStateValidityChecker(const aiScene *env, const aiScene *robot) const;
 	    

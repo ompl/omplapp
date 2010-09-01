@@ -23,7 +23,7 @@ namespace ompl
 	    {
 	    }
 	    
-	    virtual aiVector3D configure(const aiScene *robot, const aiScene *obstacles, bool centerXYonly);
+	    virtual void configure(const aiScene *robot, const aiScene *obstacles, const aiVector3D &robotCenter);
 	    
 	protected:
 	    
@@ -37,8 +37,8 @@ namespace ompl
 	    /** \brief Convert a mesh to a PQP model */
 	    PQPModelPtr getPQPModelFromScene(const aiScene *scene) const;
 
-	    /** \brief Convert a mesh to a PQP model, but center it first. */
-	    PQPModelPtr getPQPModelFromScene(const aiScene *scene, bool centerXYonly, aiVector3D &center) const;
+	    /** \brief Convert a mesh to a PQP model, but subtract center from it first. */
+	    PQPModelPtr getPQPModelFromScene(const aiScene *scene, const aiVector3D &center) const;
 
 	    /** \brief Convert a set of triangles to a PQP model */
 	    PQPModelPtr getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const;

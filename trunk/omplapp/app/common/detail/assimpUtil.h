@@ -18,7 +18,7 @@ namespace ompl
 	    void extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices);
 	    double shortestEdge(const aiScene *scene);
 	    void sceneCenter(const aiScene *scene, aiVector3D &center);
-	    int assimpRender(const aiScene* envScene, const aiScene* robotScene);
+	    int assimpRender(const aiScene* envScene, const aiScene* robotScene, const aiVector3D &robotCenter);
 
 	}
 	

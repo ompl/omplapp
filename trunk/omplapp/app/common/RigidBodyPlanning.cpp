@@ -47,12 +47,13 @@ int ompl::app::RigidBodyPlanning::setMeshes(const std::string &robot, const std:
     // create state validity checker
     if (robotScene->HasMeshes())
     {
+	getRobotCenterAndStartState(robotScene);
 	setStateValidityChecker(allocStateValidityChecker(envScene, robotScene));
-	msg_.inform("Start state based on loaded robot:");
+	msg_.debug("Start state based on loaded robot:");
 	start_.print();
     }
     
-    return useOpenGL ? scene::assimpRender(robotScene, envScene) : 0;
+    return useOpenGL ? scene::assimpRender(robotScene, envScene, robotCenter_) : 0;
 }
 
 void ompl::app::RigidBodyPlanning::setup(void)
