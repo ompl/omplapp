@@ -476,9 +476,9 @@ class GLViewer(QtOpenGL.QGLWidget):
 	def getTransform(self, xform):
 		R = xform.rotation()
 		(w,x,y,z) = (R.w, R.x, R.y, R.z)
-		return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z-w*y), 0, 
-			2*(x*y-w*z), w*w-x*x+y*y-z*z, 2*(y*z+w*x), 0, 
-			2*(x*z+w*y), 2*(y*z-w*x), w*w-x*x-y*y+z*z, 0,
+		return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0, 
+			2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0, 
+			2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
 			xform.getX(), xform.getY(), xform.getZ(), 1 ]
 	
 	def drawBounds(self):
