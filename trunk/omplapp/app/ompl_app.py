@@ -70,9 +70,9 @@ class MainWindow(QtGui.QMainWindow):
 		self.mainWidget.plannerWidget.plannerSelect.activated.connect(self.setPlanner)
 		self.mainWidget.plannerWidget.KPIECERange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.KPIECEGoalBias.valueChanged.connect(self.setGoalBias)
-		self.mainWidget.plannerWidget.KPIECEBorderFraction.valueChanged.connect(self.setBorderFaction)
+		self.mainWidget.plannerWidget.KPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
 		self.mainWidget.plannerWidget.LBKPIECERange.valueChanged.connect(self.setRange)
-		self.mainWidget.plannerWidget.LBKPIECEBorderFraction.valueChanged.connect(self.setBorderFaction)
+		self.mainWidget.plannerWidget.LBKPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
 		self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.valueChanged.connect(self.setMaxNearestNeighbors)
 		self.mainWidget.plannerWidget.SBLRange.valueChanged.connect(self.setRange)
 		self.mainWidget.plannerWidget.RRTConnectRange.valueChanged.connect(self.setRange)
@@ -210,9 +210,9 @@ class MainWindow(QtGui.QMainWindow):
 	def setGoalBias(self, value): 
 		print 'Changing goal bias from %g to %g' %  (self.planner.getGoalBias(), value)
 		self.planner.setGoalBias(value)
-	def setBorderFaction(self, value): 
+	def setBorderFraction(self, value): 
 		print 'Changing border fraction from %g to %g' %  (self.planner.getBorderFraction(), value)
-		self.planner.setBorderFaction(value)
+		self.planner.setBorderFraction(value)
 	def setMaxNearestNeighbors(self, value): 
 		print 'Changing max. nearest neighbors from %g to %g' %  (self.planner.getMaxNearestNeighbors(), value)
 		self.planner.setMaxNearestNeighbors(value)	
