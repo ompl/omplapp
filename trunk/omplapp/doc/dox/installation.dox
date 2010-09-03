@@ -41,7 +41,7 @@ If you want a debug version of ompl, change "Release" to "Debug" above.
 \section install_osx Installation on OS X
 
 - It is easiest to install the dependencies through <a href="http://www.macports.org">MacPorts</a>, a package manager for OS X, so install MacPorts first.
-- Install Boost, CMake, , PyQt4, PyOpenGL, and (optionally) Doxygen and Google Test. If you have MacPorts installed, type the following:
+- Install Boost, CMake, PyQt4, PyOpenGL, and (optionally) Doxygen and Google Test. If you have MacPorts installed, type the following:
 \code
 sudo port selfupdate
 sudo port install cmake py26-pyqt4 py26-opengl boost +python26
