@@ -29,9 +29,9 @@ void ompl::app::SE3RigidBodyPlanning::inferProblemDefinitionBounds(void)
 	if (minZ > z) minZ = z;
 	if (maxZ < z) maxZ = z;
     }
-    double dx = (maxX - minX) * factor_ + add_;
-    double dy = (maxY - minY) * factor_ + add_;
-    double dz = (maxZ - minZ) * factor_ + add_;
+    double dx = (maxX - minX) * (factor_ - 1.0) + add_;
+    double dy = (maxY - minY) * (factor_ - 1.0) + add_;
+    double dz = (maxZ - minZ) * (factor_ - 1.0) + add_;
     
     if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
     if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;

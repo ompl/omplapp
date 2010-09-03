@@ -228,15 +228,17 @@ class MainWindow(QtGui.QMainWindow):
 		(bounds.low[0],bounds.low[1],bounds.low[2]) = self.mainWidget.glViewer.bounds_low
 		(bounds.high[0],bounds.high[1],bounds.high[2]) = self.mainWidget.glViewer.bounds_high
 		self.omplSetup.getStateManifold().setBounds(bounds)
-		print [x for x in bounds.low ]
-		print [x for x in bounds.high ]
+#		print [x for x in bounds.low ]
+#		print [x for x in bounds.high ]
 		self.omplSetup.setStartAndGoalStates(startPose, goalPose)
 		self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
 			self.mainWidget.plannerWidget.resolution.value())
-		bounds = self.omplSetup.getStateManifold().getBounds()
+#		bounds = self.omplSetup.getStateManifold().getBounds()
 		
 		print self.omplSetup
 		solved = self.omplSetup.solve(self.timeLimit)
+		# update the displayed bounds, in case planning did so
+		self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 		if solved:
 			self.omplSetup.simplifySolution()
 			self.path = self.omplSetup.getSolutionPath()
