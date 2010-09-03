@@ -178,11 +178,11 @@ class MainWindow(QtGui.QMainWindow):
 			self.planner = og.KPIECE1(si)
 			self.planner.setRange(self.mainWidget.plannerWidget.KPIECERange.value())
 			self.planner.setGoalBias(self.mainWidget.plannerWidget.KPIECEGoalBias.value())
-			self.planner.setBorderPercentage(self.mainWidget.plannerWidget.KPIECEBorderFraction.value())
+			self.planner.setBorderFraction(self.mainWidget.plannerWidget.KPIECEBorderFraction.value())
 		elif value==1:
 			self.planner = og.LBKPIECE1(si)
 			self.planner.setRange(self.mainWidget.plannerWidget.LBKPIECERange.value())
-			self.planner.setBorderPercentage(self.mainWidget.plannerWidget.LBKPIECEBorderFraction.value())
+			self.planner.setBorderFraction(self.mainWidget.plannerWidget.LBKPIECEBorderFraction.value())
 		elif value==2:
 			self.planner = og.PRM(si)
 			self.planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.value())
