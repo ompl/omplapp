@@ -233,7 +233,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.omplSetup.setStartAndGoalStates(startPose, goalPose)
 		self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
 			self.mainWidget.plannerWidget.resolution.value())
-#		bounds = self.omplSetup.getStateManifold().getBounds()
 		
 		print self.omplSetup
 		solved = self.omplSetup.solve(self.timeLimit)
@@ -243,6 +242,8 @@ class MainWindow(QtGui.QMainWindow):
 			self.omplSetup.simplifySolution()
 			self.path = self.omplSetup.getSolutionPath()
 			self.path.interpolate(1)
+			if self.path.check() == False:
+				print "ERROR: Path reported by planner seems to be invalid!"
 			self.mainWidget.glViewer.setSolutionPath(self.path)
 	
 	def clear(self):
