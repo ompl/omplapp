@@ -5,27 +5,29 @@ using namespace ompl;
 int main()
 {
     app::SE3RigidBodyPlanning setup;
-    std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_robot.dae";
-    std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/Twistycool_env.dae";
+    std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/alpha_robot.stl";
+    std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/alpha_env.stl";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
     
     base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
-    start->setX(0);
-    start->setY(0);
-    start->setZ(0);
-    start->rotation().setAxisAngle(0,0,0,0);
+    start->setX(82.07);
+    start->setY(46.98);
+    start->setZ(316.01);
+    start->rotation().setAxisAngle(1, 0, 0, M_PI * -35.0/180.0);
 
     base::ScopedState<base::SE3StateManifold> goal(start);
-    goal->setX(0);
-    goal->setY(0);
-    goal->setZ(100);
-    goal->rotation().setAxisAngle(0,0,0,0);
-    
+    goal->setX(91.07);
+    goal->setY(17.98);
+    goal->setZ(328.01);
+    goal->rotation().setIdentity();
+        
     setup.setStartAndGoalStates(start, goal);
-    start.print();
-    goal.print();
-    if (setup.solve())
+    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.05);
+    setup.setup();
+    
+    setup.print();
+    if (setup.solve(60))
     {
 	setup.simplifySolution();
 	setup.getSolutionPath().print(std::cout);
