@@ -51,7 +51,7 @@ int ompl::app::RigidBodyPlanning::setEnvironmentMesh(const std::string &env, boo
 	if (envScene->HasMeshes())
 	{
 	    inferEnvironmentBounds(envScene);
-	    //	    si_->setStateValidityCheckingResolution(scene::shortestEdge(envScene));
+	    si_->setStateValidityCheckingResolution(std::max(0.01, scene::shortestEdge(envScene) / getStateManifold()->getMaximumExtent()));
 	}
 	else
 	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
