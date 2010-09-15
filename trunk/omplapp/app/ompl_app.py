@@ -41,7 +41,7 @@ from os.path import abspath, dirname, join
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL, GLU
 import webbrowser, re, tempfile
-from math import cos, sin, asin, atan2, pi, pow
+from math import cos, sin, asin, atan2, pi, pow, ceil
 
 try:
 	from ompl import base as ob
@@ -93,11 +93,15 @@ class MainWindow(QtGui.QMainWindow):
 		# not implemented yet
 		#self.commandWindow = CommandWindow(self)
 		self.setPlanner(0)
-		
+		self.zerobounds = ob.RealVectorBounds(3)
+		self.zerobounds.setLow(0)
+		self.zerobounds.setHigh(0)
+
 	def openEnvironment(self):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self))
 		if len(fname)>0 and fname!=self.environmentFile:
 			self.environmentFile = fname
+			self.omplSetup.getStateManifold().setBounds(self.zerobounds)
 			self.mainWidget.glViewer.setEnvironment(
 				self.omplSetup.setEnvironmentMesh(self.environmentFile, True))
 			if self.robotFile:
@@ -109,14 +113,17 @@ class MainWindow(QtGui.QMainWindow):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self))
 		if len(fname)>0 and fname!=self.robotFile:
 			self.robotFile = fname
+			self.omplSetup.getStateManifold().setBounds(self.zerobounds)
+			if not self.environmentFile: self.environmentFile = self.robotFile
+			self.mainWidget.glViewer.setEnvironment(
+				self.omplSetup.setEnvironmentMesh(self.environmentFile, True))
 			self.mainWidget.glViewer.setRobot(
 				self.omplSetup.setRobotMesh(self.robotFile, True))
 			self.mainWidget.problemWidget.startPose.setPose(self.omplSetup.getEnvStartState())
 			self.mainWidget.problemWidget.goalPose.setPose(self.omplSetup.getEnvStartState())
-			if self.environmentFile:
-				self.omplSetup.setup()
-				self.mainWidget.plannerWidget.resolution.setValue(
-					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
+			self.omplSetup.setup()
+			self.mainWidget.plannerWidget.resolution.setValue(
+				self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 				
 	def openPath(self):
@@ -239,6 +246,9 @@ class MainWindow(QtGui.QMainWindow):
 		# update the displayed bounds, in case planning did so
 		self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 		if solved:
+			self.omplSetup.simplifySolution()
+			self.omplSetup.simplifySolution()
+			self.omplSetup.simplifySolution()
 			self.omplSetup.simplifySolution()
 			self.path = self.omplSetup.getSolutionPath()
 			self.path.interpolate(1)
@@ -403,15 +413,21 @@ class GLViewer(QtOpenGL.QGLWidget):
 	def updateBounds(self, pos):
 		lo=False
 		hi=False
-		for i in range(3):
-			if pos[i]<self.bounds_low[i]:
-				self.bounds_low[i] = pos[i]
-				lo = True
-			elif pos[i]>self.bounds_high[i]:
-				self.bounds_high[i] = pos[i]
-				hi = True
-		if lo: self.boundLowChanged.emit(self.bounds_low)
-		if hi: self.boundHighChanged.emit(self.bounds_high)
+		if self.bounds_low == None:
+			self.bounds_low = pos
+			self.bounds_high = pos
+			self.boundLowChanged.emit(self.bounds_low)
+			self.boundHighChanged.emit(self.bounds_high)
+		else:
+			for i in range(3):
+				if pos[i]<self.bounds_low[i]:
+					self.bounds_low[i] = pos[i]
+					lo = True
+				elif pos[i]>self.bounds_high[i]:
+					self.bounds_high[i] = pos[i]
+					hi = True
+			if lo: self.boundLowChanged.emit(self.bounds_low)
+			if hi: self.boundHighChanged.emit(self.bounds_high)
 	def setLowerBound(self, bound):
 		self.bounds_low = bound
 		self.updateGL()
@@ -419,12 +435,10 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.bounds_high = bound
 		self.updateGL()
 	def setStartPose(self, value):
-		print "start!"
 		self.startPose = value
 		self.updateBounds(self.startPose[3:])
 		self.updateGL()
 	def setGoalPose(self, value):
-		print "goal!"
 		self.goalPose = value
 		self.updateBounds(self.startPose[3:])
 		self.updateGL()
@@ -448,6 +462,8 @@ class GLViewer(QtOpenGL.QGLWidget):
 	def setSolutionPath(self, path):
 		n = len(path.states)
 		self.solutionPath = [ self.getTransform(path.states[i]) for i in range(n) ]
+		self.pathIndex = 0
+		self.updateGL()
 	def setRobot(self, robot):
 		if self.robot: GL.glDeleteLists(self.robot, 1)
 		self.robot = robot
@@ -456,6 +472,7 @@ class GLViewer(QtOpenGL.QGLWidget):
 		self.environment = environment
 	def clear(self):
 		self.solutionPath = None
+		self.pathIndex = 0
 		self.updateGL()
 	def initializeGL(self):
 		GL.glClearColor(0.5,0.5,0.5,1.)
@@ -523,9 +540,15 @@ class GLViewer(QtOpenGL.QGLWidget):
 					GL.glCallList(self.robot)
 					GL.glPopMatrix()
 				else:
-					for xform in self.solutionPath:
+					n = len(self.solutionPath)
+					if n<100:
+						ind = range(0,n)
+					else:
+						step = float(n - 1.)/99.
+						ind = [int(step*i) for i in range(100)]
+					for i in ind:
 						GL.glPushMatrix()
-						GL.glMultMatrixf(xform)
+						GL.glMultMatrixf(self.solutionPath[i])
 						GL.glCallList(self.robot)
 						GL.glPopMatrix()
 						

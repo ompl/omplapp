@@ -55,10 +55,9 @@ except:
 
 setup = oa.SE3RigidBodyPlanning()
 print setup.getStateManifold().getBounds().low[0]
-setup.setMeshes(
-	join(ompl_resources_dir, 'Twistycool_robot.dae'),
-	join(ompl_resources_dir, 'Twistycool_env.dae'));
-    
+setup.setRobotMesh(join(ompl_resources_dir, 'Twistycool_robot.dae'))
+setup.setEnvironmentMesh(join(ompl_resources_dir, 'Twistycool_env.dae'))
+
 start = ob.State(setup.getSpaceInformation())
 rot = start().rotation()
 (rot.w, rot.x, rot.y, rot.z) = (1,0,0,0)
