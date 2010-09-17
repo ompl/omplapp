@@ -132,7 +132,7 @@ class MainWindow(QtGui.QMainWindow):
 			si = self.omplSetup.getSpaceInformation()
 			pathstr = open(fname,'r').read()
 			# Match whitespace-separated sequences of 3 or 4 numbers
-			regex = re.compile('(-?[0-9\.]+\s?){3,4}')
+			regex = re.compile('(-?[0-9\.]+\s){2,3}-?[0-9\.]+')
 			states = regex.finditer(pathstr)
 			self.path = []
 			self.mainWidget.glViewer.solutionPath = []
@@ -149,6 +149,9 @@ class MainWindow(QtGui.QMainWindow):
 				self.path.append(s)
 				self.mainWidget.glViewer.solutionPath.append(
 					self.mainWidget.glViewer.getTransform(s()))
+			self.mainWidget.problemWidget.startPose.setPose(self.path[0])
+			self.mainWidget.problemWidget.goalPose.setPose(self.path[-1])
+			
 	def savePath(self):
 		if self.path:
 			fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt'))
