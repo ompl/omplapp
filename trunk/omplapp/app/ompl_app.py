@@ -859,9 +859,10 @@ class PlannerWidget(QtGui.QWidget):
 		resolutionLabel = QtGui.QLabel('Collision checking\nresolution')
 		resolutionLabel.setAlignment(QtCore.Qt.AlignRight)
 		self.resolution = QtGui.QDoubleSpinBox()
-		self.resolution.setRange(0.01, 1.0)
-		self.resolution.setSingleStep(.01)
-		self.resolution.setValue(0.01)
+		self.resolution.setRange(0.001, 1.0)
+		self.resolution.setSingleStep(.002)
+		self.resolution.setValue(0.010)
+		self.resolution.setDecimals(3)
 
 		layout = QtGui.QGridLayout()
 		layout.addWidget(plannerLabel, 0, 0, QtCore.Qt.AlignRight)
