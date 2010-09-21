@@ -1,7 +1,7 @@
 /**
 \page installation Installation
 
-To compile OMPL and OMPL-app the following two packages are required: 
+To compile OMPL and OMPL.app the following two packages are required: 
 - <a href="http://www.boost.org">Boost</a> (version 1.42 or higher), 
 - <a href="http://www.cmake.org">CMake</a> (version 2.8 or higher),
 - <a href="http://www.python.org">Python</a> (including libraries and header files),
