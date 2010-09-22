@@ -614,10 +614,11 @@ RECURSIVE              = YES
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
 EXCLUDE                = ../ompl/doc/dox/installation.dox \
+                         ../ompl/doc/dox/download.dox \
 			 ../ompl/doc/dox/license.dox \
 			 ../ompl/doc/dox/mainpage.dox \
 			 ../ompl/doc/dox/releaseNotes.dox \
-			 ../ompl/doc/dox/tutorials.dox
+			 ../ompl/doc/dox/gettingStarted.dox
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
 # directories that are symbolic links (a Unix filesystem feature) are excluded

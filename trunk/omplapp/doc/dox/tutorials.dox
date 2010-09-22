@@ -1,8 +1,10 @@
 /**
 \page apptutorials Tutorials
 
-- app stuff
-- \ref tutorials OMPL core tutorials
+- Tutorials specific to OMPL.app
+  - None so far
+
+- \ref tutorials "OMPL core tutorials"
 .
 
 */

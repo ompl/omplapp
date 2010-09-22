@@ -9,6 +9,8 @@
 
 namespace ompl
 {
+
+    /** \brief Namespace containing code specific to OMPL.app */
     namespace app
     {
 	
