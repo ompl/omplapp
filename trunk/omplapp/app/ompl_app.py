@@ -98,7 +98,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.zerobounds.setHigh(0)
 
 	def openEnvironment(self):
-		fname = str(QtGui.QFileDialog.getOpenFileName(self))
+		fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
 		if len(fname)>0 and fname!=self.environmentFile:
 			self.environmentFile = fname
 			self.omplSetup.getStateManifold().setBounds(self.zerobounds)
@@ -110,7 +110,7 @@ class MainWindow(QtGui.QMainWindow):
 					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 	def openRobot(self):
-		fname = str(QtGui.QFileDialog.getOpenFileName(self))
+		fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
 		if len(fname)>0 and fname!=self.robotFile:
 			self.robotFile = fname
 			self.omplSetup.getStateManifold().setBounds(self.zerobounds)
@@ -127,7 +127,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
 				
 	def openPath(self):
-		fname = str(QtGui.QFileDialog.getOpenFileName(self))
+		fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
 		if len(fname)>0:
 			si = self.omplSetup.getSpaceInformation()
 			pathstr = open(fname,'r').read()
@@ -254,7 +254,9 @@ class MainWindow(QtGui.QMainWindow):
 			self.omplSetup.simplifySolution()
 			self.omplSetup.simplifySolution()
 			self.path = self.omplSetup.getSolutionPath()
-			self.path.interpolate(1)
+			self.path.interpolate(100)
+			if len(self.path.states) != 100:
+				print "ERROR: Interpolation did not produce the number of requested states!"
 			if self.path.check() == False:
 				print "ERROR: Path reported by planner seems to be invalid!"
 			self.mainWidget.glViewer.setSolutionPath(self.path)
