@@ -254,9 +254,10 @@ class MainWindow(QtGui.QMainWindow):
 			self.omplSetup.simplifySolution()
 			self.omplSetup.simplifySolution()
 			self.path = self.omplSetup.getSolutionPath()
-			self.path.interpolate(100)
-			if len(self.path.states) != 100:
-				print "ERROR: Interpolation did not produce the number of requested states!"
+			if len(self.path.states) < 100:
+				self.path.interpolate(100)
+				if len(self.path.states) != 100:
+					print "ERROR: Interpolation did not produce the number of requested states!"
 			if self.path.check() == False:
 				print "ERROR: Path reported by planner seems to be invalid!"
 			self.mainWidget.glViewer.setSolutionPath(self.path)
