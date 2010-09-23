@@ -10,7 +10,7 @@ if(PY_OMPL_GENERATE)
 	add_dependencies(update_app_bindings update_geometric_bindings)
 endif(PY_OMPL_GENERATE)
 
-if(PY_OMPL_COMPILE)
+if(PY_OMPL_COMPILE AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings")
 	create_module_target(app "${CMAKE_CURRENT_SOURCE_DIR}" 
 		"${CMAKE_CURRENT_SOURCE_DIR}/../ompl/py-bindings/ompl" ompl_app)
 endif(PY_OMPL_COMPILE)

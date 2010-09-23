@@ -78,5 +78,5 @@ print start, goal
 if setup.solve():
 	setup.simplifySolution()
 	path = setup.getSolutionPath()
-	path.interpolate(.1)
+	path.interpolate(10)
 	print path, path.check()
