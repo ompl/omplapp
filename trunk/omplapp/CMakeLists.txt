@@ -7,8 +7,6 @@ set(OMPLAPP_MINOR_VERSION 1)
 set(OMPLAPP_PATCH_VERSION 0)
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.{$OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 
-set(OMPL_APP_MODULE app)
-set(OMPL_APP_LIBRARY ompl_app)
 set(OMPL_APP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
 set(OMPL_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
@@ -55,5 +53,6 @@ set(OMPL_APP_LIBRARIES
 add_subdirectory(doc)
 add_subdirectory(app)
 add_subdirectory(ompl)
+add_subdirectory(py-bindings)
 
 include(CPackSettings)
