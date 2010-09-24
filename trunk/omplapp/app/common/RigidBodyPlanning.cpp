@@ -22,7 +22,7 @@ int ompl::app::RigidBodyPlanning::setRobotMesh(const std::string &robot, bool us
 	msg_.error("Unable to load robot scene: %s", robot.c_str());
     
     // create state validity checker
-    if (robotScene->HasMeshes())
+    if (robotScene && robotScene->HasMeshes())
     {
 	getRobotCenterAndStartState(robotScene);
 	msg_.debug("Start state based on loaded robot:");

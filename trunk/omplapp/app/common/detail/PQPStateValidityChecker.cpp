@@ -45,7 +45,8 @@ void ompl::app::PQPStateValidityChecker::quaternionToMatrix(const base::SO3State
 ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromScene(const aiScene *scene, const aiVector3D &center) const
 { 
     std::vector<aiVector3D> triangles;
-    scene::extractTriangles(scene, triangles);
+    if (scene)
+	scene::extractTriangles(scene, triangles);
     for (unsigned int j = 0 ; j < triangles.size() ; ++j)
 	triangles[j] -= center;
     return getPQPModelFromTris(triangles);
@@ -54,7 +55,8 @@ ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityCheck
 ompl::app::PQPStateValidityChecker::PQPModelPtr ompl::app::PQPStateValidityChecker::getPQPModelFromScene(const aiScene *scene) const
 {	
     std::vector<aiVector3D> triangles;
-    scene::extractTriangles(scene, triangles);
+    if (scene)
+	scene::extractTriangles(scene, triangles);
     return getPQPModelFromTris(triangles);
 }	    
 
