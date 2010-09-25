@@ -44,14 +44,45 @@ import webbrowser, re, tempfile
 from math import cos, sin, asin, atan2, pi, pow, ceil
 
 try:
+	from ompl.util import OutputHandler, useOutputHandler
 	from ompl import base as ob
 	from ompl import geometric as og
 	from ompl import app as oa
 except:
 	sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
+	from ompl.util import OutputHandler, useOutputHandler
 	from ompl import base as ob
 	from ompl import geometric as og
 	from ompl import app as oa
+
+class LogOutputHandler(OutputHandler):
+	def __init__(self, textEdit):
+		super(LogOutputHandler, self).__init__()
+		self.textEdit = textEdit
+		self.redColor = QtGui.QColor(255, 0, 0)
+		self.orangeColor = QtGui.QColor(255, 128, 0)
+		self.greenColor = QtGui.QColor(0, 255, 64)
+		self.blackColor = QtGui.QColor(0, 0, 0)
+
+	def debug(self, text):
+		self.textEdit.setTextColor(self.greenColor)
+		self.textEdit.append(text)
+		self.textEdit.repaint()
+
+	def inform(self, text):
+		self.textEdit.setTextColor(self.blackColor)
+		self.textEdit.append(text)
+		self.textEdit.repaint()
+
+	def warn(self, text):
+		self.textEdit.setTextColor(self.orangeColor)
+		self.textEdit.append(text)
+		self.textEdit.repaint()
+
+	def error(self, text):
+		self.textEdit.setTextColor(self.redColor)
+		self.textEdit.append(text)
+		self.textEdit.repaint()
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -88,14 +119,30 @@ class MainWindow(QtGui.QMainWindow):
 		self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(self.mainWidget.glViewer.setUpperBound)
 		self.mainWidget.glViewer.boundLowChanged.connect(self.mainWidget.boundsWidget.bounds_low.setBounds)
 		self.mainWidget.glViewer.boundHighChanged.connect(self.mainWidget.boundsWidget.bounds_high.setBounds)
-		# doesn't work yet
-		#self.logWindow = LogWindow(self)
+
+		# connect to OMPL's console output (via OutputHandlers)
+		self.logWindow = LogWindow(self)
+		self.oh = LogOutputHandler(self.logWindow.logView)
+		useOutputHandler(self.oh)
+
 		# not implemented yet
 		#self.commandWindow = CommandWindow(self)
 		self.setPlanner(0)
 		self.zerobounds = ob.RealVectorBounds(3)
 		self.zerobounds.setLow(0)
 		self.zerobounds.setHigh(0)
+
+	def msgDebug(self, text):
+		self.oh.debug(text)
+		
+	def msgInform(self, text):
+		self.oh.inform(text)
+
+	def msgWarn(self, text):
+		self.oh.warn(text)
+
+	def msgError(self, text):
+		self.oh.error(text)
 
 	def openEnvironment(self):
 		fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
@@ -162,14 +209,16 @@ class MainWindow(QtGui.QMainWindow):
 					pathstr = str(self.path)
 				open(fname,'w').write(pathstr)
 			
-	def showMainWindow(self):
-		self.mainWidget.show()
-		self.mainWidget.raise_()
-		self.mainWidget.activateWindow()
 	def showLogWindow(self):
-		self.logWindow.show()
-		self.logWindow.raise_()
-		self.logWindow.activateWindow()
+		if self.logWindow.isHidden():
+			self.logWindow.show()
+			self.logWindow.raise_()
+			self.logWindow.activateWindow()
+		else:
+			self.logWindow.hide()
+			self.mainWidget.raise_()
+			self.mainWidget.activateWindow()
+
 	def showCommandWindow(self):
 		self.commandWindow.show()
 		self.commandWindow.raise_()
@@ -244,7 +293,8 @@ class MainWindow(QtGui.QMainWindow):
 		self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
 			self.mainWidget.plannerWidget.resolution.value())
 		
-		print self.omplSetup
+		self.msgDebug(str(self.omplSetup))
+
 		solved = self.omplSetup.solve(self.timeLimit)
 		# update the displayed bounds, in case planning did so
 		self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
@@ -254,12 +304,13 @@ class MainWindow(QtGui.QMainWindow):
 			self.omplSetup.simplifySolution()
 			self.omplSetup.simplifySolution()
 			self.path = self.omplSetup.getSolutionPath()
-			if len(self.path.states) < 100:
-				self.path.interpolate(100)
-				if len(self.path.states) != 100:
-					print "ERROR: Interpolation did not produce the number of requested states!"
+			ns = 100
+			if len(self.path.states) < ns:
+				self.path.interpolate(ns)
+				if len(self.path.states) != ns:
+					self.msgError("Interpolation produced " + str(len(self.path.states)) + " states instead of " + str(ns) + " states!")
 			if self.path.check() == False:
-				print "ERROR: Path reported by planner seems to be invalid!"
+				self.msgError("Path reported by planner seems to be invalid!")
 			self.mainWidget.glViewer.setSolutionPath(self.path)
 	
 	def clear(self):
@@ -282,8 +333,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.exitAct = QtGui.QAction('E&xit', self, shortcut='Ctrl+Q',
 			statusTip='Exit the application', triggered=self.close)
 			
-		self.mainWindowAct = QtGui.QAction('Main Window', self,
-			shortcut='Ctrl+0', triggered=self.showMainWindow)
 		self.logWindowAct = QtGui.QAction('Log Window', self,
 			shortcut='Ctrl+1', triggered=self.showLogWindow)
 		self.commandWindowAct = QtGui.QAction('Command Window', self,
@@ -305,10 +354,8 @@ class MainWindow(QtGui.QMainWindow):
 		self.fileMenu.addSeparator()
 		self.fileMenu.addAction(self.exitAct)
 
-		# commented out for now, since only the mainWindow works
-		# self.windowMenu = self.menuBar().addMenu('Window')
-		# self.windowMenu.addAction(self.mainWindowAct)
-		# self.windowMenu.addAction(self.logWindowAct)
+		self.windowMenu = self.menuBar().addMenu('Window')
+		self.windowMenu.addAction(self.logWindowAct)
 		# self.windowMenu.addAction(self.commandWindowAct)
 
 		self.helpMenu = self.menuBar().addMenu('Help')
@@ -355,11 +402,13 @@ class MainWidget(QtGui.QWidget):
 class LogWindow(QtGui.QWidget):
 	def __init__(self, parent=None, flags=QtCore.Qt.Tool):
 		super(LogWindow, self).__init__(parent, flags)
-		self.logFile = tempfile.NamedTemporaryFile()
-		sys.stdout = self.logFile
-		sys.stderr = self.logFile
-		self.logWatch = QtCore.QFileSystemWatcher()
-		self.logWatch.addPath(self.logFile.name)
+#		self.logFile = tempfile.NamedTemporaryFile()
+#		sys.stdout = self.logFile
+#		sys.stderr = self.logFile
+#		self.logWatch = QtCore.QFileSystemWatcher()
+#		self.logWatch.addPath(self.logFile.name)
+		self.setWindowTitle('OMPL Log')
+		self.resize(640, 320)
 		self.logView = QtGui.QTextEdit(self)
 		self.logView.setReadOnly(True)
 		layout = QtGui.QGridLayout()

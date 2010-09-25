@@ -1,6 +1,7 @@
 #include "common/RigidBodyPlanning.h"
 #include "common/detail/assimpUtil.h"
 #include <limits>
+#include <sstream>
 
 int ompl::app::RigidBodyPlanning::setRobotMesh(const std::string &robot, bool useOpenGL)
 {
@@ -25,8 +26,11 @@ int ompl::app::RigidBodyPlanning::setRobotMesh(const std::string &robot, bool us
     if (robotScene && robotScene->HasMeshes())
     {
 	getRobotCenterAndStartState(robotScene);
+	
 	msg_.debug("Start state based on loaded robot:");
-	start_.print();
+	std::stringstream ss;
+	start_.print(ss);
+	msg_.debug(ss.str());
 
 	if (importerEnv_)
 	    setStateValidityChecker(allocStateValidityChecker(importerEnv_->GetScene(), robotScene));
