@@ -354,7 +354,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.fileMenu.addSeparator()
 		self.fileMenu.addAction(self.exitAct)
 
-		self.windowMenu = self.menuBar().addMenu('Window')
+		self.windowMenu = self.menuBar().addMenu('&Window')
 		self.windowMenu.addAction(self.logWindowAct)
 		# self.windowMenu.addAction(self.commandWindowAct)
 
