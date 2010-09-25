@@ -264,19 +264,19 @@ class MainWindow(QtGui.QMainWindow):
 			self.planner.setRange(self.mainWidget.plannerWidget.ESTRange.value())
 			self.planner.setGoalBias(self.mainWidget.plannerWidget.ESTGoalBias.value())
 	def setRange(self, value): 
-		print 'Changing range from %g to %g' %  (self.planner.getRange(), value)
+		self.msgDebug('Changing range from %g to %g' %  (self.planner.getRange(), value))
 		self.planner.setRange(value)
 	def setGoalBias(self, value): 
-		print 'Changing goal bias from %g to %g' %  (self.planner.getGoalBias(), value)
+		self.msgDebug('Changing goal bias from %g to %g' %  (self.planner.getGoalBias(), value))
 		self.planner.setGoalBias(value)
 	def setBorderFraction(self, value): 
-		print 'Changing border fraction from %g to %g' %  (self.planner.getBorderFraction(), value)
+		self.msgDebug('Changing border fraction from %g to %g' %  (self.planner.getBorderFraction(), value))
 		self.planner.setBorderFraction(value)
 	def setMaxNearestNeighbors(self, value): 
-		print 'Changing max. nearest neighbors from %g to %g' %  (self.planner.getMaxNearestNeighbors(), value)
+		self.msgDebug('Changing max. nearest neighbors from %g to %g' %  (self.planner.getMaxNearestNeighbors(), value))
 		self.planner.setMaxNearestNeighbors(value)	
 	def setTimeLimit(self, value):
-		print 'Changing time limit from %g to %g' % (self.timeLimit, value)
+		self.msgDebug('Changing time limit from %g to %g' % (self.timeLimit, value))
 		self.timeLimit = value		
 	def solve(self):
 		self.omplSetup.clear()
