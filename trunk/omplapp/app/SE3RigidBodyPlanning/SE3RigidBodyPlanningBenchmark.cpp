@@ -32,7 +32,7 @@ int main()
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
     
-    b.benchmark(10, 1, 50);
+    b.benchmark(100.0, 0.005, 50);
     b.saveResultsToStream();
 
     return 0;
