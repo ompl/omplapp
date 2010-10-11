@@ -2,7 +2,12 @@
 #include "common/SE3RigidBodyPlanning.h"
 #include <ompl/geometric/Benchmark.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/rrt/LazyRRT.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
+#include <ompl/geometric/planners/kpiece/KPIECE1.h>
+#include <ompl/geometric/planners/sbl/SBL.h>
+#include <ompl/geometric/planners/est/EST.h>
 using namespace ompl;
 
 int main()
@@ -30,9 +35,13 @@ int main()
     
     geometric::Benchmark b(setup);
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
-    
-    b.benchmark(100.0, 0.005, 50);
+    b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
+    b.benchmark(5.0, 100.0, 500);
     b.saveResultsToStream();
 
     return 0;
