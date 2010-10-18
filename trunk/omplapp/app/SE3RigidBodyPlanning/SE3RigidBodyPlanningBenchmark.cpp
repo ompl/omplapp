@@ -8,6 +8,7 @@
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/prm/PRM.h>
 using namespace ompl;
 
 int main()
@@ -41,8 +42,9 @@ int main()
     b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
-    b.benchmark(5.0, 100.0, 500);
-    b.saveResultsToStream();
+    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
+    b.benchmark(5.0, 100.0, 200, true);
+    b.saveResultsToFile("benchmark.log");
 
     return 0;
 }
