@@ -8,7 +8,7 @@ To compile OMPL and OMPL.app the following two packages are required:
 - <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt4</a> or <a href="http://www.pyside.org/">PySide</a> (which, in turn, require <a href="http://qt.nokia.com/downloads">Qt4</a>), and
 - <a href="http://pyopengl.sourceforge.net/">PyOpenGL</a>.
 .
-For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://www.language-binding.net/pyplusplus/pyplusplus.html">Py++</a>. Detailed installation instructions for installing Py++ can be found \ref installPyPlusPlus "here". To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
+For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://www.language-binding.net/pyplusplus/pyplusplus.html">Py++</a>. To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
 
 Below are installation instructions for <a href="#install_linux">Linux</a>, <a href="#install_osx">OS X</a>, and <a href="#install_windows">Windows</a>.
 <br>
@@ -36,16 +36,17 @@ sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4
 \code
 sudo apt-get install libgtest-dev doxygen
 \endcode
+- To be able to generate Python bindings, follow \ref installPyPlusPlus "these" instructions.
 - Follow the common steps \ref common_steps "below".
 
 
 \subsection install_mac_os Mac OS X
 
 - It is easiest to install the dependencies through <a href="http://www.macports.org">MacPorts</a>, a package manager for OS X, so install MacPorts first.
-- Install Boost, CMake, PyQt4, and PyOpenGL. If you have MacPorts installed, type the following:
+- Install Boost, CMake, PyQt4, PyOpenGL, and Py++. If you have MacPorts installed, type the following:
 \code
 sudo port selfupdate
-sudo port install cmake py26-pyqt4 py26-opengl boost +python26
+sudo port install cmake py26-pyqt4 py26-opengl py26-pyplusplus-devel boost +python26
 \endcode
 If you omit the \c +python26 part, Boost.Python will not be installed, and the Python bindings for OMPL cannot be compiled. Since MacPorts compiles everything from source, the commands above can take quite a while to complete. It is recommended to let this running overnight.
 - It is <b>very</b> important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you <b>must</b> use the MacPorts version of python 2.6 (most likely installed in <tt>/opt/local/bin</tt>). To make this version the default python version, make sure <tt>/opt/local/bin</tt> appears before <tt>/usr/bin</tt> in your PATH. You can add a line like this to your <tt>${HOME}/.bash_profile</tt>:
@@ -68,7 +69,6 @@ sudo port install google-test doxygen
 - Follow the common steps \ref common_steps "below".
 
 \subsection common_steps Common steps
-- To be able to generate Python bindings, follow \ref installPyPlusPlus "these" instructions.
 - Create a build directory and run cmake:
 \code
 cd omplapp

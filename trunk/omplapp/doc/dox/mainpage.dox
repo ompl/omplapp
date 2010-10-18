@@ -9,4 +9,11 @@ The Open Motion Planning Library (\b OMPL) is a library of many state-of-the-art
 
 To view documentation for OMPL solely, click <a href="core/">here</a>.
 
+<hr>
+
+\par Quick links:   
+   <a href="gettingStarted.html">Get started using OMPL</a>.<br>
+   <a href="gui.html">GUI for rigid body motion planning</a>.<br>
+   <a href="availablePlanners.html">List of available planners</a>.<br>
+
 */
