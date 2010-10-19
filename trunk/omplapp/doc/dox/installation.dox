@@ -29,7 +29,7 @@ For ubuntu 9.04 or earlier, adding the repository will require a <a href="https:
 You can download the latest version from <a href="http://www.cmake.org/cmake/resources/software.html">here</a>.
 - Install Boost 1.42, CMake 2.8, PyQt4, and PyOpenGL.
 \code
-sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl
+sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
 \endcode
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install <a href="http://pypi.python.org/pypi/PyOpenGL-accelerate">PyOpenGL-accelerate</a> to enable OpenGL hardware acceleration.
 - To be able to build tests and generate documentation, Google Test and Doxygen are also needed:
