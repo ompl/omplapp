@@ -77,7 +77,7 @@ cd build/Release
 cmake -DCMAKE_BUILD_TYPE=Release ../.. [-DCMAKE_INSTALL_PREFIX=/path/to/install]
 \endcode
 If you want a debug version of OMPL.app, change "Release" to "Debug" above.
-- Type <tt>make update_bindings</tt>. This will generate C++ code that in the next step will be compiled as binary Python modules.
+- Type <tt>make update_bindings</tt>. This will generate C++ code that in the next step will be compiled as binary Python modules. <tt>make</tt> needs to be executed <b>after</b> every call to <tt>make update_bindings</tt>.
 - Compile OMPL.app by typing \c make.
 - Optionally, run the test programs by typing <tt>make test</tt>.
 - Optionally, generate documentation by typing <tt>make doc</tt>.
