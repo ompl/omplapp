@@ -37,14 +37,14 @@ int main()
     geometric::Benchmark b(setup);
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
+    //    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
-    b.benchmark(5.0, 100.0, 200, true);
-    b.saveResultsToFile("benchmark.log");
+    //    b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
+    //    b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
+    //    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
+    b.benchmark(5.0, 100.0, 1000, true);
+    b.saveResultsToFile();
 
     return 0;
 }
