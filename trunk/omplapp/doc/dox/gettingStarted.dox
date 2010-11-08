@@ -3,6 +3,7 @@
 
 - Follow the instructions to \ref download "download" and \ref installation "install" OMPL.app.
 - Read the \ref apptutorials "tutorials".
+- Read the \ref api_overview "API overview".
 - Learn how to integrate your own code with \ref buildSystem "OMPL's build system".
 
 
