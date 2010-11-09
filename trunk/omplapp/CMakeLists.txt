@@ -53,6 +53,8 @@ set(OMPL_APP_LIBRARIES
 
 add_subdirectory(doc)
 add_subdirectory(app)
+
+option(OMPL_BUILD_DOC "Build OMPL documentation" OFF)
 add_subdirectory(ompl)
 add_subdirectory(py-bindings)
 
