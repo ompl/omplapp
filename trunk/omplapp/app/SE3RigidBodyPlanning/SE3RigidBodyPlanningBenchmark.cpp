@@ -1,6 +1,6 @@
 #include "common/config.h"
 #include "common/SE3RigidBodyPlanning.h"
-#include <ompl/geometric/Benchmark.h>
+#include <ompl/benchmark/Benchmark.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/LazyRRT.h>
@@ -9,6 +9,10 @@
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
 #include <ompl/geometric/planners/prm/PRM.h>
+
+#include <ompl/base/samplers/UniformValidStateSampler.h>
+#include <ompl/base/samplers/GaussianValidStateSampler.h>
+#include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 using namespace ompl;
 
 int main()
@@ -33,17 +37,18 @@ int main()
         
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
+    //    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::ObstacleBasedValidStateSampler::allocator());
     
-    geometric::Benchmark b(setup);
+    Benchmark b(setup);
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
-    //    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
-    //    b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
-    //    b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
-    //    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
-    b.benchmark(5.0, 100.0, 1000, true);
+    b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
+    b.benchmark(10.0, 500.0, 1, true);
     b.saveResultsToFile();
 
     return 0;

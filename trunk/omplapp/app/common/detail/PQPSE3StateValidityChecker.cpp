@@ -8,7 +8,7 @@ bool ompl::app::PQPSE3StateValidityChecker::isValid(const base::State *state) co
     const base::SE3StateManifold::StateType *s = state->as<base::SE3StateManifold::StateType>();
     PQP_REAL robTrans[3] = {s->getX(), s->getY(), s->getZ()};
     PQP_REAL robRot[3][3];
-    quaternionToMatrix(state->as<base::SE3StateManifold::StateType>()->getRotation(), robRot);
+    quaternionToMatrix(state->as<base::SE3StateManifold::StateType>()->rotation(), robRot);
     
     PQP_CollideResult cr;
     
