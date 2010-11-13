@@ -15,7 +15,7 @@
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 using namespace ompl;
 
-int main()
+int main(int argc, char **argv)
 {
     app::SE3RigidBodyPlanning setup;
     std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/cubicles_robot.dae";
@@ -37,9 +37,15 @@ int main()
         
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    //    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::ObstacleBasedValidStateSampler::allocator());
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::UniformValidStateSampler::allocator());
+
+
+    const double RUNTIME_LIMIT = 10.0;
+    const double MEMORY_LIMIT  = 500.0;
+    const int    RUN_COUNT     = 500;
     
-    Benchmark b(setup);
+
+    Benchmark b(setup, "cubicles_uniform_sampler");
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
@@ -48,8 +54,21 @@ int main()
     b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
-    b.benchmark(10.0, 500.0, 1, true);
+    
+    b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
     b.saveResultsToFile();
 
+    
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::GaussianValidStateSampler::allocator());
+    b.setExperimentName("cubicles_gaussian_sampler");
+    b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
+    b.saveResultsToFile();
+    
+
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::ObstacleBasedValidStateSampler::allocator());
+    b.setExperimentName("cubicles_obstaclebased_sampler");
+    b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
+    b.saveResultsToFile();
+    
     return 0;
 }
