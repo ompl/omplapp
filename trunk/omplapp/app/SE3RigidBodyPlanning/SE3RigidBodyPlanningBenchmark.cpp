@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     Benchmark b(setup, "cubicles_uniform_sampler");
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
+    //    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
