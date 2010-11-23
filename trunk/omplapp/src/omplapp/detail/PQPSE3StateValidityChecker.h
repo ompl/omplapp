@@ -1,4 +1,4 @@
-#include "common/detail/PQPStateValidityChecker.h"
+#include "omplapp/detail/PQPStateValidityChecker.h"
 #include <ompl/base/manifolds/SE3StateManifold.h>
 
 namespace ompl

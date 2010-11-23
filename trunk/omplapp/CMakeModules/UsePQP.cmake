@@ -1,4 +1,4 @@
-set(PQP_DIR "${CMAKE_SOURCE_DIR}/external/pqp-1.3")
+set(PQP_DIR "${CMAKE_SOURCE_DIR}/src/external/pqp-1.3")
 set(PQP_TGZ "${PQP_DIR}.tar.gz")
 # check if PQP directory already exists
 # if not, download and extract PQP
@@ -21,7 +21,7 @@ if(NOT EXISTS ${PQP_DIR})
 	endif()
 	# extract PQP tar ball
 	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${PQP_TGZ}
-		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/external")
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/external")
 	# show PQP license
 	message(STATUS "	
 -------------------------------------------------------------------------------

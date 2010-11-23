@@ -1,6 +1,6 @@
-#include "common/SE2RigidBodyPlanning.h"
-#include "common/detail/PQPSE2StateValidityChecker.h"
-#include "common/detail/assimpUtil.h"
+#include "omplapp/SE2RigidBodyPlanning.h"
+#include "omplapp/detail/PQPSE2StateValidityChecker.h"
+#include "omplapp/detail/assimpUtil.h"
 #include <limits>
 
 void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(const aiScene *scene)

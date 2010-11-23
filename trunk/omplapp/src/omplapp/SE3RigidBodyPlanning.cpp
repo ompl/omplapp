@@ -1,6 +1,6 @@
-#include "common/SE3RigidBodyPlanning.h"
-#include "common/detail/PQPSE3StateValidityChecker.h"
-#include "common/detail/assimpUtil.h"
+#include "omplapp/SE3RigidBodyPlanning.h"
+#include "omplapp/detail/PQPSE3StateValidityChecker.h"
+#include "omplapp/detail/assimpUtil.h"
 #include <limits>
 
 void ompl::app::SE3RigidBodyPlanning::inferProblemDefinitionBounds(void)

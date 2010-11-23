@@ -1,5 +1,5 @@
-#include "common/detail/PQPStateValidityChecker.h"
-#include "common/detail/assimpUtil.h"
+#include "omplapp/detail/PQPStateValidityChecker.h"
+#include "omplapp/detail/assimpUtil.h"
 
 void ompl::app::PQPStateValidityChecker::configure(const aiScene *robot, const aiScene *obstacles, const aiVector3D &center)
 {

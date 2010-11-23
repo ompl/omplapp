@@ -1,3 +1,3 @@
-../app/common/RigidBodyPlanning.h
-../app/common/SE2RigidBodyPlanning.h
-../app/common/SE3RigidBodyPlanning.h
+../src/omplapp/RigidBodyPlanning.h
+../src/omplapp/SE2RigidBodyPlanning.h
+../src/omplapp/SE3RigidBodyPlanning.h

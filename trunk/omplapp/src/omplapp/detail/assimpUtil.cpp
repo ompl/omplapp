@@ -1,4 +1,4 @@
-#include "common/detail/assimpUtil.h"
+#include "omplapp/detail/assimpUtil.h"
 #include <ompl/util/Console.h>
 #include <limits>
 

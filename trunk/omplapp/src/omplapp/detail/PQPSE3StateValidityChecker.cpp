@@ -1,4 +1,4 @@
-#include "common/detail/PQPSE3StateValidityChecker.h"
+#include "omplapp/detail/PQPSE3StateValidityChecker.h"
 
 bool ompl::app::PQPSE3StateValidityChecker::isValid(const base::State *state) const
 {

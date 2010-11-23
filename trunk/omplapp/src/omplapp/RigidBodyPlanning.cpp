@@ -1,5 +1,5 @@
-#include "common/RigidBodyPlanning.h"
-#include "common/detail/assimpUtil.h"
+#include "omplapp/RigidBodyPlanning.h"
+#include "omplapp/detail/assimpUtil.h"
 #include <limits>
 #include <sstream>
 

@@ -5,7 +5,7 @@ find_path(ASSIMP_INCLUDE_DIR assimp.h PATH_SUFFIXES assimp
 if(NOT ASSIMP_LIBRARY OR NOT ASSIMP_INCLUDE_DIR)
 	include(ExternalProject)
 	ExternalProject_Add(assimp
-		DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/external"
+		DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
 		URL "http://softlayer.dl.sourceforge.net/assimp/assimp--2.0.858-sdk.zip"
 		URL_MD5 "01b92c012ab52e8947dea1bda03fad9f"
 		CMAKE_ARGS 

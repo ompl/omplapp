@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 2.8)
 project(omplapp CXX C)
 
 set(OMPLAPP_MAJOR_VERSION 0)
-set(OMPLAPP_MINOR_VERSION 1)
+set(OMPLAPP_MINOR_VERSION 8)
 set(OMPLAPP_PATCH_VERSION 0)
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.{$OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 
-set(OMPL_APP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/app")
+set(OMPL_APP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
 set(OMPL_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
@@ -25,6 +25,8 @@ find_package(Doxygen)
 find_package(Ruby QUIET)
 find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
 find_package(OpenGL REQUIRED)
+# This includes our own FindPython.cmake in ompl/CMakeModules. It defines, 
+# among other things, the find_python_module() used below.
 find_package(Python REQUIRED)
 find_python_module(PyQt4 REQUIRED)
 find_python_module(OpenGL REQUIRED)
@@ -51,11 +53,15 @@ set(OMPL_APP_LIBRARIES
 	${ASSIMP_LIBRARY} 
 	${PQP_LIBRARY})
 
-add_subdirectory(doc)
-add_subdirectory(app)
-
+# disable building separate documentation for the OMPL core;
+# this documentation is already automatically included in the OMPL.app
+# documentation
 option(OMPL_BUILD_DOC "Build OMPL documentation" OFF)
+
+add_subdirectory(doc)
 add_subdirectory(ompl)
+add_subdirectory(src)
+add_subdirectory(demos)
 add_subdirectory(py-bindings)
 
 include(CPackSettings)

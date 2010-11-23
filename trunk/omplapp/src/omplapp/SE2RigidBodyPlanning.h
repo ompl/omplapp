@@ -1,7 +1,7 @@
 #ifndef OMPLAPP_COMMON_SE2_RIGID_BODY_PLANNING_
 #define OMPLAPP_COMMON_SE2_RIGID_BODY_PLANNING_
 
-#include "common/RigidBodyPlanning.h"
+#include "omplapp/RigidBodyPlanning.h"
 #include <ompl/base/manifolds/SE2StateManifold.h>
 #include <string>
 

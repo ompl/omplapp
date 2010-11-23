@@ -1,5 +1,6 @@
-#include "common/config.h"
-#include "common/SE3RigidBodyPlanning.h"
+#include <omplapp/config.h>
+#include <omplapp/SE3RigidBodyPlanning.h>
+
 using namespace ompl;
 
 int main()
