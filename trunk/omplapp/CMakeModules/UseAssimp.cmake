@@ -11,8 +11,8 @@ else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
     # download and build assimp
     ExternalProject_Add(assimp
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://softlayer.dl.sourceforge.net/assimp/assimp--2.0.858-sdk.zip"
-        URL_MD5 "01b92c012ab52e8947dea1bda03fad9f"
+        URL "http://softlayer.dl.sourceforge.net/assimp/assimp--2.0.863-sdk.zip"
+        URL_MD5 "9f41662501bd9d9533c4cf03b7c25d5b"
         CMAKE_ARGS 
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/assimp-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"

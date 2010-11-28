@@ -21,7 +21,7 @@ set(CPACK_SOURCE_IGNORE_FILES
 	"/html/"
 	"TODO"
 	"/external/assimp"
-	"/pqp-1.3/")
+	"/pqp-1.3")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ;ZIP")
 

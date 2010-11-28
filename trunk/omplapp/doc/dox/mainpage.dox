@@ -5,6 +5,7 @@ The Open Motion Planning Library (\b OMPL) is a library of many state-of-the-art
 
 \b OMPL.app, the front-end for OMPL, contains a lightweight wrapper for the <a href="http://gamma.cs.unc.edu/SSV/">PQP</a> collision checker and a simple GUI based on <a href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">PyQt</a>. The graphical front-end can be used for simple rigid body planning. It relies on the <a href="http://assimp.sf.net">Assimp</a> library to import a large variety of mesh formats that can be used to represent the robot and its environment. 
 
+We have also developed a \ref education "teaching module on motion planning" that is centered around OMPL.app.  We are looking for educational partners to use and further develop the material. Please contact us for more information.
 <br>
 
 To view documentation for OMPL solely, click <a href="core/">here</a>.
