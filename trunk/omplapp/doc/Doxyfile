@@ -583,7 +583,8 @@ WARN_LOGFILE           =
 
 INPUT                  = ./dox \
                          ../ompl/doc/dox \
-                         ../app/common \
+                         ../src/omplapp \
+                         ../demos \
                          ../ompl/src \
                          ../ompl/demos
 
