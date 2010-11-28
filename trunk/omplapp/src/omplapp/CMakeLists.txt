@@ -2,7 +2,14 @@
 file(GLOB_RECURSE OMPLAPP_SRC *.cpp)
 
 add_library(ompl_app SHARED ${OMPLAPP_SRC})
+if(TARGET assimp)
+    add_dependencies(ompl_app assimp)
+endif()
+if(TARGET pqp)
+    add_dependencies(ompl_app pqp)
+endif()
 target_link_libraries(ompl_app ompl ${OMPL_APP_LIBRARIES})
+install(TARGETS ompl_app DESTINATION lib)
 get_target_property(OMPL_APP_LIBRARY_LOC ompl_app LOCATION)
 add_custom_command(TARGET ompl_app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "${OMPL_APP_LIBRARY_LOC}" 

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(omplapp CXX C)
 
 set(OMPLAPP_MAJOR_VERSION 0)
-set(OMPLAPP_MINOR_VERSION 8)
+set(OMPLAPP_MINOR_VERSION 9)
 set(OMPLAPP_PATCH_VERSION 0)
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.{$OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 
@@ -20,9 +20,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 include(UsePQP)
 include(UseAssimp)
-find_package(Doxygen)
-# Ruby is only needed if you want the regenerate the CSS files for the documentation
-find_package(Ruby QUIET)
 find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
 find_package(OpenGL REQUIRED)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines, 
@@ -58,8 +55,11 @@ set(OMPL_APP_LIBRARIES
 # documentation
 option(OMPL_BUILD_DOC "Build OMPL documentation" OFF)
 
-add_subdirectory(doc)
+# add ompl directory first; in it some options / variables are declared 
+# that are referenced by CMakeLists.txt files in other subdirectories.
 add_subdirectory(ompl)
+add_subdirectory(app)
+add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(py-bindings)

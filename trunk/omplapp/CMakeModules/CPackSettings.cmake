@@ -8,7 +8,20 @@ set(CPACK_PACKAGE_VERSION_MINOR "${OMPLAPP_MINOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_PATCH "${OMPLAPP_PATCH_VERSION}")
 
 set(CPACK_SOURCE_IGNORE_FILES 
-	"$/CVS/;/.svn/;.swp$;.#;/#;/build/;.pyc$;.pyo$;.so$;.dylib$;.md5$;/blueprint/;.DS_Store;_cache$;mkwebdocs.sh;ompl/doc/html;TODO")
+	"/.svn/"
+	"/build/"
+	".pyc$"
+	".pyo$"
+	".so$"
+	".dylib$"
+	".md5$"
+	"/blueprint/"
+	".DS_Store"
+	"mkwebdocs.sh"
+	"/html/"
+	"TODO"
+	"/external/assimp"
+	"/pqp-1.3/")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ;ZIP")
 

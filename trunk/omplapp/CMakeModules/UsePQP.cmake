@@ -1,109 +1,43 @@
-set(PQP_DIR "${CMAKE_SOURCE_DIR}/src/external/pqp-1.3")
-set(PQP_TGZ "${PQP_DIR}.tar.gz")
-# check if PQP directory already exists
-# if not, download and extract PQP
-if(NOT EXISTS ${PQP_DIR})
-	if(NOT EXISTS ${PQP_TGZ})
- 		file(DOWNLOAD http://gamma.cs.unc.edu/software/downloads/SSV/pqp-1.3.tar.gz 
-			${PQP_TGZ} STATUS PQP_DL_STATUS)
-		# check download exit status
-		list(GET PQP_DL_STATUS 0 PQP_DL_STATUS_VAL)
-		list(GET PQP_DL_STATUS 1 PQP_DL_STATUS_MSG)
-		if(NOT PQP_DL_STATUS_VAL EQUAL 0)
-			message(FATAL_ERROR "PQP download failed with this error: ${PQP_DL_STATUS_MSG}")
-		endif()
-		# check MD5 checksum
-		execute_process(COMMAND ${CMAKE_COMMAND} -E md5sum ${PQP_TGZ}
-			OUTPUT_VARIABLE PQP_MD5)
-		if(NOT PQP_MD5 MATCHES "^f710e24a62db763d61d08667439d46fd.*pqp-1.3.tar.gz.*")
-			message(WARNING "The PQP distribution has changed. Compilation may fail.")
-		endif()
-	endif()
-	# extract PQP tar ball
-	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${PQP_TGZ}
-		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/external")
-	# show PQP license
-	message(STATUS "	
--------------------------------------------------------------------------------
-Copyright 1999 The University of North Carolina at Chapel Hill.
-All Rights Reserved.
+find_library(PQP_LIBRARY PQP DOC "Location of PQP proximity query library")
+find_path(PQP_INCLUDE_DIR PQP.h PATH_SUFFIXES "PQP"
+    DOC "Location of PQP proximity query header files")
 
-Permission to use, copy, modify and distribute this software and its
-documentation for educational, research and non-profit purposes, without
-fee, and without a written agreement is hereby granted, provided that the
-above copyright notice and the following three paragraphs appear in all
-copies.
+if(PQP_LIBRARY AND PQP_INCLUDE_DIR)
+    # if already installed, show that library and headers were found
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(pqp DEFAULT_MSG PQP_LIBRARY PQP_INCLUDE_DIR)
+else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
+    include(ExternalProject)
+    # download and build PQP
+    ExternalProject_Add(pqp
+        DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
+        URL "http://gamma.cs.unc.edu/software/downloads/SSV/pqp-1.3.tar.gz"
+        URL_MD5 "f710e24a62db763d61d08667439d46fd"
+        CMAKE_ARGS 
+            "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/pqp-prefix"
+            "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
+            "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/pqp-prefix/lib"
+        INSTALL_COMMAND "")
+    # use a CMakeLists.txt file to configure build of PQP
+    ExternalProject_Add_Step(pqp addCMakeList
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-PQP.txt"
+            "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/CMakeLists.txt"
+        DEPENDEES download
+        DEPENDERS configure)
+    # if using Visual Studio, the code is automatically patched
+    if(MSVC_IDE)
+        ExternalProject_Add_Step(pqp patchForMSVC
+            COMMAND ${CMAKE_COMMAND} 
+                -D "PQP_INCLUDE=${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/PQP_v1.3/src"
+                -P "${CMAKE_SOURCE_DIR}/src/external/patchPQP-MSVC.cmake"
+            DEPENDEES download
+            DEPENDERS configure)
+    endif(MSVC_IDE)
 
-IN NO EVENT SHALL THE UNIVERSITY OF NORTH CAROLINA AT CHAPEL HILL BE
-LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
-CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE
-USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY
-OF NORTH CAROLINA HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH
-DAMAGES.
-
-THE UNIVERSITY OF NORTH CAROLINA SPECIFICALLY DISCLAIM ANY
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE
-PROVIDED HEREUNDER IS ON AN \"AS IS\" BASIS, AND THE UNIVERSITY OF
-NORTH CAROLINA HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT,
-UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-
-The authors may be contacted via:
-
-US Mail:             E. Larsen
-                     Department of Computer Science
-                     Sitterson Hall, CB #3175
-                     University of N. Carolina
-                     Chapel Hill, NC 27599-3175
-
-Phone:               (919)962-1749
-
-EMail:               geom@cs.unc.edu
--------------------------------------------------------------------------------
-
-** THE PQP LIBRARY FOR COLLISION CHECKING HAS BEEN DOWNLOADED. BY USING THIS 
-** LIBRARY YOU AGREE TO THE LICENSE ABOVE.
-")
-endif()
-
-
-macro(ompl_backup filename)
-	if(NOT EXISTS "${filename}.orig")
-		if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER 2.6)
-			file(RENAME "${filename}" "${filename}.orig")
-		else()
-			file(READ "${filename}" FILECONTENTS)
-			file(WRITE "${filename}.orig" "${FILECONTENTS}")
-		endif()
-	endif(NOT EXISTS "${filename}.orig")
-endmacro(ompl_backup)
-
-if(MSVC_IDE)
-	message(STATUS "Patching PQP")
-	ompl_backup("${PQP_INCLUDE}/PQP_compile.h")
-	file(READ "${PQP_INCLUDE}/PQP_compile.h.orig" PQPCOMPILE_H_ORIG)
-	string(REPLACE "inline float sqrt(float x) { return (float)sqrt((double)x); }\ninline float cos(float x) { return (float)cos((double)x); }\ninline float sin(float x) { return (float)sin((double)x); }\ninline float fabs(float x) { return (float)fabs((double)x); }\n" "" PQPCOMPILE_H "${PQPCOMPILE_H_ORIG}")
-	file(WRITE "${PQP_INCLUDE}/PQP_compile.h" "${PQPCOMPILE_H}")
-	message(STATUS "Patched ${PQP_INCLUDE}/PQP_compile.h")
-
-	ompl_backup("${PQP_INCLUDE}/PQP.h")
-	file(READ "${PQP_INCLUDE}/PQP.h.orig" PQP_H_ORIG)
-	string(REPLACE "\nPQP_" "\n__declspec(dllexport) PQP_" PQP_H "${PQP_H_ORIG}")
-	file(WRITE "${PQP_INCLUDE}/PQP.h" "${PQP_H}")
-	message(STATUS "Patched ${PQP_INCLUDE}/PQP.h")
-
-	ompl_backup("${PQP_INCLUDE}/PQP_internal.h")
-	file(READ "${PQP_INCLUDE}/PQP_Internal.h.orig" PQPINTERNAL_H_ORIG)
-	string(REPLACE "class PQP_Model" "class __declspec(dllexport) PQP_Model" PQPINTERNAL_H_1 "${PQPINTERNAL_H_ORIG}")
-	string(REPLACE "struct CollisionPair" "struct __declspec(dllexport) CollisionPair" PQPINTERNAL_H_2 "${PQPINTERNAL_H_1}")
-	string(REPLACE "struct PQP_CollideResult" "struct __declspec(dllexport) PQP_CollideResult" PQPINTERNAL_H "${PQPINTERNAL_H_2}")
-	file(WRITE "${PQP_INCLUDE}/PQP_Internal.h" "${PQPINTERNAL_H}")
-	message(STATUS "Patched ${PQP_INCLUDE}/PQP_Internal.h")
-endif(MSVC_IDE)
-
-
-set(PQP_INCLUDE_DIR "${PQP_DIR}/PQP_v1.3/src")
-aux_source_directory(${PQP_INCLUDE_DIR} SRC_PQP)
-add_library(PQP SHARED ${SRC_PQP})
-set(PQP_LIBRARY "PQP")
-install(TARGETS PQP DESTINATION lib/)
+    # set the library and include variables
+    set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        CACHE FILEPATH "Location of PQP proximity query library" FORCE)
+    set(PQP_INCLUDE_DIR "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/PQP_v1.3/src"
+        CACHE PATH "Location of PQP proximity query header files" FORCE)
+endif(PQP_LIBRARY AND PQP_INCLUDE_DIR)
