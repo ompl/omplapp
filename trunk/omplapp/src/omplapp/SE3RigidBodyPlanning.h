@@ -8,7 +8,9 @@ namespace ompl
 {
     namespace app
     {
-	
+
+	/** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
+	    for rigid bodies in SE2. */	
 	class SE3RigidBodyPlanning : public RigidBodyPlanning
 	{
 	public:
@@ -17,7 +19,7 @@ namespace ompl
 	    {
 	    }
 
-	    virtual ~SE3RigidBodyPlanning()
+	    virtual ~SE3RigidBodyPlanning(void)
 	    {
 	    }
 

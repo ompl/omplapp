@@ -1,20 +1,31 @@
 if (OMPL_BUILD_DEMOS)
-    set(OMPL_APP_LIBRARIES ${OMPL_APP_LIBRARIES} ompl ompl_app)
+    set(OMPL_APP_DEMO_LIBRARIES ${OMPL_APP_LIBRARIES} ompl ompl_app)
 
     # create executable for SE3 rigid body planning application
     set(SE3RigidBodyPlanning_SRC SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
     add_executable(SE3RigidBodyPlanning ${SE3RigidBodyPlanning_SRC}) 
-    target_link_libraries(SE3RigidBodyPlanning ${OMPL_APP_LIBRARIES})
+    target_link_libraries(SE3RigidBodyPlanning ${OMPL_APP_DEMO_LIBRARIES})
 
     # create executable for SE3 rigid body benchmarking application
     set(SE3RigidBodyPlanningBenchmark_SRC SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
     add_executable(SE3RigidBodyPlanningBenchmark ${SE3RigidBodyPlanningBenchmark_SRC})
-    target_link_libraries(SE3RigidBodyPlanningBenchmark ${OMPL_APP_LIBRARIES})
+    target_link_libraries(SE3RigidBodyPlanningBenchmark ${OMPL_APP_DEMO_LIBRARIES})
 
     # create executable for SE2 rigid body planning application
     aux_source_directory(SE2RigidBodyPlanning SE2RigidBodyPlanning_SRC)
     add_executable(SE2RigidBodyPlanning ${SE2RigidBodyPlanning_SRC}) 
-    target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_LIBRARIES})
+    target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_DEMO_LIBRARIES})
+    
+    # create executable for planning with ODE
+    find_package(ODE QUIET)
+    if (ODE_FOUND)
+      add_definitions(${ODE_DEFINITIONS})
+      include_directories(${ODE_INCLUDE})
+
+      aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
+      add_executable(OpenDEPlanning ${OpenDEPlanning_SRC}) 
+      target_link_libraries(OpenDEPlanning ${ODE_LIBRARY} ${OMPL_APP_DEMO_LIBRARIES})
+    endif()
 endif(OMPL_BUILD_DEMOS)
 
 file(GLOB_RECURSE OMPLAPP_DEMO_CXX_FILES "*.cpp")

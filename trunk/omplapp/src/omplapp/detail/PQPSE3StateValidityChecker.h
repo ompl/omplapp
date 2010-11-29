@@ -5,7 +5,8 @@ namespace ompl
 {
     namespace app
     {
-	
+
+	/** \brief Specialization of PQPStateValidityChecker for SE3 (this class assumes states are allocated by ompl::base::SE3StateManifold) */	
 	class PQPSE3StateValidityChecker : public PQPStateValidityChecker
 	{
 	public:

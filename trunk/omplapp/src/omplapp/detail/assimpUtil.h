@@ -10,6 +10,7 @@ namespace ompl
     namespace app
     {
 
+	/** \brief Utilitiy functions for processing imported scenes */
 	namespace scene
 	{
 	    
@@ -20,6 +21,7 @@ namespace ompl
 	    void sceneCenter(const aiScene *scene, aiVector3D &center);
 	    int assimpRender(const aiScene* scene);
 	    int assimpRender(const aiScene* scene, const aiVector3D &robotCenter);
+	    
 	}
 	
     }

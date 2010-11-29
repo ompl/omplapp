@@ -3,13 +3,14 @@
 
 #include "omplapp/RigidBodyPlanning.h"
 #include <ompl/base/manifolds/SE2StateManifold.h>
-#include <string>
 
 namespace ompl
 {
     namespace app
     {
 	
+	/** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
+	    for rigid bodies in SE2. */
 	class SE2RigidBodyPlanning : public RigidBodyPlanning
 	{
 	public:
@@ -18,7 +19,7 @@ namespace ompl
 	    {
 	    }
 	    
-	    virtual ~SE2RigidBodyPlanning()
+	    virtual ~SE2RigidBodyPlanning(void)
 	    {
 	    }
 

@@ -23,6 +23,7 @@ namespace ompl
 	    {
 	    }
 	    
+	    /** \brief This function @b must be called after construction, to initialize the collision checker. */
 	    virtual void configure(const aiScene *robot, const aiScene *obstacles, const aiVector3D &robotCenter);
 	    
 	protected:
@@ -43,8 +44,13 @@ namespace ompl
 	    /** \brief Convert a set of triangles to a PQP model */
 	    PQPModelPtr getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const;
 	    
+	    /** \brief Model of the robot */
 	    PQPModelPtr    robot_;
-	    PQPModelPtr    environment_;    
+
+	    /** \brief Model of the environment */
+	    PQPModelPtr    environment_;
+
+	    /** \brief Interfaca used for reporting errors */
 	    msg::Interface msg_;
 	    
 	};
