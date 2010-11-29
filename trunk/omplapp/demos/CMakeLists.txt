@@ -17,14 +17,14 @@ if (OMPL_BUILD_DEMOS)
     target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_DEMO_LIBRARIES})
     
     # create executable for planning with ODE
-    find_package(ODE QUIET)
-    if (ODE_FOUND)
+    find_package(Drawstuff QUIET)
+    if (DRAWSTUFF_FOUND)
       add_definitions(${ODE_DEFINITIONS})
-      include_directories(${ODE_INCLUDE})
+      include_directories(${ODE_INCLUDE} ${DRAWSTUFF_INCLUDE})
 
       aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
       add_executable(OpenDEPlanning ${OpenDEPlanning_SRC}) 
-      target_link_libraries(OpenDEPlanning ${ODE_LIBRARY} ${OMPL_APP_DEMO_LIBRARIES})
+      target_link_libraries(OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARY} ${OMPL_APP_DEMO_LIBRARIES})
     endif()
 endif(OMPL_BUILD_DEMOS)
 

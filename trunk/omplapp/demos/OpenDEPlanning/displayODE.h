@@ -1,4 +1,5 @@
 #include <ode/ode.h>
+#include <drawstuff/drawstuff.h>
 #include <vector>
 
 class DisplayODESpaces

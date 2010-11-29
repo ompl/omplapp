@@ -1,5 +1,4 @@
 #include "displayODE.h"
-#include "drawstuff.inc"
 
 #ifdef dDOUBLE
 #define dsDrawBox dsDrawBoxD
