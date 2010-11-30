@@ -12,7 +12,7 @@ find_package(ODE QUIET)
 
 if (ODE_FOUND)
   # find the header file
-  find_path(DRAWSTUFF_INCLUDE_DIR drawstuff.h PATHS ${_ODE_INCLUDE_HINTS} ${ODE_INCLUDE} 
+  find_path(DRAWSTUFF_INCLUDE_DIR drawstuff.h PATHS ${_ODE_INCLUDE_HINTS} ${ODE_INCLUDE_DIR}
       PATH_SUFFIXES drawstuff include/drawstuff
        DOC "Location of ODE's drawstuff header files")
   if (DRAWSTUFF_INCLUDE_DIR)
