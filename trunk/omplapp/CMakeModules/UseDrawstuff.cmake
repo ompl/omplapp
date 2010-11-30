@@ -1,11 +1,10 @@
-find_library(DRAWSTUFF_LIBRARY drawstuff DOC "Location of ODE's drawstuff library")
-find_path(DRAWSTUFF_INCLUDE_DIR drawstuff DOC "Location of ODE's drawstuff header files")
+find_package(Drawstuff)
 
-if(DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR OR MSVC_IDE)
+if( ( DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR ) OR MSVC_IDE)
     # if already installed, show that library and headers were found
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(drawstuff DEFAULT_MSG DRAWSTUFF_LIBRARY DRAWSTUFF_INCLUDE_DIR)
-else(DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR OR MSVC_IDE)
+else( ( DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR ) OR MSVC_IDE)
     include(ExternalProject)
     # download and build PQP
     ExternalProject_Add(drawstuff
@@ -29,4 +28,4 @@ else(DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR OR MSVC_IDE)
     set(DRAWSTUFF_INCLUDE_DIR "${CMAKE_BINARY_DIR}/drawstuff-prefix/src/drawstuff/include"
         CACHE PATH "Location of ODE's drawstuff header files" FORCE)
     set(DRAWSTUFF_FOUND TRUE)
-endif(DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR OR MSVC_IDE)
+endif( ( DRAWSTUFF_LIBRARY AND DRAWSTUFF_INCLUDE_DIR ) OR MSVC_IDE)

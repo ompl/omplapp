@@ -17,8 +17,6 @@ if (OMPL_BUILD_DEMOS)
     target_link_libraries(SE2RigidBodyPlanning ${OMPL_APP_DEMO_LIBRARIES})
     
     # create executable for planning with ODE
-    message(ode ${ODE_FOUND})
-    message(drawstuff ${DRAWSTUFF_FOUND})
     if (ODE_FOUND AND DRAWSTUFF_FOUND)
         if(APPLE)
             find_package(GLUT)

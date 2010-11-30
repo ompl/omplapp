@@ -21,7 +21,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 include(UsePQP)
 include(UseAssimp)
 include(UseDrawstuff)
-find_package(ODE QUIET)
 find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
 find_package(OpenGL REQUIRED)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines, 
