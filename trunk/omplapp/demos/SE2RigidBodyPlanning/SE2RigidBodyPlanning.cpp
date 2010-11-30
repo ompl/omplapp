@@ -8,8 +8,8 @@ int main()
     app::SE2RigidBodyPlanning setup;
 
     // load the robot and the environment
-    std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/Easy_robot.dae";
-    std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/Easy_env.dae";
+    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Easy_robot.dae";
+    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Easy_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
     

@@ -24,29 +24,43 @@ void DisplayODESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R, in
 	return;
     }
     
-    if (!pos) pos = dGeomGetPosition (g);
-    if (!R) R = dGeomGetRotation (g);
-    
     int type = dGeomGetClass (g);
-    if (type == dBoxClass) {
+    if (type == dBoxClass)
+    {
+	if (!pos) pos = dGeomGetPosition (g);
+	if (!R) R = dGeomGetRotation (g);
+
 	dVector3 sides;
 	dGeomBoxGetLengths (g,sides);
 	dsDrawBox (pos,R,sides);
     }
-    else if (type == dSphereClass) {
+    else if (type == dSphereClass)
+    {
+	if (!pos) pos = dGeomGetPosition (g);
+	if (!R) R = dGeomGetRotation (g);
 	dsDrawSphere (pos,R,dGeomSphereGetRadius (g));
     }
-    else if (type == dCapsuleClass) {
+    else if (type == dCapsuleClass)
+    {
+	if (!pos) pos = dGeomGetPosition (g);
+	if (!R) R = dGeomGetRotation (g);
 	dReal radius,length;
 	dGeomCapsuleGetParams (g,&radius,&length);
 	dsDrawCapsule (pos,R,length,radius);
     }
-    else if (type == dCylinderClass) {
+    else if (type == dCylinderClass)
+    {
+	if (!pos) pos = dGeomGetPosition (g);
+	if (!R) R = dGeomGetRotation (g);
 	dReal radius,length;
 	dGeomCylinderGetParams (g,&radius,&length);
 	dsDrawCylinder (pos,R,length,radius);
     }
-    else if (type == dGeomTransformClass) {
+    else if (type == dGeomTransformClass)
+    {
+	if (!pos) pos = dGeomGetPosition (g);
+	if (!R) R = dGeomGetRotation (g);
+
 	dGeomID g2 = dGeomTransformGetGeom (g);
 	const dReal *pos2 = dGeomGetPosition (g2);
 	const dReal *R2 = dGeomGetRotation (g2);
@@ -59,7 +73,11 @@ void DisplayODESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R, in
 	dMULTIPLY0_333 (actual_R,R,R2);
 	drawGeom (g2,actual_pos,actual_R,0);
     }
-    if (show_aabb) {
+    else
+	show_aabb = 0;
+    
+    if (show_aabb)
+    {
 	// draw the bounding box for this geom
 	dReal aabb[6];
 	dGeomGetAABB (g,aabb);

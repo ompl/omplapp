@@ -1,4 +1,5 @@
 #include "displayODE.h"
+#include "omplapp/config.h"
 
 #include <ompl/extensions/ode/ODESimpleSetup.h>
 #include <ompl/base/GoalRegion.h>
@@ -33,8 +34,8 @@ namespace oc = ompl::control;
 #define COLS 1			// columns of cars
 #define ITERS 20		// number of iterations
 #define WBOXSIZE 1.0		// size of wall boxes
-#define WALLWIDTH 12		// width of wall
-#define WALLHEIGHT 10		// height of wall
+#define WALLWIDTH 8		// width of wall
+#define WALLHEIGHT 6		// height of wall
 #define DISABLE_THRESHOLD 0.008	// maximum velocity (squared) a body can have and be disabled
 #define DISABLE_STEPS 10	// number of steps a box has to have been disable-able before it will be disabled
 
@@ -202,7 +203,7 @@ static void command (int cmd)
 static void simLoop (int pause)
 {
     disp.displaySpaces();
-    
+    usleep(1000);
 }
 
 /// @cond IGNORE 
@@ -231,7 +232,6 @@ public:
     
     virtual void getControlBounds(std::vector<double> &lower, std::vector<double> &upper) const
     {
-	static double maxForce = 0.2;
 	lower.resize(2);
 	lower[0] = -0.3;
 	lower[1] = -1.2;
@@ -243,8 +243,8 @@ public:
     
     virtual void applyControl(const double *control) const
     {
-	dReal speed = control[0];
-	dReal turn = control[1];
+	dReal turn = control[0];
+	dReal speed = control[1];
 	for (int j = 0; j < joints; j++)
 	{
 	    dReal curturn = dJointGetHinge2Angle1 (joint[j]);
@@ -258,7 +258,7 @@ public:
     
     virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const
     {
-	return false;
+	return true;
     }
     
     virtual void setupContact(dGeomID geom1, dGeomID geom2, dContact &contact) const
@@ -284,19 +284,22 @@ public:
 	collisionSpaces_.push_back(space);
 	for (int i = 0 ; i < bodies ; ++i)
 	    stateBodies_.push_back(body[i]);
-	for (int i = 0 ; i < boxes ; ++i)
+	for (int i = 0 ; i < wb ; ++i)
 	    stateBodies_.push_back(wall_bodies[i]);
+	minControlSteps_ = 50;
+	maxControlSteps_= 500;
+	
     }
     
 };
 
 
 // Define the goal we want to reach
-class RigidBodyGoal : public ob::GoalRegion
+class CarGoal : public ob::GoalRegion
 {
 public:
     
-    RigidBodyGoal(const ob::SpaceInformationPtr &si) : ob::GoalRegion(si)
+    CarGoal(const ob::SpaceInformationPtr &si) : ob::GoalRegion(si)
     {
 	threshold_ = 0.5;
     }
@@ -304,31 +307,29 @@ public:
     virtual double distanceGoal(const ob::State *st) const
     {
 	const double *pos = st->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
-	double dx = fabs(pos[0] - 30);
-	double dy = fabs(pos[1] - 55);
-	double dz = fabs(pos[2] - 35);
-	return sqrt(dx * dx + dy * dy + dz * dz);
+	double dx = fabs(pos[0] + 3);
+	double dy = fabs(pos[1] + 5);
+	return sqrt(dx * dx + dy * dy);
     }
     
 };  
 
 
 // Define how we project a state 
-class RigidBodyStateProjectionEvaluator : public ob::ProjectionEvaluator
+class CarStateProjectionEvaluator : public ob::ProjectionEvaluator
 {
 public: 
 
-    RigidBodyStateProjectionEvaluator(const ob::StateManifold *manifold) : ob::ProjectionEvaluator(manifold)
+    CarStateProjectionEvaluator(const ob::StateManifold *manifold) : ob::ProjectionEvaluator(manifold)
     {
-	cellDimensions_.resize(3);
-	cellDimensions_[0] = 1;
-	cellDimensions_[1] = 1;
-	cellDimensions_[2] = 1;
+	cellDimensions_.resize(2);
+	cellDimensions_[0] = 0.1;
+	cellDimensions_[1] = 0.1;
     }
     
     virtual unsigned int getDimension(void) const
     {
-	return 3;
+	return 2;
     }
     
     virtual void project(const ob::State *state, ob::EuclideanProjection &projection) const
@@ -336,17 +337,16 @@ public:
 	const double *pos = state->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
 	projection[0] = pos[0];
 	projection[1] = pos[1];
-	projection[2] = pos[2];
     }
     
 };
 
 // Define our own manifold, to include a distance function we want and register a default projection
-class RigidBodyStateManifold : public oc::ODEStateManifold
+class CarStateManifold : public oc::ODEStateManifold
 {
 public:
 
-    RigidBodyStateManifold(const oc::ODEEnvironmentPtr &env) : oc::ODEStateManifold(env)
+    CarStateManifold(const oc::ODEEnvironmentPtr &env) : oc::ODEStateManifold(env)
     {
     }
     
@@ -356,18 +356,50 @@ public:
 	const double *p2 = s1->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
 	double dx = fabs(p1[0] - p2[0]);
 	double dy = fabs(p1[1] - p2[1]);
-	double dz = fabs(p1[2] - p2[2]);
-	return sqrt(dx * dx + dy * dy + dz * dz);
+	return sqrt(dx * dx + dy * dy);
     }
 
     virtual void registerProjections(void)
     {
-    	registerDefaultProjection(ob::ProjectionEvaluatorPtr(new RigidBodyStateProjectionEvaluator(this)));
+    	registerDefaultProjection(ob::ProjectionEvaluatorPtr(new CarStateProjectionEvaluator(this)));
     }
     
 };
 
+void playPath(oc::ODESimpleSetup *ss)
+{
+    ob::ScopedState<> old = ss->getCurrentState();
+    while (1)
+    {
+	sleep(1);
+	//	ss->playSolutionPath(2);
+	ob::ScopedState<> start = ss->getCurrentState();
+	
+	if (start != old)
+	    throw;
+	
+	double c[2];
+	c[0] = 0.05;
+	c[1] = 0.3;
+	
+	ss->playControl(c, 0.05 * 50, 0.2);
+	
+	ss->setCurrentState(start);
+	old = start;
+	
+	std::cout << "Back to start state" << std::endl;
+	
+	sleep(1);
+	
+	ss->play(0.05 * 50, 0.2);
+	std::cout << "Sitting in place" << std::endl;
+	break;
+	
+    }
+}
+
 /// @endcond
+
 
 int main(int argc, char **argv)
 {
@@ -377,7 +409,11 @@ int main(int argc, char **argv)
     fn.step = &simLoop;
     fn.command = &command;
     fn.stop = 0;
-    //fn.path_to_textures = ".";
+
+    char *textures = (char*)alloca(strlen(OMPLAPP_RESOURCE_DIR) + 10);
+    strcpy(textures, OMPLAPP_RESOURCE_DIR);
+    strcat(textures, "/textures");
+    fn.path_to_textures = textures;
 
     dInitODE2(0);
 
@@ -387,11 +423,32 @@ int main(int argc, char **argv)
     spheres = 0;
     resetSimulation();
 
+    oc::ODEEnvironmentPtr ce(new CarEnvironment());
+    ob::StateManifoldPtr sm(new CarStateManifold(ce));
+    oc::ODESimpleSetup ss(sm);
+    ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation())));
+    
+    ss.setup();
+    ss.print();
+    boost::thread *th = NULL;
+    
+    //    if (ss.solve(10.0))
+    {
+	std::cout << "Solved!" << std::endl;
+	th = new boost::thread(boost::bind(&playPath, &ss));
+    }
+    
     // run simulation                                                       
     dsSimulationLoop (argc,argv,640,480,&fn);
+    if (th)
+    {
+	th->interrupt();
+	th->join();
+    }
+    
     dSpaceDestroy (space);
     dWorldDestroy (world);
     dCloseODE();
-
+    
     return 0;
 }

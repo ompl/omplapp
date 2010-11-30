@@ -18,8 +18,8 @@ using namespace ompl;
 int main(int argc, char **argv)
 {
     app::SE3RigidBodyPlanning setup;
-    std::string robot_fname = std::string(OMPL_RESOURCE_DIR) + "/cubicles_robot.dae";
-    std::string env_fname = std::string(OMPL_RESOURCE_DIR) + "/cubicles_env.dae";
+    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
+    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
     
