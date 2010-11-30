@@ -107,6 +107,7 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 	
 	//center of mass offset body. (hang another copy of the body COMOFFSET units below it by a fixed joint)
 	dBodyID b = dBodyCreate (world);
+	body[bodyI + 5] = b;
 	dBodySetPosition (b,x,y,STARTZ+COMOFFSET);
 	dMassSetBox (&m,1,LENGTH,WIDTH,HEIGHT);
 	dMassAdjust (&m,CMASS/2.0);
@@ -117,7 +118,7 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 	//box[boxI+1] = dCreateBox(space,LENGTH,WIDTH,HEIGHT);
 	//dGeomSetBody (box[boxI+1],b);
 	
-	bodyI	+= 5;
+	bodyI	+= 6;
 	jointI	+= 4;
 	boxI	+= 1;
 	sphereI	+= 4;
@@ -163,7 +164,7 @@ void resetSimulation()
 	//	for (dReal x = 0.0; x < COLS*(LENGTH+RADIUS); x += LENGTH+RADIUS)
 	//		for (dReal y = -((ROWS-1)*(WIDTH/2+RADIUS)); y <= ((ROWS-1)*(WIDTH/2+RADIUS)); y += WIDTH+RADIUS*2)
 	makeCar(0, 0, bodies, joints, boxes, spheres);
-
+	/*
 	bool offset = false;
 	for (dReal z = WBOXSIZE/2.0; z <= WALLHEIGHT; z+=WBOXSIZE)
 	{
@@ -181,7 +182,7 @@ void resetSimulation()
 			wb++;
 		}
 	}
-	
+	*/
 	disp.addSpace(space);
 	
 	dMessage(0,"wall boxes: %i", wb);
@@ -248,7 +249,6 @@ public:
 	for (int j = 0; j < joints; j++)
 	{
 	    dReal curturn = dJointGetHinge2Angle1 (joint[j]);
-	    //dMessage (0,"curturn %e, turn %e, vel %e", curturn, turn, (turn-curturn)*1.0);
 	    dJointSetHinge2Param(joint[j],dParamVel,(turn-curturn)*1.0);
 	    dJointSetHinge2Param(joint[j],dParamFMax,dInfinity);
 	    dJointSetHinge2Param(joint[j],dParamVel2,speed);
@@ -286,7 +286,7 @@ public:
 	    stateBodies_.push_back(body[i]);
 	for (int i = 0 ; i < wb ; ++i)
 	    stateBodies_.push_back(wall_bodies[i]);
-	minControlSteps_ = 50;
+	minControlSteps_ = 15;
 	maxControlSteps_= 500;
 	
     }
@@ -299,7 +299,7 @@ class CarGoal : public ob::GoalRegion
 {
 public:
     
-    CarGoal(const ob::SpaceInformationPtr &si) : ob::GoalRegion(si)
+    CarGoal(const ob::SpaceInformationPtr &si, double x, double y) : ob::GoalRegion(si), x_(x), y_(y)
     {
 	threshold_ = 0.5;
     }
@@ -307,10 +307,21 @@ public:
     virtual double distanceGoal(const ob::State *st) const
     {
 	const double *pos = st->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
-	double dx = fabs(pos[0] + 3);
-	double dy = fabs(pos[1] + 5);
-	return sqrt(dx * dx + dy * dy);
+	const double *vel = st->as<oc::ODEStateManifold::StateType>()->getBodyLinearVelocity(0);
+	double dx = x_ - pos[0];
+	double dy = y_ - pos[1];
+	double dot = dx * vel[0] + dy * vel[1];
+	if (dot > 0)
+	    dot = 0;
+	else
+	    dot = fabs(dot);
+	
+	return sqrt(dx * dx + dy * dy) + dot;
     }
+    
+private:
+    
+    double x_, y_;
     
 };  
 
@@ -323,8 +334,8 @@ public:
     CarStateProjectionEvaluator(const ob::StateManifold *manifold) : ob::ProjectionEvaluator(manifold)
     {
 	cellDimensions_.resize(2);
-	cellDimensions_[0] = 0.1;
-	cellDimensions_[1] = 0.1;
+	cellDimensions_[0] = 0.5;
+	cellDimensions_[1] = 0.5;
     }
     
     virtual unsigned int getDimension(void) const
@@ -366,35 +377,64 @@ public:
     
 };
 
+class CarControlSampler : public oc::RealVectorControlUniformSampler
+{
+public:
+    
+    CarControlSampler(const oc::ControlManifold *cm) : oc::RealVectorControlUniformSampler(cm)
+    {
+    }
+    
+    virtual void sampleNext(oc::Control *control, const oc::Control *previous)
+    {
+	manifold_->copyControl(control, previous);
+	const ob::RealVectorBounds &b = manifold_->as<oc::ODEControlManifold>()->getBounds();
+	if (rng_.uniform01() > 0.3)
+	{
+	    double &v = control->as<oc::ODEControlManifold::ControlType>()->values[0];
+	    v += (rng_.uniformBool() ? 1 : -1) * 0.1;
+	    if (v > b.high[0])
+		v = b.high[0];
+	    if (v < b.low[0])
+		v = b.low[0];
+	}
+	if (rng_.uniform01() > 0.3)
+	{
+	    double &v = control->as<oc::ODEControlManifold::ControlType>()->values[1];
+	    v += (rng_.uniformBool() ? 1 : -1) * 0.3;
+	    if (v > b.high[1])
+		v = b.high[1];
+	    if (v < b.low[1])
+		v = b.low[1];
+	}
+    }
+    
+    virtual void sampleNext(oc::Control *control, const oc::Control *previous, const ob::State *state)
+    {
+	sampleNext(control, previous);
+    }
+};
+    
+class CarControlManifold : public oc::ODEControlManifold
+{
+public:
+    
+    CarControlManifold(const ob::StateManifoldPtr &m) : oc::ODEControlManifold(m)
+    {
+    }
+    
+    virtual oc::ControlSamplerPtr allocControlSampler(void) const
+    {
+	return oc::ControlSamplerPtr(new CarControlSampler(this));
+    }
+};
+
+    
 void playPath(oc::ODESimpleSetup *ss)
 {
-    ob::ScopedState<> old = ss->getCurrentState();
     while (1)
     {
-	sleep(1);
-	//	ss->playSolutionPath(2);
-	ob::ScopedState<> start = ss->getCurrentState();
-	
-	if (start != old)
-	    throw;
-	
-	double c[2];
-	c[0] = 0.05;
-	c[1] = 0.3;
-	
-	ss->playControl(c, 0.05 * 50, 0.2);
-	
-	ss->setCurrentState(start);
-	old = start;
-	
-	std::cout << "Back to start state" << std::endl;
-	
-	sleep(1);
-	
-	ss->play(0.05 * 50, 0.2);
-	std::cout << "Sitting in place" << std::endl;
-	break;
-	
+	ss->playSolutionPath(0.005);
     }
 }
 
@@ -425,21 +465,35 @@ int main(int argc, char **argv)
 
     oc::ODEEnvironmentPtr ce(new CarEnvironment());
     ob::StateManifoldPtr sm(new CarStateManifold(ce));
-    oc::ODESimpleSetup ss(sm);
-    ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation())));
+
+    oc::ControlManifoldPtr cm(new CarControlManifold(sm));
+    
+    oc::ODESimpleSetup ss(cm);
+    ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), 25, 40)));
+    ob::RealVectorBounds vb(3);
+    vb.low[0] = -10;
+    vb.low[1] = -10;
+    vb.low[2] = -5;
+    vb.high[0] = 30;
+    vb.high[1] = 50;
+    vb.high[2] = 5;
+    ss.setVolumeBounds(vb);
     
     ss.setup();
     ss.print();
     boost::thread *th = NULL;
     
-    //    if (ss.solve(10.0))
+    if (ss.solve(100.0))
     {
 	std::cout << "Solved!" << std::endl;
+	ob::ScopedState<oc::ODEStateManifold> last(ss.getSpaceInformation());
+	last = ss.getSolutionPath().states.back();
+	std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
 	th = new boost::thread(boost::bind(&playPath, &ss));
     }
     
     // run simulation                                                       
-    dsSimulationLoop (argc,argv,640,480,&fn);
+    dsSimulationLoop(argc, argv, 640, 480, &fn);
     if (th)
     {
 	th->interrupt();
