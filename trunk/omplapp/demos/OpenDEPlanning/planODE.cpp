@@ -377,7 +377,7 @@ int main(int argc, char **argv)
     fn.step = &simLoop;
     fn.command = &command;
     fn.stop = 0;
-    fn.path_to_textures = ".";
+    //fn.path_to_textures = ".";
 
     dInitODE2(0);
 
