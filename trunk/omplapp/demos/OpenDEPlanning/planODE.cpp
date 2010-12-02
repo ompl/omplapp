@@ -5,6 +5,8 @@
 #include <ompl/base/GoalRegion.h>
 #include <ompl/config.h>
 
+#include <ompl/control/planners/rrt/RRT.h>
+
 #include <drawstuff/drawstuff.h>
 
 namespace ob = ompl::base;
@@ -54,11 +56,11 @@ static dGeomID wall_boxes[10000];
 static dBodyID wall_bodies[10000];
 static int wb_stepsdis[10000];
 static int wb;
-static bool doFast;
 static dBodyID b;
 static dMass m;
 
 static DisplayODESpaces disp;
+static std::vector< std::pair<double, double> > POINTS;
 
 void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 {
@@ -204,6 +206,13 @@ static void command (int cmd)
 static void simLoop (int pause)
 {
     disp.displaySpaces();
+    glPointSize(2.0);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+    for (unsigned int i = 0 ; i < POINTS.size() ; ++i)
+	glVertex3d(POINTS[i].first, POINTS[i].second, 0.05);
+    glEnd();
+    
     usleep(1000);
 }
 
@@ -235,11 +244,11 @@ public:
     {
 	lower.resize(2);
 	lower[0] = -0.3;
-	lower[1] = -1.2;
+	lower[1] = -0.2;
 	
 	upper.resize(2);
 	upper[0] = 0.3;
-	upper[1] = 1.2;
+	upper[1] = 0.5;
     }
     
     virtual void applyControl(const double *control) const
@@ -286,8 +295,8 @@ public:
 	    stateBodies_.push_back(body[i]);
 	for (int i = 0 ; i < wb ; ++i)
 	    stateBodies_.push_back(wall_bodies[i]);
-	minControlSteps_ = 15;
-	maxControlSteps_= 500;
+	minControlSteps_ = 10;
+	maxControlSteps_= 50;
 	
     }
     
@@ -301,7 +310,7 @@ public:
     
     CarGoal(const ob::SpaceInformationPtr &si, double x, double y) : ob::GoalRegion(si), x_(x), y_(y)
     {
-	threshold_ = 0.5;
+	threshold_ = 0.1;
     }
     
     virtual double distanceGoal(const ob::State *st) const
@@ -314,7 +323,7 @@ public:
 	if (dot > 0)
 	    dot = 0;
 	else
-	    dot = fabs(dot);
+	    dot = sqrt(fabs(dot));
 	
 	return sqrt(dx * dx + dy * dy) + dot;
     }
@@ -392,20 +401,22 @@ public:
 	if (rng_.uniform01() > 0.3)
 	{
 	    double &v = control->as<oc::ODEControlManifold::ControlType>()->values[0];
-	    v += (rng_.uniformBool() ? 1 : -1) * 0.1;
+	    static const double DT0 = 0.05;
+	    v += (rng_.uniformBool() ? 1 : -1) * DT0;
 	    if (v > b.high[0])
-		v = b.high[0];
+		v = b.high[0] - DT0;
 	    if (v < b.low[0])
-		v = b.low[0];
+		v = b.low[0] + DT0;
 	}
-	if (rng_.uniform01() > 0.3)
+	if (rng_.uniform01() > 0.1)
 	{
 	    double &v = control->as<oc::ODEControlManifold::ControlType>()->values[1];
-	    v += (rng_.uniformBool() ? 1 : -1) * 0.3;
+	    static const double DT1 = 0.1;
+	    v += (rng_.uniformBool() ? 1 : -1) * DT1;
 	    if (v > b.high[1])
-		v = b.high[1];
+		v = b.high[1] - DT1;
 	    if (v < b.low[1])
-		v = b.low[1];
+		v = b.low[1] + DT1;
 	}
     }
     
@@ -471,24 +482,34 @@ int main(int argc, char **argv)
     oc::ODESimpleSetup ss(cm);
     ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), 25, 40)));
     ob::RealVectorBounds vb(3);
-    vb.low[0] = -10;
-    vb.low[1] = -10;
+    vb.low[0] = -50;
+    vb.low[1] = -50;
     vb.low[2] = -5;
-    vb.high[0] = 30;
+    vb.high[0] = 50;
     vb.high[1] = 50;
     vb.high[2] = 5;
     ss.setVolumeBounds(vb);
+    //    ss.setPlanner(ob::PlannerPtr(new oc::RRT(ss.getSpaceInformation())));
     
     ss.setup();
     ss.print();
     boost::thread *th = NULL;
     
-    if (ss.solve(100.0))
+    if (ss.solve(50.0))
     {
 	std::cout << "Solved!" << std::endl;
 	ob::ScopedState<oc::ODEStateManifold> last(ss.getSpaceInformation());
 	last = ss.getSolutionPath().states.back();
 	std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
+
+	POINTS.clear();
+	const ob::PlannerData &pd = ss.getPlannerData();
+	for (unsigned int i = 0 ; i < pd.states.size() ; ++i)
+	{
+	    const double *pos = pd.states[i]->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
+	    POINTS.push_back(std::make_pair(pos[0], pos[1]));
+	}
+	
 	th = new boost::thread(boost::bind(&playPath, &ss));
     }
     

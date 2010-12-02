@@ -2,6 +2,12 @@
 #include <drawstuff/drawstuff.h>
 #include <vector>
 
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 class DisplayODESpaces
 {
 public:
