@@ -76,4 +76,10 @@ add_subdirectory(demos)
 add_subdirectory(py-bindings)
 install(DIRECTORY resources DESTINATION share/ompl/resources)
 
+# HACK ALERT: just in case the version of ODE used for libdrawstuff is used for libompl
+if(TARGET drawstuff)
+    add_dependencies(ompl drawstuff)
+endif()
+
+
 include(CPackSettings)
