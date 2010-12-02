@@ -152,7 +152,6 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.glViewer.setEnvironment(
 				self.omplSetup.setEnvironmentMesh(self.environmentFile, True))
 			if self.robotFile:
-				self.omplSetup.setup()
 				self.mainWidget.plannerWidget.resolution.setValue(
 					self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
@@ -168,7 +167,6 @@ class MainWindow(QtGui.QMainWindow):
 				self.omplSetup.setRobotMesh(self.robotFile, True))
 			self.mainWidget.problemWidget.startPose.setPose(self.omplSetup.getEnvStartState())
 			self.mainWidget.problemWidget.goalPose.setPose(self.omplSetup.getEnvStartState())
-			self.omplSetup.setup()
 			self.mainWidget.plannerWidget.resolution.setValue(
 				self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 			self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
