@@ -65,11 +65,6 @@ set(OMPLAPP_LIBRARIES
 	${ASSIMP_LIBRARY} 
 	${PQP_LIBRARY})
 
-# disable building separate documentation for the OMPL core;
-# this documentation is already automatically included in the OMPL.app
-# documentation
-option(OMPL_BUILD_DOC "Build OMPL documentation" OFF)
-
 add_subdirectory(ompl/src)
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/tests)
