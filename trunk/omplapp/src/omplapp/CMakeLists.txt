@@ -8,11 +8,11 @@ endif()
 if(TARGET pqp)
     add_dependencies(ompl_app pqp)
 endif()
-target_link_libraries(ompl_app ompl ${OMPL_APP_LIBRARIES})
+target_link_libraries(ompl_app ompl ${OMPLAPP_LIBRARIES})
 install(TARGETS ompl_app DESTINATION lib)
-get_target_property(OMPL_APP_LIBRARY_LOC ompl_app LOCATION)
+get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
 add_custom_command(TARGET ompl_app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${OMPL_APP_LIBRARY_LOC}" 
+    COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}" 
     "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
     WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 

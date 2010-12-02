@@ -5,11 +5,18 @@ project(omplapp CXX C)
 set(OMPLAPP_MAJOR_VERSION 0)
 set(OMPLAPP_MINOR_VERSION 9)
 set(OMPLAPP_PATCH_VERSION 0)
-set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.{$OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
+set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
+set(OMPL_VERSION "${OMPLAPP_VERSION}")
 
-set(OMPL_APP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+set(OMPL_DEMO_INSTALL_DIR share/ompl/demos 
+    CACHE STRING "Relative path to directory where demos will be installed")
+set(OMPL_DOC_INSTALL_DIR share/ompl/doc
+    CACHE STRING "Relative path to directory where documentation will be installed")
+set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
+	CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
 
 set(CMAKE_MODULE_PATH 
 	"${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
@@ -18,9 +25,6 @@ include(CompilerSettings)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
-include(UsePQP)
-include(UseAssimp)
-include(UseDrawstuff)
 find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
 find_package(OpenGL REQUIRED)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines, 
@@ -28,6 +32,16 @@ find_package(OpenGL REQUIRED)
 find_package(Python REQUIRED)
 find_python_module(PyQt4 REQUIRED)
 find_python_module(OpenGL REQUIRED)
+find_package(ODE QUIET)
+include(UsePQP)
+include(UseAssimp)
+include(UseDrawstuff)
+
+set(OMPL_EXTENSION_ODE ${ODE_FOUND})
+if (ODE_FOUND)
+	add_definitions(${ODE_DEFINITIONS})
+	include_directories(${ODE_INCLUDE_DIR})
+endif()
 
 enable_testing()
 
@@ -36,15 +50,15 @@ include_directories(
 	"${OPENGL_INCLUDE_DIR}"
 	"${ASSIMP_INCLUDE_DIR}" 
 	"${PQP_INCLUDE_DIR}"
-	"${OMPL_APP_INCLUDE_DIR}"
+	"${OMPLAPP_INCLUDE_DIR}"
 	"${OMPL_INCLUDE_DIR}")
 
-set(OMPL_APP_MODULE_LIBRARIES
+set(OMPLAPP_MODULE_LIBRARIES
 	${OPENGL_LIBRARIES}
 	${ASSIMP_LIBRARY}
 	${PQP_LIBRARY}
 	${OMPL_APP_LIBRARY})
-set(OMPL_APP_LIBRARIES 
+set(OMPLAPP_LIBRARIES 
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}
 	${OPENGL_LIBRARIES}
@@ -56,9 +70,10 @@ set(OMPL_APP_LIBRARIES
 # documentation
 option(OMPL_BUILD_DOC "Build OMPL documentation" OFF)
 
-# add ompl directory first; in it some options / variables are declared 
-# that are referenced by CMakeLists.txt files in other subdirectories.
-add_subdirectory(ompl)
+add_subdirectory(ompl/src)
+add_subdirectory(ompl/py-bindings)
+add_subdirectory(ompl/tests)
+add_subdirectory(ompl/demos)
 add_subdirectory(app)
 add_subdirectory(doc)
 add_subdirectory(src)
