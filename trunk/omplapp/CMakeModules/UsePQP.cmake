@@ -16,7 +16,7 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
         CMAKE_ARGS 
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/pqp-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
-            "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/pqp-prefix/lib"
+            "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build"
         INSTALL_COMMAND "")
     # use a CMakeLists.txt file to configure build of PQP
     ExternalProject_Add_Step(pqp addCMakeList
@@ -36,8 +36,12 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
     endif(MSVC_IDE)
 
     # set the library and include variables
-    set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        CACHE FILEPATH "Location of PQP proximity query library" FORCE)
-    set(PQP_INCLUDE_DIR "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/PQP_v1.3/src"
-        CACHE PATH "Location of PQP proximity query header files" FORCE)
+    set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    if(EXISTS "${PQP_LIBRARY}")
+        set(PQP_LIBRARY "${PQP_LIBRARY}" CACHE FILEPATH "Location of PQP proximity query library" FORCE)
+    endif()
+    set(PQP_INCLUDE_DIR "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/PQP_v1.3/src")
+    if(IS_DIRECTORY "${PQP_INCLUDE_DIR}")
+        set(PQP_INCLUDE_DIR "${PQP_INCLUDE_DIR}" CACHE PATH "Location of PQP proximity query header files" FORCE)
+    endif()
 endif(PQP_LIBRARY AND PQP_INCLUDE_DIR)

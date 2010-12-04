@@ -17,6 +17,7 @@ set(CPACK_SOURCE_IGNORE_FILES
 	".md5$"
 	"/blueprint/"
 	".DS_Store"
+	".tmproj$"
 	"mkwebdocs.sh"
 	"/html/"
 	"TODO"

@@ -17,10 +17,14 @@ else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/assimp-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
             "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/assimp-prefix/lib")
-
+    
     # set the library and include variables
-    set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}assimp${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        CACHE FILEPATH "Location of 3D asset importer library" FORCE)
-    set(ASSIMP_INCLUDE_DIR "${CMAKE_BINARY_DIR}/assimp-prefix/include/assimp"
-        CACHE PATH "Location of 3D asset importer header file directory" FORCE)
+    set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}assimp${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    if(EXISTS "${ASSIMP_LIBRARY}")
+        set(ASSIMP_LIBRARY "${ASSIMP_LIBRARY}" CACHE FILEPATH "Location of 3D asset importer library" FORCE)
+    endif()
+    set(ASSIMP_INCLUDE_DIR "${CMAKE_BINARY_DIR}/assimp-prefix/include/assimp")
+    if(IS_DIRECTORY "${ASSIMP_INCLUDE_DIR}")
+        set(ASSIMP_INCLUDE_DIR "${ASSIMP_INCLUDE_DIR}" CACHE PATH "Location of 3D asset importer header file directory" FORCE)
+    endif()
 endif(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
