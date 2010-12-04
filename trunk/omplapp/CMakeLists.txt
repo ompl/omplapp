@@ -81,5 +81,16 @@ if(TARGET drawstuff)
     add_dependencies(ompl drawstuff)
 endif()
 
+if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
+    # need PQP header files to generate python bindings
+    if(TARGET pqp)
+        add_dependencies(update_app_bindings pqp)
+    endif()
+    # need assimp header files to generate python bindings
+    if(TARGET assimp)
+        add_dependencies(update_app_bindings assimp)
+    endif()
+endif()
+
 
 include(CPackSettings)
