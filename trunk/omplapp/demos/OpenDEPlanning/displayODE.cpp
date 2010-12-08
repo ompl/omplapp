@@ -98,6 +98,11 @@ void DisplayODESpaces::displaySpace(dSpaceID space)
     for (int i = 0 ; i < ngeoms ; ++i)
     {
 	dGeomID geom = dSpaceGetGeom(space, i);
+	std::map<dGeomID, Color>::const_iterator it = m_gcolors.find(geom);
+	if (it != m_gcolors.end())
+	    dsSetColor(it->second.r,it->second.g,it->second.b);
+	else
+	    dsSetColor(m_activeColor.r, m_activeColor.g, m_activeColor.b);
 	drawGeom(geom, NULL, NULL, 0);
     }
 }
@@ -106,9 +111,9 @@ void DisplayODESpaces::displaySpaces(void)
 {
     for (unsigned int i = 0 ; i < m_spaces.size() ; ++i)
     {
-	dsSetColor(m_colors[i].r, m_colors[i].g, m_colors[i].b);
+	m_activeColor = m_colors[i];
 	displaySpace(m_spaces[i]);
-    }	    
+    }
 }
 
 void DisplayODESpaces::addSpace(dSpaceID space, float r, float g, float b)
@@ -118,8 +123,15 @@ void DisplayODESpaces::addSpace(dSpaceID space, float r, float g, float b)
     m_spaces.push_back(space);
 }
 
+void DisplayODESpaces::setGeomColor(dGeomID geom, float r, float g, float b)
+{
+    Color c = {r, g, b};
+    m_gcolors[geom] = c;
+}
+
 void DisplayODESpaces::clear(void)
 {
     m_spaces.clear();
     m_colors.clear();
+    m_gcolors.clear();
 }

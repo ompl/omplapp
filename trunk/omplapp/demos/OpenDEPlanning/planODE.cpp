@@ -75,7 +75,9 @@ int main(int argc, char **argv)
     spheres = 0;
     resetSimulation();
     DISP.addSpace(space);
-    
+    DISP.setGeomColor(avoid_box_geom, 0.9, 0.0, 0.0);
+    DISP.setGeomColor(movable_box_geom, 0.0, 0.9, 0.1);
+
     oc::ODEEnvironmentPtr ce(new CarEnvironment());
     ob::StateManifoldPtr sm(new CarStateManifold(ce));
 
