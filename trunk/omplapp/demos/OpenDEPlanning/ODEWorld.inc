@@ -31,6 +31,8 @@ static dGeomID movable_box_geom;
 static dBodyID movable_box_body;
 static dMass m;
 
+static dGeomID avoid_box_geom;
+
 void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 {
     int i;
@@ -128,9 +130,12 @@ void resetSimulation(void)
         
     movable_box_body = dBodyCreate(world);
     dBodySetPosition(movable_box_body, -25, 0, BOXSIZE/2);
-    dMassSetBox (&m, 1, BOXSIZE, BOXSIZE, BOXSIZE);
+    dMassSetBox (&m, 1, BOXSIZE, BOXSIZE * 3, BOXSIZE);
     dMassAdjust (&m, BOXMASS);
     dBodySetMass (movable_box_body ,&m);
-    movable_box_geom = dCreateBox (space,BOXSIZE,BOXSIZE,BOXSIZE);
+    movable_box_geom = dCreateBox (space,BOXSIZE,BOXSIZE * 3 ,BOXSIZE);
     dGeomSetBody (movable_box_geom, movable_box_body);    
+
+    avoid_box_geom = dCreateBox (space,BOXSIZE,BOXSIZE,BOXSIZE);
+    dGeomSetPosition(avoid_box_geom, -10, 0, BOXSIZE/2);
 }

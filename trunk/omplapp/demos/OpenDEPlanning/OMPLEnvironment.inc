@@ -51,7 +51,11 @@ public:
     
     virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const
     {
-	return true;
+        if ((geom1 == avoid_box_geom && geom2 != ground) ||
+            (geom2 == avoid_box_geom && geom1 != ground))
+            return false;
+        else
+            return true;
     }
     
     virtual void setupContact(dGeomID geom1, dGeomID geom2, dContact &contact) const
