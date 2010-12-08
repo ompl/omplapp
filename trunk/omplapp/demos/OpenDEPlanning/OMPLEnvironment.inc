@@ -51,11 +51,10 @@ public:
     
     virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const
     {
-        if ((geom1 == avoid_box_geom && geom2 != ground) ||
-            (geom2 == avoid_box_geom && geom1 != ground))
-            return false;
-        else
-            return true;
+	if (geom1 == box[0] || geom2 == box[0])
+	    if (geom1 == avoid_box_geom || geom2 == avoid_box_geom)
+		return false;
+	return true;
     }
     
     virtual void setupContact(dGeomID geom1, dGeomID geom2, dContact &contact) const
@@ -81,7 +80,11 @@ public:
 	collisionSpaces_.push_back(space);
 	for (int i = 0 ; i < bodies ; ++i)
 	    stateBodies_.push_back(body[i]);
-        stateBodies_.push_back(movable_box_body);
+        stateBodies_.push_back(movable_box_body[0]);
+        stateBodies_.push_back(movable_box_body[1]);
+        stateBodies_.push_back(movable_box_body[2]);
+        stateBodies_.push_back(movable_box_body[3]);
+	stateBodies_.push_back(goal_body);
 	minControlSteps_ = 10;
 	maxControlSteps_= 50;
         stepSize_ = 0.2;

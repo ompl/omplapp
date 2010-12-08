@@ -50,6 +50,8 @@ static void playPath(oc::ODESimpleSetup *ss)
     while (1)
     {
         ss->playSolutionPath(0.005);
+	static ompl::time::duration d = ompl::time::seconds(1);
+	boost::this_thread::sleep(d);
     }
 }
 
@@ -74,9 +76,13 @@ int main(int argc, char **argv)
     boxes = 0;
     spheres = 0;
     resetSimulation();
-    DISP.addSpace(space);
+    DISP.addSpace(space, 0.9, 0.9, 0.5);
     DISP.setGeomColor(avoid_box_geom, 0.9, 0.0, 0.0);
-    DISP.setGeomColor(movable_box_geom, 0.0, 0.9, 0.1);
+    DISP.setGeomColor(movable_box_geom[0], 0.0, 0.8, 0.5);
+    DISP.setGeomColor(movable_box_geom[1], 0.0, 0.8, 0.5);
+    DISP.setGeomColor(movable_box_geom[2], 0.0, 0.8, 0.5);
+    DISP.setGeomColor(movable_box_geom[3], 0.0, 0.8, 0.5);
+    DISP.setGeomColor(goal_geom, 0.0, 0.9, 0.1);
 
     oc::ODEEnvironmentPtr ce(new CarEnvironment());
     ob::StateManifoldPtr sm(new CarStateManifold(ce));
@@ -84,7 +90,7 @@ int main(int argc, char **argv)
     oc::ControlManifoldPtr cm(new CarControlManifold(sm));
     
     oc::ODESimpleSetup ss(cm);
-    ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), -25, 0)));
+    ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), GOAL_X, GOAL_Y)));
     ob::RealVectorBounds vb(3);
     vb.low[0] = -50;
     vb.low[1] = -50;
@@ -97,6 +103,8 @@ int main(int argc, char **argv)
     ss.setup();
     ss.print();
     boost::thread *th = NULL;
+    
+    std::cout << "Planning for at most 60 seconds ..." << std::endl;
     
     if (ss.solve(60))
     {

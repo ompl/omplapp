@@ -27,11 +27,17 @@ static int boxes;
 static dGeomID sphere[10000];
 static int spheres;
 
-static dGeomID movable_box_geom;
-static dBodyID movable_box_body;
-static dMass m;
+static dGeomID movable_box_geom[4];
+static dBodyID movable_box_body[4];
+static dMass   movable_mass[4];
 
 static dGeomID avoid_box_geom;
+static dGeomID goal_geom;
+static dBodyID goal_body;
+static dMass   goal_mass;
+
+static double GOAL_X = -25;
+static double GOAL_Y = 0;
 
 void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 {
@@ -110,9 +116,7 @@ void resetSimulation(void)
     // recreate world
     
     world = dWorldCreate();
-    
-    //	space = dHashSpaceCreate( 0 );
-    //	space = dSimpleSpaceCreate( 0 );
+
     space = dSweepAndPruneSpaceCreate( 0, dSAP_AXES_XYZ );
     
     dWorldSetGravity (world,0,0,-1.5);
@@ -128,14 +132,46 @@ void resetSimulation(void)
     
     makeCar(0, 0, bodies, joints, boxes, spheres);
         
-    movable_box_body = dBodyCreate(world);
-    dBodySetPosition(movable_box_body, -25, 0, BOXSIZE/2);
-    dMassSetBox (&m, 1, BOXSIZE, BOXSIZE * 3, BOXSIZE);
-    dMassAdjust (&m, BOXMASS);
-    dBodySetMass (movable_box_body ,&m);
-    movable_box_geom = dCreateBox (space,BOXSIZE,BOXSIZE * 3 ,BOXSIZE);
-    dGeomSetBody (movable_box_geom, movable_box_body);    
+    movable_box_body[0] = dBodyCreate(world);
+    dBodySetPosition(movable_box_body[0], -18, 0, BOXSIZE/2);
+    dMassSetBox (&movable_mass[0], 1, BOXSIZE/2 , BOXSIZE * 4, BOXSIZE);
+    dMassAdjust (&movable_mass[0], BOXMASS);
+    dBodySetMass (movable_box_body[0] ,&movable_mass[0]);
+    movable_box_geom[0] = dCreateBox (space, BOXSIZE/2, BOXSIZE * 4, BOXSIZE);
+    dGeomSetBody (movable_box_geom[0], movable_box_body[0]);    
 
-    avoid_box_geom = dCreateBox (space,BOXSIZE,BOXSIZE,BOXSIZE);
+    movable_box_body[1] = dBodyCreate(world);
+    dBodySetPosition(movable_box_body[1], -32, 0, BOXSIZE/2);
+    dMassSetBox (&movable_mass[1], 1, BOXSIZE/2 , BOXSIZE * 4, BOXSIZE);
+    dMassAdjust (&movable_mass[1], BOXMASS);
+    dBodySetMass (movable_box_body[1] ,&movable_mass[1]);
+    movable_box_geom[1] = dCreateBox (space, BOXSIZE/2, BOXSIZE * 4, BOXSIZE);
+    dGeomSetBody (movable_box_geom[1], movable_box_body[1]);    
+
+    movable_box_body[2] = dBodyCreate(world);
+    dBodySetPosition(movable_box_body[2], -25, -7, BOXSIZE/2);
+    dMassSetBox (&movable_mass[2], 1, BOXSIZE * 4, BOXSIZE / 2, BOXSIZE);
+    dMassAdjust (&movable_mass[2], BOXMASS);
+    dBodySetMass (movable_box_body[2] ,&movable_mass[2]);
+    movable_box_geom[2] = dCreateBox (space, BOXSIZE * 4, BOXSIZE/2, BOXSIZE);
+    dGeomSetBody (movable_box_geom[2], movable_box_body[2]);    
+
+    movable_box_body[3] = dBodyCreate(world);
+    dBodySetPosition(movable_box_body[3], -25,  7, BOXSIZE/2);
+    dMassSetBox (&movable_mass[3], 1, BOXSIZE * 4, BOXSIZE / 2, BOXSIZE);
+    dMassAdjust (&movable_mass[3], BOXMASS);
+    dBodySetMass (movable_box_body[3], &movable_mass[3]);
+    movable_box_geom[3] = dCreateBox (space, BOXSIZE * 4, BOXSIZE/2, BOXSIZE);
+    dGeomSetBody (movable_box_geom[3], movable_box_body[3]);
+
+    avoid_box_geom = dCreateBox (space, BOXSIZE, BOXSIZE*2, BOXSIZE);
     dGeomSetPosition(avoid_box_geom, -10, 0, BOXSIZE/2);
+    
+    goal_geom = dCreateBox (space, BOXSIZE / 2, BOXSIZE / 2, BOXSIZE / 2);
+    goal_body = dBodyCreate(world);
+    dMassSetBox (&goal_mass, 1, BOXSIZE /2, BOXSIZE / 2, BOXSIZE / 2);
+    dMassAdjust (&goal_mass, (double)BOXMASS / 16.0);
+    dBodySetMass (goal_body, &goal_mass);
+    dGeomSetBody(goal_geom, goal_body);
+    dBodySetPosition(goal_body, GOAL_X, GOAL_Y, BOXSIZE/4);
 }
