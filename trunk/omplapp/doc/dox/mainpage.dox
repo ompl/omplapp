@@ -14,7 +14,7 @@ The Open Motion Planning Library (\b OMPL) is a library of many state-of-the-art
 
 We have also developed a \ref education "teaching module on motion planning" that is centered around OMPL.app.  We are looking for educational partners to use and further develop the material. Please contact us for more information.
 
-For examples uses of OMPL, see \ref gallery "our gallery page".
+For example uses of OMPL, see \ref gallery "our gallery page".
 
 To view documentation for OMPL solely, click <a href="core/">here</a>.
 
