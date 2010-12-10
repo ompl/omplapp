@@ -7,6 +7,7 @@
 
 #include <drawstuff/drawstuff.h>
 
+#include <boost/thread.hpp>
 
 #ifdef dDOUBLE
 #define dsDrawBox dsDrawBoxD
@@ -17,6 +18,7 @@
 
 static DisplayODESpaces                         DISP;
 static std::vector< std::pair<double, double> > POINTS;
+static bool                                     drawTree = true;
 
 static void start()
 {
@@ -29,17 +31,23 @@ static void start()
 
 static void command (int cmd)
 {
+    if ((char)cmd == 't')
+	drawTree = !drawTree;
 }
 
 static void simLoop (int pause)
 {
     DISP.displaySpaces();
-    glPointSize(2.0);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glBegin(GL_POINTS);
-    for (unsigned int i = 0 ; i < POINTS.size() ; ++i)
-	glVertex3d(POINTS[i].first, POINTS[i].second, 0.05);
-    glEnd();
+
+    if (drawTree)
+    {
+	glPointSize(2.0);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_POINTS);
+	for (unsigned int i = 0 ; i < POINTS.size() ; ++i)
+	    glVertex3d(POINTS[i].first, POINTS[i].second, 0.05);
+	glEnd();
+    }
     
     static ompl::time::duration d = ompl::time::seconds(0.001);
     boost::this_thread::sleep(d);
@@ -78,10 +86,10 @@ int main(int argc, char **argv)
     resetSimulation();
     DISP.addSpace(space, 0.9, 0.9, 0.5);
     DISP.setGeomColor(avoid_box_geom, 0.9, 0.0, 0.0);
-    DISP.setGeomColor(movable_box_geom[0], 0.0, 0.8, 0.5);
-    DISP.setGeomColor(movable_box_geom[1], 0.0, 0.8, 0.5);
-    DISP.setGeomColor(movable_box_geom[2], 0.0, 0.8, 0.5);
-    DISP.setGeomColor(movable_box_geom[3], 0.0, 0.8, 0.5);
+    DISP.setGeomColor(movable_box_geom[0], 0.1, 0.8, 0.8);
+    DISP.setGeomColor(movable_box_geom[1], 0.1, 0.8, 0.8);
+    DISP.setGeomColor(movable_box_geom[2], 0.1, 0.8, 0.8);
+    DISP.setGeomColor(movable_box_geom[3], 0.1, 0.8, 0.8);
     DISP.setGeomColor(goal_geom, 0.0, 0.9, 0.1);
 
     oc::ODEEnvironmentPtr ce(new CarEnvironment());
