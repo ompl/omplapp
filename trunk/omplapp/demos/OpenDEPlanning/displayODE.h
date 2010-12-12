@@ -21,6 +21,7 @@
 #include <GL/gl.h>
 #endif
 
+/// @cond IGNORE
 class DisplayODESpaces
 {
 public:
@@ -53,3 +54,4 @@ protected:
 
     Color                     m_activeColor;
 };
+/// @endcond
