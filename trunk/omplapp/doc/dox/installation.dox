@@ -83,7 +83,6 @@ cd build/Release
 cmake -DCMAKE_BUILD_TYPE=Release ../.. [-DCMAKE_INSTALL_PREFIX=/path/to/install]
 \endcode
 If you want a debug version of OMPL.app, change "Release" to "Debug" above.
-- Type <tt>make update_bindings</tt>. This will generate C++ code that in the next step will be compiled as binary Python modules. <b>Note:</b> <tt>make update_bindings</tt> is <i>never</i> run automatically. If you change any of the OMPL header files, you need to type <tt>make update_bindings</tt> again for the changes to be reflected in the Python modules. The command <tt>make</tt> needs to be executed <b>after</b> every call to <tt>make update_bindings</tt>.
 - Compile OMPL.app by typing \c make.
 - Optionally, run the test programs by typing <tt>make test</tt>.
 - Optionally, generate documentation by typing <tt>make doc</tt>.
@@ -93,6 +92,7 @@ If you want a debug version of OMPL.app, change "Release" to "Debug" above.
 
 \section install_windows Installation on Windows
 
+At this point we support only Linux and OS X, and we have not done any extensive testing on Windows. That said, it is definitely possible to compile and install OMPL on Windows.
 - Download and install the dependencies listed above. For most dependencies, you can get a precompiled version. If you plan to use Microsoft Visual Studio, you can download Boost <a href="http://www.boostpro.com/download/">here</a>. If you want to use MinGW or Cygwin, follow the <a href="http://www.boost.org/doc/libs/release/more/getting_started/unix-variants.html">Unix installation instructions</a>.
 - Run CMake (either the GUI or the command line version). From the GUI it is easy to generate project files for Visual Studio or Makefiles.
 - Build the "solution" ALL in Visual Studio, or run \c make if you use MinGW/Cygwin.

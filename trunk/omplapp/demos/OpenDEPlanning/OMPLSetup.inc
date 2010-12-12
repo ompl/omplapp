@@ -1,3 +1,14 @@
+/*********************************************************************
+* Rice University Software Distribution License
+*
+* Copyright (c) 2010, Rice University
+* All Rights Reserved.
+*
+* For a full description see the file named LICENSE.
+*
+*********************************************************************/
+
+/* Author: Ioan Sucan */
 
 #include <ompl/extensions/ode/ODESimpleSetup.h>
 #include <ompl/base/GoalRegion.h>

@@ -30,7 +30,7 @@ In addition to these planning parameters, you can set a time limit for the plann
 
 \section gui_bounding_box Defining a bounding box for the robot
 
-By default, the robot is constrained to move inside a tight bounding box around the environment, the start pose, and the goal pose. This bounding box applies to a <b>reference point</b> for the robot; the origin of the coordinate frame that defines its pose. This means that parts of the robot can stick outside the bounding box. It also means that if the reference point for your robot is far away from the robot itself, you can get rather unintuitive results.
+By default, the robot is constrained to move inside a tight bounding box around the environment, the start pose, and the goal pose. This bounding box applies to a <b>reference point</b> for the robot; the origin of the coordinate frame that defines its pose. This means that parts of the robot can stick outside the bounding box. It also means that if the reference point for your robot is far away from the robot itself, you can get rather unintuitive results. The reference point is whatever the origin is in the mesh; OMPL.app is <em>not</em> using the geometric center of the mesh as the reference point. 
 
 \htmlonly<img src="../images/gui_bbox.png" class="span-15 nofloat">\endhtmlonly
 

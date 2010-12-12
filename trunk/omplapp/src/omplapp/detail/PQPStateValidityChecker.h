@@ -1,3 +1,15 @@
+/*********************************************************************
+* Rice University Software Distribution License
+*
+* Copyright (c) 2010, Rice University
+* All Rights Reserved.
+*
+* For a full description see the file named LICENSE.
+*
+*********************************************************************/
+
+/* Author: Ioan Sucan */
+
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/manifolds/SO3StateManifold.h>
 #include <PQP.h>

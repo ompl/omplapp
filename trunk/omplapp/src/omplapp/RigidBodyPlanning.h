@@ -1,3 +1,15 @@
+/*********************************************************************
+* Rice University Software Distribution License
+*
+* Copyright (c) 2010, Rice University
+* All Rights Reserved.
+*
+* For a full description see the file named LICENSE.
+*
+*********************************************************************/
+
+/* Author: Ioan Sucan */
+
 #ifndef OMPLAPP_COMMON_RIGID_BODY_PLANNING_
 #define OMPLAPP_COMMON_RIGID_BODY_PLANNING_
 
