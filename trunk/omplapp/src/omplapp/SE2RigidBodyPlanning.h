@@ -8,32 +8,32 @@ namespace ompl
 {
     namespace app
     {
-	
-	/** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
-	    for rigid bodies in SE2. */
-	class SE2RigidBodyPlanning : public RigidBodyPlanning
-	{
-	public:
 
-	    SE2RigidBodyPlanning(void) : RigidBodyPlanning(base::StateManifoldPtr(new base::SE2StateManifold()))
-	    {
-	    }
-	    
-	    virtual ~SE2RigidBodyPlanning(void)
-	    {
-	    }
+        /** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
+            for rigid bodies in SE2. */
+        class SE2RigidBodyPlanning : public RigidBodyPlanning
+        {
+        public:
 
-	protected:
+            SE2RigidBodyPlanning(void) : RigidBodyPlanning(base::StateManifoldPtr(new base::SE2StateManifold()))
+            {
+            }
 
-	    virtual void inferEnvironmentBounds(const aiScene *scene);
-	    virtual void inferProblemDefinitionBounds(void);
-	    virtual void getRobotCenterAndStartState(const aiScene *robot);
+            virtual ~SE2RigidBodyPlanning(void)
+            {
+            }
 
-	    virtual base::StateValidityCheckerPtr allocStateValidityChecker(const aiScene *env, const aiScene *robot) const;
-	    
-	};
-	
-	
+        protected:
+
+            virtual void inferEnvironmentBounds(const aiScene *scene);
+            virtual void inferProblemDefinitionBounds(void);
+            virtual void getRobotCenterAndStartState(const aiScene *robot);
+
+            virtual base::StateValidityCheckerPtr allocStateValidityChecker(const aiScene *env, const aiScene *robot) const;
+
+        };
+
+
     }
 }
 

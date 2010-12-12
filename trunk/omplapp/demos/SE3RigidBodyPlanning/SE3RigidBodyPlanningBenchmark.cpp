@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
-    
+
     base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
     start->setX(-4.96);
     start->setY(70.57);
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     goal->setY(70.57);
     goal->setZ(40.62);
     goal->rotation().setIdentity();
-        
+
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
     setup.getSpaceInformation()->setValidStateSamplerAllocator(base::UniformValidStateSampler::allocator());
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     const double RUNTIME_LIMIT = 10.0;
     const double MEMORY_LIMIT  = 500.0;
     const int    RUN_COUNT     = 500;
-    
+
 
     Benchmark b(setup, "cubicles_uniform_sampler");
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
@@ -54,21 +54,21 @@ int main(int argc, char **argv)
     b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
-    
+
     b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
     b.saveResultsToFile();
 
-    
+
     setup.getSpaceInformation()->setValidStateSamplerAllocator(base::GaussianValidStateSampler::allocator());
     b.setExperimentName("cubicles_gaussian_sampler");
     b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
     b.saveResultsToFile();
-    
+
 
     setup.getSpaceInformation()->setValidStateSamplerAllocator(base::ObstacleBasedValidStateSampler::allocator());
     b.setExperimentName("cubicles_obstaclebased_sampler");
     b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
     b.saveResultsToFile();
-    
+
     return 0;
 }

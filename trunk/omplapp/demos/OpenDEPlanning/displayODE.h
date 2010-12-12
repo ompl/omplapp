@@ -12,32 +12,32 @@
 class DisplayODESpaces
 {
 public:
-    
+
     DisplayODESpaces(void)
     {
-	m_activeColor.r = m_activeColor.g = m_activeColor.b = 0.5;
+        m_activeColor.r = m_activeColor.g = m_activeColor.b = 0.5;
     }
-    
+
     void drawGeom (dGeomID g, const dReal *pos, const dReal *R, int show_aabb);
-    
+
     void displaySpace(dSpaceID space);
     void displaySpaces(void);
 
     void addSpace(dSpaceID space, float r = 0.75, float g = 0.75, float b = 0.75);
     void clear(void);
-    
+
     void setGeomColor(dGeomID geom, float r, float g, float b);
-    
+
 protected:
-    
+
     struct Color
     {
-	float r, g, b;
+        float r, g, b;
     };
-    
+
     std::vector<dSpaceID>     m_spaces;
     std::vector<Color>        m_colors;
     std::map<dGeomID, Color>  m_gcolors;
-    
-    Color                     m_activeColor;    
+
+    Color                     m_activeColor;
 };

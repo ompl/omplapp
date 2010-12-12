@@ -15,80 +15,80 @@
 void DisplayODESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R, int show_aabb)
 {
     int i;
-    
+
     if (!g) return;
-    
+
     if (dGeomIsSpace(g))
     {
-	displaySpace((dSpaceID)g);
-	return;
+        displaySpace((dSpaceID)g);
+        return;
     }
-    
+
     int type = dGeomGetClass (g);
     if (type == dBoxClass)
     {
-	if (!pos) pos = dGeomGetPosition (g);
-	if (!R) R = dGeomGetRotation (g);
+        if (!pos) pos = dGeomGetPosition (g);
+        if (!R) R = dGeomGetRotation (g);
 
-	dVector3 sides;
-	dGeomBoxGetLengths (g,sides);
-	dsDrawBox (pos,R,sides);
+        dVector3 sides;
+        dGeomBoxGetLengths (g,sides);
+        dsDrawBox (pos,R,sides);
     }
     else if (type == dSphereClass)
     {
-	if (!pos) pos = dGeomGetPosition (g);
-	if (!R) R = dGeomGetRotation (g);
-	dsDrawSphere (pos,R,dGeomSphereGetRadius (g));
+        if (!pos) pos = dGeomGetPosition (g);
+        if (!R) R = dGeomGetRotation (g);
+        dsDrawSphere (pos,R,dGeomSphereGetRadius (g));
     }
     else if (type == dCapsuleClass)
     {
-	if (!pos) pos = dGeomGetPosition (g);
-	if (!R) R = dGeomGetRotation (g);
-	dReal radius,length;
-	dGeomCapsuleGetParams (g,&radius,&length);
-	dsDrawCapsule (pos,R,length,radius);
+        if (!pos) pos = dGeomGetPosition (g);
+        if (!R) R = dGeomGetRotation (g);
+        dReal radius,length;
+        dGeomCapsuleGetParams (g,&radius,&length);
+        dsDrawCapsule (pos,R,length,radius);
     }
     else if (type == dCylinderClass)
     {
-	if (!pos) pos = dGeomGetPosition (g);
-	if (!R) R = dGeomGetRotation (g);
-	dReal radius,length;
-	dGeomCylinderGetParams (g,&radius,&length);
-	dsDrawCylinder (pos,R,length,radius);
+        if (!pos) pos = dGeomGetPosition (g);
+        if (!R) R = dGeomGetRotation (g);
+        dReal radius,length;
+        dGeomCylinderGetParams (g,&radius,&length);
+        dsDrawCylinder (pos,R,length,radius);
     }
     else if (type == dGeomTransformClass)
     {
-	if (!pos) pos = dGeomGetPosition (g);
-	if (!R) R = dGeomGetRotation (g);
+        if (!pos) pos = dGeomGetPosition (g);
+        if (!R) R = dGeomGetRotation (g);
 
-	dGeomID g2 = dGeomTransformGetGeom (g);
-	const dReal *pos2 = dGeomGetPosition (g2);
-	const dReal *R2 = dGeomGetRotation (g2);
-	dVector3 actual_pos;
-	dMatrix3 actual_R;
-	dMULTIPLY0_331 (actual_pos,R,pos2);
-	actual_pos[0] += pos[0];
-	actual_pos[1] += pos[1];
-	actual_pos[2] += pos[2];
-	dMULTIPLY0_333 (actual_R,R,R2);
-	drawGeom (g2,actual_pos,actual_R,0);
+        dGeomID g2 = dGeomTransformGetGeom (g);
+        const dReal *pos2 = dGeomGetPosition (g2);
+        const dReal *R2 = dGeomGetRotation (g2);
+        dVector3 actual_pos;
+        dMatrix3 actual_R;
+        dMULTIPLY0_331 (actual_pos,R,pos2);
+        actual_pos[0] += pos[0];
+        actual_pos[1] += pos[1];
+        actual_pos[2] += pos[2];
+        dMULTIPLY0_333 (actual_R,R,R2);
+        drawGeom (g2,actual_pos,actual_R,0);
     }
     else
-	show_aabb = 0;
-    
+        show_aabb = 0;
+
     if (show_aabb)
     {
-	// draw the bounding box for this geom
-	dReal aabb[6];
-	dGeomGetAABB (g,aabb);
-	dVector3 bbpos;
-	for (i=0; i<3; i++) bbpos[i] = 0.5*(aabb[i*2] + aabb[i*2+1]);
-	dVector3 bbsides;
-	for (i=0; i<3; i++) bbsides[i] = aabb[i*2+1] - aabb[i*2];
-	dMatrix3 RI;
-	dRSetIdentity (RI);
-	dsSetColorAlpha (1,0,0,0.5);
-	dsDrawBox (bbpos,RI,bbsides);
+        // draw the bounding box for this geom
+        dReal aabb[6];
+        dGeomGetAABB (g,aabb);
+        dVector3 bbpos;
+        for (i=0; i<3; i++) bbpos[i] = 0.5*(aabb[i*2] + aabb[i*2+1]);
+        dVector3 bbsides;
+        for (i=0; i<3; i++) bbsides[i] = aabb[i*2+1] - aabb[i*2];
+        dMatrix3 RI;
+        dRSetIdentity (RI);
+        dsSetColorAlpha (1,0,0,0.5);
+        dsDrawBox (bbpos,RI,bbsides);
     }
 }
 
@@ -97,13 +97,13 @@ void DisplayODESpaces::displaySpace(dSpaceID space)
     int ngeoms = dSpaceGetNumGeoms(space);
     for (int i = 0 ; i < ngeoms ; ++i)
     {
-	dGeomID geom = dSpaceGetGeom(space, i);
-	std::map<dGeomID, Color>::const_iterator it = m_gcolors.find(geom);
-	if (it != m_gcolors.end())
-	    dsSetColor(it->second.r,it->second.g,it->second.b);
-	else
-	    dsSetColor(m_activeColor.r, m_activeColor.g, m_activeColor.b);
-	drawGeom(geom, NULL, NULL, 0);
+        dGeomID geom = dSpaceGetGeom(space, i);
+        std::map<dGeomID, Color>::const_iterator it = m_gcolors.find(geom);
+        if (it != m_gcolors.end())
+            dsSetColor(it->second.r,it->second.g,it->second.b);
+        else
+            dsSetColor(m_activeColor.r, m_activeColor.g, m_activeColor.b);
+        drawGeom(geom, NULL, NULL, 0);
     }
 }
 
@@ -111,8 +111,8 @@ void DisplayODESpaces::displaySpaces(void)
 {
     for (unsigned int i = 0 ; i < m_spaces.size() ; ++i)
     {
-	m_activeColor = m_colors[i];
-	displaySpace(m_spaces[i]);
+        m_activeColor = m_colors[i];
+        displaySpace(m_spaces[i]);
     }
 }
 

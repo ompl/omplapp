@@ -12,23 +12,23 @@ int main()
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Easy_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
-    
+
     // define starting state
     base::ScopedState<base::SE2StateManifold> start(setup.getSpaceInformation());
     start->setX(270.40);
     start->setY(-196.82);
-    
+
     // define goal state
     base::ScopedState<base::SE2StateManifold> goal(start);
     start->setX(270.40);
     start->setY(-396.82);
-    
+
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
-    
+
     // attempt to solve the problem, and print it to sceen if a solution is found
     if (setup.solve())
-	setup.getSolutionPath().print(std::cout);
-    
+        setup.getSolutionPath().print(std::cout);
+
     return 0;
 }

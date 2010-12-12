@@ -40,10 +40,10 @@ int main()
     // try to solve the problem
     if (setup.solve(10))
     {
-	// simplify & print the solution
-	setup.simplifySolution();
-	setup.getSolutionPath().print(std::cout);
+        // simplify & print the solution
+        setup.simplifySolution();
+        setup.getSolutionPath().print(std::cout);
     }
-    
+
     return 0;
 }
