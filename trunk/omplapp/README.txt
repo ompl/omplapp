@@ -19,9 +19,9 @@ The following dependencies are optional:
 
 Once dependencies are installed, you can build OMPL.app on Linux and OS X like
 so:
-   cd ompl
-   mkdir build/Release
+   cd omplapp
+   mkdir -p build/Release
    cd build/Release
    cmake -DCMAKE_BUILD_TYPE=Release ../..
-   make
+   make -j 4 # replace "4" with the number of cores on your machine
 
