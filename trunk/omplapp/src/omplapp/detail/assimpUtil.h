@@ -22,6 +22,7 @@ namespace ompl
     namespace app
     {
 
+	/// @cond IGNORE
         /** \brief Utilitiy functions for processing imported scenes */
         namespace scene
         {
@@ -35,6 +36,6 @@ namespace ompl
             int assimpRender(const aiScene* scene, const aiVector3D &robotCenter);
 
         }
-
+	/// @endcond
     }
 }
