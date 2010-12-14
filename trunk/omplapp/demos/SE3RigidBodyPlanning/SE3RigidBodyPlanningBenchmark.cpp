@@ -20,7 +20,7 @@
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
-#include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/prm/BasicPRM.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::BasicPRM(setup.getSpaceInformation())));
 
     b.benchmark(RUNTIME_LIMIT, MEMORY_LIMIT, RUN_COUNT, true);
     b.saveResultsToFile();
