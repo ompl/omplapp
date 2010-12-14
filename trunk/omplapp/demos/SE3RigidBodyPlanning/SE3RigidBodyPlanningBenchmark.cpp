@@ -35,13 +35,13 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
-    
+
     base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
     start->setX(-4.96);
     start->setY(70.57);
     start->setZ(40.62);
     start->rotation().setIdentity();
-    
+
     base::ScopedState<base::SE3StateManifold> goal(start);
     goal->setX(200.49);
     goal->setY(70.57);
@@ -54,7 +54,7 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     runtime_limit = 10.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 500;    
+    run_count     = 500;
 }
 
 void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
@@ -86,13 +86,13 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     bounds.setLow(1,0.);
     bounds.setLow(2,-480.);
     setup.getStateManifold()->as<base::SE3StateManifold>()->setBounds(bounds);
-        
+
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
 
     runtime_limit = 90.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 50;    
+    run_count     = 50;
 }
 
 int main(int argc, char **argv)
@@ -101,13 +101,13 @@ int main(int argc, char **argv)
     std::string benchmark_name;
     double runtime_limit, memory_limit;
     int run_count;
-    int benchmark_id = argc==1 ? 0 : (atoi(argv[1]) % 2); 
+    int benchmark_id = argc==1 ? 0 : (atoi(argv[1]) % 2);
 
     if (benchmark_id==0)
         benchmark0(benchmark_name, setup, runtime_limit, memory_limit, run_count);
     else
         benchmark1(benchmark_name, setup, runtime_limit, memory_limit, run_count);
-    
+
     // create the benchmark object and add all the planners we'd like to run
     Benchmark b(setup, benchmark_name);
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
