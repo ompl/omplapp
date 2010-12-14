@@ -60,7 +60,7 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     double& runtime_limit, double& memory_limit, int& run_count)
 {
-    benchmark_name = std::string("TwistyCool");
+    benchmark_name = std::string("Twistycool");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Twistycool_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Twistycool_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
