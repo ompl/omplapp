@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(PQP CXX)
+include(CompilerSettings)
 include_directories(PQP_v1.3/src)
 file(GLOB PQP_SRC "PQP_v1.3/src/*.cpp")
 add_library(PQP STATIC ${PQP_SRC})
