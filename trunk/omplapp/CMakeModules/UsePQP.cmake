@@ -36,7 +36,7 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
     endif(MSVC_IDE)
 
     # set the library and include variables
-    set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_STATIC_LIBRARY_SUFFIX}")
     if(EXISTS "${PQP_LIBRARY}")
         set(PQP_LIBRARY "${PQP_LIBRARY}" CACHE FILEPATH "Location of PQP proximity query library" FORCE)
     endif()
