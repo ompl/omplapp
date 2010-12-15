@@ -34,7 +34,7 @@ sudo apt-get install libboost-all-dev cmake subversion automake libtool python-d
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install <a href="http://pypi.python.org/pypi/PyOpenGL-accelerate">PyOpenGL-accelerate</a> to enable OpenGL hardware acceleration.
 - To be able to build tests, generate documentation, and build the ODE extension, the following packages are also needed:
 \code
-sudo apt-get install libgtest-dev doxygen libode-dev
+sudo apt-get install libgtest-dev doxygen graphviz libode-dev
 \endcode
 - To be able to regenerate Python bindings, follow \ref installPyPlusPlus "these" instructions.
 - Follow the common steps \ref common_steps "below".
