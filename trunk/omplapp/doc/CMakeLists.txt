@@ -1,4 +1,4 @@
-option(OMPLAPP_BUILD_DOC "Build OMPL.app documentation" OFF)
+option(OMPLAPP_BUILD_DOC "Build OMPL.app documentation" ON)
 
 if(OMPLAPP_BUILD_DOC)
 
