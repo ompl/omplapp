@@ -17,6 +17,7 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/pqp-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
             "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build"
+            "-DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/ompl/CMakeModules"
         INSTALL_COMMAND "")
     # use a CMakeLists.txt file to configure build of PQP
     ExternalProject_Add_Step(pqp addCMakeList
