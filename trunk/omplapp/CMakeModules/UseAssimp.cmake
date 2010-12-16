@@ -13,6 +13,9 @@ else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
         URL "http://softlayer.dl.sourceforge.net/assimp/assimp--2.0.863-sdk.zip"
         URL_MD5 "9f41662501bd9d9533c4cf03b7c25d5b"
+        PATCH_COMMAND "${CMAKE_COMMAND}" -E copy_if_different 
+            "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-assimp.txt"
+            "${CMAKE_BINARY_DIR}/assimp-prefix/src/assimp/code/CMakeLists.txt"
         CMAKE_ARGS 
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/assimp-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
