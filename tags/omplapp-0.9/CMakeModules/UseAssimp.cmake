@@ -13,13 +13,17 @@ else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
         URL "http://softlayer.dl.sourceforge.net/assimp/assimp--2.0.863-sdk.zip"
         URL_MD5 "9f41662501bd9d9533c4cf03b7c25d5b"
+        PATCH_COMMAND "${CMAKE_COMMAND}" -E copy_if_different 
+            "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-assimp.txt"
+            "${CMAKE_BINARY_DIR}/assimp-prefix/src/assimp/code/CMakeLists.txt"
         CMAKE_ARGS 
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/assimp-prefix"
+            "-DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/ompl/CMakeModules"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
             "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/assimp-prefix/lib")
     
     # set the library and include variables
-    set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}assimp${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp${CMAKE_STATIC_LIBRARY_SUFFIX}")
     if(EXISTS "${ASSIMP_LIBRARY}")
         set(ASSIMP_LIBRARY "${ASSIMP_LIBRARY}" CACHE FILEPATH "Location of 3D asset importer library" FORCE)
     endif()

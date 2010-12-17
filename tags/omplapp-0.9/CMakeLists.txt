@@ -4,7 +4,7 @@ project(omplapp CXX C)
 
 set(OMPLAPP_MAJOR_VERSION 0)
 set(OMPLAPP_MINOR_VERSION 9)
-set(OMPLAPP_PATCH_VERSION 0)
+set(OMPLAPP_PATCH_VERSION 1)
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPL_VERSION "${OMPLAPP_VERSION}")
 
@@ -92,5 +92,9 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     endif()
 endif()
 
+find_program(LDCONFIG ldconfig)
+if(LDCONFIG)
+	install(CODE "execute_process(COMMAND ${LDCONFIG})")
+endif()
 
 include(CPackSettings)
