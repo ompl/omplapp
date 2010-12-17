@@ -92,5 +92,9 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     endif()
 endif()
 
+find_program(LDCONFIG ldconfig)
+if(LDCONFIG)
+	install(CODE "execute_process(COMMAND ${LDCONFIG})")
+endif()
 
 include(CPackSettings)
