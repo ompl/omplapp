@@ -19,14 +19,14 @@ ompl_app_root = dirname(dirname(dirname(abspath(__file__))))
 ompl_resources_dir = join(ompl_app_root, 'resources')
 
 try:
-	from ompl import base as ob
-	from ompl import geometric as og
-	from ompl import app as oa
+    from ompl import base as ob
+    from ompl import geometric as og
+    from ompl import app as oa
 except:
-	sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings' ) )
-	from ompl import base as ob
-	from ompl import geometric as og
-	from ompl import app as oa
+    sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings' ) )
+    from ompl import base as ob
+    from ompl import geometric as og
+    from ompl import app as oa
 
 
 setup = oa.SE3RigidBodyPlanning()
@@ -52,7 +52,7 @@ setup.setStartAndGoalStates(start, goal);
 print start, goal
 
 if setup.solve():
-	setup.simplifySolution()
-	path = setup.getSolutionPath()
-	path.interpolate(10)
-	print path, path.check()
+    setup.simplifySolution()
+    path = setup.getSolutionPath()
+    path.interpolate(10)
+    print path, path.check()
