@@ -28,11 +28,21 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
 find_package(OpenGL REQUIRED)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines, 
-# among other things, the find_python_module() used below.
+# among other things, the find_python_module() function used below.
 find_package(Python REQUIRED)
 find_python_module(PyQt4 REQUIRED)
 find_python_module(OpenGL REQUIRED)
 find_package(ODE QUIET)
+# The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
+# and may not even exist in earlier versions of CMake. We need this
+# module to download and build PQP, Assimp, and ODE/Drawstuff (if
+# they aren't already installed).
+if(${CMAKE_VERSION} VERSION_LESS 2.8.2 AND 
+    NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
+    file(DOWNLOAD 
+            "http://cmake.org/gitweb?p=cmake.git;a=blob_plain;f=Modules/ExternalProject.cmake;hb=HEAD"
+            "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
+endif()
 include(UsePQP)
 include(UseAssimp)
 include(UseDrawstuff)
