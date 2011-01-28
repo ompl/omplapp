@@ -1,3 +1,0 @@
-../app/common/RigidBodyPlanning.h
-../app/common/SE2RigidBodyPlanning.h
-../app/common/SE3RigidBodyPlanning.h
