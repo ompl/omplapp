@@ -33,10 +33,10 @@ find_package(Python REQUIRED)
 find_python_module(PyQt4 REQUIRED)
 find_python_module(OpenGL REQUIRED)
 find_package(ODE QUIET)
+find_package(Drawstuff QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
-# module to download and build PQP, Assimp, and ODE/Drawstuff (if
-# they aren't already installed).
+# module to download and build PQP and Assimp (if they aren't already installed).
 if(${CMAKE_VERSION} VERSION_LESS 2.8.2 AND 
     NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
     file(DOWNLOAD 
@@ -45,7 +45,6 @@ if(${CMAKE_VERSION} VERSION_LESS 2.8.2 AND
 endif()
 include(UsePQP)
 include(UseAssimp)
-include(UseDrawstuff)
 
 set(OMPL_EXTENSION_ODE ${ODE_FOUND})
 if (ODE_FOUND)
