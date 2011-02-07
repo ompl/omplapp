@@ -152,21 +152,33 @@ class MainWindow(QtGui.QMainWindow):
         if len(fname)>0:
             si = self.omplSetup.getSpaceInformation()
             pathstr = open(fname,'r').read()
-            # Match whitespace-separated sequences of 3 or 4 numbers
-            regex = re.compile('(-?[0-9\.]+\s){2,3}-?[0-9\.]+')
+            # Match whitespace-separated sequences of 2 to 4 numbers
+            regex = re.compile('\[([0-9\.e-]+\s){0,3}[0-9\.e-]+\]')
             states = regex.finditer(pathstr)
             self.path = []
             self.mainWidget.glViewer.solutionPath = []
             for state in states:
-                pos = [float(x) for x in state.group().split()]
+                pos = [float(x) for x in state.group()[1:-1].split()]
                 state = next(states)
-                rot = [float(x) for x in state.group().split()]
+                rot = [float(x) for x in state.group()[1:-1].split()]
                 s = ob.State(si)
-                s().setX(pos[0])
-                s().setY(pos[1])
-                s().setZ(pos[2])
-                R = s().rotation()
-                (R.x, R.y, R.z, R.w) = rot
+                if len(pos)==3 and len(rot)==4:
+                    # SE(3) state
+                    s().setX(pos[0])
+                    s().setY(pos[1])
+                    s().setZ(pos[2])
+                    R = s().rotation()
+                    (R.x, R.y, R.z, R.w) = rot
+                elif len(pos)==2 and len(rot)==1:
+                    # SE(2) state
+                    s().setX(pos[0])
+                    s().setY(pos[1])
+                    s().setZ(0.)
+                    s().rotation().setAxisAngle(0,0,1,rot[0])
+                else:
+                    # unknown state type
+                    print pos, rot
+                    raise ValueError
                 self.path.append(s)
                 self.mainWidget.glViewer.solutionPath.append(
                     self.mainWidget.glViewer.getTransform(s()))
