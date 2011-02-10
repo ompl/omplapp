@@ -12,9 +12,9 @@ target_link_libraries(ompl_app ompl ${OMPLAPP_LIBRARIES})
 install(TARGETS ompl_app DESTINATION lib)
 get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
 add_custom_command(TARGET ompl_app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}" 
+    COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
     WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in" 
-	"${CMAKE_CURRENT_SOURCE_DIR}/config.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/config.h")

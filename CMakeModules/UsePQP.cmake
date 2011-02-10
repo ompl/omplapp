@@ -13,7 +13,7 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
         URL "http://gamma.cs.unc.edu/software/downloads/SSV/pqp-1.3.tar.gz"
         URL_MD5 "f710e24a62db763d61d08667439d46fd"
-        CMAKE_ARGS 
+        CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/pqp-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
             "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build"
@@ -29,7 +29,7 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
     # if using Visual Studio, the code is automatically patched
     if(MSVC_IDE)
         ExternalProject_Add_Step(pqp patchForMSVC
-            COMMAND ${CMAKE_COMMAND} 
+            COMMAND ${CMAKE_COMMAND}
                 -D "PQP_INCLUDE=${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/PQP_v1.3/src"
                 -P "${CMAKE_SOURCE_DIR}/src/external/patchPQP-MSVC.cmake"
             DEPENDEES download

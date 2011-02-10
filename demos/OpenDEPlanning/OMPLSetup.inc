@@ -24,58 +24,58 @@ namespace oc = ompl::control;
 class CarGoal : public ob::GoalRegion
 {
 public:
-    
+
     CarGoal(const ob::SpaceInformationPtr &si, double x, double y) : ob::GoalRegion(si), x_(x), y_(y)
     {
-	threshold_ = 0.25;
+    threshold_ = 0.25;
     }
-    
+
     virtual double distanceGoal(const ob::State *st) const
     {
-	const double *pos = st->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
-	const double *vel = st->as<oc::ODEStateManifold::StateType>()->getBodyLinearVelocity(0);
-	double dx = x_ - pos[0];
-	double dy = y_ - pos[1];
-	double dot = dx * vel[0] + dy * vel[1];
-	if (dot > 0)
-	    dot = 0;
-	else
-	    dot = sqrt(fabs(dot));
-	
-	return sqrt(dx * dx + dy * dy) + dot;
+    const double *pos = st->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
+    const double *vel = st->as<oc::ODEStateManifold::StateType>()->getBodyLinearVelocity(0);
+    double dx = x_ - pos[0];
+    double dy = y_ - pos[1];
+    double dot = dx * vel[0] + dy * vel[1];
+    if (dot > 0)
+        dot = 0;
+    else
+        dot = sqrt(fabs(dot));
+
+    return sqrt(dx * dx + dy * dy) + dot;
     }
-    
+
 private:
-    
+
     double x_, y_;
-    
-};  
+
+};
 
 
-// Define how we project a state 
+// Define how we project a state
 class CarStateProjectionEvaluator : public ob::ProjectionEvaluator
 {
-public: 
+public:
 
     CarStateProjectionEvaluator(const ob::StateManifold *manifold) : ob::ProjectionEvaluator(manifold)
     {
-	cellDimensions_.resize(2);
-	cellDimensions_[0] = 1.0;
-	cellDimensions_[1] = 1.0;
+    cellDimensions_.resize(2);
+    cellDimensions_[0] = 1.0;
+    cellDimensions_[1] = 1.0;
     }
-    
+
     virtual unsigned int getDimension(void) const
     {
-	return 2;
+    return 2;
     }
-    
+
     virtual void project(const ob::State *state, ob::EuclideanProjection &projection) const
     {
-	const double *pos = state->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
-	projection[0] = pos[0];
-	projection[1] = pos[1];
+    const double *pos = state->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
+    projection[0] = pos[0];
+    projection[1] = pos[1];
     }
-    
+
 };
 
 // Define our own manifold, to include a distance function we want and register a default projection
@@ -86,74 +86,74 @@ public:
     CarStateManifold(const oc::ODEEnvironmentPtr &env) : oc::ODEStateManifold(env)
     {
     }
-    
+
     virtual double distance(const ob::State *s1, const ob::State *s2) const
     {
-	const double *p1 = s1->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
-	const double *p2 = s1->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
-	double dx = fabs(p1[0] - p2[0]);
-	double dy = fabs(p1[1] - p2[1]);
-	return sqrt(dx * dx + dy * dy);
+    const double *p1 = s1->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
+    const double *p2 = s1->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
+    double dx = fabs(p1[0] - p2[0]);
+    double dy = fabs(p1[1] - p2[1]);
+    return sqrt(dx * dx + dy * dy);
     }
 
     virtual void registerProjections(void)
     {
-    	registerDefaultProjection(ob::ProjectionEvaluatorPtr(new CarStateProjectionEvaluator(this)));
+        registerDefaultProjection(ob::ProjectionEvaluatorPtr(new CarStateProjectionEvaluator(this)));
     }
-    
+
 };
 
 class CarControlSampler : public oc::RealVectorControlUniformSampler
 {
 public:
-    
+
     CarControlSampler(const oc::ControlManifold *cm) : oc::RealVectorControlUniformSampler(cm)
     {
     }
-    
+
     virtual void sampleNext(oc::Control *control, const oc::Control *previous)
     {
-	manifold_->copyControl(control, previous);
-	const ob::RealVectorBounds &b = manifold_->as<oc::ODEControlManifold>()->getBounds();
-	if (rng_.uniform01() > 0.3)
-	{
-	    double &v = control->as<oc::ODEControlManifold::ControlType>()->values[0];
-	    static const double DT0 = 0.05;
-	    v += (rng_.uniformBool() ? 1 : -1) * DT0;
-	    if (v > b.high[0])
-		v = b.high[0] - DT0;
-	    if (v < b.low[0])
-		v = b.low[0] + DT0;
-	}
-	if (rng_.uniform01() > 0.3)
-	{
-	    double &v = control->as<oc::ODEControlManifold::ControlType>()->values[1];
-	    static const double DT1 = 0.05;
-	    v += (rng_.uniformBool() ? 1 : -1) * DT1;
-	    if (v > b.high[1])
-		v = b.high[1] - DT1;
-	    if (v < b.low[1])
-		v = b.low[1] + DT1;
-	}
+    manifold_->copyControl(control, previous);
+    const ob::RealVectorBounds &b = manifold_->as<oc::ODEControlManifold>()->getBounds();
+    if (rng_.uniform01() > 0.3)
+    {
+        double &v = control->as<oc::ODEControlManifold::ControlType>()->values[0];
+        static const double DT0 = 0.05;
+        v += (rng_.uniformBool() ? 1 : -1) * DT0;
+        if (v > b.high[0])
+        v = b.high[0] - DT0;
+        if (v < b.low[0])
+        v = b.low[0] + DT0;
     }
-    
+    if (rng_.uniform01() > 0.3)
+    {
+        double &v = control->as<oc::ODEControlManifold::ControlType>()->values[1];
+        static const double DT1 = 0.05;
+        v += (rng_.uniformBool() ? 1 : -1) * DT1;
+        if (v > b.high[1])
+        v = b.high[1] - DT1;
+        if (v < b.low[1])
+        v = b.low[1] + DT1;
+    }
+    }
+
     virtual void sampleNext(oc::Control *control, const oc::Control *previous, const ob::State *state)
     {
-	sampleNext(control, previous);
+    sampleNext(control, previous);
     }
 };
-    
+
 class CarControlManifold : public oc::ODEControlManifold
 {
 public:
-    
+
     CarControlManifold(const ob::StateManifoldPtr &m) : oc::ODEControlManifold(m)
     {
     }
-    
+
     virtual oc::ControlSamplerPtr allocControlSampler(void) const
     {
-	return oc::ControlSamplerPtr(new CarControlSampler(this));
+    return oc::ControlSamplerPtr(new CarControlSampler(this));
     }
 };
 

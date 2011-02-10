@@ -3,7 +3,7 @@ if (OMPL_BUILD_DEMOS)
 
     # create executable for SE3 rigid body planning application
     set(SE3RigidBodyPlanning_SRC SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
-    add_executable(SE3RigidBodyPlanning ${SE3RigidBodyPlanning_SRC}) 
+    add_executable(SE3RigidBodyPlanning ${SE3RigidBodyPlanning_SRC})
     target_link_libraries(SE3RigidBodyPlanning ${OMPLAPP_DEMO_LIBRARIES})
 
     # create executable for SE3 rigid body benchmarking application
@@ -13,9 +13,9 @@ if (OMPL_BUILD_DEMOS)
 
     # create executable for SE2 rigid body planning application
     aux_source_directory(SE2RigidBodyPlanning SE2RigidBodyPlanning_SRC)
-    add_executable(SE2RigidBodyPlanning ${SE2RigidBodyPlanning_SRC}) 
+    add_executable(SE2RigidBodyPlanning ${SE2RigidBodyPlanning_SRC})
     target_link_libraries(SE2RigidBodyPlanning ${OMPLAPP_DEMO_LIBRARIES})
-    
+
     # create executable for planning with ODE
     if (ODE_FOUND AND DRAWSTUFF_FOUND)
         if(APPLE)
@@ -25,7 +25,7 @@ if (OMPL_BUILD_DEMOS)
         include_directories(${ODE_INCLUDE} ${DRAWSTUFF_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
 
         aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
-        add_executable(OpenDEPlanning ${OpenDEPlanning_SRC}) 
+        add_executable(OpenDEPlanning ${OpenDEPlanning_SRC})
         target_link_libraries(OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
     endif()
 endif(OMPL_BUILD_DEMOS)

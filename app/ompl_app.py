@@ -110,7 +110,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def msgDebug(self, text):
         self.oh.debug(text)
-        
+
     def msgInform(self, text):
         self.oh.inform(text)
 
@@ -146,7 +146,7 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.plannerWidget.resolution.setValue(
                 self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
-                
+
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
         if len(fname)>0:
@@ -184,7 +184,7 @@ class MainWindow(QtGui.QMainWindow):
                     self.mainWidget.glViewer.getTransform(s()))
             self.mainWidget.problemWidget.startPose.setPose(self.path[0])
             self.mainWidget.problemWidget.goalPose.setPose(self.path[-1])
-            
+
     def savePath(self):
         if self.path:
             fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt'))
@@ -194,7 +194,7 @@ class MainWindow(QtGui.QMainWindow):
                 else:
                     pathstr = str(self.path)
                 open(fname,'w').write(pathstr)
-            
+
     def showLogWindow(self):
         if self.logWindow.isHidden():
             self.logWindow.show()
@@ -209,14 +209,14 @@ class MainWindow(QtGui.QMainWindow):
         self.commandWindow.show()
         self.commandWindow.raise_()
         self.commandWindow.activateWindow()
-    
+
     def omplWebSite(self):
         webbrowser.open('http://ompl.kavrakilab.org')
     def contactDevs(self):
         webbrowser.open('mailto:ompl-devel@lists.sourceforge.net')
     def emailList(self):
         webbrowser.open('mailto:ompl-users@lists.sourceforge.net')
-    
+
     def setPlanner(self, value):
         si = self.omplSetup.getSpaceInformation()
         if value==0:
@@ -249,21 +249,21 @@ class MainWindow(QtGui.QMainWindow):
             self.planner = og.EST(si)
             self.planner.setRange(self.mainWidget.plannerWidget.ESTRange.value())
             self.planner.setGoalBias(self.mainWidget.plannerWidget.ESTGoalBias.value())
-    def setRange(self, value): 
+    def setRange(self, value):
         self.msgDebug('Changing range from %g to %g' %  (self.planner.getRange(), value))
         self.planner.setRange(value)
-    def setGoalBias(self, value): 
+    def setGoalBias(self, value):
         self.msgDebug('Changing goal bias from %g to %g' %  (self.planner.getGoalBias(), value))
         self.planner.setGoalBias(value)
-    def setBorderFraction(self, value): 
+    def setBorderFraction(self, value):
         self.msgDebug('Changing border fraction from %g to %g' %  (self.planner.getBorderFraction(), value))
         self.planner.setBorderFraction(value)
-    def setMaxNearestNeighbors(self, value): 
+    def setMaxNearestNeighbors(self, value):
         self.msgDebug('Changing max. nearest neighbors from %g to %g' %  (self.planner.getMaxNearestNeighbors(), value))
-        self.planner.setMaxNearestNeighbors(value)    
+        self.planner.setMaxNearestNeighbors(value)
     def setTimeLimit(self, value):
         self.msgDebug('Changing time limit from %g to %g' % (self.timeLimit, value))
-        self.timeLimit = value        
+        self.timeLimit = value
     def solve(self):
         self.omplSetup.clear()
         startPose = self.convertToOmplPose(self.mainWidget.glViewer.startPose)
@@ -278,7 +278,7 @@ class MainWindow(QtGui.QMainWindow):
         self.omplSetup.setStartAndGoalStates(startPose, goalPose)
         self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
             self.mainWidget.plannerWidget.resolution.value())
-        
+
         self.msgDebug(str(self.omplSetup))
 
         solved = self.omplSetup.solve(self.timeLimit)
@@ -298,39 +298,39 @@ class MainWindow(QtGui.QMainWindow):
             if self.path.check() == False:
                 self.msgError("Path reported by planner seems to be invalid!")
             self.mainWidget.glViewer.setSolutionPath(self.path)
-    
+
     def clear(self):
         self.omplSetup.clear()
         self.mainWidget.glViewer.clear()
-        
+
     def createActions(self):
         self.openEnvironmentAct = QtGui.QAction('Open &Environment', self,
-            shortcut='Ctrl+E', statusTip='Open an environment model', 
+            shortcut='Ctrl+E', statusTip='Open an environment model',
             triggered=self.openEnvironment)
         self.openRobotAct = QtGui.QAction('Open &Robot', self,
             shortcut='Ctrl+R', statusTip='Open a robot model',
             triggered=self.openRobot)
         self.openPathAct = QtGui.QAction('&Open Path', self,
-            shortcut='Ctrl+O', statusTip='Open a path', 
+            shortcut='Ctrl+O', statusTip='Open a path',
             triggered=self.openPath)
         self.savePathAct = QtGui.QAction('Save &Path', self,
-            shortcut='Ctrl+S', statusTip='Save a path', 
+            shortcut='Ctrl+S', statusTip='Save a path',
             triggered=self.savePath)
         self.exitAct = QtGui.QAction('E&xit', self, shortcut='Ctrl+Q',
             statusTip='Exit the application', triggered=self.close)
-            
+
         self.logWindowAct = QtGui.QAction('Log Window', self,
             shortcut='Ctrl+1', triggered=self.showLogWindow)
         self.commandWindowAct = QtGui.QAction('Command Window', self,
             shortcut='Ctrl+2', triggered=self.showCommandWindow)
-        
+
         self.omplWebAct = QtGui.QAction('OMPL Web Site', self,
             triggered=self.omplWebSite)
         self.contactDevsAct = QtGui.QAction('Contact Developers', self,
             triggered=self.contactDevs)
         self.emailListAct = QtGui.QAction('Email OMPL Mailing List', self,
             triggered=self.emailList)
-            
+
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu('&File')
         self.fileMenu.addAction(self.openEnvironmentAct)
@@ -348,7 +348,7 @@ class MainWindow(QtGui.QMainWindow):
         self.helpMenu.addAction(self.omplWebAct)
         self.helpMenu.addAction(self.contactDevsAct)
         self.helpMenu.addAction(self.emailListAct)
-        
+
     def convertToOmplPose(self, pose):
         c = [ cos(angle*pi/360.) for angle in pose[:3] ]
         s = [ sin(angle*pi/360.) for angle in pose[:3] ]
@@ -384,7 +384,7 @@ class MainWidget(QtGui.QWidget):
         self.problemWidget.goalPose.valueChanged.connect(self.glViewer.setGoalPose)
         self.solveWidget.animateCheck.toggled.connect(self.glViewer.toggleAnimation)
         self.solveWidget.speedSlider.valueChanged.connect(self.glViewer.setSpeed)
-        
+
 class LogWindow(QtGui.QWidget):
     def __init__(self, parent=None, flags=QtCore.Qt.Tool):
         super(LogWindow, self).__init__(parent, flags)
@@ -429,7 +429,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.animate = True
         self.bounds_low = None
         self.bounds_high = None
-        
+
     def minimumSizeHint(self):
         return QtCore.QSize(500, 300)
 
@@ -527,7 +527,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         GL.glEnable(GL.GL_LINE_SMOOTH)
         GL.glShadeModel(GL.GL_FLAT)
         #GL.glEnable(GL.GL_CULL_FACE)
-        
+
     def transform(self, pose):
         GL.glPushMatrix()
         GL.glTranslatef(pose[3], pose[4], pose[5])
@@ -537,11 +537,11 @@ class GLViewer(QtOpenGL.QGLWidget):
     def getTransform(self, xform):
         R = xform.rotation()
         (w,x,y,z) = (R.w, -R.x, -R.y, -R.z)
-        return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0, 
-            2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0, 
+        return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0,
+            2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0,
             2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
             xform.getX(), xform.getY(), xform.getZ(), 1 ]
-    
+
     def drawBounds(self):
         lo = self.bounds_low
         hi = self.bounds_high
@@ -554,7 +554,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             GL.glVertex3fv(p[edge[0]])
             GL.glVertex3fv(p[edge[1]])
         GL.glEnd()
-        
+
     def paintGL(self):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         GL.glMatrixMode(GL.GL_MODELVIEW)
@@ -592,15 +592,15 @@ class GLViewer(QtOpenGL.QGLWidget):
                         GL.glMultMatrixf(self.solutionPath[i])
                         GL.glCallList(self.robot)
                         GL.glPopMatrix()
-                        
+
             # draw goal pose
             self.transform(self.goalPose)
             GL.glCallList(self.robot)
             GL.glPopMatrix()
-        
+
         # draw environment
         if self.environment: GL.glCallList(self.environment)
-            
+
         GL.glPopMatrix()
 
     def resizeGL(self, width, height):
@@ -640,12 +640,12 @@ class GLViewer(QtOpenGL.QGLWidget):
             else:
                 self.scale = self.scale*(1. - .01*dy)
         self.lastPos = event.pos()
-    
+
     def wheelEvent(self, event):
         self.scale = self.scale * pow(2.0, -event.delta() / 240.0)
         self.lastPos = event.pos()
         self.updateGL()
-        
+
 class ProblemWidget(QtGui.QWidget):
     def __init__(self):
         super(ProblemWidget, self).__init__()
@@ -655,10 +655,10 @@ class ProblemWidget(QtGui.QWidget):
         layout.addWidget(self.startPose, 0,0)
         layout.addWidget(self.goalPose, 1,0)
         self.setLayout(layout)
-        
+
 class PoseBox(QtGui.QGroupBox):
     valueChanged = QtCore.pyqtSignal(list)
-    
+
     def __init__(self, title):
         super(PoseBox, self).__init__(title)
         xlabel = QtGui.QLabel('X')
@@ -666,7 +666,7 @@ class PoseBox(QtGui.QGroupBox):
         zlabel = QtGui.QLabel('Z')
         poslabel = QtGui.QLabel('Position')
         rotlabel = QtGui.QLabel('Rotation')
-        
+
         self.posx = QtGui.QDoubleSpinBox()
         self.posx.setRange(-1000, 1000)
         self.posx.setSingleStep(1)
@@ -685,7 +685,7 @@ class PoseBox(QtGui.QGroupBox):
         self.rotz = QtGui.QDoubleSpinBox()
         self.rotz.setRange(-360,360)
         self.rotz.setSingleStep(1)
-        
+
         layout = QtGui.QGridLayout()
         layout.addWidget(poslabel, 0, 1, QtCore.Qt.AlignHCenter)
         layout.addWidget(rotlabel, 0, 2, QtCore.Qt.AlignHCenter)
@@ -699,7 +699,7 @@ class PoseBox(QtGui.QGroupBox):
         layout.addWidget(self.roty, 2, 2)
         layout.addWidget(self.rotz, 3, 2)
         self.setLayout(layout)
-        
+
         self.posx.valueChanged.connect(self.poseChange)
         self.posy.valueChanged.connect(self.poseChange)
         self.posz.valueChanged.connect(self.poseChange)
@@ -716,15 +716,15 @@ class PoseBox(QtGui.QGroupBox):
         self.rotx.setValue(rad2deg * atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y)))
         self.roty.setValue(rad2deg * asin(2.*(q.w*q.y-q.z*q.x)))
         self.rotz.setValue(rad2deg * atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)))
-        
+
     def poseChange(self, value):
-        self.valueChanged.emit([self.rotx.value(), self.roty.value(), self.rotz.value(), 
+        self.valueChanged.emit([self.rotx.value(), self.roty.value(), self.rotz.value(),
             self.posx.value(), self.posy.value(), self.posz.value() ])
-        
+
 class PlannerWidget(QtGui.QWidget):
     def __init__(self):
         super(PlannerWidget, self).__init__()
-        
+
         # list of planners
         plannerLabel = QtGui.QLabel('Planner')
         self.plannerSelect = QtGui.QComboBox()
@@ -764,7 +764,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(KPIECEborderFractionLabel, 2, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.KPIECEBorderFraction, 2, 1)
         self.KPIECEOptions.setLayout(layout)
-        
+
         # LBKPIECE options
         self.LBKPIECEOptions = QtGui.QGroupBox('LBKPIECE Options')
         LBKPIECErangeLabel = QtGui.QLabel('Range')
@@ -783,7 +783,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(LBKPIECEborderFractionLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.LBKPIECEBorderFraction, 1, 1)
         self.LBKPIECEOptions.setLayout(layout)
-        
+
         # PRM options
         self.PRMOptions = QtGui.QGroupBox('BasicPRM Options')
         PRMmaxNearestNeighborsLabel = QtGui.QLabel('Max. Nearest Neighbors')
@@ -795,7 +795,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(PRMmaxNearestNeighborsLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.PRMMaxNearestNeighbors, 0, 1)
         self.PRMOptions.setLayout(layout)
-        
+
         # SBL options
         self.SBLOptions = QtGui.QGroupBox('SBL Options')
         SBLrangeLabel = QtGui.QLabel('Range')
@@ -807,7 +807,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(SBLrangeLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.SBLRange, 0, 1)
         self.SBLOptions.setLayout(layout)
-        
+
         # RRT Connect options
         self.RRTConnectOptions = QtGui.QGroupBox('RRT Connect Options')
         RRTConnectrangeLabel = QtGui.QLabel('Range')
@@ -819,7 +819,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(RRTConnectrangeLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.RRTConnectRange, 0, 1)
         self.RRTConnectOptions.setLayout(layout)
-        
+
         # RRT options
         self.RRTOptions = QtGui.QGroupBox('RRT Options')
         RRTrangeLabel = QtGui.QLabel('Range')
@@ -838,7 +838,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(RRTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.RRTGoalBias, 1, 1)
         self.RRTOptions.setLayout(layout)
-        
+
         # Lazy RRT options
         self.LazyRRTOptions = QtGui.QGroupBox('Lazy RRT Options')
         LazyRRTrangeLabel = QtGui.QLabel('Range')
@@ -876,7 +876,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(ESTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.ESTGoalBias, 1, 1)
         self.ESTOptions.setLayout(layout)
-        
+
         self.stackedWidget = QtGui.QStackedWidget()
         self.stackedWidget.addWidget(self.KPIECEOptions)
         self.stackedWidget.addWidget(self.LBKPIECEOptions)
@@ -887,13 +887,13 @@ class PlannerWidget(QtGui.QWidget):
         self.stackedWidget.addWidget(self.LazyRRTOptions)
         self.stackedWidget.addWidget(self.ESTOptions)
         self.plannerSelect.activated.connect(self.stackedWidget.setCurrentIndex)
-        
+
         timeLimitLabel = QtGui.QLabel('Time (sec.)')
         self.timeLimit = QtGui.QDoubleSpinBox()
         self.timeLimit.setRange(0, 1000)
         self.timeLimit.setSingleStep(1)
         self.timeLimit.setValue(10.0)
-        
+
         resolutionLabel = QtGui.QLabel('Collision checking\nresolution')
         resolutionLabel.setAlignment(QtCore.Qt.AlignRight)
         self.resolution = QtGui.QDoubleSpinBox()
@@ -909,7 +909,7 @@ class PlannerWidget(QtGui.QWidget):
         layout.addWidget(self.timeLimit, 1, 1)
         layout.addWidget(resolutionLabel, 2, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.resolution, 2, 1)
-        layout.addWidget(self.stackedWidget, 3, 0, 1, 2) 
+        layout.addWidget(self.stackedWidget, 3, 0, 1, 2)
         self.setLayout(layout)
 
 
@@ -954,12 +954,12 @@ class BoundsBox(QtGui.QGroupBox):
         self.posx.valueChanged.connect(self.boundsChange)
         self.posy.valueChanged.connect(self.boundsChange)
         self.posz.valueChanged.connect(self.boundsChange)
-    
+
     def setBounds(self, value):
         self.posx.setValue(value[0])
         self.posy.setValue(value[1])
         self.posz.setValue(value[2])
-    
+
     def boundsChange(self, value):
         self.valueChanged.emit([ self.posx.value(), self.posy.value(), self.posz.value() ])
 
@@ -978,7 +978,7 @@ class SolveWidget(QtGui.QWidget):
         self.speedSlider.setValue(1)
         self.speedSlider.setMaximum(11)
         self.speedSlider.setMaximumSize(200, 30)
-        
+
         layout = QtGui.QGridLayout()
         layout.addWidget(self.solveButton, 0, 0)
         layout.addWidget(self.clearButton, 0, 1)

@@ -27,18 +27,18 @@
 
 #include <ode/ode.h>
 
-#define LENGTH 3.5		// chassis length
-#define WIDTH 2.5		// chassis width
-#define HEIGHT 1.0		// chassis height
-#define RADIUS 0.5		// wheel radius
-#define STARTZ 1.0		// starting height of chassis
-#define CMASS 1			// chassis mass
-#define WMASS 1			// wheel mass
-#define COMOFFSET -5		// center of mass offset
-#define BOXMASS 1		// wall box mass
-#define FMAX 25			// car engine fmax
-#define ITERS 20		// number of iterations
-#define BOXSIZE 3.0		// size of wall boxes
+#define LENGTH 3.5      // chassis length
+#define WIDTH 2.5       // chassis width
+#define HEIGHT 1.0      // chassis height
+#define RADIUS 0.5      // wheel radius
+#define STARTZ 1.0      // starting height of chassis
+#define CMASS 1         // chassis mass
+#define WMASS 1         // wheel mass
+#define COMOFFSET -5        // center of mass offset
+#define BOXMASS 1       // wall box mass
+#define FMAX 25         // car engine fmax
+#define ITERS 20        // number of iterations
+#define BOXSIZE 3.0     // size of wall boxes
 
 static dWorldID world;
 static dSpaceID space;
@@ -68,7 +68,7 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 {
     int i;
     dMass m;
-    
+
     // chassis body
     body[bodyI] = dBodyCreate (world);
     dBodySetPosition (body[bodyI],x,y,STARTZ);
@@ -77,7 +77,7 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
     dBodySetMass (body[bodyI],&m);
     box[boxI] = dCreateBox (space,LENGTH,WIDTH,HEIGHT);
     dGeomSetBody (box[boxI],body[bodyI]);
-    
+
     // wheel bodies
     for (i=1; i<=4; i++) {
         body[bodyI+i] = dBodyCreate (world);
@@ -94,7 +94,7 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
     dBodySetPosition (body[bodyI+2],x+0.4*LENGTH-0.5*RADIUS,y-WIDTH*0.5,STARTZ-HEIGHT*0.5);
     dBodySetPosition (body[bodyI+3],x-0.4*LENGTH+0.5*RADIUS,y+WIDTH*0.5,STARTZ-HEIGHT*0.5);
     dBodySetPosition (body[bodyI+4],x-0.4*LENGTH+0.5*RADIUS,y-WIDTH*0.5,STARTZ-HEIGHT*0.5);
-    
+
     // front and back wheel hinges
     for (i=0; i<4; i++) {
         joint[jointI+i] = dJointCreateHinge2 (world,0);
@@ -108,7 +108,7 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
         dJointSetHinge2Param (joint[jointI+i],dParamVel2,0);
         dJointSetHinge2Param (joint[jointI+i],dParamFMax2,FMAX);
     }
-    
+
     //center of mass offset body. (hang another copy of the body COMOFFSET units below it by a fixed joint)
     dBodyID b = dBodyCreate (world);
     body[bodyI + 5] = b;
@@ -119,51 +119,51 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
     dJointID j = dJointCreateFixed(world, 0);
     dJointAttach(j, body[bodyI], b);
     dJointSetFixed(j);
-    
-    bodyI	+= 6;
-    jointI	+= 4;
-    boxI	+= 1;
-    sphereI	+= 4;
+
+    bodyI   += 6;
+    jointI  += 4;
+    boxI    += 1;
+    sphereI += 4;
 }
 
 void resetSimulation(void)
 {
     int i;
     i = 0;
-    
+
     // destroy world if it exists
     if (bodies)
     {
         dSpaceDestroy (space);
         dWorldDestroy (world);
     }
-    
+
     // recreate world
-    
+
     world = dWorldCreate();
 
     space = dSweepAndPruneSpaceCreate( 0, dSAP_AXES_XYZ );
-    
+
     dWorldSetGravity (world,0,0,-1.5);
     dWorldSetCFM (world, 1e-5);
     dWorldSetERP (world, 0.8);
     dWorldSetQuickStepNumIterations (world,ITERS);
     ground = dCreatePlane (space,0,0,1,0);
-    
+
     bodies = 0;
     joints = 0;
     boxes = 0;
     spheres = 0;
-    
+
     makeCar(0, 0, bodies, joints, boxes, spheres);
-        
+
     movable_box_body[0] = dBodyCreate(world);
     dBodySetPosition(movable_box_body[0], -18, 0, BOXSIZE/2);
     dMassSetBox (&movable_mass[0], 1, BOXSIZE/2 , BOXSIZE * 4, BOXSIZE);
     dMassAdjust (&movable_mass[0], BOXMASS);
     dBodySetMass (movable_box_body[0] ,&movable_mass[0]);
     movable_box_geom[0] = dCreateBox (space, BOXSIZE/2, BOXSIZE * 4, BOXSIZE);
-    dGeomSetBody (movable_box_geom[0], movable_box_body[0]);    
+    dGeomSetBody (movable_box_geom[0], movable_box_body[0]);
 
     movable_box_body[1] = dBodyCreate(world);
     dBodySetPosition(movable_box_body[1], -32, 0, BOXSIZE/2);
@@ -171,7 +171,7 @@ void resetSimulation(void)
     dMassAdjust (&movable_mass[1], BOXMASS);
     dBodySetMass (movable_box_body[1] ,&movable_mass[1]);
     movable_box_geom[1] = dCreateBox (space, BOXSIZE/2, BOXSIZE * 4, BOXSIZE);
-    dGeomSetBody (movable_box_geom[1], movable_box_body[1]);    
+    dGeomSetBody (movable_box_geom[1], movable_box_body[1]);
 
     movable_box_body[2] = dBodyCreate(world);
     dBodySetPosition(movable_box_body[2], -25, -7, BOXSIZE/2);
@@ -179,7 +179,7 @@ void resetSimulation(void)
     dMassAdjust (&movable_mass[2], BOXMASS);
     dBodySetMass (movable_box_body[2] ,&movable_mass[2]);
     movable_box_geom[2] = dCreateBox (space, BOXSIZE * 4, BOXSIZE/2, BOXSIZE);
-    dGeomSetBody (movable_box_geom[2], movable_box_body[2]);    
+    dGeomSetBody (movable_box_geom[2], movable_box_body[2]);
 
     movable_box_body[3] = dBodyCreate(world);
     dBodySetPosition(movable_box_body[3], -25,  7, BOXSIZE/2);
@@ -191,7 +191,7 @@ void resetSimulation(void)
 
     avoid_box_geom = dCreateBox (space, BOXSIZE, BOXSIZE*2, BOXSIZE);
     dGeomSetPosition(avoid_box_geom, -10, 0, BOXSIZE/2);
-    
+
     goal_geom = dCreateBox (space, BOXSIZE / 2, BOXSIZE / 2, BOXSIZE / 2);
     goal_body = dBodyCreate(world);
     dMassSetBox (&goal_mass, 1, BOXSIZE /2, BOXSIZE / 2, BOXSIZE / 2);

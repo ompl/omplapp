@@ -20,7 +20,7 @@ if (ODE_FOUND)
   endif()
 
   # find the library
-  find_library(DRAWSTUFF_LIBRARY drawstuff PATHS ${_ODE_LIB_HINTS} 
+  find_library(DRAWSTUFF_LIBRARY drawstuff PATHS ${_ODE_LIB_HINTS}
       PATH_SUFFIXES lib drawstuff/src/.libs src/.libs
       DOC "Location of ODE's drawstuff library")
 endif()
