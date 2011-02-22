@@ -11,24 +11,19 @@
 /* Author: Ioan Sucan */
 
 #include "omplapp/SE2RigidBodyPlanning.h"
-#include "omplapp/detail/PQPSE2StateValidityChecker.h"
-#include "omplapp/detail/assimpUtil.h"
 #include <limits>
 
-void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(const aiScene *scene)
+void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(void)
 {
     base::RealVectorBounds bounds = getStateManifold()->as<base::SE2StateManifold>()->getBounds();
 
     // if bounds are not valid
     if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
     {
-        std::vector<aiVector3D> vertices;
-        scene::extractVertices(scene, vertices);
-        base::RealVectorBounds b(3);
-        scene::inferBounds(b, vertices, factor_, add_);
-        bounds.low[0] = b.low[0]; bounds.low[1] = b.low[1];
-        bounds.high[0] = b.high[0]; bounds.high[1] = b.high[1];
-        getStateManifold()->as<base::SE2StateManifold>()->setBounds(bounds);
+	base::RealVectorBounds b = GRigidBodyGeometry::inferEnvironmentBounds();
+	b.low.resize(2);
+	b.high.resize(2);
+        getStateManifold()->as<base::SE2StateManifold>()->setBounds(b);
     }
 }
 
@@ -65,18 +60,33 @@ void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
     getStateManifold()->as<base::SE2StateManifold>()->setBounds(bounds);
 }
 
-void ompl::app::SE2RigidBodyPlanning::getRobotCenterAndStartState(const aiScene *robot)
-{
-    scene::sceneCenter(robot, robotCenter_);
-    robotCenter_.z = 0.0;
-    start_->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
-    start_->as<base::SE2StateManifold::StateType>()->setX(robotCenter_.x);
-    start_->as<base::SE2StateManifold::StateType>()->setY(robotCenter_.y);
-}
 
-ompl::base::StateValidityCheckerPtr ompl::app::SE2RigidBodyPlanning::allocStateValidityChecker(const aiScene *env, const aiScene *robot) const
+/// @cond IGNORE
+namespace ompl
+{    
+    static const base::State* stateIdentity(const base::State* state, unsigned int)
+    {
+	return state;
+    }
+}
+/// @endcond
+
+void ompl::app::SE2RigidBodyPlanning::setup(void)
 {
-    PQPSE2StateValidityChecker *svc = new PQPSE2StateValidityChecker(getSpaceInformation());
-    svc->configure(robot, env, robotCenter_);
-    return base::StateValidityCheckerPtr(svc);
+    inferEnvironmentBounds();
+    inferProblemDefinitionBounds();
+    
+    const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(si_, boost::bind(&stateIdentity, _1, _2), false);
+    if (si_->getStateValidityChecker() != svc)
+        si_->setStateValidityChecker(svc);
+
+    if (getProblemDefinition()->getStartStateCount() == 0)
+    {
+	geometric::SimpleSetup::msg_.inform("Adding default start state");
+	base::ScopedState<> start(si_);
+	getEnvStartState(start);
+	addStartState(start);
+    }
+    
+    geometric::SimpleSetup::setup();
 }

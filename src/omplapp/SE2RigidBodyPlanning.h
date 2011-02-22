@@ -13,8 +13,9 @@
 #ifndef OMPLAPP_COMMON_SE2_RIGID_BODY_PLANNING_
 #define OMPLAPP_COMMON_SE2_RIGID_BODY_PLANNING_
 
-#include "omplapp/RigidBodyPlanning.h"
+#include "omplapp/graphics/GRigidBodyGeometry.h"
 #include <ompl/base/manifolds/SE2StateManifold.h>
+#include <ompl/geometric/SimpleSetup.h>
 
 namespace ompl
 {
@@ -23,11 +24,12 @@ namespace ompl
 
         /** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
             for rigid bodies in SE2. */
-        class SE2RigidBodyPlanning : public RigidBodyPlanning
+        class SE2RigidBodyPlanning : public geometric::SimpleSetup,
+				     public GRigidBodyGeometry
         {
         public:
 
-            SE2RigidBodyPlanning(void) : RigidBodyPlanning(base::StateManifoldPtr(new base::SE2StateManifold()))
+            SE2RigidBodyPlanning(void) : geometric::SimpleSetup(base::StateManifoldPtr(new base::SE2StateManifold())), GRigidBodyGeometry(Motion_2D)
             {
             }
 
@@ -35,14 +37,10 @@ namespace ompl
             {
             }
 
-        protected:
-
-            virtual void inferEnvironmentBounds(const aiScene *scene);
-            virtual void inferProblemDefinitionBounds(void);
-            virtual void getRobotCenterAndStartState(const aiScene *robot);
-
-            virtual base::StateValidityCheckerPtr allocStateValidityChecker(const aiScene *env, const aiScene *robot) const;
-
+	    void inferEnvironmentBounds(void);
+	    void inferProblemDefinitionBounds(void);
+	    
+            virtual void setup(void);
         };
 
 

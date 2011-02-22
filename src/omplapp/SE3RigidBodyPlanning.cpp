@@ -11,8 +11,6 @@
 /* Author: Ioan Sucan */
 
 #include "omplapp/SE3RigidBodyPlanning.h"
-#include "omplapp/detail/PQPSE3StateValidityChecker.h"
-#include "omplapp/detail/assimpUtil.h"
 #include <limits>
 
 void ompl::app::SE3RigidBodyPlanning::inferProblemDefinitionBounds(void)
@@ -56,32 +54,41 @@ void ompl::app::SE3RigidBodyPlanning::inferProblemDefinitionBounds(void)
     getStateManifold()->as<base::SE3StateManifold>()->setBounds(bounds);
 }
 
-void ompl::app::SE3RigidBodyPlanning::inferEnvironmentBounds(const aiScene *scene)
+void ompl::app::SE3RigidBodyPlanning::inferEnvironmentBounds(void)
 {
     base::RealVectorBounds bounds = getStateManifold()->as<base::SE3StateManifold>()->getBounds();
 
     // if bounds are not valid
     if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
+        getStateManifold()->as<base::SE3StateManifold>()->setBounds(GRigidBodyGeometry::inferEnvironmentBounds());
+}
+
+/// @cond IGNORE
+namespace ompl
+{    
+    static const base::State* stateIdentity(const base::State* state, unsigned int)
     {
-        std::vector<aiVector3D> vertices;
-        scene::extractVertices(scene, vertices);
-        scene::inferBounds(bounds, vertices, factor_, add_);
-        getStateManifold()->as<base::SE3StateManifold>()->setBounds(bounds);
+	return state;
     }
 }
+/// @endcond
 
-void ompl::app::SE3RigidBodyPlanning::getRobotCenterAndStartState(const aiScene *robot)
+void ompl::app::SE3RigidBodyPlanning::setup(void)
 {
-    scene::sceneCenter(robot, robotCenter_);
-    start_->as<base::SE3StateManifold::StateType>()->rotation().setIdentity();
-    start_->as<base::SE3StateManifold::StateType>()->setX(robotCenter_.x);
-    start_->as<base::SE3StateManifold::StateType>()->setY(robotCenter_.y);
-    start_->as<base::SE3StateManifold::StateType>()->setZ(robotCenter_.z);
-}
-
-ompl::base::StateValidityCheckerPtr ompl::app::SE3RigidBodyPlanning::allocStateValidityChecker(const aiScene *env, const aiScene *robot) const
-{
-    PQPSE3StateValidityChecker *svc = new PQPSE3StateValidityChecker(getSpaceInformation());
-    svc->configure(robot, env, robotCenter_);
-    return base::StateValidityCheckerPtr(svc);
+    inferEnvironmentBounds();
+    inferProblemDefinitionBounds();
+    
+    const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(si_, boost::bind(&stateIdentity, _1, _2), false);
+    if (si_->getStateValidityChecker() != svc)
+        si_->setStateValidityChecker(svc);
+    
+    if (getProblemDefinition()->getStartStateCount() == 0)
+    {
+	geometric::SimpleSetup::msg_.inform("Adding default start state");
+	base::ScopedState<> start(si_);
+	getEnvStartState(start);
+	addStartState(start);
+    }
+    
+    geometric::SimpleSetup::setup();
 }
