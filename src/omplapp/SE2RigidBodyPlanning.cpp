@@ -64,7 +64,7 @@ void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
 /// @cond IGNORE
 namespace ompl
 {    
-    static const base::State* stateIdentity(const base::State* state)
+    static const base::State* stateIdentity(const base::State* state, unsigned int)
     {
 	return state;
     }
@@ -76,9 +76,10 @@ void ompl::app::SE2RigidBodyPlanning::setup(void)
     inferEnvironmentBounds();
     inferProblemDefinitionBounds();
     
-    if (!si_->getStateValidityChecker())
-	si_->setStateValidityChecker(allocStateValidityChecker(si_, boost::bind(&stateIdentity, _1), false));
-    
+    const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(si_, boost::bind(&stateIdentity, _1, _2), false);
+    if (si_->getStateValidityChecker() != svc)
+        si_->setStateValidityChecker(svc);
+
     if (getProblemDefinition()->getStartStateCount() == 0)
     {
 	geometric::SimpleSetup::msg_.inform("Adding default start state");

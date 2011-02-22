@@ -126,7 +126,8 @@ class MainWindow(QtGui.QMainWindow):
             self.environmentFile = fname
             self.omplSetup.getStateManifold().setBounds(self.zerobounds)
             self.mainWidget.glViewer.setEnvironment(
-                self.omplSetup.setEnvironmentMesh(self.environmentFile, True))
+                self.omplSetup.setEnvironmentMesh(self.environmentFile))
+            self.omplSetup.inferEnvironmentBounds()
             if self.robotFile:
                 self.mainWidget.plannerWidget.resolution.setValue(
                     self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
@@ -138,11 +139,14 @@ class MainWindow(QtGui.QMainWindow):
             self.omplSetup.getStateManifold().setBounds(self.zerobounds)
             if not self.environmentFile: self.environmentFile = self.robotFile
             self.mainWidget.glViewer.setEnvironment(
-                self.omplSetup.setEnvironmentMesh(self.environmentFile, True))
+                self.omplSetup.setEnvironmentMesh(self.environmentFile))
             self.mainWidget.glViewer.setRobot(
-                self.omplSetup.setRobotMesh(self.robotFile, True))
-            self.mainWidget.problemWidget.startPose.setPose(self.omplSetup.getEnvStartState())
-            self.mainWidget.problemWidget.goalPose.setPose(self.omplSetup.getEnvStartState())
+                self.omplSetup.setRobotMesh(self.robotFile))
+            self.omplSetup.inferEnvironmentBounds()
+            start = ob.State(self.omplSetup.getSpaceInformation())
+            self.omplSetup.getEnvStartState(start)
+            self.mainWidget.problemWidget.startPose.setPose(start)
+            self.mainWidget.problemWidget.goalPose.setPose(start)
             self.mainWidget.plannerWidget.resolution.setValue(
                 self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())

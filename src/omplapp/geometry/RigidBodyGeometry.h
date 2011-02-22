@@ -76,7 +76,7 @@ namespace ompl
 	    aiVector3D getRobotCenter(void) const;
 	    
             /** \brief Allocate default state validity checker using PQP. */
-	    base::StateValidityCheckerPtr allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision) const;
+	    const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
 
             /** \brief The bounds of the environment are inferred
                 based on the axis-aligned bounding box for the objects
@@ -130,7 +130,9 @@ namespace ompl
             /** \brief Instance of assimp importer used to load robot */
 	    std::vector< boost::shared_ptr<Assimp::Importer> > importerRobot_;
 
-	    msg::Interface      msg_;
+            base::StateValidityCheckerPtr pqp_svc_;
+            
+	    msg::Interface                msg_;
 	    
         };
 

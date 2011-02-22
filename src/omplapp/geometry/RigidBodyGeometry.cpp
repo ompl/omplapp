@@ -48,7 +48,13 @@ int ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
 	importerRobot_.resize(p);
     }
 
-    return p < importerRobot_.size();   
+    if (p < importerRobot_.size())
+    {
+        pqp_svc_.reset();
+        return 1;
+    }
+    else
+        return 0;
 }
 
 int ompl::app::RigidBodyGeometry::setEnvironmentMesh(const std::string &env)
@@ -84,9 +90,14 @@ int ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
 	importerEnv_.resize(p);
     }
     
-    return p < importerEnv_.size();
+    if (p < importerEnv_.size())
+    {
+        pqp_svc_.reset();
+        return 1;
+    }
+    else
+        return 0;
 }
-
 
 ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBounds(void) const
 {
@@ -135,9 +146,11 @@ aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(void) const
     return s;
 }
 
-ompl::base::StateValidityCheckerPtr ompl::app::RigidBodyGeometry::allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision) const
+const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision)
 {
-    base::StateValidityCheckerPtr svc;
+    if (pqp_svc_)
+        return pqp_svc_;
+
     GeometrySpecification geom;
     
     for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
@@ -157,10 +170,9 @@ ompl::base::StateValidityCheckerPtr ompl::app::RigidBodyGeometry::allocStateVali
 	geom.robotShift.z = 0.0;
 
     if (mtype_ == Motion_2D)
-	svc.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
+	pqp_svc_.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
     else 
-	svc.reset(new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+	pqp_svc_.reset(new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
     
-    return svc;
+    return pqp_svc_;
 }
-

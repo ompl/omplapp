@@ -40,12 +40,6 @@ class ompl_app_generator_t(code_generator_t):
             'def("clear", &::ompl::geometric::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateManifold", &::ompl::geometric::SimpleSetup::getStateManifold, bp::return_value_policy< bp::copy_const_reference >())')
-        # include these pure virtual member functions, even though they are
-        # protected, so that Py++ can create the appropriate wrappers
-        self.ompl_ns.member_functions('inferEnvironmentBounds').include()
-        self.ompl_ns.member_functions('inferProblemDefinitionBounds').include()
-        self.ompl_ns.member_functions('getRobotCenterAndStartState').include()
-        self.ompl_ns.member_functions('allocStateValidityChecker').include()
 
 if __name__ == '__main__':
     setrecursionlimit(50000)
