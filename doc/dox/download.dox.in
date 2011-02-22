@@ -1,0 +1,23 @@
+/**
+\page download Download
+
+\section download_release Releases
+
+- \b OMPL.app @OMPLAPP_VERSION@, released December 2010 (<a href="releaseNotes.html">release notes</a>):<br>
+<a href="https://sourceforge.net/projects/ompl/files/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="download">TGZ</a>
+<a href="https://sourceforge.net/projects/ompl/files/omplapp-@OMPLAPP_VERSION@-Source.zip" class="download">ZIP</a></b><br>
+Just the core \b OMPL library (no GUI, no bindings to PQP and assimp):<br>
+<b><a href="https://sourceforge.net/projects/ompl/files/ompl-@OMPL_VERSION@-Source.tar.gz" class="download">TGZ</a>
+<a href="https://sourceforge.net/projects/ompl/files/ompl-@OMPL_VERSION@-Source.zip" class="download">ZIP</a></b>
+- <a href="http://sourceforge.net/projects/ompl/files">Older releases</a>. See the \ref releaseNotes "release notes" for a brief a description of changes for each release.
+.
+
+\n\par
+Alternatively, you can use the <a
+href="http://www.ros.org/wiki/ompl">version included in ROS</a>.
+
+
+\par
+Click <a href="installation.html">here</a> for installation instructions.
+
+*/
