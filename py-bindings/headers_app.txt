@@ -1,3 +1,4 @@
-../src/omplapp/RigidBodyPlanning.h
+../src/omplapp/geometry/RigidBodyGeometry.h
+../src/omplapp/graphics/GRigidBodyGeometry.h
 ../src/omplapp/SE2RigidBodyPlanning.h
 ../src/omplapp/SE3RigidBodyPlanning.h

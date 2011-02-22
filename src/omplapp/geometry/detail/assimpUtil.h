@@ -10,6 +10,9 @@
 
 /* Author: Ioan Sucan */
 
+#ifndef OMPLAPP_GEOMETRY_DETAIL_ASSIMP_UTIL_
+#define OMPLAPP_GEOMETRY_DETAIL_ASSIMP_UTIL_
+
 #include <assimp.hpp>
 #include <assimp.h>
 #include <aiScene.h>
@@ -32,10 +35,8 @@ namespace ompl
             void extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices);
             double shortestEdge(const aiScene *scene);
             void sceneCenter(const aiScene *scene, aiVector3D &center);
-            int assimpRender(const aiScene* scene);
-            int assimpRender(const aiScene* scene, const aiVector3D &robotCenter);
-
         }
         /// @endcond
     }
 }
+#endif

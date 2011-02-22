@@ -11,6 +11,7 @@
 /* Author: Ioan Sucan */
 
 #include <omplapp/SE3RigidBodyPlanning.h>
+#include <omplapp/config.h>
 
 using namespace ompl;
 
