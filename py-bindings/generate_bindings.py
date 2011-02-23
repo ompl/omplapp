@@ -24,7 +24,8 @@ class ompl_app_generator_t(code_generator_t):
     def __init__(self):
         code_generator_t.__init__(self, 'app',
             ['../ompl/py-bindings/bindings/base',
-             '../ompl/py-bindings/bindings/geometric'])
+             '../ompl/py-bindings/bindings/geometric',
+             '../ompl/py-bindings/bindings/control'])
         #self.ompl_ns.member_functions('solve').already_exposed = False
         #print self.ompl_ns.class_('SimpleSetup').member_function('solve').already_exposed
 
@@ -40,6 +41,14 @@ class ompl_app_generator_t(code_generator_t):
             'def("clear", &::ompl::geometric::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateManifold", &::ompl::geometric::SimpleSetup::getStateManifold, bp::return_value_policy< bp::copy_const_reference >())')
+
+        for cls in ['SE3ControlPlanning']:
+            self.ompl_ns.class_(cls).add_registration_code(
+            'def("solve", &::ompl::control::SimpleSetup::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % cls)
+            self.ompl_ns.class_(cls).add_registration_code(
+            'def("clear", &::ompl::control::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
+            self.ompl_ns.class_(cls).add_registration_code(
+            'def("getStateManifold", &::ompl::control::SimpleSetup::getStateManifold, bp::return_value_policy< bp::copy_const_reference >())')
 
 if __name__ == '__main__':
     setrecursionlimit(50000)

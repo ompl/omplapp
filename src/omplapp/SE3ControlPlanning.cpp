@@ -10,32 +10,31 @@
 
 /* Author: Ioan Sucan */
 
-#include "omplapp/SE2RigidBodyPlanning.h"
+#include "omplapp/SE3ControlPlanning.h"
 #include "omplapp/graphics/detail/RenderPlannerData.h"
 #include <limits>
-
 
 /// @cond IGNORE
 namespace ompl
 {
     static const base::State* extractState(const base::State* state, unsigned int)
     {
-        return state;
+        return state->as<base::CompoundState>()->components[0];
     }
 }
 /// @endcond
 
-void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(void)
+void ompl::app::SE3ControlPlanning::inferEnvironmentBounds(void)
 {
-    RigidBodyGeometry::inferEnvironmentBounds(getStateManifold());
+    RigidBodyGeometry::inferEnvironmentBounds(getSE3StateManifold());
 }
 
-void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
+void ompl::app::SE3ControlPlanning::inferProblemDefinitionBounds(void)
 {
-    RigidBodyGeometry::inferProblemDefinitionBounds(getProblemDefinition(), boost::bind(&extractState, _1, _2), 1, getStateManifold());
+    RigidBodyGeometry::inferProblemDefinitionBounds(getProblemDefinition(), boost::bind(&extractState, _1, _2), 1, getSE3StateManifold());
 }
 
-void ompl::app::SE2RigidBodyPlanning::setup(void)
+void ompl::app::SE3ControlPlanning::setup(void)
 {
     inferEnvironmentBounds();
     inferProblemDefinitionBounds();
@@ -46,16 +45,19 @@ void ompl::app::SE2RigidBodyPlanning::setup(void)
 
     if (getProblemDefinition()->getStartStateCount() == 0)
     {
-        geometric::SimpleSetup::msg_.inform("Adding default start state");
+        control::SimpleSetup::msg_.inform("Adding default start state");
         base::ScopedState<> start(si_);
-        getEnvStartState(start);
+        base::ScopedState<> startSE3(getSE3StateManifold());
+        getEnvStartState(startSE3);
+        start << startSE3;
+        start[7] = 0.0;
         addStartState(start);
     }
 
-    geometric::SimpleSetup::setup();
+    control::SimpleSetup::setup();
 }
 
-int ompl::app::SE2RigidBodyPlanning::renderPlannerData(void) const
+int ompl::app::SE3ControlPlanning::renderPlannerData(void) const
 {
-    return RenderPlannerData(getPlannerData(), aiVector3D(0.0, 0.0, 0.0), Motion_2D, boost::bind(&extractState, _1, _2), 1);
+    return RenderPlannerData(getPlannerData(), aiVector3D(0.0, 0.0, 0.0), Motion_3D, boost::bind(&extractState, _1, _2), 1);
 }

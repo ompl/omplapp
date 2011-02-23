@@ -99,6 +99,20 @@ int ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
         return 0;
 }
 
+void ompl::app::RigidBodyGeometry::inferEnvironmentBounds(const base::StateManifoldPtr &manifold) const
+{
+    base::RealVectorBounds bounds = mtype_ == Motion_2D ? manifold->as<base::SE2StateManifold>()->getBounds() : manifold->as<base::SE3StateManifold>()->getBounds();
+    
+    // if bounds are not valid
+    if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
+    {
+        if (mtype_ == Motion_2D)
+            manifold->as<base::SE2StateManifold>()->setBounds(inferEnvironmentBounds());
+        else
+            manifold->as<base::SE3StateManifold>()->setBounds(inferEnvironmentBounds());
+    }    
+}
+
 ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBounds(void) const
 {
     base::RealVectorBounds bounds(3);
@@ -117,6 +131,58 @@ ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBound
     }
 
     return bounds;
+}
+
+void ompl::app::RigidBodyGeometry::inferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, unsigned int robotCount, 
+                                                                const base::StateManifoldPtr &manifold)
+{
+    // update the bounds based on start states, if needed
+    base::RealVectorBounds bounds = mtype_ == Motion_2D ? manifold->as<base::SE2StateManifold>()->getBounds() : manifold->as<base::SE3StateManifold>()->getBounds();
+    
+    std::vector<const base::State*> states;
+    pdef->getInputStates(states);
+    
+    double minX = std::numeric_limits<double>::infinity();
+    double minY = minX;
+    double minZ = minX;
+    double maxX = -minX;
+    double maxY = maxX;
+    double maxZ = maxX;
+    for (unsigned int i = 0 ; i < states.size() ; ++i)
+    {
+        for (unsigned int r = 0 ; r < robotCount ; ++r)
+        {
+            const base::State *s = se(states[i], r);
+            double x = mtype_ == Motion_2D ? s->as<base::SE2StateManifold::StateType>()->getX() : s->as<base::SE3StateManifold::StateType>()->getX();
+            double y = mtype_ == Motion_2D ? s->as<base::SE2StateManifold::StateType>()->getY() : s->as<base::SE3StateManifold::StateType>()->getY();
+            double z = mtype_ == Motion_2D ? 0.0 : s->as<base::SE3StateManifold::StateType>()->getZ();
+            if (minX > x) minX = x;
+            if (maxX < x) maxX = x;
+            if (minY > y) minY = y;
+            if (maxY < y) maxY = y;
+            if (minZ > z) minZ = z;
+            if (maxZ < z) maxZ = z;
+        }
+    }
+    double dx = (maxX - minX) * (factor_ - 1.0) + add_;
+    double dy = (maxY - minY) * (factor_ - 1.0) + add_;
+    double dz = (maxZ - minZ) * (factor_ - 1.0) + add_;
+    
+    if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
+    if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
+    
+    if (bounds.high[0] < maxX + dx) bounds.high[0] = maxX + dx;
+    if (bounds.high[1] < maxY + dy) bounds.high[1] = maxY + dy;
+    
+    if (mtype_ == Motion_3D)
+    {
+        if (bounds.high[2] < maxZ + dz) bounds.high[2] = maxZ + dz;
+        if (bounds.low[2] > minZ - dz) bounds.low[2] = minZ - dz;
+        
+        manifold->as<base::SE3StateManifold>()->setBounds(bounds);
+    }
+    else
+        manifold->as<base::SE2StateManifold>()->setBounds(bounds);
 }
 
 void ompl::app::RigidBodyGeometry::getEnvStartState(base::ScopedState<>& state) const

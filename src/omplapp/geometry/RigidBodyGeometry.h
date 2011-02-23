@@ -14,6 +14,7 @@
 #define OMPLAPP_GEOMETRY_RIGID_BODY_GEOMETRY_
 
 #include "omplapp/geometry/GeometrySpecification.h"
+#include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/ScopedState.h>
 #include <ompl/base/manifolds/RealVectorBounds.h>
@@ -114,9 +115,15 @@ namespace ompl
                 3D. */
             base::RealVectorBounds inferEnvironmentBounds(void) const;
 
+            /** \brief If the manifold does not have valid bounds, infer bounds based on the environment and set them. */
+            void inferEnvironmentBounds(const base::StateManifoldPtr &manifold) const;
+            
+            void inferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se,
+                                              unsigned int robotCount, const base::StateManifoldPtr &manifold);
+            
         protected:
 
-                  MotionModel         mtype_;
+            MotionModel         mtype_;
 
             /** \brief The factor to multiply inferred environment bounds by (default 1) */
             double              factor_;

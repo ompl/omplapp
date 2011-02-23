@@ -38,6 +38,11 @@ namespace ompl
             {
             }
 
+            const base::StateManifoldPtr& getSE3StateManifold(void)
+            {
+                return getStateManifold();
+            }
+
             void inferEnvironmentBounds(void);
             void inferProblemDefinitionBounds(void);
 

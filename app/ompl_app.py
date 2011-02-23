@@ -23,13 +23,26 @@ try:
     from ompl.util import OutputHandler, useOutputHandler
     from ompl import base as ob
     from ompl import geometric as og
+    from ompl import control as oc
     from ompl import app as oa
 except:
     sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
     from ompl.util import OutputHandler, useOutputHandler
     from ompl import base as ob
     from ompl import geometric as og
+    from ompl import control as oc
     from ompl import app as oa
+
+class OMPLConfiguration:
+    def __init__(self):
+        self.geometricPlanning = False
+        if self.geometricPlanning:
+            self.omplSetup = oa.SE3RigidBodyPlanning()
+        else:
+            self.omplSetup = oa.SE3ControlPlanning()
+
+# global variable
+gConfig = OMPLConfiguration()
 
 class LogOutputHandler(OutputHandler):
     def __init__(self, textEdit):
@@ -67,28 +80,38 @@ class MainWindow(QtGui.QMainWindow):
         self.createMenus()
         self.mainWidget = MainWidget()
         self.setCentralWidget(self.mainWidget)
-        self.setWindowTitle('OMPL')
+        if gConfig.geometricPlanning:
+            self.setWindowTitle('OMPL: Planning With Geometric Constraints')
+        else:
+            self.setWindowTitle('OMPL: Planning With Differential Constraints')
         self.environmentFile = None
         self.robotFile = None
         self.path = None
-        self.omplSetup = oa.SE3RigidBodyPlanning()
+        self.omplSetup = gConfig.omplSetup
         self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
         self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
         self.mainWidget.plannerWidget.plannerSelect.activated.connect(self.setPlanner)
-        self.mainWidget.plannerWidget.KPIECERange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.KPIECEGoalBias.valueChanged.connect(self.setGoalBias)
-        self.mainWidget.plannerWidget.KPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
-        self.mainWidget.plannerWidget.LBKPIECERange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.LBKPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
-        self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.valueChanged.connect(self.setMaxNearestNeighbors)
-        self.mainWidget.plannerWidget.SBLRange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.RRTConnectRange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.RRTRange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.RRTGoalBias.valueChanged.connect(self.setGoalBias)
-        self.mainWidget.plannerWidget.LazyRRTRange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.LazyRRTGoalBias.valueChanged.connect(self.setGoalBias)
-        self.mainWidget.plannerWidget.ESTRange.valueChanged.connect(self.setRange)
-        self.mainWidget.plannerWidget.ESTGoalBias.valueChanged.connect(self.setGoalBias)
+        if gConfig.geometricPlanning:
+            self.mainWidget.plannerWidget.KPIECERange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.KPIECEGoalBias.valueChanged.connect(self.setGoalBias)
+            self.mainWidget.plannerWidget.KPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
+            self.mainWidget.plannerWidget.LBKPIECERange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.LBKPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
+            self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.valueChanged.connect(self.setMaxNearestNeighbors)
+            self.mainWidget.plannerWidget.SBLRange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.RRTConnectRange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.RRTRange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.RRTGoalBias.valueChanged.connect(self.setGoalBias)
+            self.mainWidget.plannerWidget.LazyRRTRange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.LazyRRTGoalBias.valueChanged.connect(self.setGoalBias)
+            self.mainWidget.plannerWidget.ESTRange.valueChanged.connect(self.setRange)
+            self.mainWidget.plannerWidget.ESTGoalBias.valueChanged.connect(self.setGoalBias)
+        else:
+            self.mainWidget.plannerWidget.KPIECEGoalBias.valueChanged.connect(self.setGoalBias)
+            self.mainWidget.plannerWidget.KPIECEBorderFraction.valueChanged.connect(self.setBorderFraction)
+            self.mainWidget.plannerWidget.RRTGoalBias.valueChanged.connect(self.setGoalBias)
+            self.mainWidget.plannerWidget.timeLimit.valueChanged.connect(self.setTimeLimit)
+
         self.timeLimit = self.mainWidget.plannerWidget.timeLimit.value()
         self.mainWidget.plannerWidget.timeLimit.valueChanged.connect(self.setTimeLimit)
         self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(self.mainWidget.glViewer.setLowerBound)
@@ -124,37 +147,38 @@ class MainWindow(QtGui.QMainWindow):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
-            self.omplSetup.getStateManifold().setBounds(self.zerobounds)
+            self.omplSetup.getSE3StateManifold().setBounds(self.zerobounds)
             self.mainWidget.glViewer.setEnvironment(
                 self.omplSetup.setEnvironmentMesh(self.environmentFile))
             self.omplSetup.inferEnvironmentBounds()
-            if self.robotFile:
-                self.mainWidget.plannerWidget.resolution.setValue(
-                    self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
+            if gConfig.geometricPlanning:
+                if self.robotFile:
+                    self.mainWidget.plannerWidget.resolution.setValue(
+                        self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
+            self.mainWidget.glViewer.setBounds(self.omplSetup.getSE3StateManifold().getBounds())
     def openRobot(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
-            self.omplSetup.getStateManifold().setBounds(self.zerobounds)
+            self.omplSetup.getSE3StateManifold().setBounds(self.zerobounds)
             if not self.environmentFile: self.environmentFile = self.robotFile
             self.mainWidget.glViewer.setEnvironment(
                 self.omplSetup.setEnvironmentMesh(self.environmentFile))
             self.mainWidget.glViewer.setRobot(
                 self.omplSetup.setRobotMesh(self.robotFile))
             self.omplSetup.inferEnvironmentBounds()
-            start = ob.State(self.omplSetup.getSpaceInformation())
+            start = ob.State(self.omplSetup.getSE3StateManifold())
             self.omplSetup.getEnvStartState(start)
             self.mainWidget.problemWidget.startPose.setPose(start)
             self.mainWidget.problemWidget.goalPose.setPose(start)
-            self.mainWidget.plannerWidget.resolution.setValue(
-                self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
+            if gConfig.geometricPlanning:
+                self.mainWidget.plannerWidget.resolution.setValue(
+                    self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
+            self.mainWidget.glViewer.setBounds(self.omplSetup.getSE3StateManifold().getBounds())
 
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
         if len(fname)>0:
-            si = self.omplSetup.getSpaceInformation()
             pathstr = open(fname,'r').read()
             # Match whitespace-separated sequences of 2 to 4 numbers
             regex = re.compile('\[([0-9\.e-]+\s){0,3}[0-9\.e-]+\]')
@@ -165,7 +189,7 @@ class MainWindow(QtGui.QMainWindow):
                 pos = [float(x) for x in state.group()[1:-1].split()]
                 state = next(states)
                 rot = [float(x) for x in state.group()[1:-1].split()]
-                s = ob.State(si)
+                s = ob.State(self.omplSetup.getSE3StateManifold())
                 if len(pos)==3 and len(rot)==4:
                     # SE(3) state
                     s().setX(pos[0])
@@ -223,36 +247,46 @@ class MainWindow(QtGui.QMainWindow):
 
     def setPlanner(self, value):
         si = self.omplSetup.getSpaceInformation()
-        if value==0:
-            self.planner = og.KPIECE1(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.KPIECERange.value())
-            self.planner.setGoalBias(self.mainWidget.plannerWidget.KPIECEGoalBias.value())
-            self.planner.setBorderFraction(self.mainWidget.plannerWidget.KPIECEBorderFraction.value())
-        elif value==1:
-            self.planner = og.LBKPIECE1(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.LBKPIECERange.value())
-            self.planner.setBorderFraction(self.mainWidget.plannerWidget.LBKPIECEBorderFraction.value())
-        elif value==2:
-            self.planner = og.BasicPRM(si)
-            self.planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.value())
-        elif value==3:
-            self.planner = og.SBL(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.SBLRange.value())
-        elif value==4:
-            self.planner = og.RRTConnect(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.RRTConnectRange.value())
-        elif value==5:
-            self.planner = og.RRT(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.RRTRange.value())
-            self.planner.setGoalBias(self.mainWidget.plannerWidget.RRTGoalBias.value())
-        elif value==6:
-            self.planner = og.LazyRRT(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.LazyRRTRange.value())
-            self.planner.setGoalBias(self.mainWidget.plannerWidget.LazyRRTGoalBias.value())
-        elif value==7:
-            self.planner = og.EST(si)
-            self.planner.setRange(self.mainWidget.plannerWidget.ESTRange.value())
-            self.planner.setGoalBias(self.mainWidget.plannerWidget.ESTGoalBias.value())
+        if gConfig.geometricPlanning:
+            if value==0:
+                self.planner = og.KPIECE1(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.KPIECERange.value())
+                self.planner.setGoalBias(self.mainWidget.plannerWidget.KPIECEGoalBias.value())
+                self.planner.setBorderFraction(self.mainWidget.plannerWidget.KPIECEBorderFraction.value())
+            elif value==1:
+                self.planner = og.LBKPIECE1(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.LBKPIECERange.value())
+                self.planner.setBorderFraction(self.mainWidget.plannerWidget.LBKPIECEBorderFraction.value())
+            elif value==2:
+                self.planner = og.BasicPRM(si)
+                self.planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.PRMMaxNearestNeighbors.value())
+            elif value==3:
+                self.planner = og.SBL(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.SBLRange.value())
+            elif value==4:
+                self.planner = og.RRTConnect(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.RRTConnectRange.value())
+            elif value==5:
+                self.planner = og.RRT(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.RRTRange.value())
+                self.planner.setGoalBias(self.mainWidget.plannerWidget.RRTGoalBias.value())
+            elif value==6:
+                self.planner = og.LazyRRT(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.LazyRRTRange.value())
+                self.planner.setGoalBias(self.mainWidget.plannerWidget.LazyRRTGoalBias.value())
+            elif value==7:
+                self.planner = og.EST(si)
+                self.planner.setRange(self.mainWidget.plannerWidget.ESTRange.value())
+                self.planner.setGoalBias(self.mainWidget.plannerWidget.ESTGoalBias.value())
+        else:
+            if value==0:
+                self.planner = oc.KPIECE1(si)
+                self.planner.setGoalBias(self.mainWidget.plannerWidget.KPIECEGoalBias.value())
+                self.planner.setBorderFraction(self.mainWidget.plannerWidget.KPIECEBorderFraction.value())
+            elif value==1:
+                self.planner = oc.RRT(si)
+                self.planner.setGoalBias(self.mainWidget.plannerWidget.RRTGoalBias.value())
+            
     def setRange(self, value):
         self.msgDebug('Changing range from %g to %g' %  (self.planner.getRange(), value))
         self.planner.setRange(value)
@@ -276,12 +310,19 @@ class MainWindow(QtGui.QMainWindow):
         bounds = ob.RealVectorBounds(3)
         (bounds.low[0],bounds.low[1],bounds.low[2]) = self.mainWidget.glViewer.bounds_low
         (bounds.high[0],bounds.high[1],bounds.high[2]) = self.mainWidget.glViewer.bounds_high
-        self.omplSetup.getStateManifold().setBounds(bounds)
+        self.omplSetup.getSE3StateManifold().setBounds(bounds)
 #        print [x for x in bounds.low ]
 #        print [x for x in bounds.high ]
         self.omplSetup.setStartAndGoalStates(startPose, goalPose)
-        self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
-            self.mainWidget.plannerWidget.resolution.value())
+        if gConfig.geometricPlanning:
+            self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
+                self.mainWidget.plannerWidget.resolution.value())
+        else:
+            self.omplSetup.getSpaceInformation().setPropagationStepSize(
+                self.mainWidget.plannerWidget.propagation.value())
+            self.omplSetup.getSpaceInformation().setMinMaxControlDuration(
+                self.mainWidget.plannerWidget.minControlDuration.value(),
+                self.mainWidget.plannerWidget.maxControlDuration.value())
 
         self.msgDebug(str(self.omplSetup))
 
@@ -291,7 +332,7 @@ class MainWindow(QtGui.QMainWindow):
         self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData()
 
         # update the displayed bounds, in case planning did so
-        self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
+        self.mainWidget.glViewer.setBounds(self.omplSetup.getSE3StateManifold().getBounds())
         if solved:
             self.omplSetup.simplifySolution()
             self.omplSetup.simplifySolution()
@@ -360,7 +401,7 @@ class MainWindow(QtGui.QMainWindow):
     def convertToOmplPose(self, pose):
         c = [ cos(angle*pi/360.) for angle in pose[:3] ]
         s = [ sin(angle*pi/360.) for angle in pose[:3] ]
-        state = ob.State(self.omplSetup.getStateManifold())
+        state = ob.State(self.omplSetup.getSE3StateManifold())
         rot = state().rotation()
         rot.w = c[0]*c[1]*c[2] + s[0]*s[1]*s[2]
         rot.x = s[0]*c[1]*c[2] - c[0]*s[1]*s[2]
@@ -749,164 +790,207 @@ class PlannerWidget(QtGui.QWidget):
         # list of planners
         plannerLabel = QtGui.QLabel('Planner')
         self.plannerSelect = QtGui.QComboBox()
-        self.plannerSelect.addItem('KPIECE')
-        self.plannerSelect.addItem('Lazy Bi-directional KPIECE')
-        self.plannerSelect.addItem('BasicPRM')
-        self.plannerSelect.addItem('SBL')
-        self.plannerSelect.addItem('RRT Connect')
-        self.plannerSelect.addItem('RRT')
-        self.plannerSelect.addItem('Lazy RRT')
-        self.plannerSelect.addItem('EST')
+        if gConfig.geometricPlanning:
+            self.plannerSelect.addItem('KPIECE')
+            self.plannerSelect.addItem('Lazy Bi-directional KPIECE')
+            self.plannerSelect.addItem('BasicPRM')
+            self.plannerSelect.addItem('SBL')
+            self.plannerSelect.addItem('RRT Connect')
+            self.plannerSelect.addItem('RRT')
+            self.plannerSelect.addItem('Lazy RRT')
+            self.plannerSelect.addItem('EST')
+        else:
+            self.plannerSelect.addItem('KPIECE')
+            self.plannerSelect.addItem('RRT')
+
         self.plannerSelect.setMinimumContentsLength(10)
         self.plannerSelect.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
 
-        # KPIECE options
-        self.KPIECEOptions = QtGui.QGroupBox('KPIECE Options')
-        KPIECErangeLabel = QtGui.QLabel('Range')
-        self.KPIECERange = QtGui.QDoubleSpinBox()
-        self.KPIECERange.setRange(0, 10000)
-        self.KPIECERange.setSingleStep(1)
-        self.KPIECERange.setValue(0)
-        KPIECEgoalBiasLabel = QtGui.QLabel('Goal Bias')
-        self.KPIECEGoalBias = QtGui.QDoubleSpinBox()
-        self.KPIECEGoalBias.setRange(0, 1)
-        self.KPIECEGoalBias.setSingleStep(.05)
-        self.KPIECEGoalBias.setValue(0.05)
-        KPIECEborderFractionLabel = QtGui.QLabel('Border fraction')
-        self.KPIECEBorderFraction = QtGui.QDoubleSpinBox()
-        self.KPIECEBorderFraction.setRange(0, 1)
-        self.KPIECEBorderFraction.setSingleStep(.05)
-        self.KPIECEBorderFraction.setValue(.9)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(KPIECErangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.KPIECERange, 0, 1)
-        layout.addWidget(KPIECEgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.KPIECEGoalBias, 1, 1)
-        layout.addWidget(KPIECEborderFractionLabel, 2, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.KPIECEBorderFraction, 2, 1)
-        self.KPIECEOptions.setLayout(layout)
+        if gConfig.geometricPlanning:
+            # KPIECE options
+            self.KPIECEOptions = QtGui.QGroupBox('KPIECE Options')
+            KPIECErangeLabel = QtGui.QLabel('Range')
+            self.KPIECERange = QtGui.QDoubleSpinBox()
+            self.KPIECERange.setRange(0, 10000)
+            self.KPIECERange.setSingleStep(1)
+            self.KPIECERange.setValue(0)
+            KPIECEgoalBiasLabel = QtGui.QLabel('Goal Bias')
+            self.KPIECEGoalBias = QtGui.QDoubleSpinBox()
+            self.KPIECEGoalBias.setRange(0, 1)
+            self.KPIECEGoalBias.setSingleStep(.05)
+            self.KPIECEGoalBias.setValue(0.05)
+            KPIECEborderFractionLabel = QtGui.QLabel('Border fraction')
+            self.KPIECEBorderFraction = QtGui.QDoubleSpinBox()
+            self.KPIECEBorderFraction.setRange(0, 1)
+            self.KPIECEBorderFraction.setSingleStep(.05)
+            self.KPIECEBorderFraction.setValue(.9)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(KPIECErangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.KPIECERange, 0, 1)
+            layout.addWidget(KPIECEgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.KPIECEGoalBias, 1, 1)
+            layout.addWidget(KPIECEborderFractionLabel, 2, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.KPIECEBorderFraction, 2, 1)
+            self.KPIECEOptions.setLayout(layout)
+            
+            # LBKPIECE options
+            self.LBKPIECEOptions = QtGui.QGroupBox('LBKPIECE Options')
+            LBKPIECErangeLabel = QtGui.QLabel('Range')
+            self.LBKPIECERange = QtGui.QDoubleSpinBox()
+            self.LBKPIECERange.setRange(0, 10000)
+            self.LBKPIECERange.setSingleStep(1)
+            self.LBKPIECERange.setValue(0)
+            LBKPIECEborderFractionLabel = QtGui.QLabel('Border fraction')
+            self.LBKPIECEBorderFraction = QtGui.QDoubleSpinBox()
+            self.LBKPIECEBorderFraction.setRange(0, 1)
+            self.LBKPIECEBorderFraction.setSingleStep(.05)
+            self.LBKPIECEBorderFraction.setValue(.9)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(LBKPIECErangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.LBKPIECERange, 0, 1)
+            layout.addWidget(LBKPIECEborderFractionLabel, 1, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.LBKPIECEBorderFraction, 1, 1)
+            self.LBKPIECEOptions.setLayout(layout)
+            
+            # PRM options
+            self.PRMOptions = QtGui.QGroupBox('BasicPRM Options')
+            PRMmaxNearestNeighborsLabel = QtGui.QLabel('Max. Nearest Neighbors')
+            self.PRMMaxNearestNeighbors = QtGui.QSpinBox()
+            self.PRMMaxNearestNeighbors.setRange(0, 1000)
+            self.PRMMaxNearestNeighbors.setSingleStep(1)
+            self.PRMMaxNearestNeighbors.setValue(10)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(PRMmaxNearestNeighborsLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.PRMMaxNearestNeighbors, 0, 1)
+            self.PRMOptions.setLayout(layout)
+            
+            # SBL options
+            self.SBLOptions = QtGui.QGroupBox('SBL Options')
+            SBLrangeLabel = QtGui.QLabel('Range')
+            self.SBLRange = QtGui.QDoubleSpinBox()
+            self.SBLRange.setRange(0, 10000)
+            self.SBLRange.setSingleStep(1)
+            self.SBLRange.setValue(0)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(SBLrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.SBLRange, 0, 1)
+            self.SBLOptions.setLayout(layout)
+            
+            # RRT Connect options
+            self.RRTConnectOptions = QtGui.QGroupBox('RRT Connect Options')
+            RRTConnectrangeLabel = QtGui.QLabel('Range')
+            self.RRTConnectRange = QtGui.QDoubleSpinBox()
+            self.RRTConnectRange.setRange(0, 10000)
+            self.RRTConnectRange.setSingleStep(1)
+            self.RRTConnectRange.setValue(0)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(RRTConnectrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.RRTConnectRange, 0, 1)
+            self.RRTConnectOptions.setLayout(layout)
 
-        # LBKPIECE options
-        self.LBKPIECEOptions = QtGui.QGroupBox('LBKPIECE Options')
-        LBKPIECErangeLabel = QtGui.QLabel('Range')
-        self.LBKPIECERange = QtGui.QDoubleSpinBox()
-        self.LBKPIECERange.setRange(0, 10000)
-        self.LBKPIECERange.setSingleStep(1)
-        self.LBKPIECERange.setValue(0)
-        LBKPIECEborderFractionLabel = QtGui.QLabel('Border fraction')
-        self.LBKPIECEBorderFraction = QtGui.QDoubleSpinBox()
-        self.LBKPIECEBorderFraction.setRange(0, 1)
-        self.LBKPIECEBorderFraction.setSingleStep(.05)
-        self.LBKPIECEBorderFraction.setValue(.9)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(LBKPIECErangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.LBKPIECERange, 0, 1)
-        layout.addWidget(LBKPIECEborderFractionLabel, 1, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.LBKPIECEBorderFraction, 1, 1)
-        self.LBKPIECEOptions.setLayout(layout)
+            # RRT options
+            self.RRTOptions = QtGui.QGroupBox('RRT Options')
+            RRTrangeLabel = QtGui.QLabel('Range')
+            self.RRTRange = QtGui.QDoubleSpinBox()
+            self.RRTRange.setRange(0, 10000)
+            self.RRTRange.setSingleStep(1)
+            self.RRTRange.setValue(0)
+            RRTgoalBiasLabel = QtGui.QLabel('Goal Bias')
+            self.RRTGoalBias = QtGui.QDoubleSpinBox()
+            self.RRTGoalBias.setRange(0, 1)
+            self.RRTGoalBias.setSingleStep(.05)
+            self.RRTGoalBias.setValue(0.05)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(RRTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.RRTRange, 0, 1)
+            layout.addWidget(RRTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.RRTGoalBias, 1, 1)
+            self.RRTOptions.setLayout(layout)
 
-        # PRM options
-        self.PRMOptions = QtGui.QGroupBox('BasicPRM Options')
-        PRMmaxNearestNeighborsLabel = QtGui.QLabel('Max. Nearest Neighbors')
-        self.PRMMaxNearestNeighbors = QtGui.QSpinBox()
-        self.PRMMaxNearestNeighbors.setRange(0, 1000)
-        self.PRMMaxNearestNeighbors.setSingleStep(1)
-        self.PRMMaxNearestNeighbors.setValue(10)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(PRMmaxNearestNeighborsLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.PRMMaxNearestNeighbors, 0, 1)
-        self.PRMOptions.setLayout(layout)
+            # Lazy RRT options
+            self.LazyRRTOptions = QtGui.QGroupBox('Lazy RRT Options')
+            LazyRRTrangeLabel = QtGui.QLabel('Range')
+            self.LazyRRTRange = QtGui.QDoubleSpinBox()
+            self.LazyRRTRange.setRange(0, 10000)
+            self.LazyRRTRange.setSingleStep(1)
+            self.LazyRRTRange.setValue(0)
+            LazyRRTgoalBiasLabel = QtGui.QLabel('Goal Bias')
+            self.LazyRRTGoalBias = QtGui.QDoubleSpinBox()
+            self.LazyRRTGoalBias.setRange(0, 1)
+            self.LazyRRTGoalBias.setSingleStep(.05)
+            self.LazyRRTGoalBias.setValue(0.05)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(LazyRRTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.LazyRRTRange, 0, 1)
+            layout.addWidget(LazyRRTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.LazyRRTGoalBias, 1, 1)
+            self.LazyRRTOptions.setLayout(layout)
+            
+            # EST options
+            self.ESTOptions = QtGui.QGroupBox('EST Options')
+            ESTgoalBiasLabel = QtGui.QLabel('Goal Bias')
+            ESTrangeLabel = QtGui.QLabel('Range')
+            self.ESTRange = QtGui.QDoubleSpinBox()
+            self.ESTRange.setRange(0, 10000)
+            self.ESTRange.setSingleStep(1)
+            self.ESTRange.setValue(0)
+            self.ESTGoalBias = QtGui.QDoubleSpinBox()
+            self.ESTGoalBias.setRange(0, 1)
+            self.ESTGoalBias.setSingleStep(.05)
+            self.ESTGoalBias.setValue(0.05)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(ESTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.ESTRange, 0, 1)
+            layout.addWidget(ESTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.ESTGoalBias, 1, 1)
+            self.ESTOptions.setLayout(layout)
+        else:
+            # KPIECE options
+            self.KPIECEOptions = QtGui.QGroupBox('KPIECE Options')
+            KPIECEgoalBiasLabel = QtGui.QLabel('Goal Bias')
+            self.KPIECEGoalBias = QtGui.QDoubleSpinBox()
+            self.KPIECEGoalBias.setRange(0, 1)
+            self.KPIECEGoalBias.setSingleStep(.05)
+            self.KPIECEGoalBias.setValue(0.05)
+            KPIECEborderFractionLabel = QtGui.QLabel('Border fraction')
+            self.KPIECEBorderFraction = QtGui.QDoubleSpinBox()
+            self.KPIECEBorderFraction.setRange(0, 1)
+            self.KPIECEBorderFraction.setSingleStep(.05)
+            self.KPIECEBorderFraction.setValue(.9)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(KPIECEgoalBiasLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.KPIECEGoalBias, 0, 1)
+            layout.addWidget(KPIECEborderFractionLabel, 1, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.KPIECEBorderFraction, 1, 1)
+            self.KPIECEOptions.setLayout(layout)
 
-        # SBL options
-        self.SBLOptions = QtGui.QGroupBox('SBL Options')
-        SBLrangeLabel = QtGui.QLabel('Range')
-        self.SBLRange = QtGui.QDoubleSpinBox()
-        self.SBLRange.setRange(0, 10000)
-        self.SBLRange.setSingleStep(1)
-        self.SBLRange.setValue(0)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(SBLrangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.SBLRange, 0, 1)
-        self.SBLOptions.setLayout(layout)
-
-        # RRT Connect options
-        self.RRTConnectOptions = QtGui.QGroupBox('RRT Connect Options')
-        RRTConnectrangeLabel = QtGui.QLabel('Range')
-        self.RRTConnectRange = QtGui.QDoubleSpinBox()
-        self.RRTConnectRange.setRange(0, 10000)
-        self.RRTConnectRange.setSingleStep(1)
-        self.RRTConnectRange.setValue(0)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(RRTConnectrangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.RRTConnectRange, 0, 1)
-        self.RRTConnectOptions.setLayout(layout)
-
-        # RRT options
-        self.RRTOptions = QtGui.QGroupBox('RRT Options')
-        RRTrangeLabel = QtGui.QLabel('Range')
-        self.RRTRange = QtGui.QDoubleSpinBox()
-        self.RRTRange.setRange(0, 10000)
-        self.RRTRange.setSingleStep(1)
-        self.RRTRange.setValue(0)
-        RRTgoalBiasLabel = QtGui.QLabel('Goal Bias')
-        self.RRTGoalBias = QtGui.QDoubleSpinBox()
-        self.RRTGoalBias.setRange(0, 1)
-        self.RRTGoalBias.setSingleStep(.05)
-        self.RRTGoalBias.setValue(0.05)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(RRTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.RRTRange, 0, 1)
-        layout.addWidget(RRTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.RRTGoalBias, 1, 1)
-        self.RRTOptions.setLayout(layout)
-
-        # Lazy RRT options
-        self.LazyRRTOptions = QtGui.QGroupBox('Lazy RRT Options')
-        LazyRRTrangeLabel = QtGui.QLabel('Range')
-        self.LazyRRTRange = QtGui.QDoubleSpinBox()
-        self.LazyRRTRange.setRange(0, 10000)
-        self.LazyRRTRange.setSingleStep(1)
-        self.LazyRRTRange.setValue(0)
-        LazyRRTgoalBiasLabel = QtGui.QLabel('Goal Bias')
-        self.LazyRRTGoalBias = QtGui.QDoubleSpinBox()
-        self.LazyRRTGoalBias.setRange(0, 1)
-        self.LazyRRTGoalBias.setSingleStep(.05)
-        self.LazyRRTGoalBias.setValue(0.05)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(LazyRRTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.LazyRRTRange, 0, 1)
-        layout.addWidget(LazyRRTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.LazyRRTGoalBias, 1, 1)
-        self.LazyRRTOptions.setLayout(layout)
-
-        # EST options
-        self.ESTOptions = QtGui.QGroupBox('EST Options')
-        ESTgoalBiasLabel = QtGui.QLabel('Goal Bias')
-        ESTrangeLabel = QtGui.QLabel('Range')
-        self.ESTRange = QtGui.QDoubleSpinBox()
-        self.ESTRange.setRange(0, 10000)
-        self.ESTRange.setSingleStep(1)
-        self.ESTRange.setValue(0)
-        self.ESTGoalBias = QtGui.QDoubleSpinBox()
-        self.ESTGoalBias.setRange(0, 1)
-        self.ESTGoalBias.setSingleStep(.05)
-        self.ESTGoalBias.setValue(0.05)
-        layout = QtGui.QGridLayout()
-        layout.addWidget(ESTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.ESTRange, 0, 1)
-        layout.addWidget(ESTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.ESTGoalBias, 1, 1)
-        self.ESTOptions.setLayout(layout)
-
+            # RRT options
+            self.RRTOptions = QtGui.QGroupBox('RRT Options')
+            RRTgoalBiasLabel = QtGui.QLabel('Goal Bias')
+            self.RRTGoalBias = QtGui.QDoubleSpinBox()
+            self.RRTGoalBias.setRange(0, 1)
+            self.RRTGoalBias.setSingleStep(.05)
+            self.RRTGoalBias.setValue(0.05)
+            layout = QtGui.QGridLayout()
+            layout.addWidget(RRTgoalBiasLabel, 0, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.RRTGoalBias, 0, 1)
+            self.RRTOptions.setLayout(layout)
+            
         self.stackedWidget = QtGui.QStackedWidget()
-        self.stackedWidget.addWidget(self.KPIECEOptions)
-        self.stackedWidget.addWidget(self.LBKPIECEOptions)
-        self.stackedWidget.addWidget(self.PRMOptions)
-        self.stackedWidget.addWidget(self.SBLOptions)
-        self.stackedWidget.addWidget(self.RRTConnectOptions)
-        self.stackedWidget.addWidget(self.RRTOptions)
-        self.stackedWidget.addWidget(self.LazyRRTOptions)
-        self.stackedWidget.addWidget(self.ESTOptions)
+        
+        if gConfig.geometricPlanning:
+            self.stackedWidget.addWidget(self.KPIECEOptions)
+            self.stackedWidget.addWidget(self.LBKPIECEOptions)
+            self.stackedWidget.addWidget(self.PRMOptions)
+            self.stackedWidget.addWidget(self.SBLOptions)
+            self.stackedWidget.addWidget(self.RRTConnectOptions)
+            self.stackedWidget.addWidget(self.RRTOptions)
+            self.stackedWidget.addWidget(self.LazyRRTOptions)
+            self.stackedWidget.addWidget(self.ESTOptions)
+        else:
+            self.stackedWidget.addWidget(self.KPIECEOptions)
+            self.stackedWidget.addWidget(self.RRTOptions)
+
         self.plannerSelect.activated.connect(self.stackedWidget.setCurrentIndex)
 
         timeLimitLabel = QtGui.QLabel('Time (sec.)')
@@ -915,22 +999,49 @@ class PlannerWidget(QtGui.QWidget):
         self.timeLimit.setSingleStep(1)
         self.timeLimit.setValue(10.0)
 
-        resolutionLabel = QtGui.QLabel('Collision checking\nresolution')
-        resolutionLabel.setAlignment(QtCore.Qt.AlignRight)
-        self.resolution = QtGui.QDoubleSpinBox()
-        self.resolution.setRange(0.001, 1.0)
-        self.resolution.setSingleStep(.002)
-        self.resolution.setValue(0.010)
-        self.resolution.setDecimals(3)
-
         layout = QtGui.QGridLayout()
         layout.addWidget(plannerLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.plannerSelect, 0, 1)
         layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.timeLimit, 1, 1)
-        layout.addWidget(resolutionLabel, 2, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.resolution, 2, 1)
-        layout.addWidget(self.stackedWidget, 3, 0, 1, 2)
+
+        if gConfig.geometricPlanning:
+            resolutionLabel = QtGui.QLabel('Collision checking\nresolution')
+            resolutionLabel.setAlignment(QtCore.Qt.AlignRight)
+            self.resolution = QtGui.QDoubleSpinBox()
+            self.resolution.setRange(0.001, 1.0)
+            self.resolution.setSingleStep(.002)
+            self.resolution.setValue(0.010)
+            self.resolution.setDecimals(3)
+            layout.addWidget(resolutionLabel, 2, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.resolution, 2, 1)
+        else:
+            propagationLabel = QtGui.QLabel('Propagation step\nsize')
+            propagationLabel.setAlignment(QtCore.Qt.AlignRight)
+            self.propagation = QtGui.QDoubleSpinBox()
+            self.propagation.setRange(0.01, 1000.00)
+            self.propagation.setSingleStep(.01)
+            self.propagation.setValue(0.01)
+            self.propagation.setDecimals(2)
+            layout.addWidget(propagationLabel, 2, 0, QtCore.Qt.AlignRight)
+            layout.addWidget(self.propagation, 2, 1)
+            durationLabel = QtGui.QLabel('Control duration')
+            durationLabel.setAlignment(QtCore.Qt.AlignRight)
+            layout.addWidget(durationLabel, 3, 0)
+            self.minControlDuration = QtGui.QSpinBox()
+            self.minControlDuration.setRange(1, 1000)
+            self.minControlDuration.setSingleStep(1)
+            self.minControlDuration.setValue(2)
+            self.maxControlDuration = QtGui.QSpinBox()
+            self.maxControlDuration.setRange(1, 1000)
+            self.maxControlDuration.setSingleStep(1)
+            self.maxControlDuration.setValue(20)
+            ctrlLayout = QtGui.QGridLayout()
+            ctrlLayout.addWidget(self.minControlDuration, 0, 0)
+            ctrlLayout.addWidget(self.maxControlDuration, 0, 1)
+            layout.addLayout(ctrlLayout, 3, 1)
+
+        layout.addWidget(self.stackedWidget, 4, 0, 1, 2)
         self.setLayout(layout)
 
 
@@ -1013,6 +1124,9 @@ class SolveWidget(QtGui.QWidget):
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
+
+    # command line configuration for gConfig ?
+
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
