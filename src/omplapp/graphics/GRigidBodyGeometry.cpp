@@ -19,17 +19,17 @@ int ompl::app::GRigidBodyGeometry::setRobotMesh(const std::string &robot)
 }
 
 int ompl::app::GRigidBodyGeometry::addRobotMesh(const std::string &robot)
-{ 
+{
     int r = RigidBodyGeometry::addRobotMesh(robot);
     if (r)
     {
-	std::vector<const aiScene*> scenes;
-	for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
-	    scenes.push_back(importerRobot_[i]->GetScene());
-	return scene::assimpRender(scenes, getRobotCenter());
+        std::vector<const aiScene*> scenes;
+        for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
+            scenes.push_back(importerRobot_[i]->GetScene());
+        return scene::assimpRender(scenes, getRobotCenter());
     }
     else
-	return 0;
+        return 0;
 }
 
 int ompl::app::GRigidBodyGeometry::setEnvironmentMesh(const std::string &env)
@@ -42,11 +42,11 @@ int ompl::app::GRigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     int r = RigidBodyGeometry::addEnvironmentMesh(env);
     if (r)
     {
-	std::vector<const aiScene*> scenes;
-	for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
-	    scenes.push_back(importerEnv_[i]->GetScene());
-	return scene::assimpRender(scenes);
+        std::vector<const aiScene*> scenes;
+        for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
+            scenes.push_back(importerEnv_[i]->GetScene());
+        return scene::assimpRender(scenes);
     }
     else
-	return 0;
+        return 0;
 }

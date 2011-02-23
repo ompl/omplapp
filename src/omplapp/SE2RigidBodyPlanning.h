@@ -25,7 +25,7 @@ namespace ompl
         /** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
             for rigid bodies in SE2. */
         class SE2RigidBodyPlanning : public geometric::SimpleSetup,
-				     public GRigidBodyGeometry
+                                     public GRigidBodyGeometry
         {
         public:
 
@@ -37,9 +37,11 @@ namespace ompl
             {
             }
 
-	    void inferEnvironmentBounds(void);
-	    void inferProblemDefinitionBounds(void);
-	    
+            void inferEnvironmentBounds(void);
+            void inferProblemDefinitionBounds(void);
+
+            int renderPlannerData(void) const;
+
             virtual void setup(void);
         };
 

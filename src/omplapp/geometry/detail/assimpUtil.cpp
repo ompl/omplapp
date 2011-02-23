@@ -141,4 +141,3 @@ double ompl::app::scene::shortestEdge(const aiScene *scene)
     }
     return s;
 }
-

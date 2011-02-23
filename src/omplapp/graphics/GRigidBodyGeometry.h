@@ -25,12 +25,12 @@ namespace ompl
         public:
 
             /** \brief Constructor expects a manifold that can represent a rigid body */
-	    explicit 
+            explicit
             GRigidBodyGeometry(MotionModel mtype) : RigidBodyGeometry(mtype)
             {
             }
 
-	    virtual ~GRigidBodyGeometry(void)
+            virtual ~GRigidBodyGeometry(void)
             {
             }
 
@@ -39,29 +39,29 @@ namespace ompl
                 env). This environment is also redered
                 with OpenGL. The function returns the GL list id of
                 the rendered objects (0 if nothing is rendered). */
-	    virtual int setEnvironmentMesh(const std::string &env);
+            virtual int setEnvironmentMesh(const std::string &env);
 
             /** \brief This function specifies the name of the CAD
                 file representing a part of the environment (\e
                 env). This environment is also redered
                 with OpenGL. The function returns the GL list id of
                 the rendered objects (0 if nothing is rendered). */
-	    virtual int addEnvironmentMesh(const std::string &env);
+            virtual int addEnvironmentMesh(const std::string &env);
 
              /** \brief This function specifies the name of the CAD
-		 file representing the robot (\e robot). This
-		 environment is also redered with OpenGL. The function
-		 returns the GL list id of the rendered objects (0 if
-		 nothing is rendered). */
-	    virtual int setRobotMesh(const std::string &robot);
+                 file representing the robot (\e robot). This
+                 environment is also redered with OpenGL. The function
+                 returns the GL list id of the rendered objects (0 if
+                 nothing is rendered). */
+            virtual int setRobotMesh(const std::string &robot);
 
              /** \brief This function specifies the name of the CAD
                 file representing a part of the robot (\e robot). This
                 environment is also redered with OpenGL. The function
                 returns the GL list id of the rendered objects (0 if
                 nothing is rendered). */
-	    virtual int addRobotMesh(const std::string &robot);
-	    
+            virtual int addRobotMesh(const std::string &robot);
+
         };
 
     }

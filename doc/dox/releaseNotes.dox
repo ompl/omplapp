@@ -1,6 +1,10 @@
 /**
 \page releaseNotes Release Notes
 
+\section release_0_9_3 OMPL.app 0.9.3
+- Added support for visualizing internal planner data
+- Minor bug fixes
+
 \section release_0_9_2 OMPL.app 0.9.2
 - Minor bug fixes
 

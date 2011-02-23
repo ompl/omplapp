@@ -11,6 +11,7 @@
 /* Author: Ioan Sucan */
 
 #include "omplapp/SE2RigidBodyPlanning.h"
+#include "omplapp/graphics/detail/RenderPlannerData.h"
 #include <limits>
 
 void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(void)
@@ -19,12 +20,7 @@ void ompl::app::SE2RigidBodyPlanning::inferEnvironmentBounds(void)
 
     // if bounds are not valid
     if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
-    {
-	base::RealVectorBounds b = GRigidBodyGeometry::inferEnvironmentBounds();
-	b.low.resize(2);
-	b.high.resize(2);
-        getStateManifold()->as<base::SE2StateManifold>()->setBounds(b);
-    }
+        getStateManifold()->as<base::SE2StateManifold>()->setBounds(GRigidBodyGeometry::inferEnvironmentBounds());
 }
 
 void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
@@ -63,10 +59,10 @@ void ompl::app::SE2RigidBodyPlanning::inferProblemDefinitionBounds(void)
 
 /// @cond IGNORE
 namespace ompl
-{    
+{
     static const base::State* stateIdentity(const base::State* state, unsigned int)
     {
-	return state;
+        return state;
     }
 }
 /// @endcond
@@ -75,18 +71,23 @@ void ompl::app::SE2RigidBodyPlanning::setup(void)
 {
     inferEnvironmentBounds();
     inferProblemDefinitionBounds();
-    
+
     const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(si_, boost::bind(&stateIdentity, _1, _2), false);
     if (si_->getStateValidityChecker() != svc)
         si_->setStateValidityChecker(svc);
 
     if (getProblemDefinition()->getStartStateCount() == 0)
     {
-	geometric::SimpleSetup::msg_.inform("Adding default start state");
-	base::ScopedState<> start(si_);
-	getEnvStartState(start);
-	addStartState(start);
+        geometric::SimpleSetup::msg_.inform("Adding default start state");
+        base::ScopedState<> start(si_);
+        getEnvStartState(start);
+        addStartState(start);
     }
-    
+
     geometric::SimpleSetup::setup();
+}
+
+int ompl::app::SE2RigidBodyPlanning::renderPlannerData(void) const
+{
+    return RenderPlannerData(getPlannerData(), aiVector3D(0.0, 0.0, 0.0), Motion_2D, boost::bind(&stateIdentity, _1, _2), 1);
 }

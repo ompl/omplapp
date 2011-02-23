@@ -25,22 +25,24 @@ namespace ompl
         /** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
             for rigid bodies in SE2. */
         class SE3RigidBodyPlanning : public geometric::SimpleSetup,
-				     public GRigidBodyGeometry
+                                     public GRigidBodyGeometry
         {
         public:
 
             SE3RigidBodyPlanning(void) : geometric::SimpleSetup(base::StateManifoldPtr(new base::SE3StateManifold())), GRigidBodyGeometry(Motion_3D)
-					 
+
             {
             }
-	    
+
             virtual ~SE3RigidBodyPlanning(void)
             {
             }
-	
-	    void inferEnvironmentBounds(void);
-	    void inferProblemDefinitionBounds(void);
-	    
+
+            void inferEnvironmentBounds(void);
+            void inferProblemDefinitionBounds(void);
+
+            int renderPlannerData(void) const;
+
             virtual void setup(void);
 
         };

@@ -286,6 +286,10 @@ class MainWindow(QtGui.QMainWindow):
         self.msgDebug(str(self.omplSetup))
 
         solved = self.omplSetup.solve(self.timeLimit)
+        
+        # update the planner data to render, if needed
+        self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData()
+
         # update the displayed bounds, in case planning did so
         self.mainWidget.glViewer.setBounds(self.omplSetup.getStateManifold().getBounds())
         if solved:
@@ -386,6 +390,7 @@ class MainWidget(QtGui.QWidget):
         self.setLayout(layout)
         self.problemWidget.startPose.valueChanged.connect(self.glViewer.setStartPose)
         self.problemWidget.goalPose.valueChanged.connect(self.glViewer.setGoalPose)
+        self.solveWidget.showData.toggled.connect(self.glViewer.toggleShowData)
         self.solveWidget.animateCheck.toggled.connect(self.glViewer.toggleAnimation)
         self.solveWidget.speedSlider.valueChanged.connect(self.glViewer.setSpeed)
 
@@ -431,6 +436,8 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.timer.start(100.)
         self.timer.timeout.connect(self.updatePathPose)
         self.animate = True
+        self.drawPlannerData = False
+        self.plannerDataList = None
         self.bounds_low = None
         self.bounds_high = None
 
@@ -487,6 +494,9 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.goalPose = value
         self.updateBounds(self.startPose[3:])
         self.updateGL()
+    def toggleShowData(self, value):
+        self.drawPlannerData = value
+        self.updateGL()
     def toggleAnimation(self, value):
         self.animate = value
         if self.animate:
@@ -517,6 +527,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.environment = environment
     def clear(self):
         self.solutionPath = None
+        self.plannerDataList = None
         self.pathIndex = 0
         self.updateGL()
     def initializeGL(self):
@@ -552,6 +563,8 @@ class GLViewer(QtOpenGL.QGLWidget):
         p = [lo, [lo[0],lo[1],hi[2]], [lo[0],hi[1],lo[2]], [lo[0],hi[1],hi[2]],
             [hi[0],lo[1],lo[2]], [hi[0],lo[1],hi[2]], [hi[0],hi[1],lo[2]], hi]
         ind = [(0,1),(1,3),(3,2),(2,0),(4,5),(5,7),(7,6),(6,4),(0,4),(1,5),(2,6),(3,7)]
+        GL.glDisable(GL.GL_LIGHTING)
+        GL.glDisable(GL.GL_COLOR_MATERIAL)
         GL.glColor3f(1,1,1)
         GL.glBegin(GL.GL_LINES)
         for edge in ind:
@@ -604,6 +617,10 @@ class GLViewer(QtOpenGL.QGLWidget):
 
         # draw environment
         if self.environment: GL.glCallList(self.environment)
+        
+        # draw the planner data
+        if self.drawPlannerData and self.plannerDataList:
+            GL.glCallList(self.plannerDataList)
 
         GL.glPopMatrix()
 
@@ -972,6 +989,8 @@ class SolveWidget(QtGui.QWidget):
         super(SolveWidget, self).__init__()
         self.solveButton = QtGui.QPushButton('Solve')
         self.clearButton = QtGui.QPushButton('Clear')
+        self.showData = QtGui.QCheckBox('Show Exploration')
+        self.showData.setChecked(False)
         self.animateCheck = QtGui.QCheckBox('Animate')
         self.animateCheck.setChecked(True)
         speedlabel = QtGui.QLabel('Speed:')
@@ -986,6 +1005,7 @@ class SolveWidget(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         layout.addWidget(self.solveButton, 0, 0)
         layout.addWidget(self.clearButton, 0, 1)
+        layout.addWidget(self.showData, 0, 2)
         layout.addWidget(self.animateCheck, 0, 3)
         layout.addWidget(speedlabel, 0, 5)
         layout.addWidget(self.speedSlider, 0, 6)

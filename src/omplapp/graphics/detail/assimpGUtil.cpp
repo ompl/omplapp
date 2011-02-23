@@ -180,8 +180,8 @@ namespace ompl
                 glPushMatrix();
                 glMultMatrixf((float*)&t);
 
-		for (unsigned int i = 0 ; i < scenes.size() ; ++i)
-		    recursive_render(scenes[i], scenes[i]->mRootNode);
+                for (unsigned int i = 0 ; i < scenes.size() ; ++i)
+                    recursive_render(scenes[i], scenes[i]->mRootNode);
 
                 glPopMatrix();
                 glEndList();
@@ -196,8 +196,8 @@ namespace ompl
                 // create display list for environment
                 glNewList(result, GL_COMPILE);
 
-		for (unsigned int i = 0 ; i < scenes.size() ; ++i)
-		    recursive_render(scenes[i], scenes[i]->mRootNode);
+                for (unsigned int i = 0 ; i < scenes.size() ; ++i)
+                    recursive_render(scenes[i], scenes[i]->mRootNode);
                 glEndList();
 
                 return result;

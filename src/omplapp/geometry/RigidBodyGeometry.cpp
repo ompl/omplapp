@@ -29,23 +29,23 @@ int ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
     importerRobot_[p].reset(new Assimp::Importer());
 
     const aiScene* robotScene = importerRobot_[p]->ReadFile(robot.c_str(),
-							    aiProcess_Triangulate            |
-							    aiProcess_JoinIdenticalVertices  |
-							    aiProcess_SortByPType            |
-							    aiProcess_OptimizeGraph          |
-							    aiProcess_OptimizeMeshes);
+                                                            aiProcess_Triangulate            |
+                                                            aiProcess_JoinIdenticalVertices  |
+                                                            aiProcess_SortByPType            |
+                                                            aiProcess_OptimizeGraph          |
+                                                            aiProcess_OptimizeMeshes);
     if (robotScene)
     {
         if (!robotScene->HasMeshes())
-	{
-	    msg_.error("There is no mesh specified in the indicated robot resource: %s", robot.c_str());
-	    importerRobot_.resize(p);
-	}
+        {
+            msg_.error("There is no mesh specified in the indicated robot resource: %s", robot.c_str());
+            importerRobot_.resize(p);
+        }
     }
     else
     {
-	msg_.error("Unable to load robot scene: %s", robot.c_str());
-	importerRobot_.resize(p);
+        msg_.error("Unable to load robot scene: %s", robot.c_str());
+        importerRobot_.resize(p);
     }
 
     if (p < importerRobot_.size())
@@ -71,25 +71,25 @@ int ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     importerEnv_[p].reset(new Assimp::Importer());
 
     const aiScene* envScene = importerEnv_[p]->ReadFile(env.c_str(),
-							aiProcess_Triangulate            |
-							aiProcess_JoinIdenticalVertices  |
-							aiProcess_SortByPType            |
-							aiProcess_OptimizeGraph          |
-							aiProcess_OptimizeMeshes);
+                                                        aiProcess_Triangulate            |
+                                                        aiProcess_JoinIdenticalVertices  |
+                                                        aiProcess_SortByPType            |
+                                                        aiProcess_OptimizeGraph          |
+                                                        aiProcess_OptimizeMeshes);
     if (envScene)
     {
         if (!envScene->HasMeshes())
-	{
-	    msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
-	    importerEnv_.resize(p);
-	}
+        {
+            msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
+            importerEnv_.resize(p);
+        }
     }
     else
     {
-	msg_.error("Unable to load environment scene: %s", env.c_str());
-	importerEnv_.resize(p);
+        msg_.error("Unable to load environment scene: %s", env.c_str());
+        importerEnv_.resize(p);
     }
-    
+
     if (p < importerEnv_.size())
     {
         pqp_svc_.reset();
@@ -102,33 +102,39 @@ int ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
 ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBounds(void) const
 {
     base::RealVectorBounds bounds(3);
-    
+
     for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
     {
-	std::vector<aiVector3D> vertices;
-	scene::extractVertices(importerEnv_[i]->GetScene(), vertices);
-	scene::inferBounds(bounds, vertices, factor_, add_);
+        std::vector<aiVector3D> vertices;
+        scene::extractVertices(importerEnv_[i]->GetScene(), vertices);
+        scene::inferBounds(bounds, vertices, factor_, add_);
     }
-    
+
+    if (mtype_ == Motion_2D)
+    {
+        bounds.low.resize(2);
+        bounds.high.resize(2);
+    }
+
     return bounds;
 }
 
 void ompl::app::RigidBodyGeometry::getEnvStartState(base::ScopedState<>& state) const
 {
     aiVector3D s = getRobotCenter();
-    
+
     if (mtype_ == Motion_2D)
     {
-	state->as<base::SE2StateManifold::StateType>()->setX(s.x);
-	state->as<base::SE2StateManifold::StateType>()->setY(s.y);
-	state->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
+        state->as<base::SE2StateManifold::StateType>()->setX(s.x);
+        state->as<base::SE2StateManifold::StateType>()->setY(s.y);
+        state->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
     }
     else
     {
-	state->as<base::SE3StateManifold::StateType>()->setX(s.x);
-	state->as<base::SE3StateManifold::StateType>()->setY(s.y);
-	state->as<base::SE3StateManifold::StateType>()->setZ(s.z);
-	state->as<base::SE3StateManifold::StateType>()->rotation().setIdentity();
+        state->as<base::SE3StateManifold::StateType>()->setX(s.x);
+        state->as<base::SE3StateManifold::StateType>()->setY(s.y);
+        state->as<base::SE3StateManifold::StateType>()->setZ(s.z);
+        state->as<base::SE3StateManifold::StateType>()->rotation().setIdentity();
     }
 }
 
@@ -137,12 +143,16 @@ aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(void) const
     aiVector3D s(0.0, 0.0, 0.0);
     for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
     {
-	aiVector3D c;
-	scene::sceneCenter(importerRobot_[i]->GetScene(), c);
-	s = s + c;	
+        aiVector3D c;
+        scene::sceneCenter(importerRobot_[i]->GetScene(), c);
+        s = s + c;
     }
+
+    if (mtype_ == Motion_2D)
+        s.z = 0.0;
+
     if (!importerRobot_.empty())
-	s = s / (double)importerRobot_.size();
+        s = s / (double)importerRobot_.size();
     return s;
 }
 
@@ -152,27 +162,27 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
         return pqp_svc_;
 
     GeometrySpecification geom;
-    
+
     for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
-	geom.obstacles.push_back(importerEnv_[i]->GetScene());
+        geom.obstacles.push_back(importerEnv_[i]->GetScene());
 
     for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
     {
-	geom.robot.push_back(importerRobot_[i]->GetScene());
-	aiVector3D c;
-	scene::sceneCenter(geom.robot.back(), c);
-	geom.robotShift = geom.robotShift + c;	
+        geom.robot.push_back(importerRobot_[i]->GetScene());
+        aiVector3D c;
+        scene::sceneCenter(geom.robot.back(), c);
+        geom.robotShift = geom.robotShift + c;
     }
     if (!importerRobot_.empty())
-	geom.robotShift = geom.robotShift / (double)importerRobot_.size();
-    
-    if (mtype_ == Motion_2D)
-	geom.robotShift.z = 0.0;
+        geom.robotShift = geom.robotShift / (double)importerRobot_.size();
 
     if (mtype_ == Motion_2D)
-	pqp_svc_.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
-    else 
-	pqp_svc_.reset(new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
-    
+        geom.robotShift.z = 0.0;
+
+    if (mtype_ == Motion_2D)
+        pqp_svc_.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
+    else
+        pqp_svc_.reset(new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+
     return pqp_svc_;
 }

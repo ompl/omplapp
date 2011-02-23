@@ -30,17 +30,17 @@ namespace ompl
     namespace app
     {
 
-        class RigidBodyGeometry 
+        class RigidBodyGeometry
         {
         public:
 
             /** \brief Constructor expects a manifold that can represent a rigid body */
-	    explicit 
+            explicit
             RigidBodyGeometry(MotionModel mtype) : mtype_(mtype), factor_(1.0), add_(0.0), msg_("Geometry")
             {
             }
 
-	    virtual ~RigidBodyGeometry(void)
+            virtual ~RigidBodyGeometry(void)
             {
             }
 
@@ -53,30 +53,30 @@ namespace ompl
                 2D, and ompl::base::SE3StateManifold if motion is in
                 3D.*/
             void getEnvStartState(base::ScopedState<>& state) const;
-	    
+
             /** \brief This function specifies the name of the CAD
                 file representing the environment (\e
                 env). Returns 1 on success, 0 on failure. */
-	    virtual int setEnvironmentMesh(const std::string &env);
+            virtual int setEnvironmentMesh(const std::string &env);
 
             /** \brief This function specifies the name of the CAD
                 file representing a part of the environment (\e
                 env). Returns 1 on success, 0 on failure. */
-	    virtual int addEnvironmentMesh(const std::string &env);
+            virtual int addEnvironmentMesh(const std::string &env);
 
              /** \brief This function specifies the name of the CAD
-		 file representing the robot (\e robot). Returns 1 on success, 0 on failure. */
-	    virtual int setRobotMesh(const std::string &robot);
+                 file representing the robot (\e robot). Returns 1 on success, 0 on failure. */
+            virtual int setRobotMesh(const std::string &robot);
 
              /** \brief This function specifies the name of the CAD
                 file representing a part of the robot (\e robot). Returns 1 on success, 0 on failure. */
-	    virtual int addRobotMesh(const std::string &robot);
-	    
-	    /** \brief Get the robot's center (average of all the vertices of all its parts) */
-	    aiVector3D getRobotCenter(void) const;
-	    
+            virtual int addRobotMesh(const std::string &robot);
+
+            /** \brief Get the robot's center (average of all the vertices of all its parts) */
+            aiVector3D getRobotCenter(void) const;
+
             /** \brief Allocate default state validity checker using PQP. */
-	    const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
+            const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
 
             /** \brief The bounds of the environment are inferred
                 based on the axis-aligned bounding box for the objects
@@ -109,15 +109,15 @@ namespace ompl
             }
 
             /** \brief Given the representation of an environment,
-		infer its bounds. The bounds will be 2-dimensional
-		when planning in 2D and 3-dimensional when planning in
-		3D. */
-	    base::RealVectorBounds inferEnvironmentBounds(void) const;
+                infer its bounds. The bounds will be 2-dimensional
+                when planning in 2D and 3-dimensional when planning in
+                3D. */
+            base::RealVectorBounds inferEnvironmentBounds(void) const;
 
         protected:
-	    
-      	    MotionModel         mtype_;
-	    
+
+                  MotionModel         mtype_;
+
             /** \brief The factor to multiply inferred environment bounds by (default 1) */
             double              factor_;
 
@@ -125,15 +125,15 @@ namespace ompl
             double              add_;
 
             /** \brief Instance of assimp importer used to load environment */
-	    std::vector< boost::shared_ptr<Assimp::Importer> > importerEnv_;
+            std::vector< boost::shared_ptr<Assimp::Importer> > importerEnv_;
 
             /** \brief Instance of assimp importer used to load robot */
-	    std::vector< boost::shared_ptr<Assimp::Importer> > importerRobot_;
+            std::vector< boost::shared_ptr<Assimp::Importer> > importerRobot_;
 
             base::StateValidityCheckerPtr pqp_svc_;
-            
-	    msg::Interface                msg_;
-	    
+
+            msg::Interface                msg_;
+
         };
 
     }

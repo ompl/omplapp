@@ -11,6 +11,7 @@
 /* Author: Ioan Sucan */
 
 #include "omplapp/SE3RigidBodyPlanning.h"
+#include "omplapp/graphics/detail/RenderPlannerData.h"
 #include <limits>
 
 void ompl::app::SE3RigidBodyPlanning::inferProblemDefinitionBounds(void)
@@ -65,10 +66,10 @@ void ompl::app::SE3RigidBodyPlanning::inferEnvironmentBounds(void)
 
 /// @cond IGNORE
 namespace ompl
-{    
+{
     static const base::State* stateIdentity(const base::State* state, unsigned int)
     {
-	return state;
+        return state;
     }
 }
 /// @endcond
@@ -77,18 +78,23 @@ void ompl::app::SE3RigidBodyPlanning::setup(void)
 {
     inferEnvironmentBounds();
     inferProblemDefinitionBounds();
-    
+
     const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(si_, boost::bind(&stateIdentity, _1, _2), false);
     if (si_->getStateValidityChecker() != svc)
         si_->setStateValidityChecker(svc);
-    
+
     if (getProblemDefinition()->getStartStateCount() == 0)
     {
-	geometric::SimpleSetup::msg_.inform("Adding default start state");
-	base::ScopedState<> start(si_);
-	getEnvStartState(start);
-	addStartState(start);
+        geometric::SimpleSetup::msg_.inform("Adding default start state");
+        base::ScopedState<> start(si_);
+        getEnvStartState(start);
+        addStartState(start);
     }
-    
+
     geometric::SimpleSetup::setup();
+}
+
+int ompl::app::SE3RigidBodyPlanning::renderPlannerData(void) const
+{
+    return RenderPlannerData(getPlannerData(), aiVector3D(0.0, 0.0, 0.0), Motion_3D, boost::bind(&stateIdentity, _1, _2), 1);
 }
