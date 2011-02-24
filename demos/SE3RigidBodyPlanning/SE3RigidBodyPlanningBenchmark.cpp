@@ -27,6 +27,21 @@
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 using namespace ompl;
 
+base::ValidStateSamplerPtr allocUniformStateSampler(const base::SpaceInformation *si)
+{
+    return base::ValidStateSamplerPtr(new base::UniformValidStateSampler(si));
+}
+
+base::ValidStateSamplerPtr allocGaussianStateSampler(const base::SpaceInformation *si)
+{
+    return base::ValidStateSamplerPtr(new base::GaussianValidStateSampler(si));
+}
+
+base::ValidStateSamplerPtr allocObstacleStateSampler(const base::SpaceInformation *si)
+{
+    return base::ValidStateSamplerPtr(new base::ObstacleBasedValidStateSampler(si));
+}
+
 void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     double& runtime_limit, double& memory_limit, int& run_count)
 {
@@ -50,7 +65,7 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::UniformValidStateSampler::allocator());
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
 
     runtime_limit = 10.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
@@ -120,21 +135,21 @@ int main(int argc, char **argv)
     b.addPlanner(base::PlannerPtr(new geometric::BasicPRM(setup.getSpaceInformation())));
 
     // run all planners with a uniform valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::UniformValidStateSampler::allocator());
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
     b.setExperimentName(benchmark_name + "_uniform_sampler");
     b.benchmark(runtime_limit, memory_limit, run_count, true);
     b.saveResultsToFile();
 
 
     // run all planners with a Gaussian valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::GaussianValidStateSampler::allocator());
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocGaussianStateSampler);
     b.setExperimentName(benchmark_name + "_gaussian_sampler");
     b.benchmark(runtime_limit, memory_limit, run_count, true);
     b.saveResultsToFile();
 
 
     // run all planners with a obstacle-based valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(base::ObstacleBasedValidStateSampler::allocator());
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
     b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
     b.benchmark(runtime_limit, memory_limit, run_count, true);
     b.saveResultsToFile();
