@@ -66,6 +66,11 @@ namespace ompl
 
             virtual unsigned int getRobotCount(void) const = 0;
             
+            GeometricStateExtractor getGeometricStateExtractor(void) const
+            {
+                return boost::bind(&AppBase::getGeometricComponentState, this, _1, _2);
+            }
+            
             void inferEnvironmentBounds(void)
             {
                 InferEnvironmentBounds(getGeometricComponentStateManifold(), *static_cast<RigidBodyGeometry*>(this));
@@ -73,8 +78,7 @@ namespace ompl
             
             void inferProblemDefinitionBounds(void)
             {    
-                InferProblemDefinitionBounds(AppTypeSelector<T>::SimpleSetup::getProblemDefinition(),
-                                             boost::bind(&AppBase::getGeometricComponentState, this, _1, _2), factor_, add_,
+                InferProblemDefinitionBounds(AppTypeSelector<T>::SimpleSetup::getProblemDefinition(), getGeometricStateExtractor(), factor_, add_,
                                              getRobotCount(), getGeometricComponentStateManifold(), mtype_);
             }
             
@@ -84,8 +88,7 @@ namespace ompl
                 inferProblemDefinitionBounds();
                 
                 const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(AppTypeSelector<T>::SimpleSetup::si_, 
-                                                                                     boost::bind(&AppBase::getGeometricComponentState, this, _1, _2), 
-                                                                                     isSelfCollisionEnabled());
+                                                                                     getGeometricStateExtractor(), isSelfCollisionEnabled());
                 if (AppTypeSelector<T>::SimpleSetup::si_->getStateValidityChecker() != svc)
                     AppTypeSelector<T>::SimpleSetup::si_->setStateValidityChecker(svc);
                 
