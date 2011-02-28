@@ -185,8 +185,10 @@ namespace ompl
 
                 for (unsigned int i = 0 ; i < geom.robot.size() ; ++i)
                 {
-                    std::vector<const aiScene *> g(1, geom.robot[i]);
-                    PQPModelPtr m = getPQPModelFromScene(g, geom.robotShift);
+                    aiVector3D shift(0.0, 0.0, 0.0);
+                    if (geom.robotShift.size() > i)
+                        shift = geom.robotShift[i];
+                    PQPModelPtr m = getPQPModelFromScene(geom.robot[i], shift);
                     if (!m)
                         throw Exception("Invalid robot mesh");
                     else
@@ -195,8 +197,15 @@ namespace ompl
                 }
             }
 
+            PQPModelPtr getPQPModelFromScene(const aiScene *scene, const aiVector3D &center) const
+            {
+                std::vector<const aiScene*> scenes(1, scene);
+                std::vector<aiVector3D>     centers(1, center);
+                return getPQPModelFromScene(scenes, centers);
+            }
+            
             /** \brief Convert a mesh to a PQP model */
-            PQPModelPtr getPQPModelFromScene(const std::vector<const aiScene*> &scenes, const aiVector3D &center) const
+            PQPModelPtr getPQPModelFromScene(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &center) const
             {
                 std::vector<aiVector3D> triangles;
                 for (unsigned int i = 0 ; i < scenes.size() ; ++i)
@@ -204,12 +213,11 @@ namespace ompl
                     {
                         std::vector<aiVector3D> t;
                         scene::extractTriangles(scenes[i], t);
+                        if (center.size() > i)
+                            for (unsigned int j = 0 ; j < t.size() ; ++j)
+                                t[j] -= center[i];
                         triangles.insert(triangles.end(), t.begin(), t.end());
                     }
-
-                for (unsigned int j = 0 ; j < triangles.size() ; ++j)
-                    triangles[j] -= center;
-
                 return getPQPModelFromTris(triangles);
             }
 

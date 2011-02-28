@@ -168,39 +168,54 @@ namespace ompl
                 glPopMatrix();
             }
 
-            int assimpRender(const std::vector<const aiScene*> &scenes, const aiVector3D &robotCenter)
+            int assimpRender(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &robotCenter)
             {
                 int result = glGenLists(1);
-
+                
                 // create display list for robot; we undo the translation of the robot
                 glNewList(result, GL_COMPILE);
+                
                 aiMatrix4x4 t;
-                aiMatrix4x4::Translation(-robotCenter, t);
-                aiTransposeMatrix4(&t);
-                glPushMatrix();
-                glMultMatrixf((float*)&t);
-
                 for (unsigned int i = 0 ; i < scenes.size() ; ++i)
+                {                    
+                    bool tr = robotCenter.size() > i;
+                    if (tr)
+                    {
+                        aiMatrix4x4::Translation(-robotCenter[i], t);
+                        aiTransposeMatrix4(&t);
+                        glPushMatrix();
+                        glMultMatrixf((float*)&t);
+                    }
+                    
                     recursive_render(scenes[i], scenes[i]->mRootNode);
-
-                glPopMatrix();
+                    
+                    if (tr)
+                        glPopMatrix();
+                }
+                
                 glEndList();
 
                 return result;
             }
 
+            
+            int assimpRender(const aiScene* scene, const aiVector3D &robotCenter)
+            {
+                std::vector<const aiScene*> scenes(1, scene);
+                std::vector<aiVector3D>    centers(1, robotCenter);
+                return assimpRender(scenes, centers);
+            }
+            
             int assimpRender(const std::vector<const aiScene*> &scenes)
             {
-                int result = glGenLists(1);
+                std::vector<aiVector3D> empty;
+                return assimpRender(scenes, empty);
+            }
 
-                // create display list for environment
-                glNewList(result, GL_COMPILE);
-
-                for (unsigned int i = 0 ; i < scenes.size() ; ++i)
-                    recursive_render(scenes[i], scenes[i]->mRootNode);
-                glEndList();
-
-                return result;
+            int assimpRender(const aiScene* scene)
+            {
+                std::vector<const aiScene*> scenes(1, scene);
+                return assimpRender(scenes);
             }
 
         }

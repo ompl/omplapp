@@ -12,16 +12,16 @@
 
 #include "omplapp/geometry/RigidBodyGeometry.h"
 #include "omplapp/geometry/detail/PQPStateValidityChecker.h"
-#include <limits>
-#include <sstream>
+#include <boost/lexical_cast.hpp>
 
-int ompl::app::RigidBodyGeometry::setRobotMesh(const std::string &robot)
+bool ompl::app::RigidBodyGeometry::setRobotMesh(const std::string &robot)
 {
     importerRobot_.clear();
+    computeGeometrySpecification();
     return addRobotMesh(robot);
 }
 
-int ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
+bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
 {
     assert(!robot.empty());
     std::size_t p = importerRobot_.size();
@@ -50,20 +50,21 @@ int ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
 
     if (p < importerRobot_.size())
     {
-        pqp_svc_.reset();
-        return 1;
+        computeGeometrySpecification();
+        return true;
     }
     else
-        return 0;
+        return false;
 }
 
-int ompl::app::RigidBodyGeometry::setEnvironmentMesh(const std::string &env)
+bool ompl::app::RigidBodyGeometry::setEnvironmentMesh(const std::string &env)
 {
     importerEnv_.clear();
+    computeGeometrySpecification();
     return addEnvironmentMesh(env);
 }
 
-int ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
+bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
 {
     assert(!env.empty());
     std::size_t p = importerEnv_.size();
@@ -92,25 +93,11 @@ int ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
 
     if (p < importerEnv_.size())
     {
-        pqp_svc_.reset();
-        return 1;
+        computeGeometrySpecification();
+        return true;
     }
     else
-        return 0;
-}
-
-void ompl::app::RigidBodyGeometry::inferEnvironmentBounds(const base::StateManifoldPtr &manifold) const
-{
-    base::RealVectorBounds bounds = mtype_ == Motion_2D ? manifold->as<base::SE2StateManifold>()->getBounds() : manifold->as<base::SE3StateManifold>()->getBounds();
-    
-    // if bounds are not valid
-    if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
-    {
-        if (mtype_ == Motion_2D)
-            manifold->as<base::SE2StateManifold>()->setBounds(inferEnvironmentBounds());
-        else
-            manifold->as<base::SE3StateManifold>()->setBounds(inferEnvironmentBounds());
-    }    
+        return false;
 }
 
 ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBounds(void) const
@@ -133,92 +120,36 @@ ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBound
     return bounds;
 }
 
-void ompl::app::RigidBodyGeometry::inferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, unsigned int robotCount, 
-                                                                const base::StateManifoldPtr &manifold)
+const ompl::app::GeometrySpecification& ompl::app::RigidBodyGeometry::getGeometrySpecification(void) const
 {
-    // update the bounds based on start states, if needed
-    base::RealVectorBounds bounds = mtype_ == Motion_2D ? manifold->as<base::SE2StateManifold>()->getBounds() : manifold->as<base::SE3StateManifold>()->getBounds();
-    
-    std::vector<const base::State*> states;
-    pdef->getInputStates(states);
-    
-    double minX = std::numeric_limits<double>::infinity();
-    double minY = minX;
-    double minZ = minX;
-    double maxX = -minX;
-    double maxY = maxX;
-    double maxZ = maxX;
-    for (unsigned int i = 0 ; i < states.size() ; ++i)
-    {
-        for (unsigned int r = 0 ; r < robotCount ; ++r)
-        {
-            const base::State *s = se(states[i], r);
-            double x = mtype_ == Motion_2D ? s->as<base::SE2StateManifold::StateType>()->getX() : s->as<base::SE3StateManifold::StateType>()->getX();
-            double y = mtype_ == Motion_2D ? s->as<base::SE2StateManifold::StateType>()->getY() : s->as<base::SE3StateManifold::StateType>()->getY();
-            double z = mtype_ == Motion_2D ? 0.0 : s->as<base::SE3StateManifold::StateType>()->getZ();
-            if (minX > x) minX = x;
-            if (maxX < x) maxX = x;
-            if (minY > y) minY = y;
-            if (maxY < y) maxY = y;
-            if (minZ > z) minZ = z;
-            if (maxZ < z) maxZ = z;
-        }
-    }
-    double dx = (maxX - minX) * (factor_ - 1.0) + add_;
-    double dy = (maxY - minY) * (factor_ - 1.0) + add_;
-    double dz = (maxZ - minZ) * (factor_ - 1.0) + add_;
-    
-    if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
-    if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
-    
-    if (bounds.high[0] < maxX + dx) bounds.high[0] = maxX + dx;
-    if (bounds.high[1] < maxY + dy) bounds.high[1] = maxY + dy;
-    
-    if (mtype_ == Motion_3D)
-    {
-        if (bounds.high[2] < maxZ + dz) bounds.high[2] = maxZ + dz;
-        if (bounds.low[2] > minZ - dz) bounds.low[2] = minZ - dz;
-        
-        manifold->as<base::SE3StateManifold>()->setBounds(bounds);
-    }
-    else
-        manifold->as<base::SE2StateManifold>()->setBounds(bounds);
+    return geom_;
 }
 
-void ompl::app::RigidBodyGeometry::getEnvStartState(base::ScopedState<>& state) const
+void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void) 
 {
-    aiVector3D s = getRobotCenter();
+    pqp_svc_.reset();
+    geom_.obstacles.clear();
+    geom_.obstaclesShift.clear();
+    geom_.robot.clear();
+    geom_.robotShift.clear();
+    
+    for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
+        geom_.obstacles.push_back(importerEnv_[i]->GetScene());
 
-    if (mtype_ == Motion_2D)
-    {
-        state->as<base::SE2StateManifold::StateType>()->setX(s.x);
-        state->as<base::SE2StateManifold::StateType>()->setY(s.y);
-        state->as<base::SE2StateManifold::StateType>()->setYaw(0.0);
-    }
-    else
-    {
-        state->as<base::SE3StateManifold::StateType>()->setX(s.x);
-        state->as<base::SE3StateManifold::StateType>()->setY(s.y);
-        state->as<base::SE3StateManifold::StateType>()->setZ(s.z);
-        state->as<base::SE3StateManifold::StateType>()->rotation().setIdentity();
-    }
-}
-
-aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(void) const
-{
-    aiVector3D s(0.0, 0.0, 0.0);
     for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
     {
-        aiVector3D c;
-        scene::sceneCenter(importerRobot_[i]->GetScene(), c);
-        s = s + c;
+        geom_.robot.push_back(importerRobot_[i]->GetScene());
+        geom_.robotShift.push_back(getRobotCenter(i));
     }
+}
 
-    if (mtype_ == Motion_2D)
-        s.z = 0.0;
-
-    if (!importerRobot_.empty())
-        s = s / (double)importerRobot_.size();
+aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(unsigned int robotIndex) const
+{
+    aiVector3D s(0.0, 0.0, 0.0);
+    if (robotIndex >= importerRobot_.size())
+        throw Exception("Robot " + boost::lexical_cast<std::string>(robotIndex) + " not found.");
+    
+    scene::sceneCenter(importerRobot_[robotIndex]->GetScene(), s);
     return s;
 }
 
@@ -227,24 +158,8 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
     if (pqp_svc_)
         return pqp_svc_;
 
-    GeometrySpecification geom;
-
-    for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
-        geom.obstacles.push_back(importerEnv_[i]->GetScene());
-
-    for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
-    {
-        geom.robot.push_back(importerRobot_[i]->GetScene());
-        aiVector3D c;
-        scene::sceneCenter(geom.robot.back(), c);
-        geom.robotShift = geom.robotShift + c;
-    }
-    if (!importerRobot_.empty())
-        geom.robotShift = geom.robotShift / (double)importerRobot_.size();
-
-    if (mtype_ == Motion_2D)
-        geom.robotShift.z = 0.0;
-
+    GeometrySpecification geom = getGeometrySpecification();
+    
     if (mtype_ == Motion_2D)
         pqp_svc_.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
     else
