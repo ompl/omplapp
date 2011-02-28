@@ -3,4 +3,5 @@
 ../src/omplapp/apps/AppBase.h
 ../src/omplapp/apps/SE2RigidBodyPlanning.h
 ../src/omplapp/apps/SE3RigidBodyPlanning.h
+../src/omplapp/apps/SE3ControlPlanning.h
 ../src/omplapp/apps/graphical/GSE3RigidBodyPlanning.h
