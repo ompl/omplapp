@@ -21,11 +21,13 @@ ompl_resources_dir = join(ompl_app_root, 'resources')
 try:
     from ompl import base as ob
     from ompl import geometric as og
+    from ompl import control as oc
     from ompl import app as oa
 except:
     sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings' ) )
     from ompl import base as ob
     from ompl import geometric as og
+    from ompl import control as oc
     from ompl import app as oa
 
 
