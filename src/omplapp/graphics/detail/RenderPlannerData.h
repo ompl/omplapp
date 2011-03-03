@@ -22,10 +22,10 @@ namespace ompl
     namespace app
     {
 
-        /** \brief Render the planner states in \e pd, after shifting them by \e robotCenter, using the motion model \e m.
+        /** \brief Render the planner states in \e pd, after shifting them by \e translate, using the motion model \e m.
             The SE2 (or SE3) states can be extracted from \e pd using \e gse. There are \e robotCount points to extract from each state.
             Return a gl list. */
-        int RenderPlannerData(const base::PlannerData &pd, const aiVector3D &robotCenter,
+        int RenderPlannerData(const base::PlannerData &pd, const aiVector3D &translate,
                               MotionModel m, const GeometricStateExtractor &gse, unsigned int robotCount);
     }
 }
