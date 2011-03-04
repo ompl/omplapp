@@ -29,39 +29,40 @@ namespace ompl
 
             SE2RigidBodyPlanning(void) : AppBase<GEOMETRIC>(base::StateManifoldPtr(new base::SE2StateManifold()), Motion_2D)
             {
+                name_ = "Rigid body planning (2D)";
             }
 
             virtual ~SE2RigidBodyPlanning(void)
             {
             }
 
-            bool isSelfCollisionEnabled(void) const 
+            bool isSelfCollisionEnabled(void) const
             {
                 return false;
             }
-            
+
             virtual base::ScopedState<> getDefaultStartState(void) const;
-            
+
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
             {
                 return state;
             }
-            
+
             virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
             {
                 return getStateManifold();
             }
-            
+
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
             {
                 return state;
             }
-            
+
             virtual unsigned int getRobotCount(void) const
             {
                 return 1;
             }
-            
+
         };
 
     }

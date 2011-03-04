@@ -4,4 +4,8 @@
 ../src/omplapp/apps/SE2RigidBodyPlanning.h
 ../src/omplapp/apps/SE3RigidBodyPlanning.h
 ../src/omplapp/apps/SE3ControlPlanning.h
+../src/omplapp/apps/KinematicCarPlanning.h
+../src/omplapp/apps/graphical/GSE2RigidBodyPlanning.h
 ../src/omplapp/apps/graphical/GSE3RigidBodyPlanning.h
+../src/omplapp/apps/graphical/GSE3ControlPlanning.h
+../src/omplapp/apps/graphical/GKinematicCarPlanning.h

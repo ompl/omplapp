@@ -22,30 +22,29 @@ namespace ompl
 {
     namespace app
     {
-        
+
         enum AppType
             { GEOMETRIC, CONTROL };
-        
+
         template<AppType T>
         struct AppTypeSelector
         {
             typedef geometric::SimpleSetup SimpleSetup;
             typedef base::StateManifoldPtr ManifoldType;
         };
-        
+
         template<>
         struct AppTypeSelector<CONTROL>
         {
             typedef control::SimpleSetup        SimpleSetup;
-            typedef control::ControlManifoldPtr ManifoldType;            
+            typedef control::ControlManifoldPtr ManifoldType;
         };
-        
+
         template<AppType T>
         class AppBase : public AppTypeSelector<T>::SimpleSetup,
                         public RigidBodyGeometry
         {
         public:
-            
             AppBase(const typename AppTypeSelector<T>::ManifoldType &manifold, MotionModel model) : AppTypeSelector<T>::SimpleSetup(manifold), RigidBodyGeometry(model)
             {
             }
@@ -54,53 +53,71 @@ namespace ompl
             {
             }
 
+            AppType getAppType()
+            {
+                return GEOMETRIC;
+            }
+            const std::string& getName()
+            {
+                return name_;
+            }
+
             virtual bool isSelfCollisionEnabled(void) const = 0;
-            
+
             virtual base::ScopedState<> getDefaultStartState(void) const = 0;
-            
+
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const = 0;
-            
+
             virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const = 0;
-            
+
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const = 0;
 
             virtual unsigned int getRobotCount(void) const = 0;
-            
+
             GeometricStateExtractor getGeometricStateExtractor(void) const
             {
                 return boost::bind(&AppBase::getGeometricComponentState, this, _1, _2);
             }
-            
+
             void inferEnvironmentBounds(void)
             {
                 InferEnvironmentBounds(getGeometricComponentStateManifold(), *static_cast<RigidBodyGeometry*>(this));
             }
-            
+
             void inferProblemDefinitionBounds(void)
-            {    
+            {
                 InferProblemDefinitionBounds(AppTypeSelector<T>::SimpleSetup::getProblemDefinition(), getGeometricStateExtractor(), factor_, add_,
                                              getRobotCount(), getGeometricComponentStateManifold(), mtype_);
             }
-            
+
             virtual void setup(void)
             {
                 inferEnvironmentBounds();
                 inferProblemDefinitionBounds();
-                
-                const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(AppTypeSelector<T>::SimpleSetup::si_, 
+
+                const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(AppTypeSelector<T>::SimpleSetup::si_,
                                                                                      getGeometricStateExtractor(), isSelfCollisionEnabled());
                 if (AppTypeSelector<T>::SimpleSetup::si_->getStateValidityChecker() != svc)
                     AppTypeSelector<T>::SimpleSetup::si_->setStateValidityChecker(svc);
-                
+
                 if (AppTypeSelector<T>::SimpleSetup::getProblemDefinition()->getStartStateCount() == 0)
                 {
                     AppTypeSelector<T>::SimpleSetup::msg_.inform("Adding default start state");
                     AppTypeSelector<T>::SimpleSetup::addStartState(getDefaultStartState());
                 }
-                
+
                 AppTypeSelector<T>::SimpleSetup::setup();
             }
+
+        protected:
+            std::string name_;
         };
+
+        template<>
+        inline AppType AppBase<CONTROL>::getAppType()
+        {
+            return CONTROL;
+        }
 
     }
 }

@@ -27,55 +27,56 @@ namespace ompl
         class SE3ControlPlanning : public AppBase<CONTROL>
         {
         public:
-            
+
             SE3ControlPlanning(void) : AppBase<CONTROL>(constructControlManifold(), Motion_3D)
             {
                 getControlManifold()->setPropagationFunction(boost::bind(&SE3ControlPlanning::propagateForward, this, _1, _2, _3, _4));
+                name_ = "Rigid body planning with controls (3D)";
             }
-            
+
             virtual ~SE3ControlPlanning(void)
             {
             }
 
 
-            bool isSelfCollisionEnabled(void) const 
+            bool isSelfCollisionEnabled(void) const
             {
                 return false;
             }
-            
+
             virtual base::ScopedState<> getDefaultStartState(void) const;
-            
+
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const;
-            
+
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
             {
                 return state->as<base::CompoundState>()->components[0];
             }
-            
+
             virtual unsigned int getRobotCount(void) const
             {
                 return 1;
             }
-            
+
             virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
             {
                 return getStateManifold()->as<base::CompoundStateManifold>()->getSubManifold(0);
             }
-            
+
         private:
-            
+
             void propagateForward(const base::State *from, const control::Control *ctrl, const double duration, base::State *result);
-            
+
             static control::ControlManifoldPtr constructControlManifold(void)
             {
                 return control::ControlManifoldPtr(new control::RealVectorControlManifold(constructStateManifold(), 4));
             }
-            
+
             static base::StateManifoldPtr constructStateManifold(void)
             {
                 return base::StateManifoldPtr(new base::SE3StateManifold()) + base::StateManifoldPtr(new base::RealVectorStateManifold(1));
             }
-            
+
         };
 
     }
