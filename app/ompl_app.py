@@ -16,7 +16,7 @@ import sys
 from os.path import abspath, dirname, join
 try:
     # try PyQt4 first
-    from PyqqQt4 import QtCore, QtGui, QtOpenGL
+    from PyQt4 import QtCore, QtGui, QtOpenGL
     from PyQt4.QtCore import pyqtSignal as Signal
 except:
     # if PyQt4 wasn't found, try PySide *** UNTESTED ***
