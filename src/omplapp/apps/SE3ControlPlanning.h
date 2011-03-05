@@ -32,6 +32,7 @@ namespace ompl
             {
                 getControlManifold()->setPropagationFunction(boost::bind(&SE3ControlPlanning::propagateForward, this, _1, _2, _3, _4));
                 name_ = "Rigid body planning with controls (3D)";
+                setDefaultBounds();
             }
 
             virtual ~SE3ControlPlanning(void)
@@ -64,6 +65,7 @@ namespace ompl
             }
 
         private:
+            void setDefaultBounds();
 
             void propagateForward(const base::State *from, const control::Control *ctrl, const double duration, base::State *result);
 

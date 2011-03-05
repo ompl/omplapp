@@ -27,8 +27,8 @@ namespace ompl
             The dynamics of the kinematic car are described by the following
             equations:
             \f{eqnarray*}{
-            \dot x &=& u_0 \cos\theta,\\ 
-            \dot y &=& u_0\sin\theta,\\ 
+            \dot x &=& u_0 \cos\theta,\\
+            \dot y &=& u_0\sin\theta,\\
             \dot\theta &=& \frac{u_1}{L}\tan u_1,\f}
             where the control inputs \f$(u_0,u_1)\f$ are the translational
             velocity and the steering angle, respectively, and \f$L\f$ is the
@@ -38,14 +38,14 @@ namespace ompl
         class KinematicCarPlanning : public AppBase<CONTROL>
         {
         public:
-            KinematicCarPlanning() 
+            KinematicCarPlanning()
                 : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-3), lengthInv_(1.)
             {
                 name_ = std::string("Kinematic car");
                 setDefaultControlBounds();
                 getControlManifold()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
             }
-            KinematicCarPlanning(control::ControlManifoldPtr controlManifold) 
+            KinematicCarPlanning(control::ControlManifoldPtr controlManifold)
                 : AppBase<CONTROL>(controlManifold, Motion_2D), timeStep_(1e-3), lengthInv_(1.)
             {
                 setDefaultControlBounds();
@@ -54,8 +54,8 @@ namespace ompl
             ~KinematicCarPlanning()
             {
             }
-            
-            bool isSelfCollisionEnabled(void) const 
+
+            bool isSelfCollisionEnabled(void) const
             {
                 return false;
             }
@@ -84,7 +84,7 @@ namespace ompl
             {
                 lengthInv_ = 1./length;
             }
-            void setDefaultControlBounds()
+            virtual void setDefaultControlBounds()
             {
                 base::RealVectorBounds cbounds(2);
                 cbounds.setLow(-1.);
@@ -93,10 +93,10 @@ namespace ompl
             }
 
         protected:
-            void propagate(const base::State *from, const control::Control *ctrl, 
+            void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
             virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);
-            
+
             static control::ControlManifoldPtr constructControlManifold(void)
             {
                 return control::ControlManifoldPtr(new control::RealVectorControlManifold(constructStateManifold(), 2));
@@ -111,7 +111,7 @@ namespace ompl
         };
 
         /** \brief \brief A class to facilitate planning for a Dubins car model
-        
+
             The Dubins car allows only the velocity controls { 0, max }
             to be used.
         */
@@ -153,7 +153,7 @@ namespace ompl
         };
 
         /** \brief \brief A class to facilitate planning for a Reeds-Shepp car model
-        
+
             The Reeds-Shepp car allows only the velocity controls { min, 0, max }
             to be used.
         */
@@ -168,7 +168,7 @@ namespace ompl
                 }
                 void sample(control::Control* control);
             };
-            
+
             class ReedsSheppControlManifold : public control::RealVectorControlManifold
             {
             public:
@@ -181,12 +181,12 @@ namespace ompl
                     return control::ControlSamplerPtr(new ReedsSheppControlSampler(this));
                 }
             };
-            
+
             ReedsSheppCarPlanning() : KinematicCarPlanning(constructControlManifold())
             {
                 name_ = std::string("Reeds-Shepp car");
             }
-            
+
         protected:
             static control::ControlManifoldPtr constructControlManifold(void)
             {
