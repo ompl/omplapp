@@ -19,13 +19,13 @@ int main()
 {
     // plan in SE3
     app::SE3ControlPlanning setup;
-    base::StateManifoldPtr SE3 = base::StateManifoldPtr(setup.getStateManifold()->as<base::CompoundStateManifold>()->as<base::SE3StateManifold>(0));
-
+    const base::StateManifoldPtr &SE3 = setup.getGeometricComponentStateManifold();
+    
     // load the robot and the environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
+    setup.setRobotMesh(robot_fname);
+    setup.setEnvironmentMesh(env_fname);
 
     // define start state
     base::ScopedState<base::SE3StateManifold> start(SE3);
@@ -45,10 +45,7 @@ int main()
     setup.setStartAndGoalStates(setup.getFullStateFromGeometricComponent(start),
         setup.getFullStateFromGeometricComponent(goal));
 
-    // setting collision checking resolution to 1% of the space extent
-    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-
-    // we call setup just so print() can show more information
+    // we call setup() just so print() can show more information
     setup.setup();
     setup.print();
 

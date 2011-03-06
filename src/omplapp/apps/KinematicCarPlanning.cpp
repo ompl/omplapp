@@ -26,7 +26,7 @@ ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(
 void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const control::Control *ctrl, 
     const double duration, base::State *result)
 {
-    int i, nsteps = ceil(duration/timeStep_);
+    int i, nsteps = floor(0.5 + duration/timeStep_);
     double dt = duration/(double)nsteps;
     base::State *dstate = getStateManifold()->allocState();
     base::SE2StateManifold::StateType& s = *result->as<base::SE2StateManifold::StateType>();
@@ -40,6 +40,7 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
         s.setX(s.getX() + ds.getX());
         s.setY(s.getY() + ds.getY());
         s.setYaw(s.getYaw() + ds.getYaw());
+	getStateManifold()->enforceBounds(result);
     }
     getStateManifold()->freeState(dstate);
 }
