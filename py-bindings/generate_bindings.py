@@ -49,7 +49,8 @@ class ompl_app_generator_t(code_generator_t):
 
         for cls in ['SE3ControlPlanning', 'GSE3ControlPlanning',
             'KinematicCarPlanning', 'DubinsCarPlanning', 'ReedsSheppCarPlanning',
-            'GKinematicCarPlanning', 'GDubinsCarPlanning', 'GReedsSheppCarPlanning']:
+            'GKinematicCarPlanning', 'GDubinsCarPlanning', 'GReedsSheppCarPlanning',
+            'DynamicCarPlanning', 'GDynamicCarPlanning']:
             self.ompl_ns.class_(cls).add_registration_code(
             'def("solve", &::ompl::control::SimpleSetup::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
