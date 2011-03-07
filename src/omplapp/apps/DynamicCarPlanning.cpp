@@ -77,7 +77,6 @@ void ompl::app::DynamicCarPlanning::setDefaultBounds()
     base::RealVectorBounds bounds(2);
     bounds.setLow(-1.);
     bounds.setHigh(1.);
-    getStateManifold()->as<base::CompoundStateManifold>()->as<base::SE2StateManifold>(0)->setBounds(bounds);
     getStateManifold()->as<base::CompoundStateManifold>()->as<base::RealVectorStateManifold>(1)->setBounds(bounds);
     getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(bounds);
 }

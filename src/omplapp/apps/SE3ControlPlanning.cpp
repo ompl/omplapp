@@ -36,13 +36,10 @@ ompl::base::ScopedState<> ompl::app::SE3ControlPlanning::getFullStateFromGeometr
 
 void ompl::app::SE3ControlPlanning::setDefaultBounds()
 {
-    base::RealVectorBounds se3bounds(3), rbounds(1),cbounds(4);
-    se3bounds.setLow(-1.);
-    se3bounds.setHigh(1.);
-    rbounds.setLow(-1.);
-    rbounds.setHigh(1.);
-    getStateManifold()->as<base::CompoundStateManifold>()->as<base::SE3StateManifold>(0)->setBounds(se3bounds);
-    getStateManifold()->as<base::CompoundStateManifold>()->as<base::RealVectorStateManifold>(1)->setBounds(rbounds);
+    base::RealVectorBounds bounds(1), cbounds(4);
+    bounds.setLow(-1.);
+    bounds.setHigh(1.);
+    getStateManifold()->as<base::CompoundStateManifold>()->as<base::RealVectorStateManifold>(1)->setBounds(bounds);
     
     cbounds.setLow(-1.);
     cbounds.setHigh(1.);

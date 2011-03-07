@@ -468,6 +468,9 @@ class GLViewer(QtOpenGL.QGLWidget):
     def setBounds(self, bounds):
         self.bounds_low = [x for x in bounds.low ]
         self.bounds_high = [x for x in bounds.high ]
+        if len(self.bounds_low)==2:
+            self.bounds_low.append(0)
+            self.bounds_high.append(0)
         bbox = zip(self.bounds_low, self.bounds_high)
         self.center = [ .5*(p0+p1) for (p0,p1) in bbox ]
         self.scale = 1. / max([p1-p0 for (p0,p1) in bbox ])
