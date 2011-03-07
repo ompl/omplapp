@@ -33,7 +33,6 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
     base::SE2StateManifold::StateType& ds = *dstate->as<base::SE2StateManifold::StateType>();
     
     getStateManifold()->copyState(result, from);
-    
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
@@ -52,8 +51,8 @@ void ompl::app::KinematicCarPlanning::ode(const base::State *state, const contro
     base::SE2StateManifold::StateType& qdot = *dstate->as<base::SE2StateManifold::StateType>();
     const double *u = ctrl->as<control::RealVectorControlManifold::ControlType>()->values;
     
-    qdot.setX(u[0] * cos(q.getX()));
-    qdot.setY(u[0] * sin(q.getY()));
+    qdot.setX(u[0] * cos(q.getYaw()));
+    qdot.setY(u[0] * sin(q.getYaw()));
     qdot.setYaw(u[0] * lengthInv_ * tan(u[1]));
 }
 
