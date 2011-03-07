@@ -15,10 +15,9 @@
 
 using namespace ompl;
 
-int main()
+void kinematicCarDemo(app::KinematicCarPlanning& setup)
 {
     // plan for kinematic car in SE(2)
-    app::KinematicCarPlanning setup;
     const base::StateManifoldPtr &SE2 = setup.getGeometricComponentStateManifold();
 
     // set the bounds for the R^2 part of SE(2)
@@ -41,22 +40,33 @@ int main()
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
-    
+
     // we call setup just so print() can show more information
     setup.setup();
+    std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
     setup.print();
 
     // try to solve the problem
-    if (setup.solve(10))
+    if (setup.solve(20))
     {
         // simplify & print the solution
         setup.getSolutionPath().print(std::cout);
-	if (!setup.haveExactSolutionPath())
-	{
-	    std::cout << "Solution is approximate. Distance to actual goal is " << 
-		setup.getGoal()->getDifference() << std::endl;
-	}	
+        if (!setup.haveExactSolutionPath())
+        {
+            std::cout << "Solution is approximate. Distance to actual goal is " <<
+                setup.getGoal()->getDifference() << std::endl;
+        }
     }
+}
 
+int main(int argc, char* argv[])
+{
+    app::KinematicCarPlanning regularCar;
+    app::ReedsSheppCarPlanning rsCar;
+    app::DubinsCarPlanning dCar;
+
+    kinematicCarDemo(regularCar);
+    kinematicCarDemo(rsCar);
+    kinematicCarDemo(dCar);
     return 0;
 }

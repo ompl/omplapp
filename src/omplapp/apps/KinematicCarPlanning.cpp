@@ -37,12 +37,12 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
-        s.setX(s.getX() + ds.getX());
-        s.setY(s.getY() + ds.getY());
-        s.setYaw(s.getYaw() + ds.getYaw());
-	getStateManifold()->enforceBounds(result);
+        s.setX(s.getX() + timeStep_ * ds.getX());
+        s.setY(s.getY() + timeStep_ * ds.getY());
+        s.setYaw(s.getYaw() + timeStep_ * ds.getYaw());
     }
     getStateManifold()->freeState(dstate);
+	getStateManifold()->enforceBounds(result);
 }
 
 void ompl::app::KinematicCarPlanning::ode(const base::State *state, const control::Control *ctrl, 
