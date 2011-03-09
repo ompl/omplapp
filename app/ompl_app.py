@@ -316,18 +316,24 @@ class MainWindow(QtGui.QMainWindow):
         # update the displayed bounds, in case planning did so
         self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
         if solved:
-            self.omplSetup.simplifySolution()
-            self.omplSetup.simplifySolution()
-            self.omplSetup.simplifySolution()
-            self.omplSetup.simplifySolution()
-            self.path = self.omplSetup.getSolutionPath()
-            ns = 100
-            if len(self.path.states) < ns:
-                self.path.interpolate(ns)
-                if len(self.path.states) != ns:
-                    self.msgError("Interpolation produced " + str(len(self.path.states)) + " states instead of " + str(ns) + " states!")
-            if self.path.check() == False:
+            if self.isGeometric:
+                self.omplSetup.simplifySolution()
+                self.omplSetup.simplifySolution()
+                self.omplSetup.simplifySolution()
+                self.omplSetup.simplifySolution()
+                path = self.omplSetup.getSolutionPath()
+            else:
+                path = self.omplSetup.getSolutionPath().asGeometric()
+            if path.check() == False:
                 self.msgError("Path reported by planner seems to be invalid!")
+
+            ns = 100
+            if len(path.states) < ns:
+                path.interpolate(ns)
+                if len(path.states) != ns:
+                    self.msgError("Interpolation produced " + str(len(path.states)) + " states instead of " + str(ns) + " states!")
+            ns = len(path.states)
+            self.path = [ self.omplSetup.getGeometricComponentState(path.states[i], 0) for i in range(ns) ]
             self.mainWidget.glViewer.setSolutionPath(self.path)
 
     def clear(self):
@@ -530,8 +536,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.pathIndex = (self.pathIndex + 1) % len(self.solutionPath)
             self.updateGL()
     def setSolutionPath(self, path):
-        n = len(path.states)
-        self.solutionPath = [ self.getTransform(path.states[i]) for i in range(n) ]
+        self.solutionPath = [ self.getTransform(state) for state in path ]
         self.pathIndex = 0
         self.updateGL()
     def setRobot(self, robot):
@@ -567,12 +572,19 @@ class GLViewer(QtOpenGL.QGLWidget):
         GL.glRotated(pose[1], 0.0, 1.0, 0.0)
         GL.glRotated(pose[2], 0.0, 0.0, 1.0)
     def getTransform(self, xform):
-        R = xform.rotation()
-        (w,x,y,z) = (R.w, -R.x, -R.y, -R.z)
-        return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0,
-            2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0,
-            2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
-            xform.getX(), xform.getY(), xform.getZ(), 1 ]
+        if hasattr(xform,'rotation'):
+            R = xform.rotation()
+            (w,x,y,z) = (R.w, -R.x, -R.y, -R.z)
+            return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0,
+                2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0,
+                2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
+                xform.getX(), xform.getY(), xform.getZ(), 1 ]
+        else:
+            th = xform.getYaw()
+            return [ cos(th), -sin(th), 0, 0,
+                sin(th), cos(th), 0, 0,
+                0, 0, 1, 0,
+                xform.getX(), xform.getY(), 0, 1 ]
 
     def drawBounds(self):
         lo = self.bounds_low
