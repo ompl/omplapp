@@ -31,7 +31,7 @@ namespace ompl
             \dot y &=& v\sin\theta,\\
             \dot\theta &=& \frac{vm}{L}\tan \phi,\\
             \dot v &=& u_0,\\
-            \dot\phi &=& = u_1,\f}
+            \dot\phi &=& u_1,\f}
             where \f$v\f$ is the speed, \f$\phi\f$ the steering angle, the
             controls \f$(u_0,u_1)\f$ control their rate of change, \f$m\f$ is
             the mass of the car, and \f$L\f$ is the distance between the front
