@@ -79,12 +79,12 @@ namespace ompl
                 return boost::bind(&AppBase::getGeometricComponentState, this, _1, _2);
             }
 
-            void inferEnvironmentBounds(void)
+            virtual void inferEnvironmentBounds(void)
             {
                 InferEnvironmentBounds(getGeometricComponentStateManifold(), *static_cast<RigidBodyGeometry*>(this));
             }
 
-            void inferProblemDefinitionBounds(void)
+            virtual void inferProblemDefinitionBounds(void)
             {
                 InferProblemDefinitionBounds(AppTypeSelector<T>::SimpleSetup::getProblemDefinition(), getGeometricStateExtractor(), factor_, add_,
                                              getRobotCount(), getGeometricComponentStateManifold(), mtype_);
