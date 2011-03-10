@@ -171,13 +171,13 @@ namespace ompl
             int assimpRender(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &robotCenter)
             {
                 int result = glGenLists(1);
-                
+
                 // create display list for robot; we undo the translation of the robot
                 glNewList(result, GL_COMPILE);
-                
+
                 aiMatrix4x4 t;
                 for (unsigned int i = 0 ; i < scenes.size() ; ++i)
-                {                    
+                {
                     bool tr = robotCenter.size() > i;
                     if (tr)
                     {
@@ -186,26 +186,26 @@ namespace ompl
                         glPushMatrix();
                         glMultMatrixf((float*)&t);
                     }
-                    
+
                     recursive_render(scenes[i], scenes[i]->mRootNode);
-                    
+
                     if (tr)
                         glPopMatrix();
                 }
-                
+
                 glEndList();
 
                 return result;
             }
 
-            
+
             int assimpRender(const aiScene* scene, const aiVector3D &robotCenter)
             {
                 std::vector<const aiScene*> scenes(1, scene);
                 std::vector<aiVector3D>    centers(1, robotCenter);
                 return assimpRender(scenes, centers);
             }
-            
+
             int assimpRender(const std::vector<const aiScene*> &scenes)
             {
                 std::vector<aiVector3D> empty;

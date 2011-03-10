@@ -47,22 +47,22 @@ namespace ompl
             {
                 return mtype_;
             }
-            
+
             bool hasEnvironment(void) const
             {
                 return !importerEnv_.empty();
             }
-            
+
             bool hasRobot(void) const
             {
                 return !importerRobot_.empty();
             }
-            
+
             unsigned int getLoadedRobotCount(void) const
             {
                 return importerRobot_.size();
             }
-            
+
             /** \brief Get the robot's center (average of all the vertices of all its parts) */
             aiVector3D getRobotCenter(unsigned int robotIndex) const;
 
@@ -88,7 +88,7 @@ namespace ompl
             const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
 
             const GeometrySpecification& getGeometrySpecification(void) const;
-            
+
             /** \brief The bounds of the environment are inferred
                 based on the axis-aligned bounding box for the objects
                 in the environment. The inferred size is multiplied by
@@ -124,11 +124,11 @@ namespace ompl
                 when planning in 2D and 3-dimensional when planning in
                 3D. */
             base::RealVectorBounds inferEnvironmentBounds(void) const;
-            
+
         protected:
-            
+
             void computeGeometrySpecification(void);
-            
+
             MotionModel         mtype_;
 
             /** \brief The factor to multiply inferred environment bounds by (default 1) */
@@ -142,9 +142,9 @@ namespace ompl
 
             /** \brief Instance of assimp importer used to load robot */
             std::vector< boost::shared_ptr<Assimp::Importer> > importerRobot_;
-            
+
             GeometrySpecification         geom_;
-            
+
             base::StateValidityCheckerPtr pqp_svc_;
 
             msg::Interface                msg_;

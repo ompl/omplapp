@@ -93,12 +93,6 @@ namespace ompl
             virtual void setup(void)
             {
                 inferEnvironmentBounds();
-                inferProblemDefinitionBounds();
-
-                const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(AppTypeSelector<T>::SimpleSetup::si_,
-                                                                                     getGeometricStateExtractor(), isSelfCollisionEnabled());
-                if (AppTypeSelector<T>::SimpleSetup::si_->getStateValidityChecker() != svc)
-                    AppTypeSelector<T>::SimpleSetup::si_->setStateValidityChecker(svc);
 
                 if (AppTypeSelector<T>::SimpleSetup::getProblemDefinition()->getStartStateCount() == 0)
                 {
@@ -106,15 +100,29 @@ namespace ompl
                     AppTypeSelector<T>::SimpleSetup::addStartState(getDefaultStartState());
                 }
 
+                inferProblemDefinitionBounds();
+
+                const base::StateValidityCheckerPtr &svc = allocStateValidityChecker(AppTypeSelector<T>::SimpleSetup::si_,
+                                                                                     getGeometricStateExtractor(), isSelfCollisionEnabled());
+                if (AppTypeSelector<T>::SimpleSetup::si_->getStateValidityChecker() != svc)
+                    AppTypeSelector<T>::SimpleSetup::si_->setStateValidityChecker(svc);
+
+                AppTypeSelector<T>::SimpleSetup::getStateManifold()->setup();
+
+                if (!AppTypeSelector<T>::SimpleSetup::getStateManifold()->hasDefaultProjection())
+                    AppTypeSelector<T>::SimpleSetup::getStateManifold()->registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateManifold(), mtype_, getGeometricComponentStateManifold(), getGeometricStateExtractor()));
+
                 AppTypeSelector<T>::SimpleSetup::setup();
             }
 
         protected:
+
             std::string name_;
+
         };
 
         template<>
-        inline AppType AppBase<CONTROL>::getAppType()
+        inline AppType AppBase<CONTROL>::getAppType(void)
         {
             return CONTROL;
         }

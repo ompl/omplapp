@@ -30,12 +30,12 @@ namespace ompl
                                         RenderGeometry(*dynamic_cast<const RigidBodyGeometry*>(this), getGeometricStateExtractor())
             {
             }
-            
+
             virtual ~GKinematicCarPlanning(void)
             {
             }
         };
-        
+
         class GReedsSheppCarPlanning : public ReedsSheppCarPlanning,
                                     public RenderGeometry
         {
@@ -45,12 +45,12 @@ namespace ompl
                                         RenderGeometry(*dynamic_cast<const RigidBodyGeometry*>(this), getGeometricStateExtractor())
             {
             }
-            
+
             virtual ~GReedsSheppCarPlanning(void)
             {
             }
         };
-        
+
         class GDubinsCarPlanning : public DubinsCarPlanning,
                                     public RenderGeometry
         {
@@ -60,12 +60,12 @@ namespace ompl
                                         RenderGeometry(*dynamic_cast<const RigidBodyGeometry*>(this), getGeometricStateExtractor())
             {
             }
-            
+
             virtual ~GDubinsCarPlanning(void)
             {
             }
         };
-        
+
     }
 }
 

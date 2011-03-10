@@ -125,14 +125,14 @@ const ompl::app::GeometrySpecification& ompl::app::RigidBodyGeometry::getGeometr
     return geom_;
 }
 
-void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void) 
+void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void)
 {
     pqp_svc_.reset();
     geom_.obstacles.clear();
     geom_.obstaclesShift.clear();
     geom_.robot.clear();
     geom_.robotShift.clear();
-    
+
     for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
         geom_.obstacles.push_back(importerEnv_[i]->GetScene());
 
@@ -148,7 +148,7 @@ aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(unsigned int robotIndex)
     aiVector3D s(0.0, 0.0, 0.0);
     if (robotIndex >= importerRobot_.size())
         throw Exception("Robot " + boost::lexical_cast<std::string>(robotIndex) + " not found.");
-    
+
     scene::sceneCenter(importerRobot_[robotIndex]->GetScene(), s);
     return s;
 }
@@ -159,7 +159,7 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
         return pqp_svc_;
 
     GeometrySpecification geom = getGeometrySpecification();
-    
+
     if (mtype_ == Motion_2D)
         pqp_svc_.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
     else

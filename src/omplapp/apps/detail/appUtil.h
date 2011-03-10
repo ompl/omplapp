@@ -15,13 +15,16 @@
 
 namespace ompl
 {
-    
+
     namespace app
     {
-        
+
         void InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, double factor, double add,
                                           unsigned int robotCount, const base::StateManifoldPtr &manifold, MotionModel mtype);
         void InferEnvironmentBounds(const base::StateManifoldPtr &manifold, const RigidBodyGeometry &rbg);
+
+        base::ProjectionEvaluatorPtr allocGeometricStateProjector(const base::StateManifoldPtr &manifold, MotionModel mtype,
+                                                                  const base::StateManifoldPtr &gmanifold, const GeometricStateExtractor &se);
     }
-    
+
 }

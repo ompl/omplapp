@@ -29,7 +29,7 @@ namespace ompl
             int assimpRender(const std::vector<const aiScene*> &scenes);
             int assimpRender(const aiScene* scene, const aiVector3D &robotCenter);
             int assimpRender(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &robotCenter);
-            
+
         }
         /// @endcond
     }

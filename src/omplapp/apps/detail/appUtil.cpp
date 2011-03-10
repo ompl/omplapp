@@ -20,10 +20,10 @@ void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &p
 {
     // update the bounds based on start states, if needed
     base::RealVectorBounds bounds = mtype == Motion_2D ? manifold->as<base::SE2StateManifold>()->getBounds() : manifold->as<base::SE3StateManifold>()->getBounds();
-    
+
     std::vector<const base::State*> states;
     pdef->getInputStates(states);
-    
+
     double minX = std::numeric_limits<double>::infinity();
     double minY = minX;
     double minZ = minX;
@@ -49,18 +49,18 @@ void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &p
     double dx = (maxX - minX) * (factor - 1.0) + add;
     double dy = (maxY - minY) * (factor - 1.0) + add;
     double dz = (maxZ - minZ) * (factor - 1.0) + add;
-    
+
     if (bounds.low[0] > minX - dx) bounds.low[0] = minX - dx;
     if (bounds.low[1] > minY - dy) bounds.low[1] = minY - dy;
-    
+
     if (bounds.high[0] < maxX + dx) bounds.high[0] = maxX + dx;
     if (bounds.high[1] < maxY + dy) bounds.high[1] = maxY + dy;
-    
+
     if (mtype == Motion_3D)
     {
         if (bounds.high[2] < maxZ + dz) bounds.high[2] = maxZ + dz;
         if (bounds.low[2] > minZ - dz) bounds.low[2] = minZ - dz;
-        
+
         manifold->as<base::SE3StateManifold>()->setBounds(bounds);
     }
     else
@@ -70,9 +70,9 @@ void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &p
 void ompl::app::InferEnvironmentBounds(const base::StateManifoldPtr &manifold, const RigidBodyGeometry &rbg)
 {
     MotionModel mtype = rbg.getMotionModel();
-    
+
     base::RealVectorBounds bounds = mtype == Motion_2D ? manifold->as<base::SE2StateManifold>()->getBounds() : manifold->as<base::SE3StateManifold>()->getBounds();
-    
+
     // if bounds are not valid
     if (bounds.getVolume() < std::numeric_limits<double>::epsilon())
     {
@@ -80,5 +80,95 @@ void ompl::app::InferEnvironmentBounds(const base::StateManifoldPtr &manifold, c
             manifold->as<base::SE2StateManifold>()->setBounds(rbg.inferEnvironmentBounds());
         else
             manifold->as<base::SE3StateManifold>()->setBounds(rbg.inferEnvironmentBounds());
-    }    
+    }
+}
+
+namespace ompl
+{
+    namespace app
+    {
+        namespace detail
+        {
+            class GeometricStateProjector2D : public base::ProjectionEvaluator
+            {
+            public:
+
+                GeometricStateProjector2D(const base::StateManifoldPtr &manifold, const base::StateManifoldPtr &gmanifold, const GeometricStateExtractor &se) : base::ProjectionEvaluator(manifold), gm_(gmanifold->as<base::SE2StateManifold>()), se_(se)
+                {
+                }
+
+                virtual unsigned int getDimension(void) const
+                {
+                    return 2;
+                }
+
+                virtual void project(const base::State *state, base::EuclideanProjection &projection) const
+                {
+                    const base::State *gs = se_(state, 0);
+                    projection.values[0] = gs->as<base::SE2StateManifold::StateType>()->getX();
+                    projection.values[1] = gs->as<base::SE2StateManifold::StateType>()->getY();
+                }
+
+                virtual void setup(void)
+                {
+                    const std::vector<double> &b = gm_->getBounds().getDifference();
+                    cellDimensions_.resize(2);
+                    cellDimensions_[0] = b[0] / 20.0;
+                    cellDimensions_[1] = b[1] / 20.0;
+                    ProjectionEvaluator::setup();
+                }
+
+            protected:
+
+                const base::SE2StateManifold *gm_;
+                GeometricStateExtractor       se_;
+
+            };
+
+            class GeometricStateProjector3D : public base::ProjectionEvaluator
+            {
+            public:
+
+                GeometricStateProjector3D(const base::StateManifoldPtr &manifold, const base::StateManifoldPtr &gmanifold, const GeometricStateExtractor &se) : base::ProjectionEvaluator(manifold), gm_(gmanifold->as<base::SE3StateManifold>()), se_(se)
+                {
+                }
+
+                virtual unsigned int getDimension(void) const
+                {
+                    return 3;
+                }
+
+                virtual void project(const base::State *state, base::EuclideanProjection &projection) const
+                {
+                    const base::State *gs = se_(state, 0);
+                    projection.values[0] = gs->as<base::SE3StateManifold::StateType>()->getX();
+                    projection.values[1] = gs->as<base::SE3StateManifold::StateType>()->getY();
+                    projection.values[2] = gs->as<base::SE3StateManifold::StateType>()->getZ();
+                }
+
+                virtual void setup(void)
+                {
+                    const std::vector<double> &b = gm_->getBounds().getDifference();
+                    cellDimensions_.resize(3);
+                    cellDimensions_[0] = b[0] / 20.0;
+                    cellDimensions_[1] = b[1] / 20.0;
+                    cellDimensions_[2] = b[2] / 20.0;
+                    ProjectionEvaluator::setup();
+                }
+
+            protected:
+
+                const base::SE3StateManifold *gm_;
+                GeometricStateExtractor       se_;
+            };
+        }
+    }
+}
+
+ompl::base::ProjectionEvaluatorPtr ompl::app::allocGeometricStateProjector(const base::StateManifoldPtr &manifold, MotionModel mtype,
+                                                                           const base::StateManifoldPtr &gmanifold, const GeometricStateExtractor &se)
+{
+    if (mtype == Motion_2D)
+        return base::ProjectionEvaluatorPtr(new detail::GeometricStateProjector2D(manifold, gmanifold, se));
+    return base::ProjectionEvaluatorPtr(new detail::GeometricStateProjector3D(manifold, gmanifold, se));
 }

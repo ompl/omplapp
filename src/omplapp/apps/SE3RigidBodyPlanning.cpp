@@ -21,6 +21,6 @@ ompl::base::ScopedState<> ompl::app::SE3RigidBodyPlanning::getDefaultStartState(
     st->setY(s.y);
     st->setZ(s.z);
     st->rotation().setIdentity();
-    
+
     return st;
 }

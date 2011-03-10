@@ -203,7 +203,7 @@ namespace ompl
                 std::vector<aiVector3D>     centers(1, center);
                 return getPQPModelFromScene(scenes, centers);
             }
-            
+
             /** \brief Convert a mesh to a PQP model */
             PQPModelPtr getPQPModelFromScene(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &center) const
             {

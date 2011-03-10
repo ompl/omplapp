@@ -30,12 +30,12 @@ namespace ompl
                                           RenderGeometry(*dynamic_cast<const RigidBodyGeometry*>(this), getGeometricStateExtractor())
             {
             }
-            
+
             virtual ~GSE2RigidBodyPlanning(void)
             {
             }
         };
-        
+
     }
 }
 

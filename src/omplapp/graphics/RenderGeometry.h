@@ -39,14 +39,14 @@ namespace ompl
             int renderRobot(void) const;
 
             int renderRobotPart(unsigned int index) const;
-            
+
             int renderPlannerData(const base::PlannerData &pd) const;
-            
+
         private:
-            
-            const RigidBodyGeometry &rbg_;            
+
+            const RigidBodyGeometry &rbg_;
             GeometricStateExtractor  se_;
-            
+
         };
 
     }

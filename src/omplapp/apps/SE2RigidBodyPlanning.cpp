@@ -20,6 +20,6 @@ ompl::base::ScopedState<> ompl::app::SE2RigidBodyPlanning::getDefaultStartState(
     st->setX(s.x);
     st->setY(s.y);
     st->setYaw(0.0);
-    
+
     return st;
 }

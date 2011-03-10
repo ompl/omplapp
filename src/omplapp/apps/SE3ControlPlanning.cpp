@@ -40,7 +40,7 @@ void ompl::app::SE3ControlPlanning::setDefaultBounds()
     bounds.setLow(-1.);
     bounds.setHigh(1.);
     getStateManifold()->as<base::CompoundStateManifold>()->as<base::RealVectorStateManifold>(1)->setBounds(bounds);
-    
+
     cbounds.setLow(-1.);
     cbounds.setHigh(1.);
     getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(cbounds);

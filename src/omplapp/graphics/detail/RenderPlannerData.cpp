@@ -38,7 +38,7 @@ namespace ompl
         static void setStateColor(int tag)
         {
             static const int NC = 7;
-            static float colors[NC][4] = 
+            static float colors[NC][4] =
                 {
                     {1.0f, 0.0f, 0.0f, 0.6f},
                     {0.0f, 1.0f, 0.0f, 0.6f},
@@ -48,11 +48,11 @@ namespace ompl
                     {1.0f, 0.0f, 1.0f, 0.6f},
                     {1.0f, 1.0f, 1.0f, 0.6f},
                 };
-            
+
             int c = abs(tag) % NC;
             glColor4f(colors[c][0], colors[c][1], colors[c][2], colors[c][3]);
         }
-        
+
         int RenderPlannerData(const base::PlannerData &pd, const aiVector3D &translate, MotionModel m, const GeometricStateExtractor &gse, unsigned int count)
         {
             int result = glGenLists(1);
@@ -85,7 +85,7 @@ namespace ompl
                     for (unsigned int r = 0 ; r < count ; ++r)
                         renderState(*static_cast<const base::SE3StateManifold::StateType*>(gse(pd.states[i], r)));
                 }
-            
+
             glEnd();
 
             glPopMatrix();
