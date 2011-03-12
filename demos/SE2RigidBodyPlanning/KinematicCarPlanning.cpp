@@ -41,16 +41,29 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
 
-    // we call setup just so print() can show more information
-    setup.setup();
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
-    setup.print();
 
     // try to solve the problem
     if (setup.solve(20))
     {
-        // simplify & print the solution
-        setup.getSolutionPath().print(std::cout);
+        // print the (apprxoimate) solution path: print states along the path
+        // and controls required to get from one state to the next
+        control::PathControl& path(setup.getSolutionPath());
+        for (unsigned int i=0; i<path.states.size(); ++i)
+        {
+            const base::SE2StateManifold::StateType& s = *path.states[i]->as<base::SE2StateManifold::StateType>();
+            std::cout << s.getX() <<' '<< s.getY() << ' ' << s.getYaw() << ' ';
+            if (i==0)
+                // null controls applied for zero seconds to get to start state
+                std::cout << "0 0 0";
+            else
+            {
+                // print controls and control duration needed to get from state i-1 to state i
+                const double* c = path.controls[i-1]->as<control::RealVectorControlManifold::ControlType>()->values;
+                std::cout << c[0] << ' ' << c[1] << ' ' << path.controlDurations[i-1];
+            }
+            std::cout << std::endl;
+        }
         if (!setup.haveExactSolutionPath())
         {
             std::cout << "Solution is approximate. Distance to actual goal is " <<

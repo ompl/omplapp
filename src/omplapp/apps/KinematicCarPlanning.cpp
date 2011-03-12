@@ -64,7 +64,7 @@ void ompl::app::DubinsCarPlanning::DubinsControlSampler::sample(control::Control
         static_cast<control::RealVectorControlManifold::ControlType*>(control);
     switch (rng_.uniformInt(0,1))
     {
-        case 0: rcontrol->values[0] = 0;
+        case 0: rcontrol->values[0] = 0; break;
         case 1: rcontrol->values[0] = bounds.high[0];
     }
     rcontrol->values[1] = rng_.uniformReal(bounds.low[1], bounds.high[1]);
@@ -78,8 +78,8 @@ void ompl::app::ReedsSheppCarPlanning::ReedsSheppControlSampler::sample(control:
         static_cast<control::RealVectorControlManifold::ControlType*>(control);
     switch (rng_.uniformInt(-1,1))
     {
-        case -1: rcontrol->values[0] = bounds.low[0];
-        case 0: rcontrol->values[0] = 0;
+        case -1: rcontrol->values[0] = bounds.low[0]; break;
+        case 0: rcontrol->values[0] = 0; break;
         case 1: rcontrol->values[0] = bounds.high[0];
     }
     rcontrol->values[1] = rng_.uniformReal(bounds.low[1], bounds.high[1]);
