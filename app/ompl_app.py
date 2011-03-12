@@ -14,14 +14,17 @@
 
 import sys
 from os.path import abspath, dirname, join
-try:
-    # try PyQt4 first
-    from PyQt4 import QtCore, QtGui, QtOpenGL
-    from PyQt4.QtCore import pyqtSignal as Signal
-except:
-    # if PyQt4 wasn't found, try PySide *** UNTESTED ***
-    from PySide import QtCore, QtGui, QtOpenGL
-    from PySide.QtCore import Signal
+from PyQt4 import QtCore, QtGui, QtOpenGL
+from PyQt4.QtCore import pyqtSignal as Signal
+# PySide doesn't work yet
+# try:
+#     # try PyQt4 first
+#     from PyQt4 import QtCore, QtGui, QtOpenGL
+#     from PyQt4.QtCore import pyqtSignal as Signal
+# except:
+#     # if PyQt4 wasn't found, try PySide
+#     from PySide import QtCore, QtGui, QtOpenGL
+#     from PySide.QtCore import Signal
 from OpenGL import GL, GLU
 import webbrowser, re
 from math import cos, sin, asin, atan2, pi, pow, ceil
@@ -81,7 +84,7 @@ class MainWindow(QtGui.QMainWindow):
         self.environmentFile = None
         self.robotFile = None
         self.path = None
-        self.mainWidget.problemWidget.robotTypeSelect.activated.connect(self.setRobotType)
+        self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged.connect(self.setRobotType)
         self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
         self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
 
@@ -102,7 +105,6 @@ class MainWindow(QtGui.QMainWindow):
 
         #self.commandWindow = CommandWindow(self) # not implemented yet
         robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
-        self.setRobotType(robotType)
         self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
         self.setPlanner(0)
         self.zerobounds = ob.RealVectorBounds(3)
@@ -479,7 +481,8 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.bounds_high.append(0)
         bbox = zip(self.bounds_low, self.bounds_high)
         self.center = [ .5*(p0+p1) for (p0,p1) in bbox ]
-        self.scale = 1. / max([p1-p0 for (p0,p1) in bbox ])
+        m = max([p1-p0 for (p0,p1) in bbox ])
+        self.scale = 1. if m==0 else 1. / m
         self.viewheight = (self.bounds_high[2]-self.bounds_low[2])*self.scale*3
         self.boundLowChanged.emit(self.bounds_low)
         self.boundHighChanged.emit(self.bounds_high)
