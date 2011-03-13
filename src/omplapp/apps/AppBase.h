@@ -109,9 +109,7 @@ namespace ompl
 
                 AppTypeSelector<T>::SimpleSetup::getStateManifold()->setup();
 
-                if (AppTypeSelector<T>::SimpleSetup::getStateManifold()->hasDefaultProjection())
-                    AppTypeSelector<T>::SimpleSetup::getStateManifold()->getDefaultProjection()->setup();
-                else
+                if (!AppTypeSelector<T>::SimpleSetup::getStateManifold()->hasDefaultProjection())
                     AppTypeSelector<T>::SimpleSetup::getStateManifold()->registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateManifold(), mtype_, getGeometricComponentStateManifold(), getGeometricStateExtractor()));
 
                 AppTypeSelector<T>::SimpleSetup::setup();
