@@ -10,12 +10,15 @@
 
 /* Author: Mark Moll */
 
+#include <ompl/benchmark/Benchmark.h>
+#include <ompl/control/planners/rrt/RRT.h>
+#include <ompl/control/planners/kpiece/KPIECE1.h>
 #include <omplapp/apps/KinematicCarPlanning.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
 
-void kinematicCarDemo(app::KinematicCarPlanning& setup)
+void kinematicCarSetup(app::KinematicCarPlanning& setup)
 {
     // plan for kinematic car in SE(2)
     const base::StateManifoldPtr &SE2 = setup.getGeometricComponentStateManifold();
@@ -40,13 +43,16 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
+}
 
+void kinematicCarDemo(app::KinematicCarPlanning& setup)
+{
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
 
     // try to solve the problem
     if (setup.solve(20))
     {
-        // print the (apprxoimate) solution path: print states along the path
+        // print the (approximate) solution path: print states along the path
         // and controls required to get from one state to the next
         control::PathControl& path(setup.getSolutionPath());
         for (unsigned int i=0; i<path.states.size(); ++i)
@@ -70,6 +76,19 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
                 setup.getGoal()->getDifference() << std::endl;
         }
     }
+
+}
+void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
+{
+    double runtime_limit = 20.0;
+    double memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
+    int    run_count     = 10;
+
+    Benchmark b(setup, setup.getName());
+    b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    b.benchmark(runtime_limit, memory_limit, run_count, true);
+    b.saveResultsToFile();
 }
 
 int main(int argc, char* argv[])
@@ -78,8 +97,25 @@ int main(int argc, char* argv[])
     app::ReedsSheppCarPlanning rsCar;
     app::DubinsCarPlanning dCar;
 
-    kinematicCarDemo(regularCar);
-    kinematicCarDemo(rsCar);
-    kinematicCarDemo(dCar);
+    kinematicCarSetup(regularCar);
+    kinematicCarSetup(rsCar);
+    kinematicCarSetup(dCar);
+
+    // If any command line arguments are given, solve the problem multiple
+    // times for each car type with different planners and collect benchmark
+    // statistics. Otherwise, solve the problem once for each car type and
+    // print the path.
+    if (argc>1)
+    {
+        kinematicCarBenchmark(regularCar);
+        kinematicCarBenchmark(rsCar);
+        kinematicCarBenchmark(dCar);
+    }
+    else
+    {
+        kinematicCarDemo(regularCar);
+        kinematicCarDemo(rsCar);
+        kinematicCarDemo(dCar);
+    }
     return 0;
 }
