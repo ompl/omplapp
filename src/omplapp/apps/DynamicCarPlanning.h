@@ -42,7 +42,7 @@ namespace ompl
         {
         public:
             DynamicCarPlanning()
-                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-3), lengthInv_(1.), mass_(1.)
+                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.)
             {
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
@@ -106,11 +106,11 @@ namespace ompl
             }
             static base::StateManifoldPtr constructStateManifold(void)
             {
-		base::RealVectorStateManifold *rv = new base::RealVectorStateManifold(2);		
-		base::RealVectorBounds b(2);
-		b.setLow(-1); b.setHigh(1);
-		rv->setBounds(b);
-		return base::StateManifoldPtr(new base::SE2StateManifold()) + base::StateManifoldPtr(rv);
+                base::RealVectorStateManifold *rv = new base::RealVectorStateManifold(2);		
+                base::RealVectorBounds b(2);
+                b.setLow(-1); b.setHigh(1);
+                rv->setBounds(b);
+                return base::StateManifoldPtr(new base::SE2StateManifold()) + base::StateManifoldPtr(rv);
             }
 
             double timeStep_;

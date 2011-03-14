@@ -39,14 +39,14 @@ namespace ompl
         {
         public:
             KinematicCarPlanning()
-                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-3), lengthInv_(1.)
+                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-2), lengthInv_(1.)
             {
                 name_ = std::string("Kinematic car");
                 setDefaultControlBounds();
                 getControlManifold()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
             }
             KinematicCarPlanning(control::ControlManifoldPtr controlManifold)
-                : AppBase<CONTROL>(controlManifold, Motion_2D), timeStep_(1e-3), lengthInv_(1.)
+                : AppBase<CONTROL>(controlManifold, Motion_2D), timeStep_(1e-2), lengthInv_(1.)
             {
                 setDefaultControlBounds();
                 getControlManifold()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
