@@ -127,6 +127,7 @@ class MainWindow(QtGui.QMainWindow):
         self.oh.error(text)
 
     def openEnvironment(self):
+#        fname = '/home/isucan/repos/omplapp/resources/cubicles_env.dae'
         fname = '/Users/mmoll/omplapp/resources/cubicles_env.dae'
         #str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
         if len(fname)>0 and fname!=self.environmentFile:
@@ -140,6 +141,7 @@ class MainWindow(QtGui.QMainWindow):
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
     def openRobot(self):
+#        fname = '/home/isucan/repos/omplapp/resources/cubicles_robot.dae'
         fname = '/Users/mmoll/omplapp/resources/cubicles_robot.dae'
         #str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
         if len(fname)>0 and fname!=self.robotFile:
@@ -318,17 +320,14 @@ class MainWindow(QtGui.QMainWindow):
         if solved:
             if self.isGeometric:
                 self.omplSetup.simplifySolution()
-                self.omplSetup.simplifySolution()
-                self.omplSetup.simplifySolution()
-                self.omplSetup.simplifySolution()
                 path = self.omplSetup.getSolutionPath()
             else:
                 path = self.omplSetup.getSolutionPath().asGeometric()
             if path.check() == False:
                 self.msgError("Path reported by planner seems to be invalid!")
 
-            ns = 100
-            if len(path.states) < ns:
+            ns = 200
+            if self.isGeometric and len(path.states) < ns:
                 path.interpolate(ns)
                 if len(path.states) != ns:
                     self.msgError("Interpolation produced " + str(len(path.states)) + " states instead of " + str(ns) + " states!")
