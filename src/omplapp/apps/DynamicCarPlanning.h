@@ -63,11 +63,11 @@ namespace ompl
             virtual base::ScopedState<> getDefaultStartState(void) const;
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
             {
-		base::ScopedState<> r(si_);
-		r = 0.0;
-		r << state;
-		return r;
-	    }
+                base::ScopedState<> r(si_);
+                r = 0.0;
+                r << state;
+                return r;
+            }
 
             virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
             {
@@ -106,7 +106,7 @@ namespace ompl
             }
             static base::StateManifoldPtr constructStateManifold(void)
             {
-                base::RealVectorStateManifold *rv = new base::RealVectorStateManifold(2);		
+                base::RealVectorStateManifold *rv = new base::RealVectorStateManifold(2);
                 base::RealVectorBounds b(2);
                 b.setLow(-1); b.setHigh(1);
                 rv->setBounds(b);

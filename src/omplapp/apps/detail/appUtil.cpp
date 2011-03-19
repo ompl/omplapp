@@ -109,12 +109,12 @@ namespace ompl
                     projection.values[1] = gs->as<base::SE2StateManifold::StateType>()->getY();
                 }
 
-                virtual void defaultCellDimensions(void)
+                virtual void defaultCellSizes(void)
                 {
                     const std::vector<double> &b = gm_->getBounds().getDifference();
-                    cellDimensions_.resize(2);
-                    cellDimensions_[0] = b[0] / 20.0;
-                    cellDimensions_[1] = b[1] / 20.0;
+                    cellSizes_.resize(2);
+                    cellSizes_[0] = b[0] / 20.0;
+                    cellSizes_[1] = b[1] / 20.0;
                 }
 
             protected:
@@ -145,13 +145,13 @@ namespace ompl
                     projection.values[2] = gs->as<base::SE3StateManifold::StateType>()->getZ();
                 }
 
-                virtual void defaultCellDimensions(void)
+                virtual void defaultCellSizes(void)
                 {
                     const std::vector<double> &b = gm_->getBounds().getDifference();
-                    cellDimensions_.resize(3);
-                    cellDimensions_[0] = b[0] / 20.0;
-                    cellDimensions_[1] = b[1] / 20.0;
-                    cellDimensions_[2] = b[2] / 20.0;
+                    cellSizes_.resize(3);
+                    cellSizes_[0] = b[0] / 20.0;
+                    cellSizes_[1] = b[1] / 20.0;
+                    cellSizes_[2] = b[2] / 20.0;
                 }
 
             protected:
