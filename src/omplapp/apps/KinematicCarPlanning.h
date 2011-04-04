@@ -29,7 +29,7 @@ namespace ompl
             \f{eqnarray*}{
             \dot x &=& u_0 \cos\theta,\\
             \dot y &=& u_0\sin\theta,\\
-            \dot\theta &=& \frac{u_1}{L}\tan u_1,\f}
+            \dot\theta &=& \frac{u_0}{L}\tan u_1,\f}
             where the control inputs \f$(u_0,u_1)\f$ are the translational
             velocity and the steering angle, respectively, and \f$L\f$ is the
             distance between the front and rear axle of the car (set to 1 by
