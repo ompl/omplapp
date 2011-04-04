@@ -42,12 +42,13 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
     goal->setYaw(M_PI);
 
     // set the start & goal states
-    setup.setStartAndGoalStates(start, goal);
+    setup.setStartAndGoalStates(start, goal, .1);
 }
 
 void kinematicCarDemo(app::KinematicCarPlanning& setup)
 {
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
+    //setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
 
     // try to solve the problem
     if (setup.solve(20))

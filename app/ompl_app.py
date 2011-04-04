@@ -98,6 +98,9 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.plannerWidget.geometricPlanning.timeLimit.setValue)
         self.timeLimit = self.mainWidget.plannerWidget.geometricPlanning.timeLimit.value()
 
+        self.mainWidget.plannerWidget.geometricPlanning.plannerSelect.currentIndexChanged.connect(self.setPlanner)
+        self.mainWidget.plannerWidget.controlPlanning.plannerSelect.currentIndexChanged.connect(self.setPlanner)
+
         self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(self.mainWidget.glViewer.setLowerBound)
         self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(self.mainWidget.glViewer.setUpperBound)
         self.mainWidget.glViewer.boundLowChanged.connect(self.mainWidget.boundsWidget.bounds_low.setBounds)
