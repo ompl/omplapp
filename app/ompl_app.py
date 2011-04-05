@@ -130,9 +130,7 @@ class MainWindow(QtGui.QMainWindow):
         self.oh.error(text)
 
     def openEnvironment(self):
-#        fname = '/home/isucan/repos/omplapp/resources/cubicles_env.dae'
-        fname = '/Users/mmoll/omplapp/resources/cubicles_env.dae'
-        #str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
+        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -144,9 +142,7 @@ class MainWindow(QtGui.QMainWindow):
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
     def openRobot(self):
-#        fname = '/home/isucan/repos/omplapp/resources/cubicles_robot.dae'
-        fname = '/Users/mmoll/omplapp/resources/cubicles_robot.dae'
-        #str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
+        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
@@ -243,27 +239,31 @@ class MainWindow(QtGui.QMainWindow):
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.KPIECEGoalBias.value())
                 planner.setBorderFraction(self.mainWidget.plannerWidget.geometricPlanning.KPIECEBorderFraction.value())
             elif self.planner==1:
+                planner = og.BKPIECE1(si)
+                planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.BKPIECERange.value())
+                planner.setBorderFraction(self.mainWidget.plannerWidget.geometricPlanning.BKPIECEBorderFraction.value())
+            elif self.planner==2:
                 planner = og.LBKPIECE1(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.LBKPIECERange.value())
                 planner.setBorderFraction(self.mainWidget.plannerWidget.geometricPlanning.LBKPIECEBorderFraction.value())
-            elif self.planner==2:
+            elif self.planner==3:
                 planner = og.BasicPRM(si)
                 planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.geometricPlanning.PRMMaxNearestNeighbors.value())
-            elif self.planner==3:
+            elif self.planner==4:
                 planner = og.SBL(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.SBLRange.value())
-            elif self.planner==4:
+            elif self.planner==5:
                 planner = og.RRTConnect(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.RRTConnectRange.value())
-            elif self.planner==5:
+            elif self.planner==6:
                 planner = og.RRT(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.RRTRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.RRTGoalBias.value())
-            elif self.planner==6:
+            elif self.planner==7:
                 planner = og.LazyRRT(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.LazyRRTRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.LazyRRTGoalBias.value())
-            elif self.planner==7:
+            elif self.planner==8:
                 planner = og.EST(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.ESTRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.ESTGoalBias.value())
@@ -927,6 +927,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         plannerLabel = QtGui.QLabel('Planner')
         self.plannerSelect = QtGui.QComboBox()
         self.plannerSelect.addItem('KPIECE')
+        self.plannerSelect.addItem('Bi-directional KPIECE')
         self.plannerSelect.addItem('Lazy Bi-directional KPIECE')
         self.plannerSelect.addItem('BasicPRM')
         self.plannerSelect.addItem('SBL')
@@ -962,6 +963,25 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         layout.addWidget(KPIECEborderFractionLabel, 2, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.KPIECEBorderFraction, 2, 1)
         self.KPIECEOptions.setLayout(layout)
+
+        # BKPIECE options
+        self.BKPIECEOptions = QtGui.QGroupBox('BKPIECE options')
+        BKPIECErangeLabel = QtGui.QLabel('Range')
+        self.BKPIECERange = QtGui.QDoubleSpinBox()
+        self.BKPIECERange.setRange(0, 10000)
+        self.BKPIECERange.setSingleStep(1)
+        self.BKPIECERange.setValue(0)
+        BKPIECEborderFractionLabel = QtGui.QLabel('Border fraction')
+        self.BKPIECEBorderFraction = QtGui.QDoubleSpinBox()
+        self.BKPIECEBorderFraction.setRange(0, 1)
+        self.BKPIECEBorderFraction.setSingleStep(.05)
+        self.BKPIECEBorderFraction.setValue(.9)
+        layout = QtGui.QGridLayout()
+        layout.addWidget(BKPIECErangeLabel, 0, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.BKPIECERange, 0, 1)
+        layout.addWidget(BKPIECEborderFractionLabel, 1, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.BKPIECEBorderFraction, 1, 1)
+        self.BKPIECEOptions.setLayout(layout)
 
         # LBKPIECE options
         self.LBKPIECEOptions = QtGui.QGroupBox('LBKPIECE options')
@@ -1077,6 +1097,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
 
         self.stackedWidget = QtGui.QStackedWidget()
         self.stackedWidget.addWidget(self.KPIECEOptions)
+        self.stackedWidget.addWidget(self.BKPIECEOptions)
         self.stackedWidget.addWidget(self.LBKPIECEOptions)
         self.stackedWidget.addWidget(self.PRMOptions)
         self.stackedWidget.addWidget(self.SBLOptions)
