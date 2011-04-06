@@ -322,12 +322,18 @@ class MainWindow(QtGui.QMainWindow):
         self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
         if solved:
             if self.isGeometric:
+                path = self.omplSetup.getSolutionPath()
+                initialValid = path.check()
+                if initialValid == False:
+                    self.msgError("Path reported by planner seems to be invalid!")
                 self.omplSetup.simplifySolution()
                 path = self.omplSetup.getSolutionPath()
+                if initialValid == True and path.check() == False:
+                    self.msgError("Simplified path seems to be invalid!")
             else:
                 path = self.omplSetup.getSolutionPath().asGeometric()
-            if path.check() == False:
-                self.msgError("Path reported by planner seems to be invalid!")
+                if path.check() == False:
+                    self.msgError("Path reported by planner seems to be invalid!")
 
             ns = 200
             if self.isGeometric and len(path.states) < ns:
