@@ -130,7 +130,8 @@ class MainWindow(QtGui.QMainWindow):
         self.oh.error(text)
 
     def openEnvironment(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
+#        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
+        fname = "/home/isucan/Desktop/environment.stl"
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -142,7 +143,8 @@ class MainWindow(QtGui.QMainWindow):
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
     def openRobot(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
+#        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
+        fname = "/home/isucan/Desktop/robots.stl"
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
@@ -206,6 +208,28 @@ class MainWindow(QtGui.QMainWindow):
                     pathstr = str(self.path)
                 open(fname,'w').write(pathstr)
 
+    def setSolutionPath(self, path):
+            ns = len(path.states)
+            self.path = [ self.omplSetup.getGeometricComponentState(path.states[i], 0) for i in range(ns) ]
+            self.mainWidget.glViewer.setSolutionPath(self.path)
+
+    def randMotion(self):
+        self.configureApp()
+
+        if self.isGeometric:
+            pg = og.PathGeometric(self.omplSetup.getSpaceInformation())
+            if pg.randomValid(100):
+                pg.interpolate()
+                self.setSolutionPath(pg)
+            else:
+                self.msgError("Unable to generate random valid path")
+        else:
+            pc = oc.PathControl(self.omplSetup.getSpaceInformation())
+            if pc.randomValid(100):
+                self.setSolutionPath(pc.asGeometric())
+            else:
+                self.msgError("Unable to generate random valid path")
+                
     def showLogWindow(self):
         if self.logWindow.isHidden():
             self.logWindow.show()
@@ -287,7 +311,8 @@ class MainWindow(QtGui.QMainWindow):
     def setTimeLimit(self, value):
         self.msgDebug('Changing time limit from %g to %g' % (self.timeLimit, value))
         self.timeLimit = value
-    def solve(self):
+
+    def configureApp(self):
         self.omplSetup.clear()
         startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
         goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
@@ -310,7 +335,10 @@ class MainWindow(QtGui.QMainWindow):
             self.omplSetup.getSpaceInformation().setMinMaxControlDuration(
                 self.mainWidget.plannerWidget.controlPlanning.minControlDuration.value(),
                 self.mainWidget.plannerWidget.controlPlanning.maxControlDuration.value())
+        self.omplSetup.setup()
 
+    def solve(self):
+        self.configureApp()
         self.msgDebug(str(self.omplSetup))
 
         solved = self.omplSetup.solve(self.timeLimit)
@@ -340,9 +368,7 @@ class MainWindow(QtGui.QMainWindow):
                 path.interpolate(ns)
                 if len(path.states) != ns:
                     self.msgError("Interpolation produced " + str(len(path.states)) + " states instead of " + str(ns) + " states!")
-            ns = len(path.states)
-            self.path = [ self.omplSetup.getGeometricComponentState(path.states[i], 0) for i in range(ns) ]
-            self.mainWidget.glViewer.setSolutionPath(self.path)
+            self.setSolutionPath(path)
 
     def clear(self):
         self.omplSetup.clear()
@@ -366,6 +392,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.logWindowAct = QtGui.QAction('Log Window', self,
             shortcut='Ctrl+1', triggered=self.showLogWindow)
+        self.randMotionAct = QtGui.QAction('&Random Motion', self, shortcut='Ctrl+M', triggered=self.randMotion)
         self.commandWindowAct = QtGui.QAction('Command Window', self,
             shortcut='Ctrl+2', triggered=self.showCommandWindow)
 
@@ -385,8 +412,9 @@ class MainWindow(QtGui.QMainWindow):
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAct)
 
-        self.windowMenu = self.menuBar().addMenu('&Window')
-        self.windowMenu.addAction(self.logWindowAct)
+        self.toolsMenu = self.menuBar().addMenu('&Tools')
+        self.toolsMenu.addAction(self.logWindowAct)
+        self.toolsMenu.addAction(self.randMotionAct)
         # self.windowMenu.addAction(self.commandWindowAct)
 
         self.helpMenu = self.menuBar().addMenu('Help')

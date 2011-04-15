@@ -127,6 +127,9 @@ namespace ompl
             {
                 typedef typename OMPL_StateType<T>::type StateType;
 
+                if (!si_->satisfiesBounds(state))
+                    return false;
+
                 if (!environment_)
                     return true;
 

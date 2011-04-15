@@ -87,8 +87,10 @@ namespace ompl
             virtual void setDefaultControlBounds()
             {
                 base::RealVectorBounds cbounds(2);
-                cbounds.setLow(-1.);
-                cbounds.setHigh(1.);
+                cbounds.low[0] = -0.2;
+                cbounds.high[0] = 0.2;
+                cbounds.low[1] = -1;
+                cbounds.high[1] = 1;
                 getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(cbounds);
             }
 
