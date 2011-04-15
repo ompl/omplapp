@@ -131,7 +131,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def openEnvironment(self):
 #        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
-        fname = "/home/isucan/Desktop/environment.stl"
+        fname = "/home/isucan/repos/omplapp/resources/environment.stl"
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -144,7 +144,7 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
     def openRobot(self):
 #        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
-        fname = "/home/isucan/Desktop/robots.stl"
+        fname = "/home/isucan/repos/omplapp/resources/robots.stl"
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
@@ -325,7 +325,7 @@ class MainWindow(QtGui.QMainWindow):
             bounds = ob.RealVectorBounds(2)
             (bounds.low[0],bounds.low[1]) = self.mainWidget.glViewer.bounds_low[:2]
             (bounds.high[0],bounds.high[1]) = self.mainWidget.glViewer.bounds_high[:2]
-        self.omplSetup.setStartAndGoalStates(startPose, goalPose)
+        self.omplSetup.setStartAndGoalStates(startPose, goalPose, 1e-6)
         if self.isGeometric:
             self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.value())
@@ -392,7 +392,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.logWindowAct = QtGui.QAction('Log Window', self,
             shortcut='Ctrl+1', triggered=self.showLogWindow)
-        self.randMotionAct = QtGui.QAction('&Random Motion', self, shortcut='Ctrl+M', triggered=self.randMotion)
+        self.randMotionAct = QtGui.QAction('Random &Motion', self, shortcut='Ctrl+M', triggered=self.randMotion)
         self.commandWindowAct = QtGui.QAction('Command Window', self,
             shortcut='Ctrl+2', triggered=self.showCommandWindow)
 

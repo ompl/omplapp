@@ -23,6 +23,16 @@ ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(
     return sSE2;
 }
 
+void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
+{
+    base::RealVectorBounds cbounds(2);
+    cbounds.low[0] = -0.1;
+    cbounds.high[0] = 0.1;
+    cbounds.low[1] = -0.5;
+    cbounds.high[1] = 0.5;
+    getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(cbounds);
+}
+
 void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
     const double duration, base::State *result)
 {

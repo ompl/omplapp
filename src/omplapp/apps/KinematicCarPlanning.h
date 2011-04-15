@@ -39,7 +39,7 @@ namespace ompl
         {
         public:
             KinematicCarPlanning()
-                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-2), lengthInv_(1.)
+                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-2), lengthInv_(20.)
             {
                 name_ = std::string("Kinematic car");
                 setDefaultControlBounds();
@@ -84,15 +84,7 @@ namespace ompl
             {
                 lengthInv_ = 1./length;
             }
-            virtual void setDefaultControlBounds()
-            {
-                base::RealVectorBounds cbounds(2);
-                cbounds.low[0] = -0.2;
-                cbounds.high[0] = 0.2;
-                cbounds.low[1] = -1;
-                cbounds.high[1] = 1;
-                getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(cbounds);
-            }
+            virtual void setDefaultControlBounds();
 
         protected:
             void propagate(const base::State *from, const control::Control *ctrl,
