@@ -25,6 +25,7 @@
 #include <boost/function.hpp>
 #include <boost/thread/mutex.hpp>
 #include <vector>
+#include <limits>
 #include <cmath>
 
 namespace ompl
@@ -173,6 +174,34 @@ namespace ompl
                 return true;
             }
 
+            virtual double clearance(const base::State *state) const
+            {
+                typedef typename OMPL_StateType<T>::type StateType;
+
+                double dist = std::numeric_limits<double>::infinity();
+                if (environment_)
+                {
+                    static PQP_REAL identityTranslation[3] = { 0.0, 0.0, 0.0 };
+                    static PQP_REAL identityRotation[3][3] = { { 1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0} };
+
+                    boost::mutex::scoped_lock slock(mutex_);
+
+                    PQP_REAL robTrans[3];
+                    PQP_REAL robRot[3][3];
+
+                    for (std::size_t i = 0 ; i < robotParts_.size() ; ++i)
+                    {
+                        stateConvertor_.PQP_pose_from_state(robTrans, robRot, *static_cast<const StateType*>(extractState_(state, i)));
+                        PQP_DistanceResult dr;
+                        PQP_Distance(&dr, robRot, robTrans, robotParts_[i].get(),
+                                     identityRotation, identityTranslation, environment_.get(), 1e-2, distanceTol_);
+                        if (dist > dr.Distance())
+                            dist = dr.Distance();
+                    }
+                }
+                return dist;
+            }
+
         protected:
 
             /** \brief Shared pointer wrapper for PQP_Model */
@@ -180,18 +209,22 @@ namespace ompl
 
             void configure(const GeometrySpecification &geom)
             {
-                environment_ = getPQPModelFromScene(geom.obstacles, geom.obstaclesShift);
+                std::pair<PQPModelPtr, double> p = getPQPModelFromScene(geom.obstacles, geom.obstaclesShift);
+                environment_ = p.first;
+                avgEnvSide_ = p.second;
+                distanceTol_ = avgEnvSide_ / 100.0;
+
                 if (!environment_)
                     msg_.inform("Empty environment loaded");
                 else
-                    msg_.inform("Loaded environment model with %d triangles", environment_->num_tris);
+                    msg_.inform("Loaded environment model with %d triangles. Average side length is %lf.", environment_->num_tris, avgEnvSide_);
 
                 for (unsigned int i = 0 ; i < geom.robot.size() ; ++i)
                 {
                     aiVector3D shift(0.0, 0.0, 0.0);
                     if (geom.robotShift.size() > i)
                         shift = geom.robotShift[i];
-                    PQPModelPtr m = getPQPModelFromScene(geom.robot[i], shift);
+                    PQPModelPtr m = getPQPModelFromScene(geom.robot[i], shift).first;
                     if (!m)
                         throw Exception("Invalid robot mesh");
                     else
@@ -200,7 +233,7 @@ namespace ompl
                 }
             }
 
-            PQPModelPtr getPQPModelFromScene(const aiScene *scene, const aiVector3D &center) const
+            std::pair<PQPModelPtr, double> getPQPModelFromScene(const aiScene *scene, const aiVector3D &center) const
             {
                 std::vector<const aiScene*> scenes(1, scene);
                 std::vector<aiVector3D>     centers(1, center);
@@ -208,7 +241,7 @@ namespace ompl
             }
 
             /** \brief Convert a mesh to a PQP model */
-            PQPModelPtr getPQPModelFromScene(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &center) const
+            std::pair<PQPModelPtr, double> getPQPModelFromScene(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &center) const
             {
                 std::vector<aiVector3D> triangles;
                 for (unsigned int i = 0 ; i < scenes.size() ; ++i)
@@ -225,18 +258,19 @@ namespace ompl
             }
 
             /** \brief Convert a set of triangles to a PQP model */
-            PQPModelPtr getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const
+            std::pair<PQPModelPtr, double> getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const
             {
                 PQPModelPtr model;
 
                 if (triangles.empty())
-                    return model;
+                    return std::make_pair(model, 0.0);
 
                 // create the PQP model
                 model.reset(new PQP_Model());
                 model->BeginModel();
                 int id = 0;
                 const int N = triangles.size() / 3;
+                double avgSide = 0.0;
                 for (int j = 0 ; j < N ; ++j)
                 {
                     const aiVector3D &v0 = triangles[j * 3];
@@ -245,12 +279,13 @@ namespace ompl
                     PQP_REAL dV0[3] = {v0.x, v0.y, v0.z};
                     PQP_REAL dV1[3] = {v1.x, v1.y, v1.z};
                     PQP_REAL dV2[3] = {v2.x, v2.y, v2.z};
+                    avgSide += (v1 - v0).Length() + (v1 - v2).Length() + (v2 - v0).Length();
                     model->AddTri(dV0, dV1, dV2, id++);
                 }
 
                 model->EndModel();
 
-                return model;
+                return std::make_pair(model, avgSide / (double)triangles.size());
             }
 
             OMPL_StateType<T>           stateConvertor_;
@@ -264,6 +299,12 @@ namespace ompl
 
             /** \brief Model of the environment */
             PQPModelPtr                 environment_;
+
+            /** \brief The average length of a side in the environment */
+            double                      avgEnvSide_;
+
+            /** \brief Tolerance passed to PQP for distance calculations */
+            double                      distanceTol_;
 
             mutable boost::mutex        mutex_;
 
