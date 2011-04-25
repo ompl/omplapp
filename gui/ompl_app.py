@@ -130,8 +130,7 @@ class MainWindow(QtGui.QMainWindow):
         self.oh.error(text)
 
     def openEnvironment(self):
-#        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
-        fname = "/home/isucan/repos/omplapp/resources/environment.stl"
+        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -143,8 +142,7 @@ class MainWindow(QtGui.QMainWindow):
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
     def openRobot(self):
-#        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
-        fname = "/home/isucan/repos/omplapp/resources/robots.stl"
+        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
