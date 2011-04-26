@@ -54,8 +54,8 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
                 double& runtime_limit, double& memory_limit, int& run_count)
 {
     benchmark_name = std::string("cubicles");
-    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
-    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
+    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_robot.dae";
+    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
 
@@ -89,8 +89,8 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
                 double& runtime_limit, double& memory_limit, int& run_count)
 {
     benchmark_name = std::string("Twistycool");
-    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Twistycool_robot.dae";
-    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Twistycool_env.dae";
+    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_robot.dae";
+    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
 

@@ -16,7 +16,7 @@ import sys
 from os.path import abspath, dirname, join
 
 ompl_app_root = dirname(dirname(dirname(abspath(__file__))))
-ompl_resources_dir = join(ompl_app_root, 'resources')
+ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 
 try:
     from ompl import base as ob
