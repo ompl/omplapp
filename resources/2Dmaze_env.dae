@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+    <asset>
+        <contributor>
+            <authoring_tool>Google SketchUp 8.0.4810</authoring_tool>
+        </contributor>
+        <created>2011-04-26T20:38:27Z</created>
+        <modified>2011-04-26T20:38:27Z</modified>
+        <unit meter="0.0254000" name="inch" />
+        <up_axis>Z_UP</up_axis>
+    </asset>
+    <library_visual_scenes>
+        <visual_scene id="ID1">
+            <node name="SketchUp">
+                <node id="ID2" name="instance_0">
+                    <matrix>1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 -0.0000000 -1.0000000 0.0000000 0.0000000 1.0000000 -0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000</matrix>
+                    <node id="ID3" name="instance_1">
+                        <matrix>1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000</matrix>
+                        <instance_geometry url="#ID4">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID12">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID18">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID24">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID30">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID36">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID42">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID48">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID54">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID60">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID66">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID72">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID78">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID84">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID90">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID96">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID102">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID108">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID114">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID120">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID5">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                        <instance_geometry url="#ID126">
+                            <bind_material>
+                                <technique_common>
+                                    <instance_material symbol="Material2" target="#ID127">
+                                        <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+                                    </instance_material>
+                                </technique_common>
+                            </bind_material>
+                        </instance_geometry>
+                    </node>
+                </node>
+            </node>
+        </visual_scene>
+    </library_visual_scenes>
+    <library_geometries>
+        <geometry id="ID4">
+            <mesh>
+                <source id="ID7">
+                    <float_array id="ID10" count="240">-0.3581500 -0.3568900 0.0000000 -0.4059040 -0.3416640 0.0000000 -0.3783530 -0.3854400 0.0000000 -0.3783530 -0.3854400 0.0000000 -0.4059040 -0.3416640 0.0000000 -0.3581500 -0.3568900 0.0000000 -0.3287640 -0.3721170 0.0000000 -0.3287640 -0.3721170 0.0000000 -0.3801900 -0.3074030 0.0000000 -0.3801900 -0.3074030 0.0000000 -0.2663170 -0.3911130 0.0000000 -0.2663170 -0.3911130 0.0000000 -0.4150870 -0.2826600 0.0000000 -0.4150870 -0.2826600 0.0000000 -0.3471300 -0.4082800 0.0000000 -0.3471300 -0.4082800 0.0000000 -0.3544770 -0.2750470 0.0000000 -0.3544770 -0.2750470 0.0000000 -0.1910130 -0.4082420 0.0000000 -0.1910130 -0.4082420 0.0000000 -0.3269270 -0.2636270 0.0000000 -0.3269270 -0.2636270 0.0000000 0.3816910 -0.4139900 0.0000000 0.3816910 -0.4139900 0.0000000 -0.3930470 -0.2522070 0.0000000 -0.3930470 -0.2522070 0.0000000 -0.2791730 -0.4292170 0.0000000 -0.2791730 -0.4292170 0.0000000 -0.0808140 -0.4063770 0.0000000 -0.0808140 -0.4063770 0.0000000 -0.3379470 -0.2407870 0.0000000 -0.3379470 -0.2407870 0.0000000 0.0716300 -0.4234690 0.0000000 0.0716300 -0.4234690 0.0000000 -0.1432600 -0.4063770 0.0000000 -0.1432600 -0.4063770 0.0000000 0.1946870 -0.4006670 0.0000000 0.1946870 -0.4006670 0.0000000 -0.2424400 -0.4330230 0.0000000 -0.2424400 -0.4330230 0.0000000 0.1102000 -0.4311200 0.0000000 0.1102000 -0.4311200 0.0000000 -0.0330600 -0.4006670 0.0000000 -0.0330600 -0.4006670 0.0000000 0.2755000 -0.3968560 0.0000000 0.2755000 -0.3968560 0.0000000 -0.0404070 -0.4368300 0.0000000 -0.0404070 -0.4368300 0.0000000 0.0587740 -0.4463470 0.0000000 0.0587740 -0.4463470 0.0000000 0.3250900 -0.4387330 0.0000000 0.3250900 -0.4387330 0.0000000 0.0110200 -0.3968600 0.0000000 0.0110200 -0.3968600 0.0000000 0.4150870 -0.3740200 0.0000000 0.4150870 -0.3740200 0.0000000 -0.1469340 -0.4444430 0.0000000 -0.1469340 -0.4444430 0.0000000 0.1028530 -0.4482500 0.0000000 0.1028530 -0.4482500 0.0000000 0.2516230 -0.4387330 0.0000000 0.2516230 -0.4387330 0.0000000 0.1175470 -0.3930530 0.0000000 0.1175470 -0.3930530 0.0000000 0.3657960 -0.3816330 0.0000000 0.3657960 -0.3816330 0.0000000 0.0716300 -0.4501540 0.0000000 0.0716300 -0.4501540 0.0000000 0.0753030 -0.3854400 0.0000000 0.0753030 -0.3854400 0.0000000 0.4352900 -0.3016940 0.0000000 0.4352900 -0.3016940 0.0000000 0.0955070 -0.4520560 0.0000000 0.0955070 -0.4520560 0.0000000 0.1561160 -0.1532050 0.0000000 0.1561160 -0.1532050 0.0000000 0.4077400 -0.2940800 0.0000000 0.4077400 -0.2940800 0.0000000 0.1212200 -0.1513300 0.0000000 0.1212200 -0.1513300 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="80" source="#ID10" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID8">
+                    <float_array id="ID11" count="240">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="80" source="#ID11" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID9">
+                    <input semantic="POSITION" source="#ID7" />
+                    <input semantic="NORMAL" source="#ID8" />
+                </vertices>
+                <triangles count="76" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID9" />
+                    <p>0 1 2 3 4 5 6 0 2 3 5 7 0 8 1 4 9 5 10 6 2 3 7 11 8 12 1 4 13 9 10 2 14 15 3 11 16 12 8 9 13 17 18 10 14 15 11 19 20 12 16 17 13 21 22 18 14 15 19 23 20 24 12 13 25 21 22 14 26 27 15 23 22 28 18 19 29 23 20 30 24 25 31 21 22 26 32 33 27 23 28 34 18 19 35 29 22 36 28 29 37 23 32 26 38 39 27 33 22 32 40 41 33 23 36 42 28 29 43 37 22 44 36 37 45 23 32 38 46 47 39 33 40 32 48 49 33 41 22 40 50 51 41 23 36 52 42 43 53 37 54 44 22 23 45 55 46 38 56 57 39 47 40 48 58 59 49 41 50 40 60 61 41 51 36 62 52 53 63 37 54 64 44 45 65 55 58 48 66 67 49 59 62 68 52 53 69 63 70 64 54 55 65 71 58 66 72 73 67 59 74 68 62 63 69 75 70 76 64 65 77 71 74 78 68 69 79 75</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID12">
+            <mesh>
+                <source id="ID13">
+                    <float_array id="ID16" count="24">-0.5000000 -0.5000000 0.0000000 -0.5500000 0.5000000 0.0000000 -0.5500000 -0.5000000 0.0000000 -0.5500000 -0.5000000 0.0000000 -0.5500000 0.5000000 0.0000000 -0.5000000 -0.5000000 0.0000000 -0.5000000 0.5000000 0.0000000 -0.5000000 0.5000000 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID16" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID14">
+                    <float_array id="ID17" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID17" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID15">
+                    <input semantic="POSITION" source="#ID13" />
+                    <input semantic="NORMAL" source="#ID14" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID15" />
+                    <p>0 1 2 3 4 5 6 1 0 5 4 7</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID18">
+            <mesh>
+                <source id="ID19">
+                    <float_array id="ID22" count="126">-0.3669960 -0.0923460 0.0000000 -0.4276060 -0.0695060 0.0000000 -0.4147500 -0.1018620 0.0000000 -0.4147500 -0.1018620 0.0000000 -0.4276060 -0.0695060 0.0000000 -0.3669960 -0.0923460 0.0000000 -0.3302630 -0.1208960 0.0000000 -0.3302630 -0.1208960 0.0000000 -0.3963830 -0.0656990 0.0000000 -0.3963830 -0.0656990 0.0000000 -0.3835260 -0.1266060 0.0000000 -0.3835260 -0.1266060 0.0000000 -0.4000560 -0.0105020 0.0000000 -0.4000560 -0.0105020 0.0000000 -0.3412830 -0.1437360 0.0000000 -0.3412830 -0.1437360 0.0000000 -0.4239330 0.0066280 0.0000000 -0.4239330 0.0066280 0.0000000 -0.3596500 -0.1437360 0.0000000 -0.3596500 -0.1437360 0.0000000 -0.3872000 0.0389840 0.0000000 -0.3872000 0.0389840 0.0000000 -0.4129130 0.0427910 0.0000000 -0.4129130 0.0427910 0.0000000 -0.3596500 0.0637280 0.0000000 -0.3596500 0.0637280 0.0000000 -0.3982200 0.0656310 0.0000000 -0.3982200 0.0656310 0.0000000 -0.3302630 0.0808580 0.0000000 -0.3302630 0.0808580 0.0000000 -0.3835260 0.0808580 0.0000000 -0.3835260 0.0808580 0.0000000 -0.3137330 0.0884710 0.0000000 -0.3137330 0.0884710 0.0000000 -0.3669960 0.0960840 0.0000000 -0.3669960 0.0960840 0.0000000 -0.3394460 0.1113110 0.0000000 -0.3394460 0.1113110 0.0000000 -0.3541400 0.1056010 0.0000000 -0.3541400 0.1056010 0.0000000 -0.3229160 0.1208280 0.0000000 -0.3229160 0.1208280 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="42" source="#ID22" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID20">
+                    <float_array id="ID23" count="126">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="42" source="#ID23" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID21">
+                    <input semantic="POSITION" source="#ID19" />
+                    <input semantic="NORMAL" source="#ID20" />
+                </vertices>
+                <triangles count="38" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID21" />
+                    <p>0 1 2 3 4 5 6 0 2 3 5 7 0 8 1 4 9 5 6 2 10 11 3 7 8 12 1 4 13 9 6 10 14 15 11 7 12 16 1 4 17 13 14 10 18 19 11 15 20 16 12 13 17 21 20 22 16 17 23 21 24 22 20 21 23 25 24 26 22 23 27 25 28 26 24 25 27 29 28 30 26 27 31 29 32 30 28 29 31 33 32 34 30 31 35 33 32 36 34 35 37 33 36 38 34 35 39 37 32 40 36 37 41 33</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID24">
+            <mesh>
+                <source id="ID25">
+                    <float_array id="ID28" count="78">-0.1928500 -0.1589430 0.0000000 -0.2259100 -0.1494270 0.0000000 -0.2185630 -0.2027200 0.0000000 -0.2185630 -0.2027200 0.0000000 -0.2259100 -0.1494270 0.0000000 -0.1928500 -0.1589430 0.0000000 -0.1855030 -0.1951070 0.0000000 -0.1855030 -0.1951070 0.0000000 -0.2130530 -0.0980370 0.0000000 -0.2130530 -0.0980370 0.0000000 -0.1983600 -0.2617230 0.0000000 -0.1983600 -0.2617230 0.0000000 -0.2497870 -0.1018430 0.0000000 -0.2497870 -0.1018430 0.0000000 -0.2259100 -0.2636270 0.0000000 -0.2259100 -0.2636270 0.0000000 -0.2663170 -0.0732720 0.0000000 -0.2663170 -0.0732720 0.0000000 -0.2130530 -0.3093070 0.0000000 -0.2130530 -0.3093070 0.0000000 -0.2295830 -0.0656800 0.0000000 -0.2295830 -0.0656800 0.0000000 -0.2663170 -0.3245330 0.0000000 -0.2663170 -0.3245330 0.0000000 -0.2406030 -0.3435670 0.0000000 -0.2406030 -0.3435670 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="26" source="#ID28" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID26">
+                    <float_array id="ID29" count="78">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="26" source="#ID29" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID27">
+                    <input semantic="POSITION" source="#ID25" />
+                    <input semantic="NORMAL" source="#ID26" />
+                </vertices>
+                <triangles count="22" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID27" />
+                    <p>0 1 2 3 4 5 6 0 2 3 5 7 0 8 1 4 9 5 6 2 10 11 3 7 8 12 1 4 13 9 10 2 14 15 3 11 8 16 12 13 17 9 10 14 18 19 15 11 8 20 16 17 21 9 18 14 22 23 15 19 18 22 24 25 23 19</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID30">
+            <mesh>
+                <source id="ID31">
+                    <float_array id="ID34" count="24">-0.1175460 -0.0238070 0.0000000 -0.1671360 -0.0161940 0.0000000 -0.1542800 -0.0504540 0.0000000 -0.1542800 -0.0504540 0.0000000 -0.1671360 -0.0161940 0.0000000 -0.1175460 -0.0238070 0.0000000 -0.1432600 0.0009360 0.0000000 -0.1432600 0.0009360 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID34" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID32">
+                    <float_array id="ID35" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID35" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID33">
+                    <input semantic="POSITION" source="#ID31" />
+                    <input semantic="NORMAL" source="#ID32" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID33" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID36">
+            <mesh>
+                <source id="ID37">
+                    <float_array id="ID40" count="24">0.5500000 -0.5500000 0.0000000 -0.5500000 -0.5000000 0.0000000 -0.5500000 -0.5500000 0.0000000 -0.5500000 -0.5500000 0.0000000 -0.5500000 -0.5000000 0.0000000 0.5500000 -0.5500000 0.0000000 0.5500000 -0.5000000 0.0000000 0.5500000 -0.5000000 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID40" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID38">
+                    <float_array id="ID41" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID41" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID39">
+                    <input semantic="POSITION" source="#ID37" />
+                    <input semantic="NORMAL" source="#ID38" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID39" />
+                    <p>0 1 2 3 4 5 6 1 0 5 4 7</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID42">
+            <mesh>
+                <source id="ID43">
+                    <float_array id="ID46" count="96">-0.0711040 -0.3149230 0.0000000 -0.1080100 -0.3136050 0.0000000 -0.0924470 -0.3517460 0.0000000 -0.0924470 -0.3517460 0.0000000 -0.1080100 -0.3136050 0.0000000 -0.0711040 -0.3149230 0.0000000 -0.0620350 -0.3334510 0.0000000 -0.0620350 -0.3334510 0.0000000 -0.0881600 -0.2644910 0.0000000 -0.0881600 -0.2644910 0.0000000 -0.0744410 -0.3490640 0.0000000 -0.0744410 -0.3490640 0.0000000 -0.1195830 -0.2504880 0.0000000 -0.1195830 -0.2504880 0.0000000 -0.0880550 -0.2106940 0.0000000 -0.0880550 -0.2106940 0.0000000 -0.1218500 -0.2136550 0.0000000 -0.1218500 -0.2136550 0.0000000 -0.0723430 -0.1513920 0.0000000 -0.0723430 -0.1513920 0.0000000 -0.0998910 -0.1494610 0.0000000 -0.0998910 -0.1494610 0.0000000 -0.0552880 -0.1139010 0.0000000 -0.0552880 -0.1139010 0.0000000 -0.0787490 -0.1043720 0.0000000 -0.0787490 -0.1043720 0.0000000 -0.0147450 -0.0677740 0.0000000 -0.0147450 -0.0677740 0.0000000 -0.0602430 -0.0781320 0.0000000 -0.0602430 -0.0781320 0.0000000 -0.0263440 -0.0366270 0.0000000 -0.0263440 -0.0366270 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="32" source="#ID46" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID44">
+                    <float_array id="ID47" count="96">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="32" source="#ID47" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID45">
+                    <input semantic="POSITION" source="#ID43" />
+                    <input semantic="NORMAL" source="#ID44" />
+                </vertices>
+                <triangles count="28" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID45" />
+                    <p>0 1 2 3 4 5 6 0 2 3 5 7 0 8 1 4 9 5 6 2 10 11 3 7 8 12 1 4 13 9 14 12 8 9 13 15 14 16 12 13 17 15 18 16 14 15 17 19 18 20 16 17 21 19 22 20 18 19 21 23 22 24 20 21 25 23 26 24 22 23 25 27 26 28 24 25 29 27 26 30 28 29 31 27</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID48">
+            <mesh>
+                <source id="ID49">
+                    <float_array id="ID52" count="24">0.0404070 -0.2484000 0.0000000 -0.0091830 -0.2407870 0.0000000 0.0036730 -0.2750470 0.0000000 0.0036730 -0.2750470 0.0000000 -0.0091830 -0.2407870 0.0000000 0.0404070 -0.2484000 0.0000000 0.0146930 -0.2236570 0.0000000 0.0146930 -0.2236570 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID52" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID50">
+                    <float_array id="ID53" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID53" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID51">
+                    <input semantic="POSITION" source="#ID49" />
+                    <input semantic="NORMAL" source="#ID50" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID51" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID54">
+            <mesh>
+                <source id="ID55">
+                    <float_array id="ID58" count="60">0.3342730 -0.2769500 0.0000000 0.2663160 -0.3207260 0.0000000 0.2901940 -0.3378560 0.0000000 0.2901940 -0.3378560 0.0000000 0.2663160 -0.3207260 0.0000000 0.3342730 -0.2769500 0.0000000 0.3232540 -0.2407870 0.0000000 0.3232540 -0.2407870 0.0000000 0.3893740 -0.1817830 0.0000000 0.3893740 -0.1817830 0.0000000 0.3397830 -0.1798800 0.0000000 0.3397830 -0.1798800 0.0000000 0.3654970 -0.1361030 0.0000000 0.3654970 -0.1361030 0.0000000 0.3324370 -0.1265870 0.0000000 0.3324370 -0.1265870 0.0000000 0.3471300 -0.0561640 0.0000000 0.3471300 -0.0561640 0.0000000 0.3214170 -0.0561630 0.0000000 0.3214170 -0.0561630 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="20" source="#ID58" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID56">
+                    <float_array id="ID59" count="60">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="20" source="#ID59" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID57">
+                    <input semantic="POSITION" source="#ID55" />
+                    <input semantic="NORMAL" source="#ID56" />
+                </vertices>
+                <triangles count="16" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID57" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5 8 6 0 5 7 9 8 10 6 7 11 9 8 12 10 11 13 9 12 14 10 11 15 13 12 16 14 15 17 13 16 18 14 15 19 17</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID60">
+            <mesh>
+                <source id="ID61">
+                    <float_array id="ID64" count="108">0.0687220 -0.1117580 0.0000000 0.0264120 -0.1128530 0.0000000 0.0460480 -0.1531690 0.0000000 0.0460480 -0.1531690 0.0000000 0.0264120 -0.1128530 0.0000000 0.0687220 -0.1117580 0.0000000 0.0796810 -0.0908940 0.0000000 0.0796810 -0.0908940 0.0000000 0.0906530 -0.0721470 0.0000000 0.0906530 -0.0721470 0.0000000 0.0952230 -0.0458410 0.0000000 0.0952230 -0.0458410 0.0000000 0.0692410 -0.0450720 0.0000000 0.0692410 -0.0450720 0.0000000 0.1019310 -0.0086350 0.0000000 0.1019310 -0.0086350 0.0000000 0.0762130 0.0055800 0.0000000 0.0762130 0.0055800 0.0000000 0.1020130 0.0220390 0.0000000 0.1020130 0.0220390 0.0000000 0.0660990 0.0599670 0.0000000 0.0660990 0.0599670 0.0000000 0.0966620 0.0674040 0.0000000 0.0966620 0.0674040 0.0000000 0.0337940 0.0829880 0.0000000 0.0337940 0.0829880 0.0000000 0.0801040 0.0980320 0.0000000 0.0801040 0.0980320 0.0000000 0.0031520 0.1051360 0.0000000 0.0031520 0.1051360 0.0000000 0.0461970 0.1189480 0.0000000 0.0461970 0.1189480 0.0000000 0.0114210 0.1272050 0.0000000 0.0114210 0.1272050 0.0000000 0.0204790 0.1331630 0.0000000 0.0204790 0.1331630 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="36" source="#ID64" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID62">
+                    <float_array id="ID65" count="108">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="36" source="#ID65" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID63">
+                    <input semantic="POSITION" source="#ID61" />
+                    <input semantic="NORMAL" source="#ID62" />
+                </vertices>
+                <triangles count="32" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID63" />
+                    <p>0 1 2 3 4 5 6 1 0 5 4 7 8 1 6 7 4 9 10 1 8 9 4 11 10 12 1 4 13 11 14 12 10 11 13 15 14 16 12 13 17 15 18 16 14 15 17 19 18 20 16 17 21 19 18 22 20 21 23 19 22 24 20 21 25 23 22 26 24 25 27 23 26 28 24 25 29 27 26 30 28 29 31 27 30 32 28 29 33 31 30 34 32 33 35 31</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID66">
+            <mesh>
+                <source id="ID67">
+                    <float_array id="ID70" count="132">0.2001970 0.0104540 0.0000000 0.1763200 0.0275840 0.0000000 0.1726470 -0.0028690 0.0000000 0.1726470 -0.0028690 0.0000000 0.1763200 0.0275840 0.0000000 0.2001970 0.0104540 0.0000000 0.2038700 -0.0447430 0.0000000 0.2038700 -0.0447430 0.0000000 0.2130540 0.0599410 0.0000000 0.2130540 0.0599410 0.0000000 0.1726470 -0.0485490 0.0000000 0.1726470 -0.0485490 0.0000000 0.1873400 0.0637470 0.0000000 0.1873400 0.0637470 0.0000000 0.2332570 -0.0713890 0.0000000 0.2332570 -0.0713890 0.0000000 0.2406040 0.0846840 0.0000000 0.2406040 0.0846840 0.0000000 0.1855040 -0.0809060 0.0000000 0.1855040 -0.0809060 0.0000000 0.2020340 0.0865870 0.0000000 0.2020340 0.0865870 0.0000000 0.2663170 -0.0999390 0.0000000 0.2663170 -0.0999390 0.0000000 0.2699900 0.1018140 0.0000000 0.2699900 0.1018140 0.0000000 0.2167270 -0.1056490 0.0000000 0.2167270 -0.1056490 0.0000000 0.2167270 0.1018140 0.0000000 0.2167270 0.1018140 0.0000000 0.2534600 -0.1189720 0.0000000 0.2534600 -0.1189720 0.0000000 0.2791730 0.1075240 0.0000000 0.2791730 0.1075240 0.0000000 0.2406040 -0.1227790 0.0000000 0.2406040 -0.1227790 0.0000000 0.2332570 0.1170410 0.0000000 0.2332570 0.1170410 0.0000000 0.2755000 0.1341710 0.0000000 0.2755000 0.1341710 0.0000000 0.2461140 0.1265570 0.0000000 0.2461140 0.1265570 0.0000000 0.2608070 0.1322670 0.0000000 0.2608070 0.1322670 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="44" source="#ID70" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID68">
+                    <float_array id="ID71" count="132">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="44" source="#ID71" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID69">
+                    <input semantic="POSITION" source="#ID67" />
+                    <input semantic="NORMAL" source="#ID68" />
+                </vertices>
+                <triangles count="40" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID69" />
+                    <p>0 1 2 3 4 5 6 0 2 3 5 7 8 1 0 5 4 9 6 2 10 11 3 7 8 12 1 4 13 9 14 6 10 11 7 15 16 12 8 9 13 17 14 10 18 19 11 15 16 20 12 13 21 17 22 14 18 19 15 23 24 20 16 17 21 25 22 18 26 27 19 23 24 28 20 21 29 25 22 26 30 31 27 23 32 28 24 25 29 33 30 26 34 35 27 31 32 36 28 29 37 33 32 38 36 37 39 33 38 40 36 37 41 39 38 42 40 41 43 39</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID72">
+            <mesh>
+                <source id="ID73">
+                    <float_array id="ID76" count="24">0.2608070 -0.2274630 0.0000000 0.2112170 -0.2198500 0.0000000 0.2240730 -0.2541100 0.0000000 0.2240730 -0.2541100 0.0000000 0.2112170 -0.2198500 0.0000000 0.2608070 -0.2274630 0.0000000 0.2350930 -0.2027200 0.0000000 0.2350930 -0.2027200 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID76" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID74">
+                    <float_array id="ID77" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID77" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID75">
+                    <input semantic="POSITION" source="#ID73" />
+                    <input semantic="NORMAL" source="#ID74" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID75" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID78">
+            <mesh>
+                <source id="ID79">
+                    <float_array id="ID82" count="24">0.5500000 -0.5000000 0.0000000 0.5000000 0.5000000 0.0000000 0.5000000 -0.5000000 0.0000000 0.5000000 -0.5000000 0.0000000 0.5000000 0.5000000 0.0000000 0.5500000 -0.5000000 0.0000000 0.5500000 0.5000000 0.0000000 0.5500000 0.5000000 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID82" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID80">
+                    <float_array id="ID83" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID83" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID81">
+                    <input semantic="POSITION" source="#ID79" />
+                    <input semantic="NORMAL" source="#ID80" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID81" />
+                    <p>0 1 2 3 4 5 6 1 0 5 4 7</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID84">
+            <mesh>
+                <source id="ID85">
+                    <float_array id="ID88" count="90">-0.2112170 0.0523270 0.0000000 -0.2608070 0.0313900 0.0000000 -0.2406040 0.0047440 0.0000000 -0.2406040 0.0047440 0.0000000 -0.2608070 0.0313900 0.0000000 -0.2112170 0.0523270 0.0000000 -0.2314200 0.0922970 0.0000000 -0.2314200 0.0922970 0.0000000 -0.1965230 0.0999100 0.0000000 -0.1965230 0.0999100 0.0000000 -0.2167270 0.1589130 0.0000000 -0.2167270 0.1589130 0.0000000 -0.1891770 0.1646240 0.0000000 -0.1891770 0.1646240 0.0000000 -0.1910130 0.2026900 0.0000000 -0.1910130 0.2026900 0.0000000 -0.2240730 0.2122070 0.0000000 -0.2240730 0.2122070 0.0000000 -0.2112170 0.2635970 0.0000000 -0.2112170 0.2635970 0.0000000 -0.2479500 0.2597900 0.0000000 -0.2479500 0.2597900 0.0000000 -0.2901930 0.2788250 0.0000000 -0.2901930 0.2788250 0.0000000 -0.2314200 0.2902430 0.0000000 -0.2314200 0.2902430 0.0000000 -0.2442770 0.3035670 0.0000000 -0.2442770 0.3035670 0.0000000 -0.2810100 0.3035680 0.0000000 -0.2810100 0.3035680 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="30" source="#ID88" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID86">
+                    <float_array id="ID89" count="90">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="30" source="#ID89" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID87">
+                    <input semantic="POSITION" source="#ID85" />
+                    <input semantic="NORMAL" source="#ID86" />
+                </vertices>
+                <triangles count="26" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID87" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5 8 6 0 5 7 9 8 10 6 7 11 9 12 10 8 9 11 13 12 14 10 11 15 13 14 16 10 11 17 15 14 18 16 17 19 15 18 20 16 17 21 19 18 22 20 21 23 19 18 24 22 23 25 19 24 26 22 23 27 25 26 28 22 23 29 27</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID90">
+            <mesh>
+                <source id="ID91">
+                    <float_array id="ID94" count="330">-0.3857000 0.1836570 0.0000000 -0.3893730 0.2141100 0.0000000 -0.4150870 0.1950770 0.0000000 -0.4150870 0.1950770 0.0000000 -0.3893730 0.2141100 0.0000000 -0.3857000 0.1836570 0.0000000 -0.4205970 0.2426600 0.0000000 -0.4205970 0.2426600 0.0000000 -0.3893730 0.2597900 0.0000000 -0.3893730 0.2597900 0.0000000 -0.3838630 0.2978570 0.0000000 -0.3838630 0.2978570 0.0000000 -0.4114130 0.3016630 0.0000000 -0.4114130 0.3016630 0.0000000 -0.3691700 0.3264070 0.0000000 -0.3691700 0.3264070 0.0000000 -0.3452930 0.3492470 0.0000000 -0.3452930 0.3492470 0.0000000 -0.3765170 0.3682800 0.0000000 -0.3765170 0.3682800 0.0000000 -0.3214170 0.3625700 0.0000000 -0.3214170 0.3625700 0.0000000 -0.2846830 0.3777970 0.0000000 -0.2846830 0.3777970 0.0000000 -0.2681530 0.3835070 0.0000000 -0.2681530 0.3835070 0.0000000 -0.3489670 0.3930230 0.0000000 -0.3489670 0.3930230 0.0000000 -0.2130530 0.3949270 0.0000000 -0.2130530 0.3949270 0.0000000 0.0165300 0.3987330 0.0000000 0.0165300 0.3987330 0.0000000 -0.1634630 0.3949270 0.0000000 -0.1634630 0.3949270 0.0000000 -0.3122330 0.4120570 0.0000000 -0.3122330 0.4120570 0.0000000 -0.1377500 0.3892170 0.0000000 -0.1377500 0.3892170 0.0000000 -0.0275500 0.4120570 0.0000000 -0.0275500 0.4120570 0.0000000 0.0459170 0.3873130 0.0000000 0.0459170 0.3873130 0.0000000 -0.0624470 0.4158630 0.0000000 -0.0624470 0.4158630 0.0000000 -0.1010170 0.3873130 0.0000000 -0.1010170 0.3873130 0.0000000 -0.2755000 0.4291870 0.0000000 -0.2755000 0.4291870 0.0000000 -0.0661200 0.3835070 0.0000000 -0.0661200 0.3835070 0.0000000 -0.0973430 0.4291870 0.0000000 -0.0973430 0.4291870 0.0000000 0.0642830 0.3797000 0.0000000 0.0642830 0.3797000 0.0000000 -0.2185630 0.4368000 0.0000000 -0.2185630 0.4368000 0.0000000 -0.0257130 0.3720870 0.0000000 -0.0257130 0.3720870 0.0000000 -0.1542800 0.4368000 0.0000000 -0.1542800 0.4368000 0.0000000 0.1304030 0.3777970 0.0000000 0.1304030 0.3777970 0.0000000 0.2461130 0.3797000 0.0000000 0.2461130 0.3797000 0.0000000 0.0808130 0.3816030 0.0000000 0.0808130 0.3816030 0.0000000 0.1744830 0.3911200 0.0000000 0.1744830 0.3911200 0.0000000 0.2185630 0.3701830 0.0000000 0.2185630 0.3701830 0.0000000 0.1304030 0.4120570 0.0000000 0.1304030 0.4120570 0.0000000 0.2993770 0.4044430 0.0000000 0.2993770 0.4044430 0.0000000 0.0863240 0.3454400 0.0000000 0.0863240 0.3454400 0.0000000 0.0881600 0.4253800 0.0000000 0.0881600 0.4253800 0.0000000 0.2277470 0.4158630 0.0000000 0.2277470 0.4158630 0.0000000 0.1873400 0.3530530 0.0000000 0.1873400 0.3530530 0.0000000 0.1355900 0.4539300 0.0000000 0.1355900 0.4539300 0.0000000 0.4003930 0.4215730 0.0000000 0.4003930 0.4215730 0.0000000 0.1454060 0.3397300 0.0000000 0.1454060 0.3397300 0.0000000 0.0915110 0.4996100 0.0000000 0.0915110 0.4996100 0.0000000 0.3636600 0.4387030 0.0000000 0.3636600 0.4387030 0.0000000 0.3599870 0.3987330 0.0000000 0.3599870 0.3987330 0.0000000 0.1227230 0.1417620 0.0000000 0.1227230 0.1417620 0.0000000 0.1355910 0.4996100 0.0000000 0.1355910 0.4996100 0.0000000 0.3048870 0.4406070 0.0000000 0.3048870 0.4406070 0.0000000 0.4279440 0.3682800 0.0000000 0.4279440 0.3682800 0.0000000 0.1564270 0.1417880 0.0000000 0.1564270 0.1417880 0.0000000 0.3857000 0.3606670 0.0000000 0.3857000 0.3606670 0.0000000 0.3930460 0.3264070 0.0000000 0.3930460 0.3264070 0.0000000 0.4261070 0.3226000 0.0000000 0.4261070 0.3226000 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="110" source="#ID94" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID92">
+                    <float_array id="ID95" count="330">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="110" source="#ID95" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID93">
+                    <input semantic="POSITION" source="#ID91" />
+                    <input semantic="NORMAL" source="#ID92" />
+                </vertices>
+                <triangles count="106" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID93" />
+                    <p>0 1 2 3 4 5 1 6 2 3 7 4 8 6 1 4 7 9 10 6 8 9 7 11 10 12 6 7 13 11 14 12 10 11 13 15 16 12 14 15 13 17 16 18 12 13 19 17 20 18 16 17 19 21 22 18 20 21 19 23 24 18 22 23 19 25 24 26 18 19 27 25 28 26 24 25 27 29 30 26 28 29 27 31 30 28 32 33 29 31 30 34 26 27 35 31 30 32 36 37 33 31 30 38 34 35 39 31 40 30 36 37 31 41 38 42 34 35 43 39 40 36 44 45 37 41 42 46 34 35 47 43 40 44 48 49 45 41 42 50 46 47 51 43 52 40 48 49 41 53 50 54 46 47 55 51 52 48 56 57 49 53 50 58 54 55 59 51 60 52 56 57 53 61 62 60 56 57 61 63 60 64 52 53 65 61 62 66 60 61 67 63 62 56 68 69 57 63 70 64 60 61 65 71 72 66 62 63 67 73 68 56 74 75 57 69 70 76 64 65 77 71 72 78 66 67 79 73 68 74 80 81 75 69 82 76 70 71 77 83 84 78 72 73 79 85 80 74 86 87 75 81 82 88 76 77 89 83 84 90 78 79 91 85 84 72 92 93 73 85 86 74 94 95 75 87 96 88 82 83 89 97 90 98 78 79 99 91 100 84 92 93 85 101 102 86 94 95 87 103 100 92 104 105 93 101 100 104 106 107 105 101 100 106 108 109 107 101</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID96">
+            <mesh>
+                <source id="ID97">
+                    <float_array id="ID100" count="24">0.5500000 0.5000000 0.0000000 -0.5500000 0.5500000 0.0000000 -0.5500000 0.5000000 0.0000000 -0.5500000 0.5000000 0.0000000 -0.5500000 0.5500000 0.0000000 0.5500000 0.5000000 0.0000000 0.5500000 0.5500000 0.0000000 0.5500000 0.5500000 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID100" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID98">
+                    <float_array id="ID101" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID101" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID99">
+                    <input semantic="POSITION" source="#ID97" />
+                    <input semantic="NORMAL" source="#ID98" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID99" />
+                    <p>0 1 2 3 4 5 6 1 0 5 4 7</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID102">
+            <mesh>
+                <source id="ID103">
+                    <float_array id="ID106" count="102">-0.0395570 0.0526580 0.0000000 -0.0815500 0.0476680 0.0000000 -0.0536760 0.0274280 0.0000000 -0.0536760 0.0274280 0.0000000 -0.0815500 0.0476680 0.0000000 -0.0395570 0.0526580 0.0000000 -0.0506910 0.0709970 0.0000000 -0.0506910 0.0709970 0.0000000 -0.0985880 0.0797600 0.0000000 -0.0985880 0.0797600 0.0000000 -0.0619190 0.0841450 0.0000000 -0.0619190 0.0841450 0.0000000 -0.0865420 0.1313460 0.0000000 -0.0865420 0.1313460 0.0000000 -0.1197480 0.1403410 0.0000000 -0.1197480 0.1403410 0.0000000 -0.0947270 0.1845170 0.0000000 -0.0947270 0.1845170 0.0000000 -0.1239900 0.1763840 0.0000000 -0.1239900 0.1763840 0.0000000 -0.1158570 0.2431950 0.0000000 -0.1158570 0.2431950 0.0000000 -0.0810850 0.2513570 0.0000000 -0.0810850 0.2513570 0.0000000 -0.0594670 0.2783470 0.0000000 -0.0594670 0.2783470 0.0000000 -0.1019150 0.2910040 0.0000000 -0.1019150 0.2910040 0.0000000 -0.0399890 0.2980690 0.0000000 -0.0399890 0.2980690 0.0000000 -0.0801470 0.3084790 0.0000000 -0.0801470 0.3084790 0.0000000 -0.0509840 0.3261540 0.0000000 -0.0509840 0.3261540 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="34" source="#ID106" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID104">
+                    <float_array id="ID107" count="102">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="34" source="#ID107" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID105">
+                    <input semantic="POSITION" source="#ID103" />
+                    <input semantic="NORMAL" source="#ID104" />
+                </vertices>
+                <triangles count="30" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID105" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5 6 8 1 4 9 7 6 10 8 9 11 7 10 12 8 9 13 11 12 14 8 9 15 13 12 16 14 15 17 13 16 18 14 15 19 17 16 20 18 19 21 17 22 20 16 17 21 23 24 20 22 23 21 25 24 26 20 21 27 25 28 26 24 25 27 29 28 30 26 27 31 29 28 32 30 31 33 29</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID108">
+            <mesh>
+                <source id="ID109">
+                    <float_array id="ID112" count="24">0.0183670 0.1969800 0.0000000 -0.0220400 0.2045930 0.0000000 -0.0146940 0.1798500 0.0000000 -0.0146940 0.1798500 0.0000000 -0.0220400 0.2045930 0.0000000 0.0183670 0.1969800 0.0000000 -0.0036740 0.2236260 0.0000000 -0.0036740 0.2236260 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID112" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID110">
+                    <float_array id="ID113" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID113" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID111">
+                    <input semantic="POSITION" source="#ID109" />
+                    <input semantic="NORMAL" source="#ID110" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID111" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID114">
+            <mesh>
+                <source id="ID115">
+                    <float_array id="ID118" count="48">0.3820270 0.1513000 0.0000000 0.3397830 0.0542300 0.0000000 0.3654970 0.0485190 0.0000000 0.3654970 0.0485190 0.0000000 0.3397830 0.0542300 0.0000000 0.3820270 0.1513000 0.0000000 0.3452930 0.1912700 0.0000000 0.3452930 0.1912700 0.0000000 0.3710070 0.2350470 0.0000000 0.3710070 0.2350470 0.0000000 0.3195800 0.2483410 0.0000000 0.3195800 0.2483410 0.0000000 0.3177430 0.2978250 0.0000000 0.3177430 0.2978250 0.0000000 0.2883560 0.2845340 0.0000000 0.2883560 0.2845340 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="16" source="#ID118" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID116">
+                    <float_array id="ID119" count="48">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="16" source="#ID119" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID117">
+                    <input semantic="POSITION" source="#ID115" />
+                    <input semantic="NORMAL" source="#ID116" />
+                </vertices>
+                <triangles count="12" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID117" />
+                    <p>0 1 2 3 4 5 0 6 1 4 7 5 0 8 6 7 9 5 8 10 6 7 11 9 8 12 10 11 13 9 10 12 14 15 13 11</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID120">
+            <mesh>
+                <source id="ID121">
+                    <float_array id="ID124" count="24">0.2406030 0.2293370 0.0000000 0.2222360 0.2540800 0.0000000 0.2075430 0.2369500 0.0000000 0.2075430 0.2369500 0.0000000 0.2222360 0.2540800 0.0000000 0.2406030 0.2293370 0.0000000 0.2130530 0.2122070 0.0000000 0.2130530 0.2122070 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID124" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="ID122">
+                    <float_array id="ID125" count="24">-0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 0.0000000 0.0000000 -1.0000000 -0.0000000 -0.0000000 1.0000000 0.0000000 0.0000000 -1.0000000</float_array>
+                    <technique_common>
+                        <accessor count="8" source="#ID125" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID123">
+                    <input semantic="POSITION" source="#ID121" />
+                    <input semantic="NORMAL" source="#ID122" />
+                </vertices>
+                <triangles count="4" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID123" />
+                    <p>0 1 2 3 4 5 0 2 6 7 3 5</p>
+                </triangles>
+            </mesh>
+        </geometry>
+        <geometry id="ID126">
+            <mesh>
+                <source id="ID129">
+                    <float_array id="ID131" count="9">-0.0918340 -0.4406360 0.0000000 -0.1469340 -0.4444430 0.0000000 -0.0404070 -0.4368300 0.0000000</float_array>
+                    <technique_common>
+                        <accessor count="3" source="#ID131" stride="3">
+                            <param name="X" type="float" />
+                            <param name="Y" type="float" />
+                            <param name="Z" type="float" />
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="ID130">
+                    <input semantic="POSITION" source="#ID129" />
+                </vertices>
+                <lines count="2" material="Material2">
+                    <input offset="0" semantic="VERTEX" source="#ID130" />
+                    <p>1 0 0 2</p>
+                </lines>
+            </mesh>
+        </geometry>
+    </library_geometries>
+    <library_materials>
+        <material id="ID5" name="material_0">
+            <instance_effect url="#ID6" />
+        </material>
+        <material id="ID127" name="edge_color25519066255">
+            <instance_effect url="#ID128" />
+        </material>
+    </library_materials>
+    <library_effects>
+        <effect id="ID6">
+            <profile_COMMON>
+                <technique sid="COMMON">
+                    <lambert>
+                        <diffuse>
+                            <color>1.0000000 0.7450980 0.2588235 1.0000000</color>
+                        </diffuse>
+                    </lambert>
+                </technique>
+            </profile_COMMON>
+        </effect>
+        <effect id="ID128">
+            <profile_COMMON>
+                <technique sid="COMMON">
+                    <constant>
+                        <transparent opaque="A_ONE">
+                            <color>1.0000000 0.7450981 0.2588235 1.0000000</color>
+                        </transparent>
+                        <transparency>
+                            <float>1.0000000</float>
+                        </transparency>
+                    </constant>
+                </technique>
+            </profile_COMMON>
+        </effect>
+    </library_effects>
+    <scene>
+        <instance_visual_scene url="#ID1" />
+    </scene>
+</COLLADA>
