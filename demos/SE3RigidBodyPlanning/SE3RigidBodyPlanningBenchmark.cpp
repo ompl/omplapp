@@ -74,10 +74,15 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
     setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
+    setup.setup();
+
+    std::vector<double> cs(3);
+    cs[0] = 35; cs[1] = 35; cs[2] = 35;
+    setup.getStateManifold()->getDefaultProjection()->setCellSizes(cs);
 
     runtime_limit = 10.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 5;
+    run_count     = 500;
 }
 
 void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
@@ -112,10 +117,7 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    std::vector<double> cs(3);
-    cs[0] = 30; cs[1] = 20; cs[2] = 30;
-    setup.getStateManifold()->getDefaultProjection()->setCellSizes(cs);
-    
+
     runtime_limit = 90.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
     run_count     = 50;
@@ -145,6 +147,7 @@ int main(int argc, char **argv)
     b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::BasicPRM(setup.getSpaceInformation())));
 
+
     // run all planners with a uniform valid state sampler on the benchmark problem
     setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
     b.setExperimentName(benchmark_name + "_uniform_sampler");
@@ -164,6 +167,7 @@ int main(int argc, char **argv)
     b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
     b.benchmark(runtime_limit, memory_limit, run_count, true);
     b.saveResultsToFile();
+
 
     // run all planners with a maximum-clearance valid state sampler on the benchmark problem
     setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocMaximizeClearanceStateSampler);
