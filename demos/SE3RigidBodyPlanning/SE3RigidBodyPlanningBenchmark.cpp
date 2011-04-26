@@ -45,7 +45,9 @@ base::ValidStateSamplerPtr allocObstacleStateSampler(const base::SpaceInformatio
 
 base::ValidStateSamplerPtr allocMaximizeClearanceStateSampler(const base::SpaceInformation *si)
 {
-    return base::ValidStateSamplerPtr(new base::MaximizeClearanceValidStateSampler(si));
+    base::MaximizeClearanceValidStateSampler *s = new base::MaximizeClearanceValidStateSampler(si);
+    s->setNrImproveAttempts(5);
+    return base::ValidStateSamplerPtr(s);
 }
 
 void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
@@ -110,8 +112,10 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    setup.getSpaceInformation()->getProjectionEvaluator()
-
+    std::vector<double> cs(3);
+    cs[0] = 30; cs[1] = 20; cs[2] = 30;
+    setup.getStateManifold()->getDefaultProjection()->setCellSizes(cs);
+    
     runtime_limit = 90.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
     run_count     = 50;
