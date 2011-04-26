@@ -15,8 +15,8 @@
 #include <ompl/benchmark/Benchmark.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/rrt/LazyRRT.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
+#include <ompl/geometric/planners/kpiece/BKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
@@ -25,6 +25,7 @@
 #include <ompl/base/samplers/UniformValidStateSampler.h>
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
+#include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
 using namespace ompl;
 
 base::ValidStateSamplerPtr allocUniformStateSampler(const base::SpaceInformation *si)
@@ -42,8 +43,13 @@ base::ValidStateSamplerPtr allocObstacleStateSampler(const base::SpaceInformatio
     return base::ValidStateSamplerPtr(new base::ObstacleBasedValidStateSampler(si));
 }
 
+base::ValidStateSamplerPtr allocMaximizeClearanceStateSampler(const base::SpaceInformation *si)
+{
+    return base::ValidStateSamplerPtr(new base::MaximizeClearanceValidStateSampler(si));
+}
+
 void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
-    double& runtime_limit, double& memory_limit, int& run_count)
+                double& runtime_limit, double& memory_limit, int& run_count)
 {
     benchmark_name = std::string("cubicles");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
@@ -69,11 +75,11 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     runtime_limit = 10.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 500;
+    run_count     = 5;
 }
 
 void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
-    double& runtime_limit, double& memory_limit, int& run_count)
+                double& runtime_limit, double& memory_limit, int& run_count)
 {
     benchmark_name = std::string("Twistycool");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/Twistycool_robot.dae";
@@ -104,6 +110,7 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
+    setup.getSpaceInformation()->getProjectionEvaluator()
 
     runtime_limit = 90.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
@@ -127,7 +134,7 @@ int main(int argc, char **argv)
     Benchmark b(setup, benchmark_name);
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
-    //    b.addPlanner(base::PlannerPtr(new geometric::LazyRRT(setup.getSpaceInformation())));
+    b.addPlanner(base::PlannerPtr(new geometric::BKPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
@@ -151,6 +158,12 @@ int main(int argc, char **argv)
     // run all planners with a obstacle-based valid state sampler on the benchmark problem
     setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
     b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
+    b.benchmark(runtime_limit, memory_limit, run_count, true);
+    b.saveResultsToFile();
+
+    // run all planners with a maximum-clearance valid state sampler on the benchmark problem
+    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocMaximizeClearanceStateSampler);
+    b.setExperimentName(benchmark_name + "_maxclearance_sampler");
     b.benchmark(runtime_limit, memory_limit, run_count, true);
     b.saveResultsToFile();
 

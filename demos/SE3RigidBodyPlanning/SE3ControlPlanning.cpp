@@ -20,7 +20,7 @@ int main()
     // plan in SE3
     app::SE3ControlPlanning setup;
     const base::StateManifoldPtr &SE3 = setup.getGeometricComponentStateManifold();
-    
+
     // load the robot and the environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
