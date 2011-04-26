@@ -15,7 +15,6 @@
 
 #include "omplapp/geometry/GeometrySpecification.h"
 #include <ompl/base/SpaceInformation.h>
-#include <ompl/base/ScopedState.h>
 #include <ompl/base/manifolds/RealVectorBounds.h>
 #include <boost/shared_ptr.hpp>
 #include <aiScene.h>
@@ -44,39 +43,51 @@ namespace ompl
             {
             }
 
-            /** \brief The CAD file for the robot often has a root
-                transform. This root transform is undone when the
-                robot is loaded, but the value of that transform is
-                kept as the robot's starting state. This function
-                returns that starting state. \e state is assumed to be
-                part of ompl::base::SE2StateManifold if motion is in
-                2D, and ompl::base::SE3StateManifold if motion is in
-                3D.*/
-            void getEnvStartState(base::ScopedState<>& state) const;
+            MotionModel getMotionModel(void) const
+            {
+                return mtype_;
+            }
+
+            bool hasEnvironment(void) const
+            {
+                return !importerEnv_.empty();
+            }
+
+            bool hasRobot(void) const
+            {
+                return !importerRobot_.empty();
+            }
+
+            unsigned int getLoadedRobotCount(void) const
+            {
+                return importerRobot_.size();
+            }
+
+            /** \brief Get the robot's center (average of all the vertices of all its parts) */
+            aiVector3D getRobotCenter(unsigned int robotIndex) const;
 
             /** \brief This function specifies the name of the CAD
                 file representing the environment (\e
                 env). Returns 1 on success, 0 on failure. */
-            virtual int setEnvironmentMesh(const std::string &env);
+            virtual bool setEnvironmentMesh(const std::string &env);
 
             /** \brief This function specifies the name of the CAD
                 file representing a part of the environment (\e
                 env). Returns 1 on success, 0 on failure. */
-            virtual int addEnvironmentMesh(const std::string &env);
+            virtual bool addEnvironmentMesh(const std::string &env);
 
              /** \brief This function specifies the name of the CAD
                  file representing the robot (\e robot). Returns 1 on success, 0 on failure. */
-            virtual int setRobotMesh(const std::string &robot);
+            virtual bool setRobotMesh(const std::string &robot);
 
              /** \brief This function specifies the name of the CAD
                 file representing a part of the robot (\e robot). Returns 1 on success, 0 on failure. */
-            virtual int addRobotMesh(const std::string &robot);
-
-            /** \brief Get the robot's center (average of all the vertices of all its parts) */
-            aiVector3D getRobotCenter(void) const;
+            virtual bool addRobotMesh(const std::string &robot);
 
             /** \brief Allocate default state validity checker using PQP. */
             const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
+
+            const GeometrySpecification& getGeometrySpecification(void) const;
 
             /** \brief The bounds of the environment are inferred
                 based on the axis-aligned bounding box for the objects
@@ -116,7 +127,9 @@ namespace ompl
 
         protected:
 
-                  MotionModel         mtype_;
+            void computeGeometrySpecification(void);
+
+            MotionModel         mtype_;
 
             /** \brief The factor to multiply inferred environment bounds by (default 1) */
             double              factor_;
@@ -129,6 +142,8 @@ namespace ompl
 
             /** \brief Instance of assimp importer used to load robot */
             std::vector< boost::shared_ptr<Assimp::Importer> > importerRobot_;
+
+            GeometrySpecification         geom_;
 
             base::StateValidityCheckerPtr pqp_svc_;
 

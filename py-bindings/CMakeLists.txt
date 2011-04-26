@@ -8,7 +8,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
 if(OMPL_BUILD_PYBINDINGS)
     if(PY_OMPL_GENERATE)
         create_module_generation_targets(app ${CMAKE_CURRENT_SOURCE_DIR})
-        add_dependencies(update_app_bindings update_geometric_bindings)
+        add_dependencies(update_app_bindings update_geometric_bindings update_control_bindings)
     endif(PY_OMPL_GENERATE)
 
     if(PY_OMPL_COMPILE AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bindings")

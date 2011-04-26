@@ -9,6 +9,13 @@ if(TARGET pqp)
     add_dependencies(ompl_app pqp)
 endif()
 target_link_libraries(ompl_app ompl ${OMPLAPP_LIBRARIES})
+
+if(WIN32)
+  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}")
+else(WIN32)
+  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" SOVERSION "${OMPLAPP_MAJOR_VERSION}")
+endif(WIN32)
+
 install(TARGETS ompl_app DESTINATION lib)
 get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
 add_custom_command(TARGET ompl_app POST_BUILD

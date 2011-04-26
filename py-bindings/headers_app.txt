@@ -1,4 +1,13 @@
 ../src/omplapp/geometry/RigidBodyGeometry.h
-../src/omplapp/graphics/GRigidBodyGeometry.h
-../src/omplapp/SE2RigidBodyPlanning.h
-../src/omplapp/SE3RigidBodyPlanning.h
+../src/omplapp/graphics/RenderGeometry.h
+../src/omplapp/apps/AppBase.h
+../src/omplapp/apps/SE2RigidBodyPlanning.h
+../src/omplapp/apps/SE3RigidBodyPlanning.h
+../src/omplapp/apps/SE3ControlPlanning.h
+../src/omplapp/apps/KinematicCarPlanning.h
+../src/omplapp/apps/DynamicCarPlanning.h
+../src/omplapp/apps/graphical/GSE2RigidBodyPlanning.h
+../src/omplapp/apps/graphical/GSE3RigidBodyPlanning.h
+../src/omplapp/apps/graphical/GSE3ControlPlanning.h
+../src/omplapp/apps/graphical/GKinematicCarPlanning.h
+../src/omplapp/apps/graphical/GDynamicCarPlanning.h

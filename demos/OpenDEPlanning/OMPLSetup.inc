@@ -59,14 +59,18 @@ public:
 
     CarStateProjectionEvaluator(const ob::StateManifold *manifold) : ob::ProjectionEvaluator(manifold)
     {
-    cellDimensions_.resize(2);
-    cellDimensions_[0] = 1.0;
-    cellDimensions_[1] = 1.0;
     }
 
     virtual unsigned int getDimension(void) const
     {
     return 2;
+    }
+
+    virtual void defaultCellSizes(void)
+    {
+    cellSizes_.resize(2);
+    cellSizes_[0] = 1.0;
+    cellSizes_[1] = 1.0;
     }
 
     virtual void project(const ob::State *state, ob::EuclideanProjection &projection) const

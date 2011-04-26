@@ -11,7 +11,7 @@
 /* Author: Ioan Sucan */
 
 #include <omplapp/config.h>
-#include <omplapp/SE3RigidBodyPlanning.h>
+#include <omplapp/apps/SE3RigidBodyPlanning.h>
 #include <ompl/benchmark/Benchmark.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>

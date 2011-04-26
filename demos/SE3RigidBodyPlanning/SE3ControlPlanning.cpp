@@ -8,9 +8,9 @@
 *
 *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Mark Moll */
 
-#include <omplapp/apps/SE3RigidBodyPlanning.h>
+#include <omplapp/apps/SE3ControlPlanning.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
@@ -18,16 +18,17 @@ using namespace ompl;
 int main()
 {
     // plan in SE3
-    app::SE3RigidBodyPlanning setup;
-
+    app::SE3ControlPlanning setup;
+    const base::StateManifoldPtr &SE3 = setup.getGeometricComponentStateManifold();
+    
     // load the robot and the environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
+    setup.setRobotMesh(robot_fname);
+    setup.setEnvironmentMesh(env_fname);
 
     // define start state
-    base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
+    base::ScopedState<base::SE3StateManifold> start(SE3);
     start->setX(-4.96);
     start->setY(70.57);
     start->setZ(40.62);
@@ -41,12 +42,10 @@ int main()
     goal->rotation().setIdentity();
 
     // set the start & goal states
-    setup.setStartAndGoalStates(start, goal);
+    setup.setStartAndGoalStates(setup.getFullStateFromGeometricComponent(start),
+        setup.getFullStateFromGeometricComponent(goal));
 
-    // setting collision checking resolution to 1% of the space extent
-    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-
-    // we call setup just so print() can show more information
+    // we call setup() just so print() can show more information
     setup.setup();
     setup.print();
 
@@ -54,7 +53,6 @@ int main()
     if (setup.solve(10))
     {
         // simplify & print the solution
-        setup.simplifySolution();
         setup.getSolutionPath().print(std::cout);
     }
 

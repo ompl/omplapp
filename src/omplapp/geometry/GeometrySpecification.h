@@ -32,16 +32,15 @@ namespace ompl
         {
         public:
 
-            GeometrySpecification(void) : robotShift(0.0, 0.0, 0.0),
-                                          obstaclesShift(0.0, 0.0, 0.0)
+            GeometrySpecification(void)
             {
             }
 
             std::vector<const aiScene *> robot;
-            aiVector3D                   robotShift;
+            std::vector<aiVector3D>      robotShift;
 
             std::vector<const aiScene *> obstacles;
-            aiVector3D                   obstaclesShift;
+            std::vector<aiVector3D>      obstaclesShift;
         };
 
     }

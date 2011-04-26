@@ -2,19 +2,24 @@ if (OMPL_BUILD_DEMOS)
     set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app)
 
     # create executable for SE3 rigid body planning application
-    set(SE3RigidBodyPlanning_SRC SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
-    add_executable(SE3RigidBodyPlanning ${SE3RigidBodyPlanning_SRC})
+    add_executable(SE3RigidBodyPlanning SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
     target_link_libraries(SE3RigidBodyPlanning ${OMPLAPP_DEMO_LIBRARIES})
 
+    # create executable for SE3 planning with controls application
+    add_executable(SE3ControlPlanning SE3RigidBodyPlanning/SE3ControlPlanning.cpp)
+    target_link_libraries(SE3ControlPlanning ${OMPLAPP_DEMO_LIBRARIES})
+
     # create executable for SE3 rigid body benchmarking application
-    set(SE3RigidBodyPlanningBenchmark_SRC SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
-    add_executable(SE3RigidBodyPlanningBenchmark ${SE3RigidBodyPlanningBenchmark_SRC})
+    add_executable(SE3RigidBodyPlanningBenchmark SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
     target_link_libraries(SE3RigidBodyPlanningBenchmark ${OMPLAPP_DEMO_LIBRARIES})
 
     # create executable for SE2 rigid body planning application
-    aux_source_directory(SE2RigidBodyPlanning SE2RigidBodyPlanning_SRC)
-    add_executable(SE2RigidBodyPlanning ${SE2RigidBodyPlanning_SRC})
+    add_executable(SE2RigidBodyPlanning SE2RigidBodyPlanning/SE2RigidBodyPlanning.cpp)
     target_link_libraries(SE2RigidBodyPlanning ${OMPLAPP_DEMO_LIBRARIES})
+
+    # create executable for kinematic car planning application
+    add_executable(KinematicCarPlanning SE2RigidBodyPlanning/KinematicCarPlanning.cpp)
+    target_link_libraries(KinematicCarPlanning ${OMPLAPP_DEMO_LIBRARIES})
 
     # create executable for planning with ODE
     if (ODE_FOUND AND DRAWSTUFF_FOUND)
