@@ -1,0 +1,50 @@
+solid robots
+facet normal 0 0 0
+outer loop
+vertex -0.135914 0.029108 0
+vertex -0.117546 -0.013509 0
+vertex -0.135914 -0.032542 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex -0.135914 0.029108 0
+vertex -0.117546 0.029108 0
+vertex -0.117546 -0.013509 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex -0.117546 -0.013509 0
+vertex 0.134076 -0.032542 0
+vertex -0.135914 -0.032542 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.134076 -0.032542 0
+vertex -0.117546 -0.013509 0
+vertex 0.119384 -0.013509 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.134076 -0.032542 0
+vertex 0.119384 -0.013509 0
+vertex 0.134076 0.016943 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.119384 -0.013509 0
+vertex 0.119384 0.016943 0
+vertex 0.134076 0.016943 0
+endloop 
+ endfacet
+
+ endsolid robots

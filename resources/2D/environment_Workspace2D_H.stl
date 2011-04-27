@@ -1,0 +1,114 @@
+solid environment
+facet normal 0 0 0
+outer loop
+vertex -0.5 -0.5 0
+vertex -0.55 -0.5 0
+vertex -0.55 0.5 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.55 -0.55 0
+vertex -0.55 -0.55 0
+vertex -0.55 -0.5 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex -0.17081 -0.501543 0
+vertex -0.17081 -0.02571 0
+vertex 0.08265 -0.501543 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.08265 -0.501543 0
+vertex -0.17081 -0.02571 0
+vertex -0.1653 -0.02571 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.08265 -0.501543 0
+vertex -0.1653 -0.02571 0
+vertex 0.08265 -0.02571 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.55 -0.5 0
+vertex 0.55 -0.55 0
+vertex -0.55 -0.5 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.55 -0.5 0
+vertex 0.5 -0.5 0
+vertex 0.5 0.5 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex -0.5 0.5 0
+vertex -0.5 -0.5 0
+vertex -0.55 0.5 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.55 0.5 0
+vertex -0.55 0.5 0
+vertex -0.55 0.55 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex -0.168973 0.029487 0
+vertex -0.168973 0.497707 0
+vertex 0.084487 0.029487 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex -0.168973 0.497707 0
+vertex -0.1653 0.503417 0
+vertex 0.084487 0.501513 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.084487 0.029487 0
+vertex -0.168973 0.497707 0
+vertex 0.084487 0.501513 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.55 0.55 0
+vertex 0.55 0.5 0
+vertex -0.55 0.55 0
+endloop 
+ endfacet
+
+facet normal 0 0 0
+outer loop
+vertex 0.55 0.5 0
+vertex 0.55 -0.5 0
+vertex 0.5 0.5 0
+endloop 
+ endfacet
+
+ endsolid environment
