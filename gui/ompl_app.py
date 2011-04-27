@@ -886,7 +886,7 @@ class Pose3DBox(QtGui.QGroupBox):
             self.posz.setValue(elevation)
             self.rotx.setValue(0)
             self.roty.setValue(0)
-            self.rotz.setValue(state.getYaw())
+            self.rotz.setValue(180 * state.getYaw() / pi)
 
     def getPose(self):
         state = ob.State(ob.SE3StateManifold())
@@ -949,13 +949,13 @@ class Pose2DBox(QtGui.QGroupBox):
         else:
             self.posx.setValue(state.getX())
             self.posy.setValue(state.getY())
-            self.rot.setValue(state.getYaw())
+            self.rot.setValue(state.getYaw() * 180 / pi)
 
     def getPose(self):
         state = ob.State(ob.SE2StateManifold())
         state().setX(self.posx.value())
         state().setY(self.posy.value())
-        state().setYaw(self.rot.value())
+        state().setYaw(self.rot.value() * pi / 180)
         return state
 
     def poseChange(self, value):
