@@ -300,7 +300,11 @@ class MainWindow(QtGui.QMainWindow):
         return planner
 
     def setRobotType(self, value):
+        self.environmentFile = None
+        self.robotFile = None
+        self.path = None
         self.omplSetup = eval('oa.%s()' % self.robotTypes[value][0])
+        self.clear()
         self.isGeometric = self.robotTypes[value][2]==oa.GEOMETRIC
         self.is3D = isinstance(self.omplSetup.getGeometricComponentStateManifold(), ob.SE3StateManifold)
         self.mainWidget.plannerWidget.setCurrentIndex(0 if self.isGeometric else 1)
@@ -370,7 +374,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def clear(self):
         self.omplSetup.clear()
-        self.mainWidget.glViewer.clear()
+        self.mainWidget.glViewer.clear(True)
 
     def createActions(self):
         self.openEnvironmentAct = QtGui.QAction('Open &Environment', self,
@@ -581,10 +585,16 @@ class GLViewer(QtOpenGL.QGLWidget):
     def setEnvironment(self, environment):
         if self.environment: GL.glDeleteLists(self.environment, 1)
         self.environment = environment
-    def clear(self):
+    def clear(self, deepClean=False):
         self.solutionPath = None
         self.plannerDataList = None
         self.pathIndex = 0
+        if deepClean:
+            self.setRobot(None)
+            self.setEnvironment(None)
+            self.bounds_low = None
+            self.bounds_high = None
+            self.cameraPose = [0,0,0,0,0,0]
         self.updateGL()
     def initializeGL(self):
         GL.glClearColor(0.5,0.5,0.5,1.)
@@ -762,8 +772,8 @@ class ProblemWidget(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         layout.addWidget(self.startPose2D, 0, 0, 1, 2)
         layout.addWidget(self.goalPose2D, 1, 0, 1 ,2)
-        layout.addWidget(elevation2Dlabel, 2, 0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.elevation2D, 2, 1)
+        #layout.addWidget(elevation2Dlabel, 2, 0, QtCore.Qt.AlignRight)
+        #layout.addWidget(self.elevation2D, 2, 1)
         startGoal2D.setLayout(layout)
 
         self.poses = QtGui.QStackedWidget()
@@ -784,8 +794,8 @@ class ProblemWidget(QtGui.QWidget):
 
     def setStartPose(self, value, is3D):
         self.startPose2D.setPose(value, is3D)
-        if is3D:
-            self.elevation2D.setValue(value().getZ())
+        # if is3D:
+        #     self.elevation2D.setValue(value().getZ())
         self.startPose3D.setPose(value, self.elevation2D.value(), is3D)
     def getStartPose(self):
         return self.startPose3D.getPose() if self.poses.currentIndex()==0 else self.startPose2D.getPose()
@@ -796,8 +806,8 @@ class ProblemWidget(QtGui.QWidget):
         self.startChanged.emit(value)
     def setGoalPose(self, value, is3D):
         self.goalPose2D.setPose(value, is3D)
-        if is3D:
-            self.elevation2D.setValue(value().getZ())
+        # if is3D:
+        #     self.elevation2D.setValue(value().getZ())
         self.goalPose3D.setPose(value, self.elevation2D.value(), is3D)
     def goalPoseChange(self, value):
         if self.poses.currentIndex()==1: value[5] = self.elevation2D.value()
