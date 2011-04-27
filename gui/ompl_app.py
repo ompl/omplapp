@@ -304,7 +304,7 @@ class MainWindow(QtGui.QMainWindow):
         self.robotFile = None
         self.path = None
         self.omplSetup = eval('oa.%s()' % self.robotTypes[value][0])
-        self.clear()
+        self.clear(True)
         self.isGeometric = self.robotTypes[value][2]==oa.GEOMETRIC
         self.is3D = isinstance(self.omplSetup.getGeometricComponentStateManifold(), ob.SE3StateManifold)
         self.mainWidget.plannerWidget.setCurrentIndex(0 if self.isGeometric else 1)
@@ -372,9 +372,9 @@ class MainWindow(QtGui.QMainWindow):
                     self.msgError("Interpolation produced " + str(len(path.states)) + " states instead of " + str(ns) + " states!")
             self.setSolutionPath(path)
 
-    def clear(self):
+    def clear(self, deepClean=False):
         self.omplSetup.clear()
-        self.mainWidget.glViewer.clear(True)
+        self.mainWidget.glViewer.clear(deepClean)
 
     def createActions(self):
         self.openEnvironmentAct = QtGui.QAction('Open &Environment', self,
