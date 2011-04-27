@@ -257,8 +257,53 @@ namespace ompl
                 return getPQPModelFromTris(triangles);
             }
 
-            /** \brief Convert a set of triangles to a PQP model */
+            /** \brief Convert a set of triangles to a PQP model, but add extra padding if a particular dimension is disproportionately small */
             std::pair<PQPModelPtr, double> getPQPModelFromTris(const std::vector<aiVector3D> &triangles) const
+#ifdef OMPLAPP_ADD_PADDING_FOR_DIMENSION
+            {
+                base::RealVectorBounds bounds(3);
+                scene::inferBounds(bounds, triangles, 1.0, 0.0);
+                const std::vector<double> &b = bounds.getDifference();
+                unsigned int d = b[0] > b[1] ? 1 : 0;
+                if (b[d] > b[2])
+                    d = 2;
+                // the dimension with minimum extents is in d
+                double other = (b[(d + 1) % 3] + b[(d + 2) % 3]) / 2.0;
+                if (b[d] * 1000.0 < other && b[d] < 0.1)
+                {
+                    msg_.debug("Adding padding for dimension %u so that collision checking is more accurate", d);
+                    std::vector<aiVector3D> extraTri;
+                    extraTri.reserve(triangles.size() * 8);
+                    const int N = triangles.size() / 3;
+                    double padd = other / 10.0;
+
+                    for (int j = 0 ; j < N ; ++j)
+                    {
+                        const aiVector3D &v0 = triangles[j * 3];
+                        const aiVector3D &v1 = triangles[j * 3 + 1];
+                        const aiVector3D &v2 = triangles[j * 3 + 2];
+                        aiVector3D x0 = v0; x0[d] += padd;
+                        aiVector3D x1 = v1; x1[d] += padd;
+                        aiVector3D x2 = v2; x2[d] += padd;
+                        extraTri.push_back(v0); extraTri.push_back(v1); extraTri.push_back(v2);
+                        extraTri.push_back(x0); extraTri.push_back(x2); extraTri.push_back(x1);
+                        extraTri.push_back(x1); extraTri.push_back(v1); extraTri.push_back(v2);
+                        extraTri.push_back(x1); extraTri.push_back(v2); extraTri.push_back(x2);
+                        extraTri.push_back(x1); extraTri.push_back(v0); extraTri.push_back(v1);
+                        extraTri.push_back(x1); extraTri.push_back(x0); extraTri.push_back(v0);
+                        extraTri.push_back(v0); extraTri.push_back(v2); extraTri.push_back(x2);
+                        extraTri.push_back(v0); extraTri.push_back(x2); extraTri.push_back(x0);
+                    }
+
+                    return getPQPModelFromTrisHelper(extraTri);
+                }
+                else
+                    return getPQPModelFromTrisHelper(triangles);
+            }
+
+            /** \brief Convert a set of triangles to a PQP model */
+            std::pair<PQPModelPtr, double> getPQPModelFromTrisHelper(const std::vector<aiVector3D> &triangles) const
+#endif
             {
                 PQPModelPtr model;
 
