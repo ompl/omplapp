@@ -365,11 +365,14 @@ class MainWindow(QtGui.QMainWindow):
                 if path.check() == False:
                     self.msgError("Path reported by planner seems to be invalid!")
 
-            ns = 200
+            ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateManifold().getMaximumExtent()))
             if self.isGeometric and len(path.states) < ns:
+                self.msgDebug("Interpolating solution path to " + str(ns) + " states")
                 path.interpolate(ns)
                 if len(path.states) != ns:
                     self.msgError("Interpolation produced " + str(len(path.states)) + " states instead of " + str(ns) + " states!")
+#            if path.check() == False:
+#                self.msgError("Something wicked happened to the path during interpolation")
             self.setSolutionPath(path)
 
     def clear(self, deepClean=False):
@@ -674,11 +677,12 @@ class GLViewer(QtOpenGL.QGLWidget):
                     GL.glPopMatrix()
                 else:
                     n = len(self.solutionPath)
-                    if n<100:
+                    nmax = 100
+                    if n < nmax:
                         ind = range(0,n)
                     else:
-                        step = float(n - 1.)/99.
-                        ind = [int(step*i) for i in range(100)]
+                        step = float(n - 1.)/float(nmax - 1)
+                        ind = [int(step*i) for i in range(nmax)]
                     for i in ind:
                         GL.glPushMatrix()
                         GL.glMultMatrixf(self.solutionPath[i])
