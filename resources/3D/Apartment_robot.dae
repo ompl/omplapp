@@ -2,10 +2,10 @@
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
     <asset>
         <contributor>
-            <authoring_tool>Google SketchUp 8.0.3161</authoring_tool>
+            <authoring_tool>Google SketchUp 8.0.4810</authoring_tool>
         </contributor>
-        <created>2010-09-07T16:58:26Z</created>
-        <modified>2010-09-07T16:58:26Z</modified>
+        <created>2011-04-30T18:42:40Z</created>
+        <modified>2011-04-30T18:42:40Z</modified>
         <unit meter="0.0254000" name="inch" />
         <up_axis>Z_UP</up_axis>
     </asset>
@@ -13,7 +13,7 @@
         <visual_scene id="ID1">
             <node name="SketchUp">
                 <node id="ID2" name="instance_0">
-                    <matrix>-0.0000000 -0.7700000 0.0000000 -37.1341342 0.8600000 -0.0000000 0.0000000 -128.7159178 0.0000000 0.0000000 0.8700000 7.6245821 0.0000000 0.0000000 0.0000000 1.0000000</matrix>
+                    <matrix>-0.0000000 -0.7700000 0.0000000 -37.1341342 -0.0000000 0.0000000 -0.8700000 -7.6245821 0.8600000 -0.0000000 -0.0000000 -128.7159178 0.0000000 0.0000000 0.0000000 1.0000000</matrix>
                     <instance_geometry url="#ID3">
                         <bind_material>
                             <technique_common>
@@ -155,10 +155,10 @@
                     <instance_geometry url="#ID85">
                         <bind_material>
                             <technique_common>
-                                <instance_material symbol="Material2" target="#ID66">
+                                <instance_material symbol="Material2" target="#ID10">
                                     <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
                                 </instance_material>
-                                <instance_material symbol="Material3" target="#ID10">
+                                <instance_material symbol="Material3" target="#ID66">
                                     <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
                                 </instance_material>
                             </technique_common>
@@ -167,10 +167,10 @@
                     <instance_geometry url="#ID91">
                         <bind_material>
                             <technique_common>
-                                <instance_material symbol="Material2" target="#ID66">
+                                <instance_material symbol="Material2" target="#ID10">
                                     <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
                                 </instance_material>
-                                <instance_material symbol="Material3" target="#ID10">
+                                <instance_material symbol="Material3" target="#ID66">
                                     <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
                                 </instance_material>
                             </technique_common>
@@ -781,11 +781,11 @@
                     <input semantic="POSITION" source="#ID86" />
                     <input semantic="NORMAL" source="#ID87" />
                 </vertices>
-                <triangles count="6" material="Material2">
+                <triangles count="6" material="Material3">
                     <input offset="0" semantic="VERTEX" source="#ID88" />
                     <p>0 1 2 1 3 4 3 1 5 5 1 6 6 1 0 5 6 7</p>
                 </triangles>
-                <triangles count="6" material="Material3">
+                <triangles count="6" material="Material2">
                     <input offset="0" semantic="VERTEX" source="#ID88" />
                     <p>8 9 10 11 12 9 9 12 10 10 12 13 14 13 12 15 12 11</p>
                 </triangles>
@@ -817,11 +817,11 @@
                     <input semantic="POSITION" source="#ID92" />
                     <input semantic="NORMAL" source="#ID93" />
                 </vertices>
-                <triangles count="6" material="Material2">
+                <triangles count="6" material="Material3">
                     <input offset="0" semantic="VERTEX" source="#ID94" />
                     <p>0 1 2 1 3 4 3 1 5 5 1 6 6 1 0 5 6 7</p>
                 </triangles>
-                <triangles count="6" material="Material3">
+                <triangles count="6" material="Material2">
                     <input offset="0" semantic="VERTEX" source="#ID94" />
                     <p>8 9 10 11 12 9 9 12 10 10 12 13 14 13 12 15 12 11</p>
                 </triangles>
