@@ -110,9 +110,6 @@ class MainWindow(QtGui.QMainWindow):
         robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
         self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
         self.setPlanner(0)
-        self.zerobounds = ob.RealVectorBounds(3)
-        self.zerobounds.setLow(0)
-        self.zerobounds.setHigh(0)
 
         # connect to OMPL's console output (via OutputHandlers)
         self.logWindow = LogWindow(self)
@@ -135,6 +132,12 @@ class MainWindow(QtGui.QMainWindow):
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
             self.mainWidget.glViewer.setEnvironment(self.omplSetup.renderEnvironment())
+            if self.is3D:
+                b = ob.RealVectorBounds(3)
+                self.omplSetup.getGeometricComponentStateManifold().setBounds(b)
+            else:
+                b = ob.RealVectorBounds(2)
+                self.omplSetup.getGeometricComponentStateManifold().setBounds(b)
             self.omplSetup.inferEnvironmentBounds()
             if self.isGeometric:
                 if self.robotFile:
