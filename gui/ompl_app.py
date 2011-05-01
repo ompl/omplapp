@@ -632,7 +632,7 @@ class GLViewer(QtOpenGL.QGLWidget):
                 2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
                 xform.getX(), xform.getY(), xform.getZ(), 1 ]
         else:
-            th = xform.getYaw()
+            th = -xform.getYaw()
             return [ cos(th), -sin(th), 0, 0,
                 sin(th), cos(th), 0, 0,
                 0, 0, 1, 0,
