@@ -1,9 +1,12 @@
-This directory contains a number of robot and environment models that can be
-used as input for ompl_app.py or to benchmark motion planning algorithms. Below
-is a short description of each benchmark. For each problem there is a SketchUp
-(.skp) file available, so that it is easy to modify them in Google SketchUp, a
-free 3D modeling program. The SketchUp files cannot be read directly by OMPL,
-but need to be exported as COLLADA files.
+This directory contains a number of robot and environment models that
+can be used as input for ompl_app.py or to benchmark motion planning
+algorithms. Below is a short description of each benchmark. For each
+problem there is a SketchUp (.skp) file available, so that it is easy
+to modify them in Google SketchUp, a free 3D modeling program. The
+SketchUp files cannot be read directly by OMPL, but need to be
+exported as COLLADA files. From each SkethcUp file, two COLLADA files
+are exported: <problem>_env.dae and <problem>_robot.dae; these files
+represent the environment and robot geometries. 
 
 * Cubicles. A simple office-like environment. Depending on the start and goal
   state, the robot may have to fly through the basement. Created by Nick Bridle
