@@ -18,9 +18,9 @@ possible, but these environments were designed with SE2 in mind.
    hook_planar_robot.dae
    StraightC_planar_robot.dae
 
- Were originally created by Erion Plaku, as part of the OOPSMP
+ Were originally created by Erion Plaku, for use with the OOPSMP
  library, and ported to OMPL by Amit Bhatia and Mark Moll. The scales
- of the robots & environments match, so different combinations are
+ of the robots & the environments match, so different combinations are
  possible.
 
 * The maze problem (UniqueSolutionMaze_env.dae and
