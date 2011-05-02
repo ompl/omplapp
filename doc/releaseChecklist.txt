@@ -16,4 +16,13 @@ Steps to release a new version:
 * make sure the symlink /mnt/data2/ompl/release on arache points to the latest release-x.y (no patch level)
 * tag omplapp and ompl with release-x.y.z (including patch level this time)
 * update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org)
+* push changes to the version of ompl on sourceforge (omplapp repo is private)
+    - in the folder that contains the private clone of ompl, execute this command:
+      hg push /path/to/local/clone/of/sourceforge/ompl -b default
+      (this pushes the changes from the clone of the private version of ompl to the local clone of sourceforge, and only pushes the changes of the default branch)
+    - cd /path/to/local/clone/of/sourceforge/omp/
+    - hg up
+      (make sure everything is ok (hgview is a good tool to see what is in the repository))
+    - hg push
+      (pushes the changes to sourceforge)
 * announce to ompl-users@lists.sourceforge.net
