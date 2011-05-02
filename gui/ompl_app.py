@@ -462,7 +462,6 @@ class MainWidget(QtGui.QWidget):
         self.setLayout(layout)
         self.problemWidget.startChanged.connect(self.glViewer.setStartPose)
         self.problemWidget.goalChanged.connect(self.glViewer.setGoalPose)
-        #self.problemWidget.elevation2D.valueChanged.connect(self.glViewer.setElevation)
         self.solveWidget.showData.toggled.connect(self.glViewer.toggleShowData)
         self.solveWidget.animateCheck.toggled.connect(self.glViewer.toggleAnimation)
         self.solveWidget.speedSlider.valueChanged.connect(self.glViewer.setSpeed)
@@ -508,6 +507,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.plannerDataList = None
         self.bounds_low = None
         self.bounds_high = None
+        #self.elevation = 0
 
     def minimumSizeHint(self):
         return QtCore.QSize(500, 300)
@@ -617,8 +617,6 @@ class GLViewer(QtOpenGL.QGLWidget):
 
     def transform(self, pose):
         GL.glPushMatrix()
-        # z = pose[5] #+self.elevation if self.elevation else pose[5]
-        # GL.glTranslatef(pose[3], pose[4], z)
         GL.glTranslatef(pose[3], pose[4], pose[5])
         GL.glRotated(pose[0], 1.0, 0.0, 0.0)
         GL.glRotated(pose[1], 0.0, 1.0, 0.0)
