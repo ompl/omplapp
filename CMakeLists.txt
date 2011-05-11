@@ -53,21 +53,21 @@ endif()
 include(UsePQP)
 include(UseAssimp)
 
+enable_testing()
+
+include_directories(
+    "${OMPLAPP_INCLUDE_DIR}"
+    "${OMPL_INCLUDE_DIR}"
+    "${Boost_INCLUDE_DIR}"
+    "${OPENGL_INCLUDE_DIR}"
+    "${ASSIMP_INCLUDE_DIR}"
+    "${PQP_INCLUDE_DIR}")
+
 set(OMPL_EXTENSION_ODE ${ODE_FOUND})
 if (ODE_FOUND)
     add_definitions(${ODE_DEFINITIONS})
     include_directories(${ODE_INCLUDE_DIR})
 endif()
-
-enable_testing()
-
-include_directories(
-    "${Boost_INCLUDE_DIR}"
-    "${OPENGL_INCLUDE_DIR}"
-    "${ASSIMP_INCLUDE_DIR}"
-    "${PQP_INCLUDE_DIR}"
-    "${OMPLAPP_INCLUDE_DIR}"
-    "${OMPL_INCLUDE_DIR}")
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
