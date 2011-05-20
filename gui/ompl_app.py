@@ -87,6 +87,7 @@ class MainWindow(QtGui.QMainWindow):
         self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged.connect(self.setRobotType)
         self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
         self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
+        self.mainWidget.boundsWidget.resetButton.clicked.connect(self.resetBounds)
 
         # connect timeLimit widgets in geometric and control planning with each other and with the
         # MainWindow.setTimeLimit method
@@ -132,18 +133,12 @@ class MainWindow(QtGui.QMainWindow):
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
             self.mainWidget.glViewer.setEnvironment(self.omplSetup.renderEnvironment())
-            if self.is3D:
-                b = ob.RealVectorBounds(3)
-                self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
-            else:
-                b = ob.RealVectorBounds(2)
-                self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
-            self.omplSetup.inferEnvironmentBounds()
+            self.resetBounds()
             if self.isGeometric:
                 if self.robotFile:
                     self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+
     def openRobot(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
         if len(fname)>0 and fname!=self.robotFile:
@@ -381,6 +376,16 @@ class MainWindow(QtGui.QMainWindow):
     def clear(self, deepClean=False):
         self.omplSetup.clear()
         self.mainWidget.glViewer.clear(deepClean)
+
+    def resetBounds(self):
+        if self.is3D:
+            b = ob.RealVectorBounds(3)
+            self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
+        else:
+            b = ob.RealVectorBounds(2)
+            self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
+        self.omplSetup.inferEnvironmentBounds()
+        self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
 
     def createActions(self):
         self.openEnvironmentAct = QtGui.QAction('Open &Environment', self,
@@ -1278,9 +1283,11 @@ class BoundsWidget(QtGui.QWidget):
         super(BoundsWidget, self).__init__()
         self.bounds_high = BoundsBox('Upper bounds')
         self.bounds_low = BoundsBox('Lower bounds')
+        self.resetButton = QtGui.QPushButton('Reset')
         layout = QtGui.QGridLayout()
         layout.addWidget(self.bounds_high, 0,0)
         layout.addWidget(self.bounds_low, 1,0)
+        layout.addWidget(self.resetButton, 2,0, QtCore.Qt.AlignRight)
         self.setLayout(layout)
 
 class BoundsBox(QtGui.QGroupBox):
