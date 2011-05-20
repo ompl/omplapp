@@ -40,14 +40,14 @@ setup.setEnvironmentMesh(join(ompl_resources_dir, 'cubicles_env.dae'))
 # define start state
 start = ob.State(setup.getSpaceInformation())
 start().setX(-4.96)
-start().setY(70.57)
-start().setZ(40.62)
+start().setY(-40.62)
+start().setZ(70.57)
 rot = start().rotation().setIdentity()
 
 goal = ob.State(setup.getSpaceInformation())
 goal().setX(200.49)
-goal().setY(70.57)
-goal().setZ(40.62)
+goal().setY(-40.62)
+goal().setZ(70.57)
 rot = goal().rotation().setIdentity()
 
 # set the start & goal states

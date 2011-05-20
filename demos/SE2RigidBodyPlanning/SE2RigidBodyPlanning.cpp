@@ -21,20 +21,20 @@ int main()
     app::SE2RigidBodyPlanning setup;
 
     // load the robot and the environment
-    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/2D/maze_env1.dae";
-    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/2D/robot1.dae";
+    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/2D/car1_planar_robot.dae";
+    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/2D/Maze_planar_env.dae";
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
 
     // define starting state
     base::ScopedState<base::SE2StateSpace> start(setup.getSpaceInformation());
     start->setX(0.0);
-    start->setY(0.02);
+    start->setY(0.0);
 
     // define goal state
     base::ScopedState<base::SE2StateSpace> goal(start);
-    start->setX(0.0);
-    start->setY(0.16);
+    start->setX(26.0);
+    start->setY(0.0);
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);

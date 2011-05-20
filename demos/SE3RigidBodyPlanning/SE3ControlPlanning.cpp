@@ -30,20 +30,20 @@ int main()
     // define start state
     base::ScopedState<base::SE3StateSpace> start(SE3);
     start->setX(-4.96);
-    start->setY(70.57);
-    start->setZ(40.62);
+    start->setY(-40.62);
+    start->setZ(70.57);
     start->rotation().setIdentity();
 
     // define goal state
     base::ScopedState<base::SE3StateSpace> goal(start);
     goal->setX(200.49);
-    goal->setY(70.57);
-    goal->setZ(40.62);
+    goal->setY(-40.62);
+    goal->setZ(70.57);
     goal->rotation().setIdentity();
 
     // set the start & goal states
     setup.setStartAndGoalStates(setup.getFullStateFromGeometricComponent(start),
-        setup.getFullStateFromGeometricComponent(goal));
+    setup.getFullStateFromGeometricComponent(goal));
 
     // we call setup() just so print() can show more information
     setup.setup();
