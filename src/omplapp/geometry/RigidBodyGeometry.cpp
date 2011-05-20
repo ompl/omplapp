@@ -139,7 +139,10 @@ void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void)
     for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
     {
         geom_.robot.push_back(importerRobot_[i]->GetScene());
-        geom_.robotShift.push_back(getRobotCenter(i));
+        aiVector3D c = getRobotCenter(i);
+        if (mtype_ == Motion_2D)
+            c[2] = 0.0;
+        geom_.robotShift.push_back(c);
     }
 }
 
