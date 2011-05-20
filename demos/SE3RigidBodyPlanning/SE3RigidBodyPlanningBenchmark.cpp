@@ -59,13 +59,13 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
 
-    base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
+    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
     start->setX(-4.96);
     start->setY(70.57);
     start->setZ(40.62);
     start->rotation().setIdentity();
 
-    base::ScopedState<base::SE3StateManifold> goal(start);
+    base::ScopedState<base::SE3StateSpace> goal(start);
     goal->setX(200.49);
     goal->setY(70.57);
     goal->setZ(40.62);
@@ -78,7 +78,7 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     std::vector<double> cs(3);
     cs[0] = 35; cs[1] = 35; cs[2] = 35;
-    setup.getStateManifold()->getDefaultProjection()->setCellSizes(cs);
+    setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
 
     runtime_limit = 10.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
@@ -94,13 +94,13 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
 
-    base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
+    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
     start->setX(270.);
     start->setY(160.);
     start->setZ(-200.);
     start->rotation().setIdentity();
 
-    base::ScopedState<base::SE3StateManifold> goal(start);
+    base::ScopedState<base::SE3StateSpace> goal(start);
     goal->setX(270.);
     goal->setY(160.);
     goal->setZ(-400.);
@@ -113,7 +113,7 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     bounds.setLow(0,60.);
     bounds.setLow(1,0.);
     bounds.setLow(2,-480.);
-    setup.getStateManifold()->as<base::SE3StateManifold>()->setBounds(bounds);
+    setup.getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);

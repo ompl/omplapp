@@ -14,8 +14,8 @@
 #define OMPLAPP_SE3_CONTROL_PLANNING_
 
 #include "omplapp/apps/AppBase.h"
-#include <ompl/base/manifolds/SE3StateManifold.h>
-#include <ompl/control/manifolds/RealVectorControlManifold.h>
+#include <ompl/base/spaces/SE3StateSpace.h>
+#include <ompl/control/spaces/RealVectorControlSpace.h>
 
 namespace ompl
 {
@@ -28,9 +28,9 @@ namespace ompl
         {
         public:
 
-            SE3ControlPlanning(void) : AppBase<CONTROL>(constructControlManifold(), Motion_3D)
+            SE3ControlPlanning(void) : AppBase<CONTROL>(constructControlSpace(), Motion_3D)
             {
-                getControlManifold()->setPropagationFunction(boost::bind(&SE3ControlPlanning::propagateForward, this, _1, _2, _3, _4));
+                getControlSpace()->setPropagationFunction(boost::bind(&SE3ControlPlanning::propagateForward, this, _1, _2, _3, _4));
                 name_ = "Rigid body planning with controls (3D)";
                 setDefaultBounds();
             }
@@ -59,9 +59,9 @@ namespace ompl
                 return 1;
             }
 
-            virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
             {
-                return getStateManifold()->as<base::CompoundStateManifold>()->getSubManifold(0);
+                return getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(0);
             }
 
         private:
@@ -69,14 +69,14 @@ namespace ompl
 
             void propagateForward(const base::State *from, const control::Control *ctrl, const double duration, base::State *result);
 
-            static control::ControlManifoldPtr constructControlManifold(void)
+            static control::ControlSpacePtr constructControlSpace(void)
             {
-                return control::ControlManifoldPtr(new control::RealVectorControlManifold(constructStateManifold(), 4));
+                return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 4));
             }
 
-            static base::StateManifoldPtr constructStateManifold(void)
+            static base::StateSpacePtr constructStateSpace(void)
             {
-                return base::StateManifoldPtr(new base::SE3StateManifold()) + base::StateManifoldPtr(new base::RealVectorStateManifold(1));
+                return base::StateSpacePtr(new base::SE3StateSpace()) + base::StateSpacePtr(new base::RealVectorStateSpace(1));
             }
 
         };

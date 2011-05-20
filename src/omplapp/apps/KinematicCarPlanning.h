@@ -14,8 +14,8 @@
 #define OMPLAPP_KINEMATIC_CAR_PLANNING_
 
 #include "omplapp/apps/AppBase.h"
-#include <ompl/base/manifolds/SE2StateManifold.h>
-#include <ompl/control/manifolds/RealVectorControlManifold.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
+#include <ompl/control/spaces/RealVectorControlSpace.h>
 
 namespace ompl
 {
@@ -39,17 +39,17 @@ namespace ompl
         {
         public:
             KinematicCarPlanning()
-                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-2), lengthInv_(20.)
+                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(20.)
             {
                 name_ = std::string("Kinematic car");
                 setDefaultControlBounds();
-                getControlManifold()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
+                getControlSpace()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
             }
-            KinematicCarPlanning(control::ControlManifoldPtr controlManifold)
-                : AppBase<CONTROL>(controlManifold, Motion_2D), timeStep_(1e-2), lengthInv_(1.)
+            KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
+                : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.)
             {
                 setDefaultControlBounds();
-                getControlManifold()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
+                getControlSpace()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
             }
             ~KinematicCarPlanning()
             {
@@ -68,9 +68,9 @@ namespace ompl
             {
                 return state;
             }
-            virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
             {
-                return getStateManifold();
+                return getStateSpace();
             }
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
             {
@@ -91,13 +91,13 @@ namespace ompl
                 const double duration, base::State *result);
             virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);
 
-            static control::ControlManifoldPtr constructControlManifold(void)
+            static control::ControlSpacePtr constructControlSpace(void)
             {
-                return control::ControlManifoldPtr(new control::RealVectorControlManifold(constructStateManifold(), 2));
+                return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 2));
             }
-            static base::StateManifoldPtr constructStateManifold(void)
+            static base::StateSpacePtr constructStateSpace(void)
             {
-                return base::StateManifoldPtr(new base::SE2StateManifold());
+                return base::StateSpacePtr(new base::SE2StateSpace());
             }
 
             double timeStep_;
@@ -115,17 +115,17 @@ namespace ompl
             class DubinsControlSampler : public control::ControlSampler
             {
             public:
-                DubinsControlSampler(const control::ControlManifold *manifold) : control::ControlSampler(manifold)
+                DubinsControlSampler(const control::ControlSpace *space) : control::ControlSampler(space)
                 {
                 }
                 void sample(control::Control* control);
             };
 
-            class DubinsControlManifold : public control::RealVectorControlManifold
+            class DubinsControlSpace : public control::RealVectorControlSpace
             {
             public:
-                DubinsControlManifold(const base::StateManifoldPtr &stateManifold)
-                    : control::RealVectorControlManifold(stateManifold, 2)
+                DubinsControlSpace(const base::StateSpacePtr &stateSpace)
+                    : control::RealVectorControlSpace(stateSpace, 2)
                 {
                 }
                 control::ControlSamplerPtr allocControlSampler(void) const
@@ -134,15 +134,15 @@ namespace ompl
                 }
             };
 
-            DubinsCarPlanning() : KinematicCarPlanning(constructControlManifold())
+            DubinsCarPlanning() : KinematicCarPlanning(constructControlSpace())
             {
                 name_ = std::string("Dubins car");
             }
 
         protected:
-            static control::ControlManifoldPtr constructControlManifold(void)
+            static control::ControlSpacePtr constructControlSpace(void)
             {
-                return control::ControlManifoldPtr(new DubinsControlManifold(constructStateManifold()));
+                return control::ControlSpacePtr(new DubinsControlSpace(constructStateSpace()));
             }
         };
 
@@ -157,17 +157,17 @@ namespace ompl
             class ReedsSheppControlSampler : public control::ControlSampler
             {
             public:
-                ReedsSheppControlSampler(const control::ControlManifold *manifold) : control::ControlSampler(manifold)
+                ReedsSheppControlSampler(const control::ControlSpace *space) : control::ControlSampler(space)
                 {
                 }
                 void sample(control::Control* control);
             };
 
-            class ReedsSheppControlManifold : public control::RealVectorControlManifold
+            class ReedsSheppControlSpace : public control::RealVectorControlSpace
             {
             public:
-                ReedsSheppControlManifold(const base::StateManifoldPtr &stateManifold)
-                    : control::RealVectorControlManifold(stateManifold, 2)
+                ReedsSheppControlSpace(const base::StateSpacePtr &stateSpace)
+                    : control::RealVectorControlSpace(stateSpace, 2)
                 {
                 }
                 control::ControlSamplerPtr allocControlSampler(void) const
@@ -176,15 +176,15 @@ namespace ompl
                 }
             };
 
-            ReedsSheppCarPlanning() : KinematicCarPlanning(constructControlManifold())
+            ReedsSheppCarPlanning() : KinematicCarPlanning(constructControlSpace())
             {
                 name_ = std::string("Reeds-Shepp car");
             }
 
         protected:
-            static control::ControlManifoldPtr constructControlManifold(void)
+            static control::ControlSpacePtr constructControlSpace(void)
             {
-                return control::ControlManifoldPtr(new ReedsSheppControlManifold(constructStateManifold()));
+                return control::ControlSpacePtr(new ReedsSheppControlSpace(constructStateSpace()));
             }
         };
 

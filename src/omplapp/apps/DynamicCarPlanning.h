@@ -14,8 +14,8 @@
 #define OMPLAPP_DYNAMIC_CAR_PLANNING_
 
 #include "omplapp/apps/AppBase.h"
-#include <ompl/base/manifolds/SE2StateManifold.h>
-#include <ompl/control/manifolds/RealVectorControlManifold.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
+#include <ompl/control/spaces/RealVectorControlSpace.h>
 
 namespace ompl
 {
@@ -42,11 +42,11 @@ namespace ompl
         {
         public:
             DynamicCarPlanning()
-                : AppBase<CONTROL>(constructControlManifold(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.)
+                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.)
             {
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
-                getControlManifold()->setPropagationFunction(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
+                getControlSpace()->setPropagationFunction(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
             }
             ~DynamicCarPlanning()
             {
@@ -69,9 +69,9 @@ namespace ompl
                 return r;
             }
 
-            virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
             {
-                return getStateManifold()->as<base::CompoundStateManifold>()->getSubManifold(0);
+                return getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(0);
             }
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
             {
@@ -100,17 +100,17 @@ namespace ompl
                 const double duration, base::State *result);
             virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);
 
-            static control::ControlManifoldPtr constructControlManifold(void)
+            static control::ControlSpacePtr constructControlSpace(void)
             {
-                return control::ControlManifoldPtr(new control::RealVectorControlManifold(constructStateManifold(), 2));
+                return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 2));
             }
-            static base::StateManifoldPtr constructStateManifold(void)
+            static base::StateSpacePtr constructStateSpace(void)
             {
-                base::RealVectorStateManifold *rv = new base::RealVectorStateManifold(2);
+                base::RealVectorStateSpace *rv = new base::RealVectorStateSpace(2);
                 base::RealVectorBounds b(2);
                 b.setLow(-1); b.setHigh(1);
                 rv->setBounds(b);
-                return base::StateManifoldPtr(new base::SE2StateManifold()) + base::StateManifoldPtr(rv);
+                return base::StateSpacePtr(new base::SE2StateSpace()) + base::StateSpacePtr(rv);
             }
 
             double timeStep_;

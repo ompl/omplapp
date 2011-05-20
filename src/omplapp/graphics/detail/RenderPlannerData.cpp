@@ -11,8 +11,8 @@
 /* Author: Ioan Sucan */
 
 #include "omplapp/graphics/detail/RenderPlannerData.h"
-#include <ompl/base/manifolds/SE2StateManifold.h>
-#include <ompl/base/manifolds/SE3StateManifold.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
+#include <ompl/base/spaces/SE3StateSpace.h>
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -25,12 +25,12 @@ namespace ompl
     namespace app
     {
 
-        static void renderState(const base::SE2StateManifold::StateType &state)
+        static void renderState(const base::SE2StateSpace::StateType &state)
         {
             glVertex3d(state.getX(), state.getY(), 0.0);
         }
 
-        static void renderState(const base::SE3StateManifold::StateType &state)
+        static void renderState(const base::SE3StateSpace::StateType &state)
         {
             glVertex3d(state.getX(), state.getY(), state.getZ());
         }
@@ -76,14 +76,14 @@ namespace ompl
                 {
                     setStateColor(pd.tags[i]);
                     for (unsigned int r = 0 ; r < count ; ++r)
-                        renderState(*static_cast<const base::SE2StateManifold::StateType*>(gse(pd.states[i], r)));
+                        renderState(*static_cast<const base::SE2StateSpace::StateType*>(gse(pd.states[i], r)));
                 }
             else
                 for (std::size_t i = 0 ; i < pd.states.size() ; ++i)
                 {
                     setStateColor(pd.tags[i]);
                     for (unsigned int r = 0 ; r < count ; ++r)
-                        renderState(*static_cast<const base::SE3StateManifold::StateType*>(gse(pd.states[i], r)));
+                        renderState(*static_cast<const base::SE3StateSpace::StateType*>(gse(pd.states[i], r)));
                 }
 
             glEnd();

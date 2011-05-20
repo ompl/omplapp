@@ -30,14 +30,14 @@ namespace ompl
         struct AppTypeSelector
         {
             typedef geometric::SimpleSetup SimpleSetup;
-            typedef base::StateManifoldPtr ManifoldType;
+            typedef base::StateSpacePtr    SpaceType;
         };
 
         template<>
         struct AppTypeSelector<CONTROL>
         {
-            typedef control::SimpleSetup        SimpleSetup;
-            typedef control::ControlManifoldPtr ManifoldType;
+            typedef control::SimpleSetup     SimpleSetup;
+            typedef control::ControlSpacePtr SpaceType;
         };
 
         template<AppType T>
@@ -45,7 +45,7 @@ namespace ompl
                         public RigidBodyGeometry
         {
         public:
-            AppBase(const typename AppTypeSelector<T>::ManifoldType &manifold, MotionModel model) : AppTypeSelector<T>::SimpleSetup(manifold), RigidBodyGeometry(model)
+            AppBase(const typename AppTypeSelector<T>::SpaceType &space, MotionModel model) : AppTypeSelector<T>::SimpleSetup(space), RigidBodyGeometry(model)
             {
             }
 
@@ -68,7 +68,7 @@ namespace ompl
 
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const = 0;
 
-            virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const = 0;
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const = 0;
 
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const = 0;
 
@@ -81,13 +81,13 @@ namespace ompl
 
             virtual void inferEnvironmentBounds(void)
             {
-                InferEnvironmentBounds(getGeometricComponentStateManifold(), *static_cast<RigidBodyGeometry*>(this));
+                InferEnvironmentBounds(getGeometricComponentStateSpace(), *static_cast<RigidBodyGeometry*>(this));
             }
 
             virtual void inferProblemDefinitionBounds(void)
             {
                 InferProblemDefinitionBounds(AppTypeSelector<T>::SimpleSetup::getProblemDefinition(), getGeometricStateExtractor(), factor_, add_,
-                                             getRobotCount(), getGeometricComponentStateManifold(), mtype_);
+                                             getRobotCount(), getGeometricComponentStateSpace(), mtype_);
             }
 
             virtual void setup(void)
@@ -107,10 +107,10 @@ namespace ompl
                 if (AppTypeSelector<T>::SimpleSetup::si_->getStateValidityChecker() != svc)
                     AppTypeSelector<T>::SimpleSetup::si_->setStateValidityChecker(svc);
 
-                AppTypeSelector<T>::SimpleSetup::getStateManifold()->setup();
+                AppTypeSelector<T>::SimpleSetup::getStateSpace()->setup();
 
-                if (!AppTypeSelector<T>::SimpleSetup::getStateManifold()->hasDefaultProjection())
-                    AppTypeSelector<T>::SimpleSetup::getStateManifold()->registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateManifold(), mtype_, getGeometricComponentStateManifold(), getGeometricStateExtractor()));
+                if (!AppTypeSelector<T>::SimpleSetup::getStateSpace()->hasDefaultProjection())
+                    AppTypeSelector<T>::SimpleSetup::getStateSpace()->registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateSpace(), mtype_, getGeometricComponentStateSpace(), getGeometricStateExtractor()));
 
                 AppTypeSelector<T>::SimpleSetup::setup();
             }

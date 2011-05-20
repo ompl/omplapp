@@ -105,9 +105,9 @@ int main(int argc, char **argv)
     DISP.setGeomColor(goal_geom, 0.0, 0.9, 0.1);
 
     oc::ODEEnvironmentPtr ce(new CarEnvironment());
-    ob::StateManifoldPtr sm(new CarStateManifold(ce));
+    ob::StateSpacePtr sm(new CarStateSpace(ce));
 
-    oc::ControlManifoldPtr cm(new CarControlManifold(sm));
+    oc::ControlSpacePtr cm(new CarControlSpace(sm));
 
     oc::ODESimpleSetup ss(cm);
     ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), GOAL_X, GOAL_Y)));
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
     if (ss.solve(60))
     {
         std::cout << "Solved!" << std::endl;
-        ob::ScopedState<oc::ODEStateManifold> last(ss.getSpaceInformation());
+        ob::ScopedState<oc::ODEStateSpace> last(ss.getSpaceInformation());
         last = ss.getSolutionPath().states.back();
         std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
 
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
         const ob::PlannerData &pd = ss.getPlannerData();
         for (unsigned int i = 0 ; i < pd.states.size() ; ++i)
         {
-            const double *pos = pd.states[i]->as<oc::ODEStateManifold::StateType>()->getBodyPosition(0);
+            const double *pos = pd.states[i]->as<oc::ODEStateSpace::StateType>()->getBodyPosition(0);
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
         }
 

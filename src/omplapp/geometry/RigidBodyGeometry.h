@@ -15,7 +15,7 @@
 
 #include "omplapp/geometry/GeometrySpecification.h"
 #include <ompl/base/SpaceInformation.h>
-#include <ompl/base/manifolds/RealVectorBounds.h>
+#include <ompl/base/spaces/RealVectorBounds.h>
 #include <boost/shared_ptr.hpp>
 #include <aiScene.h>
 #include <assimp.hpp>

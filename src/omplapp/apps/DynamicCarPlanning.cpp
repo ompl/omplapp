@@ -14,9 +14,9 @@
 
 ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState(void) const
 {
-    base::ScopedState<base::CompoundStateManifold> s(getStateManifold());
-    base::SE2StateManifold::StateType& pose = *s->as<base::SE2StateManifold::StateType>(0);
-    base::RealVectorStateManifold::StateType& vel = *s->as<base::RealVectorStateManifold::StateType>(1);
+    base::ScopedState<base::CompoundStateSpace> s(getStateSpace());
+    base::SE2StateSpace::StateType& pose = *s->as<base::SE2StateSpace::StateType>(0);
+    base::RealVectorStateSpace::StateType& vel = *s->as<base::RealVectorStateSpace::StateType>(1);
 
     aiVector3D c = getRobotCenter(0);
     pose.setX(c.x);
@@ -32,15 +32,15 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
 {
     int i, nsteps = ceil(duration/timeStep_);
     double dt = duration/(double)nsteps;
-    base::State *dstate = getStateManifold()->allocState();
-    base::CompoundStateManifold::StateType& s = *result->as<base::CompoundStateManifold::StateType>();
-    base::CompoundStateManifold::StateType& ds = *dstate->as<base::CompoundStateManifold::StateType>();
-    base::SE2StateManifold::StateType& pose = *s.as<base::SE2StateManifold::StateType>(0);
-    base::SE2StateManifold::StateType& dpose = *ds.as<base::SE2StateManifold::StateType>(0);
-    base::RealVectorStateManifold::StateType& vel = *s.as<base::RealVectorStateManifold::StateType>(1);
-    base::RealVectorStateManifold::StateType& dvel = *ds.as<base::RealVectorStateManifold::StateType>(1);
+    base::State *dstate = getStateSpace()->allocState();
+    base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
+    base::CompoundStateSpace::StateType& ds = *dstate->as<base::CompoundStateSpace::StateType>();
+    base::SE2StateSpace::StateType& pose = *s.as<base::SE2StateSpace::StateType>(0);
+    base::SE2StateSpace::StateType& dpose = *ds.as<base::SE2StateSpace::StateType>(0);
+    base::RealVectorStateSpace::StateType& vel = *s.as<base::RealVectorStateSpace::StateType>(1);
+    base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
 
-    getStateManifold()->copyState(result, from);
+    getStateSpace()->copyState(result, from);
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
@@ -50,20 +50,20 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
         vel[0] += timeStep_ * dvel[0];
         vel[1] += timeStep_ * dvel[1];
     }
-    getStateManifold()->freeState(dstate);
-    getStateManifold()->enforceBounds(result);
+    getStateSpace()->freeState(dstate);
+    getStateSpace()->enforceBounds(result);
 }
 
 void ompl::app::DynamicCarPlanning::ode(const base::State *state, const control::Control *ctrl,
     base::State *dstate)
 {
-    const base::CompoundStateManifold::StateType& s = *state->as<base::CompoundStateManifold::StateType>();
-    base::CompoundStateManifold::StateType& ds = *dstate->as<base::CompoundStateManifold::StateType>();
-    const base::SE2StateManifold::StateType& pose = *s.as<base::SE2StateManifold::StateType>(0);
-    base::SE2StateManifold::StateType& dpose = *ds.as<base::SE2StateManifold::StateType>(0);
-    const base::RealVectorStateManifold::StateType& vel = *s.as<base::RealVectorStateManifold::StateType>(1);
-    base::RealVectorStateManifold::StateType& dvel = *ds.as<base::RealVectorStateManifold::StateType>(1);
-    const double *u = ctrl->as<control::RealVectorControlManifold::ControlType>()->values;
+    const base::CompoundStateSpace::StateType& s = *state->as<base::CompoundStateSpace::StateType>();
+    base::CompoundStateSpace::StateType& ds = *dstate->as<base::CompoundStateSpace::StateType>();
+    const base::SE2StateSpace::StateType& pose = *s.as<base::SE2StateSpace::StateType>(0);
+    base::SE2StateSpace::StateType& dpose = *ds.as<base::SE2StateSpace::StateType>(0);
+    const base::RealVectorStateSpace::StateType& vel = *s.as<base::RealVectorStateSpace::StateType>(1);
+    base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
+    const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
     dpose.setX(pose.getX() * cos(pose.getYaw()));
     dpose.setY(pose.getY() * sin(pose.getYaw()));
@@ -77,6 +77,6 @@ void ompl::app::DynamicCarPlanning::setDefaultBounds()
     base::RealVectorBounds bounds(2);
     bounds.setLow(-1.);
     bounds.setHigh(1.);
-    getStateManifold()->as<base::CompoundStateManifold>()->as<base::RealVectorStateManifold>(1)->setBounds(bounds);
-    getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(bounds);
+    getStateSpace()->as<base::CompoundStateSpace>()->as<base::RealVectorStateSpace>(1)->setBounds(bounds);
+    getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(bounds);
 }

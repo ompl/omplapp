@@ -14,7 +14,7 @@
 
 ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(void) const
 {
-    base::ScopedState<base::SE2StateManifold> sSE2(getStateManifold());
+    base::ScopedState<base::SE2StateSpace> sSE2(getStateSpace());
     aiVector3D s = getRobotCenter(0);
 
     sSE2->setX(s.x);
@@ -30,7 +30,7 @@ void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
     cbounds.high[0] = 1;
     cbounds.low[1] = -1.0;
     cbounds.high[1] = 1.0;
-    getControlManifold()->as<control::RealVectorControlManifold>()->setBounds(cbounds);
+    getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(cbounds);
 }
 
 void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
@@ -38,11 +38,11 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
 {
     int i, nsteps = floor(0.5 + duration/timeStep_);
     double dt = duration/(double)nsteps;
-    base::State *dstate = getStateManifold()->allocState();
-    base::SE2StateManifold::StateType& s = *result->as<base::SE2StateManifold::StateType>();
-    base::SE2StateManifold::StateType& ds = *dstate->as<base::SE2StateManifold::StateType>();
+    base::State *dstate = getStateSpace()->allocState();
+    base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
+    base::SE2StateSpace::StateType& ds = *dstate->as<base::SE2StateSpace::StateType>();
 
-    getStateManifold()->copyState(result, from);
+    getStateSpace()->copyState(result, from);
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
@@ -50,16 +50,16 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
         s.setY(s.getY() + timeStep_ * ds.getY());
         s.setYaw(s.getYaw() + timeStep_ * ds.getYaw());
     }
-    getStateManifold()->freeState(dstate);
-    getStateManifold()->as<base::CompoundStateManifold>()->getSubManifold(1)->enforceBounds(s[1]);
+    getStateSpace()->freeState(dstate);
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
 void ompl::app::KinematicCarPlanning::ode(const base::State *state, const control::Control *ctrl,
     base::State *dstate)
 {
-    const base::SE2StateManifold::StateType& q = *state->as<base::SE2StateManifold::StateType>();
-    base::SE2StateManifold::StateType& qdot = *dstate->as<base::SE2StateManifold::StateType>();
-    const double *u = ctrl->as<control::RealVectorControlManifold::ControlType>()->values;
+    const base::SE2StateSpace::StateType& q = *state->as<base::SE2StateSpace::StateType>();
+    base::SE2StateSpace::StateType& qdot = *dstate->as<base::SE2StateSpace::StateType>();
+    const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
     qdot.setX(u[0] * cos(q.getYaw()));
     qdot.setY(u[0] * sin(q.getYaw()));
@@ -68,10 +68,10 @@ void ompl::app::KinematicCarPlanning::ode(const base::State *state, const contro
 
 void ompl::app::DubinsCarPlanning::DubinsControlSampler::sample(control::Control* control)
 {
-    const base::RealVectorBounds &bounds = static_cast<const control::RealVectorControlManifold*>(manifold_)->getBounds();
+    const base::RealVectorBounds &bounds = static_cast<const control::RealVectorControlSpace*>(space_)->getBounds();
 
-    control::RealVectorControlManifold::ControlType *rcontrol =
-        static_cast<control::RealVectorControlManifold::ControlType*>(control);
+    control::RealVectorControlSpace::ControlType *rcontrol =
+        static_cast<control::RealVectorControlSpace::ControlType*>(control);
     switch (rng_.uniformInt(0,1))
     {
         case 0: rcontrol->values[0] = 0; break;
@@ -82,10 +82,10 @@ void ompl::app::DubinsCarPlanning::DubinsControlSampler::sample(control::Control
 
 void ompl::app::ReedsSheppCarPlanning::ReedsSheppControlSampler::sample(control::Control* control)
 {
-    const base::RealVectorBounds &bounds = static_cast<const control::RealVectorControlManifold*>(manifold_)->getBounds();
+    const base::RealVectorBounds &bounds = static_cast<const control::RealVectorControlSpace*>(space_)->getBounds();
 
-    control::RealVectorControlManifold::ControlType *rcontrol =
-        static_cast<control::RealVectorControlManifold::ControlType*>(control);
+    control::RealVectorControlSpace::ControlType *rcontrol =
+        static_cast<control::RealVectorControlSpace::ControlType*>(control);
     switch (rng_.uniformInt(-1,1))
     {
         case -1: rcontrol->values[0] = bounds.low[0]; break;

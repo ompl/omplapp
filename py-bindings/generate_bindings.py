@@ -45,7 +45,7 @@ class ompl_app_generator_t(code_generator_t):
             self.ompl_ns.class_(cls).add_registration_code(
             'def("clear", &::ompl::geometric::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
-            'def("getStateManifold", &::ompl::geometric::SimpleSetup::getStateManifold, bp::return_value_policy< bp::copy_const_reference >())')
+            'def("getStateSpace", &::ompl::geometric::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
 
         for cls in ['SE3ControlPlanning', 'GSE3ControlPlanning',
             'KinematicCarPlanning', 'DubinsCarPlanning', 'ReedsSheppCarPlanning',
@@ -56,7 +56,7 @@ class ompl_app_generator_t(code_generator_t):
             self.ompl_ns.class_(cls).add_registration_code(
             'def("clear", &::ompl::control::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
-            'def("getStateManifold", &::ompl::control::SimpleSetup::getStateManifold, bp::return_value_policy< bp::copy_const_reference >())')
+            'def("getStateSpace", &::ompl::control::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
 
 
 if __name__ == '__main__':

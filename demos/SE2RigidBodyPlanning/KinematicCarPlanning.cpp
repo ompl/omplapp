@@ -21,22 +21,22 @@ using namespace ompl;
 void kinematicCarSetup(app::KinematicCarPlanning& setup)
 {
     // plan for kinematic car in SE(2)
-    const base::StateManifoldPtr &SE2 = setup.getGeometricComponentStateManifold();
+    const base::StateSpacePtr &SE2 = setup.getGeometricComponentStateSpace();
 
     // set the bounds for the R^2 part of SE(2)
     base::RealVectorBounds bounds(2);
     bounds.setLow(-10);
     bounds.setHigh(10);
-    SE2->as<base::SE2StateManifold>()->setBounds(bounds);
+    SE2->as<base::SE2StateSpace>()->setBounds(bounds);
 
     // define start state
-    base::ScopedState<base::SE2StateManifold> start(SE2);
+    base::ScopedState<base::SE2StateSpace> start(SE2);
     start->setX(0);
     start->setY(0);
     start->setYaw(0);
 
     // define goal state
-    base::ScopedState<base::SE2StateManifold> goal(SE2);
+    base::ScopedState<base::SE2StateSpace> goal(SE2);
     goal->setX(2);
     goal->setY(2);
     goal->setYaw(M_PI);
@@ -58,7 +58,7 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
         control::PathControl& path(setup.getSolutionPath());
         for (unsigned int i=0; i<path.states.size(); ++i)
         {
-            const base::SE2StateManifold::StateType& s = *path.states[i]->as<base::SE2StateManifold::StateType>();
+            const base::SE2StateSpace::StateType& s = *path.states[i]->as<base::SE2StateSpace::StateType>();
             std::cout << s.getX() <<' '<< s.getY() << ' ' << s.getYaw() << ' ';
             if (i==0)
                 // null controls applied for zero seconds to get to start state
@@ -66,7 +66,7 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
             else
             {
                 // print controls and control duration needed to get from state i-1 to state i
-                const double* c = path.controls[i-1]->as<control::RealVectorControlManifold::ControlType>()->values;
+                const double* c = path.controls[i-1]->as<control::RealVectorControlSpace::ControlType>()->values;
                 std::cout << c[0] << ' ' << c[1] << ' ' << path.controlDurations[i-1];
             }
             std::cout << std::endl;

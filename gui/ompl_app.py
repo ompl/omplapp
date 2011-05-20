@@ -134,16 +134,16 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.glViewer.setEnvironment(self.omplSetup.renderEnvironment())
             if self.is3D:
                 b = ob.RealVectorBounds(3)
-                self.omplSetup.getGeometricComponentStateManifold().setBounds(b)
+                self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
             else:
                 b = ob.RealVectorBounds(2)
-                self.omplSetup.getGeometricComponentStateManifold().setBounds(b)
+                self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
             self.omplSetup.inferEnvironmentBounds()
             if self.isGeometric:
                 if self.robotFile:
                     self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
+            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
     def openRobot(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
         if len(fname)>0 and fname!=self.robotFile:
@@ -154,14 +154,14 @@ class MainWindow(QtGui.QMainWindow):
             # full state
             start = self.omplSetup.getDefaultStartState()
             # just the first geometric component
-            start = ob.State(self.omplSetup.getGeometricComponentStateManifold(),
+            start = ob.State(self.omplSetup.getGeometricComponentStateSpace(),
                 self.omplSetup.getGeometricComponentState(start(),0))
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(start, self.is3D)
             if self.isGeometric:
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                     self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
+            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
 
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
@@ -176,7 +176,7 @@ class MainWindow(QtGui.QMainWindow):
                 pos = [float(x) for x in state.group()[1:-1].split()]
                 state = next(states)
                 rot = [float(x) for x in state.group()[1:-1].split()]
-                s = ob.State(self.omplSetup.getGeometricComponentStateManifold())
+                s = ob.State(self.omplSetup.getGeometricComponentStateSpace())
                 if len(pos)==3 and len(rot)==4:
                     # SE(3) state
                     s().setX(pos[0])
@@ -309,7 +309,7 @@ class MainWindow(QtGui.QMainWindow):
         self.omplSetup = eval('oa.%s()' % self.robotTypes[value][0])
         self.clear(True)
         self.isGeometric = self.robotTypes[value][2]==oa.GEOMETRIC
-        self.is3D = isinstance(self.omplSetup.getGeometricComponentStateManifold(), ob.SE3StateManifold)
+        self.is3D = isinstance(self.omplSetup.getGeometricComponentStateSpace(), ob.SE3StateSpace)
         self.mainWidget.plannerWidget.setCurrentIndex(0 if self.isGeometric else 1)
         self.mainWidget.problemWidget.poses.setCurrentIndex(0 if self.is3D else 1)
 
@@ -352,7 +352,7 @@ class MainWindow(QtGui.QMainWindow):
         self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(self.omplSetup.getPlannerData())
 
         # update the displayed bounds, in case planning did so
-        self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateManifold().getBounds())
+        self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
         if solved:
             if self.isGeometric:
                 path = self.omplSetup.getSolutionPath()
@@ -368,7 +368,7 @@ class MainWindow(QtGui.QMainWindow):
                 if path.check() == False:
                     self.msgError("Path reported by planner seems to be invalid!")
 
-            ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateManifold().getMaximumExtent()))
+            ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateSpace().getMaximumExtent()))
             if self.isGeometric and len(path.states) < ns:
                 self.msgDebug("Interpolating solution path to " + str(ns) + " states")
                 path.interpolate(ns)
@@ -894,7 +894,7 @@ class Pose3DBox(QtGui.QGroupBox):
             self.rotz.setValue(180 * state.getYaw() / pi)
 
     def getPose(self):
-        state = ob.State(ob.SE3StateManifold())
+        state = ob.State(ob.SE3StateSpace())
         state().setX(self.posx.value())
         state().setY(self.posy.value())
         state().setZ(self.posz.value())
@@ -957,7 +957,7 @@ class Pose2DBox(QtGui.QGroupBox):
             self.rot.setValue(state.getYaw() * 180 / pi)
 
     def getPose(self):
-        state = ob.State(ob.SE2StateManifold())
+        state = ob.State(ob.SE2StateSpace())
         state().setX(self.posx.value())
         state().setY(self.posy.value())
         state().setYaw(self.rot.value() * pi / 180)

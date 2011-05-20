@@ -14,7 +14,7 @@
 #define OMPLAPP_SE3_RIGID_BODY_PLANNING_
 
 #include "omplapp/apps/AppBase.h"
-#include <ompl/base/manifolds/SE3StateManifold.h>
+#include <ompl/base/spaces/SE3StateSpace.h>
 
 namespace ompl
 {
@@ -27,7 +27,7 @@ namespace ompl
         {
         public:
 
-            SE3RigidBodyPlanning(void) : AppBase<GEOMETRIC>(base::StateManifoldPtr(new base::SE3StateManifold()), Motion_3D)
+            SE3RigidBodyPlanning(void) : AppBase<GEOMETRIC>(base::StateSpacePtr(new base::SE3StateSpace()), Motion_3D)
             {
                 name_ = "Rigid body planning (3D)";
             }
@@ -48,9 +48,9 @@ namespace ompl
                 return state;
             }
 
-            virtual const base::StateManifoldPtr& getGeometricComponentStateManifold(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
             {
-                return getStateManifold();
+                return getStateSpace();
             }
 
             virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const

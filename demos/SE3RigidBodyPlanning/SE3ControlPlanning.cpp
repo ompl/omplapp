@@ -19,7 +19,7 @@ int main()
 {
     // plan in SE3
     app::SE3ControlPlanning setup;
-    const base::StateManifoldPtr &SE3 = setup.getGeometricComponentStateManifold();
+    const base::StateSpacePtr &SE3 = setup.getGeometricComponentStateSpace();
 
     // load the robot and the environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/cubicles_robot.dae";
@@ -28,14 +28,14 @@ int main()
     setup.setEnvironmentMesh(env_fname);
 
     // define start state
-    base::ScopedState<base::SE3StateManifold> start(SE3);
+    base::ScopedState<base::SE3StateSpace> start(SE3);
     start->setX(-4.96);
     start->setY(70.57);
     start->setZ(40.62);
     start->rotation().setIdentity();
 
     // define goal state
-    base::ScopedState<base::SE3StateManifold> goal(start);
+    base::ScopedState<base::SE3StateSpace> goal(start);
     goal->setX(200.49);
     goal->setY(70.57);
     goal->setZ(40.62);

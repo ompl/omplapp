@@ -14,8 +14,8 @@
 #define OMPLAPP_GEOMETRY_DETAIL_PQP_COLLISION_CHECKER_
 
 #include <ompl/base/SpaceInformation.h>
-#include <ompl/base/manifolds/SE2StateManifold.h>
-#include <ompl/base/manifolds/SE3StateManifold.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
+#include <ompl/base/spaces/SE3StateSpace.h>
 
 #include "omplapp/geometry/GeometrySpecification.h"
 #include "omplapp/geometry/detail/assimpUtil.h"
@@ -38,11 +38,11 @@ namespace ompl
         template<MotionModel T>
         struct OMPL_StateType
         {
-            typedef base::SE3StateManifold::StateType type;
+            typedef base::SE3StateSpace::StateType type;
 
             /** \brief  Convert a quaternion to a 3x3 rotation matrix; based on code from
                 http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm */
-            void quaternionToMatrix(PQP_REAL m[3][3], const base::SO3StateManifold::StateType &q) const
+            void quaternionToMatrix(PQP_REAL m[3][3], const base::SO3StateSpace::StateType &q) const
             {
                 double sqw = q.w*q.w;
                 double sqx = q.x*q.x;
@@ -79,7 +79,7 @@ namespace ompl
         template<>
         struct OMPL_StateType<Motion_2D>
         {
-            typedef base::SE2StateManifold::StateType type;
+            typedef base::SE2StateSpace::StateType type;
 
             void PQP_pose_from_state(PQP_REAL robTrans[3], PQP_REAL robRot[3][3], const type &s) const
             {
@@ -110,7 +110,7 @@ namespace ompl
         /** \brief Define an ompl::base::StateValidityChecker that can
             construct PQP models internally.  The instance is still
             abstract however, as the isValid() function is not
-            implemented (knowledge of the manifold is needed for this
+            implemented (knowledge of the state space is needed for this
             function to be implemented) */
         template<MotionModel T>
         class PQPStateValidityChecker : public base::StateValidityChecker

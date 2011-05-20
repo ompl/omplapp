@@ -14,7 +14,7 @@
 
 ompl::base::ScopedState<> ompl::app::SE2RigidBodyPlanning::getDefaultStartState(void) const
 {
-    base::ScopedState<base::SE2StateManifold> st(getGeometricComponentStateManifold());
+    base::ScopedState<base::SE2StateSpace> st(getGeometricComponentStateSpace());
     aiVector3D s = getRobotCenter(0);
 
     st->setX(s.x);

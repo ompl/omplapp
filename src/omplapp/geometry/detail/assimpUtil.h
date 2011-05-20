@@ -17,7 +17,7 @@
 #include <assimp.h>
 #include <aiScene.h>
 #include <aiPostProcess.h>
-#include <ompl/base/manifolds/RealVectorBounds.h>
+#include <ompl/base/spaces/RealVectorBounds.h>
 #include <vector>
 
 namespace ompl

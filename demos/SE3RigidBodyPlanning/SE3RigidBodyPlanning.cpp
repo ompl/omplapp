@@ -27,14 +27,14 @@ int main()
     setup.setEnvironmentMesh(env_fname.c_str());
 
     // define start state
-    base::ScopedState<base::SE3StateManifold> start(setup.getSpaceInformation());
+    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
     start->setX(-4.96);
     start->setY(70.57);
     start->setZ(40.62);
     start->rotation().setIdentity();
 
     // define goal state
-    base::ScopedState<base::SE3StateManifold> goal(start);
+    base::ScopedState<base::SE3StateSpace> goal(start);
     goal->setX(200.49);
     goal->setY(70.57);
     goal->setZ(40.62);
