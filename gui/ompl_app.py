@@ -14,17 +14,14 @@
 
 import sys
 from os.path import abspath, dirname, join
-from PyQt4 import QtCore, QtGui, QtOpenGL
-from PyQt4.QtCore import pyqtSignal as Signal
-# PySide doesn't work yet
-# try:
-#     # try PyQt4 first
-#     from PyQt4 import QtCore, QtGui, QtOpenGL
-#     from PyQt4.QtCore import pyqtSignal as Signal
-# except:
-#     # if PyQt4 wasn't found, try PySide
-#     from PySide import QtCore, QtGui, QtOpenGL
-#     from PySide.QtCore import Signal
+try:
+    # try PyQt4 first
+    from PyQt4 import QtCore, QtGui, QtOpenGL
+    from PyQt4.QtCore import pyqtSignal as Signal
+except:
+    # if PyQt4 wasn't found, try PySide
+    from PySide import QtCore, QtGui, QtOpenGL
+    from PySide.QtCore import Signal
 from OpenGL import GL, GLU
 import webbrowser, re
 from math import cos, sin, asin, atan2, pi, pow, ceil
@@ -84,7 +81,7 @@ class MainWindow(QtGui.QMainWindow):
         self.environmentFile = None
         self.robotFile = None
         self.path = None
-        self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged.connect(self.setRobotType)
+        self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged[int].connect(self.setRobotType)
         self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
         self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
         self.mainWidget.boundsWidget.resetButton.clicked.connect(self.resetBounds)
@@ -99,8 +96,8 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.plannerWidget.geometricPlanning.timeLimit.setValue)
         self.timeLimit = self.mainWidget.plannerWidget.geometricPlanning.timeLimit.value()
 
-        self.mainWidget.plannerWidget.geometricPlanning.plannerSelect.currentIndexChanged.connect(self.setPlanner)
-        self.mainWidget.plannerWidget.controlPlanning.plannerSelect.currentIndexChanged.connect(self.setPlanner)
+        self.mainWidget.plannerWidget.geometricPlanning.plannerSelect.currentIndexChanged[int].connect(self.setPlanner)
+        self.mainWidget.plannerWidget.controlPlanning.plannerSelect.currentIndexChanged[int].connect(self.setPlanner)
 
         self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(self.mainWidget.glViewer.setLowerBound)
         self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(self.mainWidget.glViewer.setUpperBound)
@@ -128,7 +125,10 @@ class MainWindow(QtGui.QMainWindow):
         self.oh.error(text)
 
     def openEnvironment(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Environment"))
+        fname = QtGui.QFileDialog.getOpenFileName(self, "Open Environment")
+        print type(fname)
+        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
+        print fname
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -140,7 +140,8 @@ class MainWindow(QtGui.QMainWindow):
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 
     def openRobot(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Robot"))
+        fname = QtGui.QFileDialog.getOpenFileName(self, "Open Robot")
+        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
@@ -1158,7 +1159,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.stackedWidget.addWidget(self.RRTOptions)
         self.stackedWidget.addWidget(self.LazyRRTOptions)
         self.stackedWidget.addWidget(self.ESTOptions)
-        self.plannerSelect.activated.connect(self.stackedWidget.setCurrentIndex)
+        self.plannerSelect.activated[int].connect(self.stackedWidget.setCurrentIndex)
 
         timeLimitLabel = QtGui.QLabel('Time (sec.)')
         self.timeLimit = QtGui.QDoubleSpinBox()

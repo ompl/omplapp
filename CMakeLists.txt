@@ -31,13 +31,11 @@ find_package(OpenGL REQUIRED)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
 find_package(Python REQUIRED)
-find_python_module(PyQt4 REQUIRED)
-# due to a bug in PySide, we can't use it just yet
-#find_python_module(PyQt4 QUIET)
-#find_python_module(PySide QUIET)
-# if(NOT PY_PYQT4 AND NOT PY_PYSIDE)
-#     message(SEND_ERROR "Either PyQt4 or PySide needs to be installed.")
-# endif()
+find_python_module(PyQt4 QUIET)
+find_python_module(PySide QUIET)
+if(NOT PY_PYQT4 AND NOT PY_PYSIDE)
+    message(SEND_ERROR "Either PyQt4 or PySide needs to be installed.")
+endif()
 find_python_module(OpenGL REQUIRED)
 find_package(ODE QUIET)
 find_package(Drawstuff QUIET)
