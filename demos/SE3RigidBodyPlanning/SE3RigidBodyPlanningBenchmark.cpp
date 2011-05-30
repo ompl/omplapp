@@ -129,7 +129,7 @@ int main(int argc, char **argv)
     std::string benchmark_name;
     double runtime_limit, memory_limit;
     int run_count;
-    int benchmark_id = argc==1 ? 0 : (atoi(argv[1]) % 2);
+    int benchmark_id = argc > 1 ? ((argv[1][0] - '0') % 2) : 0;
 
     if (benchmark_id==0)
         benchmark0(benchmark_name, setup, runtime_limit, memory_limit, run_count);
@@ -147,33 +147,43 @@ int main(int argc, char **argv)
     b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::BasicPRM(setup.getSpaceInformation())));
 
+    int sampler_id = argc > 2 ? ((argv[2][0] - '0') % 4) : -1;
 
-    // run all planners with a uniform valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
-    b.setExperimentName(benchmark_name + "_uniform_sampler");
-    b.benchmark(runtime_limit, memory_limit, run_count, true);
-    b.saveResultsToFile();
+    if (sampler_id == 0 || sampler_id < 0)
+    {
+        // run all planners with a uniform valid state sampler on the benchmark problem
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
+        b.setExperimentName(benchmark_name + "_uniform_sampler");
+        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.saveResultsToFile();
+    }
 
+    if (sampler_id == 1 || sampler_id < 0)
+    {
+        // run all planners with a Gaussian valid state sampler on the benchmark problem
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocGaussianStateSampler);
+        b.setExperimentName(benchmark_name + "_gaussian_sampler");
+        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.saveResultsToFile();
+    }
 
-    // run all planners with a Gaussian valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocGaussianStateSampler);
-    b.setExperimentName(benchmark_name + "_gaussian_sampler");
-    b.benchmark(runtime_limit, memory_limit, run_count, true);
-    b.saveResultsToFile();
+    if (sampler_id == 2 || sampler_id < 0)
+    {
+        // run all planners with a obstacle-based valid state sampler on the benchmark problem
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
+        b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
+        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.saveResultsToFile();
+    }
 
-
-    // run all planners with a obstacle-based valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
-    b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
-    b.benchmark(runtime_limit, memory_limit, run_count, true);
-    b.saveResultsToFile();
-
-
-    // run all planners with a maximum-clearance valid state sampler on the benchmark problem
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocMaximizeClearanceStateSampler);
-    b.setExperimentName(benchmark_name + "_maxclearance_sampler");
-    b.benchmark(runtime_limit, memory_limit, run_count, true);
-    b.saveResultsToFile();
+    if (sampler_id == 3 || sampler_id < 0)
+    {
+        // run all planners with a maximum-clearance valid state sampler on the benchmark problem
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocMaximizeClearanceStateSampler);
+        b.setExperimentName(benchmark_name + "_maxclearance_sampler");
+        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.saveResultsToFile();
+    }
 
     return 0;
 }
