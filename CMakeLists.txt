@@ -80,6 +80,7 @@ set(OMPLAPP_LIBRARIES
     ${ASSIMP_LIBRARY}
     ${PQP_LIBRARY})
 
+add_subdirectory(ompl/contrib)
 add_subdirectory(ompl/src)
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/tests)
