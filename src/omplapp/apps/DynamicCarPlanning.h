@@ -65,7 +65,9 @@ namespace ompl
             {
                 base::ScopedState<> r(si_);
                 r = 0.0;
-                r << state;
+                r[0] = state[0];
+                r[1] = state[1];
+                r[2] = state[2];
                 return r;
             }
 
@@ -106,11 +108,14 @@ namespace ompl
             }
             static base::StateSpacePtr constructStateSpace(void)
             {
+                base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
                 base::RealVectorStateSpace *rv = new base::RealVectorStateSpace(2);
                 base::RealVectorBounds b(2);
                 b.setLow(-1); b.setHigh(1);
                 rv->setBounds(b);
-                return base::StateSpacePtr(new base::SE2StateSpace()) + base::StateSpacePtr(rv);
+                stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE2StateSpace()), 1.);
+                stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(rv), .3);
+                return stateSpace;
             }
 
             double timeStep_;

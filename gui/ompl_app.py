@@ -126,9 +126,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def openEnvironment(self):
         fname = QtGui.QFileDialog.getOpenFileName(self, "Open Environment")
-        print type(fname)
         fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
-        print fname
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -326,11 +324,12 @@ class MainWindow(QtGui.QMainWindow):
             bounds = ob.RealVectorBounds(2)
             (bounds.low[0],bounds.low[1]) = self.mainWidget.glViewer.bounds_low[:2]
             (bounds.high[0],bounds.high[1]) = self.mainWidget.glViewer.bounds_high[:2]
-        self.omplSetup.setStartAndGoalStates(startPose, goalPose, 1e-6)
         if self.isGeometric:
+            self.omplSetup.setStartAndGoalStates(startPose, goalPose, 1e-6)
             self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.value())
         else:
+            self.omplSetup.setStartAndGoalStates(startPose, goalPose, .1)
             self.omplSetup.getSpaceInformation().setPropagationStepSize(
                 self.mainWidget.plannerWidget.controlPlanning.propagation.value())
             self.omplSetup.getSpaceInformation().setMinMaxControlDuration(
@@ -440,8 +439,8 @@ class MainWindow(QtGui.QMainWindow):
         from inspect import isclass
         self.robotTypes = []
         for c in dir(oa):
-            #if eval('isclass(oa.%s) and issubclass(oa.%s, (oa.AppBaseGeometric,oa.AppBaseControl)) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
-            if eval('isclass(oa.%s) and issubclass(oa.%s, oa.AppBaseGeometric) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
+            if eval('isclass(oa.%s) and issubclass(oa.%s, (oa.AppBaseGeometric,oa.AppBaseControl)) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
+            #if eval('isclass(oa.%s) and issubclass(oa.%s, oa.AppBaseGeometric) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
                 name = eval('oa.%s().getName()' % c)
                 apptype = eval('oa.%s().getAppType()' % c)
                 self.robotTypes.append((c, name, apptype))
@@ -1243,7 +1242,7 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         self.propagation = QtGui.QDoubleSpinBox()
         self.propagation.setRange(0.01, 1000.00)
         self.propagation.setSingleStep(.01)
-        self.propagation.setValue(0.01)
+        self.propagation.setValue(0.2)
         self.propagation.setDecimals(2)
 
         durationLabel = QtGui.QLabel('Control duration\n(min/max #steps)')
@@ -1251,7 +1250,7 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         self.minControlDuration = QtGui.QSpinBox()
         self.minControlDuration.setRange(1, 1000)
         self.minControlDuration.setSingleStep(1)
-        self.minControlDuration.setValue(2)
+        self.minControlDuration.setValue(1)
         self.maxControlDuration = QtGui.QSpinBox()
         self.maxControlDuration.setRange(1, 1000)
         self.maxControlDuration.setSingleStep(1)

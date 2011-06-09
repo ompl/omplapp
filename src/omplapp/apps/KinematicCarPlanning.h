@@ -38,19 +38,8 @@ namespace ompl
         class KinematicCarPlanning : public AppBase<CONTROL>
         {
         public:
-            KinematicCarPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(20.)
-            {
-                name_ = std::string("Kinematic car");
-                setDefaultControlBounds();
-                getControlSpace()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
-            }
-            KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
-                : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.)
-            {
-                setDefaultControlBounds();
-                getControlSpace()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
-            }
+            KinematicCarPlanning();
+            KinematicCarPlanning(const control::ControlSpacePtr &controlSpace);
             ~KinematicCarPlanning()
             {
             }

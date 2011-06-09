@@ -12,6 +12,21 @@
 
 #include "omplapp/apps/KinematicCarPlanning.h"
 
+ompl::app::KinematicCarPlanning::KinematicCarPlanning()
+    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.)
+{
+    name_ = std::string("Kinematic car");
+    setDefaultControlBounds();
+    getControlSpace()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
+}
+
+ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
+    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.)
+{
+    setDefaultControlBounds();
+    getControlSpace()->setPropagationFunction(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
+}
+
 ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(void) const
 {
     base::ScopedState<base::SE2StateSpace> sSE2(getStateSpace());
@@ -26,10 +41,10 @@ ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(
 void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
 {
     base::RealVectorBounds cbounds(2);
-    cbounds.low[0] = -1;
-    cbounds.high[0] = 1;
-    cbounds.low[1] = -1.0;
-    cbounds.high[1] = 1.0;
+    cbounds.low[0] = -1.;
+    cbounds.high[0] = 1.;
+    cbounds.low[1] = -M_PI * 30. / 180.;
+    cbounds.high[1] = M_PI * 30. / 180.;
     getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(cbounds);
 }
 

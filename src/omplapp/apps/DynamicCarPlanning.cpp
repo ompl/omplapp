@@ -51,7 +51,7 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
         vel[1] += timeStep_ * dvel[1];
     }
     getStateSpace()->freeState(dstate);
-    getStateSpace()->enforceBounds(result);
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
 void ompl::app::DynamicCarPlanning::ode(const base::State *state, const control::Control *ctrl,
@@ -65,8 +65,8 @@ void ompl::app::DynamicCarPlanning::ode(const base::State *state, const control:
     base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
-    dpose.setX(pose.getX() * cos(pose.getYaw()));
-    dpose.setY(pose.getY() * sin(pose.getYaw()));
+    dpose.setX(vel[0] * cos(pose.getYaw()));
+    dpose.setY(vel[0] * sin(pose.getYaw()));
     dpose.setYaw(vel[0] * mass_ * lengthInv_ * tan(vel[1]));
     dvel[0] = u[0];
     dvel[1] = u[1];
@@ -75,8 +75,14 @@ void ompl::app::DynamicCarPlanning::ode(const base::State *state, const control:
 void ompl::app::DynamicCarPlanning::setDefaultBounds()
 {
     base::RealVectorBounds bounds(2);
-    bounds.setLow(-1.);
-    bounds.setHigh(1.);
+    bounds.low[0] = -1.;
+    bounds.high[0] = 1.;
+    bounds.low[1] = -M_PI * 30. / 180.;
+    bounds.high[1] = M_PI * 30. / 180.;
     getStateSpace()->as<base::CompoundStateSpace>()->as<base::RealVectorStateSpace>(1)->setBounds(bounds);
+    bounds.low[0] = -.5;
+    bounds.high[0] = .5;
+    bounds.low[1] = -M_PI * 2. / 180.;
+    bounds.high[1] = M_PI * 2. / 180.;
     getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(bounds);
 }

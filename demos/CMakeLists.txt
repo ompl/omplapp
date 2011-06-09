@@ -21,6 +21,10 @@ if (OMPL_BUILD_DEMOS)
     add_executable(KinematicCarPlanning SE2RigidBodyPlanning/KinematicCarPlanning.cpp)
     target_link_libraries(KinematicCarPlanning ${OMPLAPP_DEMO_LIBRARIES})
 
+    # create executable for dynamic car planning application
+    add_executable(DynamicCarPlanning SE2RigidBodyPlanning/DynamicCarPlanning.cpp)
+    target_link_libraries(DynamicCarPlanning ${OMPLAPP_DEMO_LIBRARIES})
+
     # create executable for planning with ODE
     if (ODE_FOUND AND DRAWSTUFF_FOUND)
         if(APPLE)
