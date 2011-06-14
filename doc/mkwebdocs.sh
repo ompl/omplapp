@@ -28,5 +28,11 @@ tar cf - --exclude .svn ${ASSET_DIR} | ssh ${SERVER} 'mkdir -p '${ASSETS_ROOT}';
 # clean up
 rm -rf ${ASSET_DIR}
 
+# beta site should not be indexed
+if [ $BRANCH == "trunk" ]
+then
+    (echo "User-agent: *"; echo "Disallow: /") | ssh ${SERVER} 'cat - > '${ASSETS_ROOT}'/'${ASSET_DIR}'/robots.txt'
+fi
+
 echo The web site has been copied to:
 echo "      " ${SERVER}:${ASSETS_ROOT}/${ASSET_DIR}.
