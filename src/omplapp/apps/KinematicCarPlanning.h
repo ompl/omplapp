@@ -61,10 +61,6 @@ namespace ompl
             {
                 return getStateSpace();
             }
-            virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
-            {
-                return state;
-            }
             double getVehicleLength()
             {
                 return 1./lengthInv_;
@@ -76,6 +72,11 @@ namespace ompl
             virtual void setDefaultControlBounds();
 
         protected:
+
+            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const
+            {
+                return state;
+            }
             void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
             virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);

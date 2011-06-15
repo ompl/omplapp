@@ -45,7 +45,8 @@ namespace ompl
                         public RigidBodyGeometry
         {
         public:
-            AppBase(const typename AppTypeSelector<T>::SpaceType &space, MotionModel model) : AppTypeSelector<T>::SimpleSetup(space), RigidBodyGeometry(model)
+            AppBase(const typename AppTypeSelector<T>::SpaceType &space, MotionModel model) :
+		AppTypeSelector<T>::SimpleSetup(space), RigidBodyGeometry(model)
             {
             }
 
@@ -68,15 +69,18 @@ namespace ompl
 
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const = 0;
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const = 0;
+            virtual base::ScopedState<> getGeometricComponentState(const base::ScopedState<> &state, unsigned int index) const
+            {
+                return base::ScopedState<>(getGeometricComponentStateSpace(), getGeometricComponentStateInternal(state.get(), index));
+            }
 
-            virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const = 0;
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const = 0;
 
             virtual unsigned int getRobotCount(void) const = 0;
 
             GeometricStateExtractor getGeometricStateExtractor(void) const
             {
-                return boost::bind(&AppBase::getGeometricComponentState, this, _1, _2);
+                return boost::bind(&AppBase::getGeometricComponentStateInternal, this, _1, _2);
             }
 
             virtual void inferEnvironmentBounds(void)
@@ -110,12 +114,17 @@ namespace ompl
                 AppTypeSelector<T>::SimpleSetup::getStateSpace()->setup();
 
                 if (!AppTypeSelector<T>::SimpleSetup::getStateSpace()->hasDefaultProjection())
-                    AppTypeSelector<T>::SimpleSetup::getStateSpace()->registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateSpace(), mtype_, getGeometricComponentStateSpace(), getGeometricStateExtractor()));
+                    AppTypeSelector<T>::SimpleSetup::getStateSpace()->
+                        registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateSpace(),
+                                                                               mtype_, getGeometricComponentStateSpace(),
+									       getGeometricStateExtractor()));
 
                 AppTypeSelector<T>::SimpleSetup::setup();
             }
 
         protected:
+
+            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const = 0;
 
             std::string name_;
 

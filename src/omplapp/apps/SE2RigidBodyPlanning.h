@@ -53,14 +53,16 @@ namespace ompl
                 return getStateSpace();
             }
 
-            virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
-            {
-                return state;
-            }
-
             virtual unsigned int getRobotCount(void) const
             {
                 return 1;
+            }
+
+        protected:
+
+            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const
+            {
+                return state;
             }
 
         };

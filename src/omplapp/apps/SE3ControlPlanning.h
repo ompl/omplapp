@@ -49,11 +49,6 @@ namespace ompl
 
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const;
 
-            virtual const base::State* getGeometricComponentState(const base::State* state, unsigned int index) const
-            {
-                return state->as<base::CompoundState>()->components[0];
-            }
-
             virtual unsigned int getRobotCount(void) const
             {
                 return 1;
@@ -64,7 +59,12 @@ namespace ompl
                 return getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(0);
             }
 
-        private:
+        protected:
+            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const
+            {
+                return state->as<base::CompoundState>()->components[0];
+            }
+
             void setDefaultBounds();
 
             void propagateForward(const base::State *from, const control::Control *ctrl, const double duration, base::State *result);
