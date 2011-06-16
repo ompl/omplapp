@@ -41,14 +41,14 @@ void dynamicCarSetup(app::DynamicCarPlanning& setup)
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .1);
-    
+
     base::StateSpacePtr se2 = base::StateSpacePtr(new base::SE2StateSpace());
     base::ScopedState<> s(se2);
     s.random();
     s.print();
     base::ScopedState<> s2(setup.getFullStateFromGeometricComponent(s));
     s2.print();
-    
+
     base::StateSpace::diagram(std::cout);
 }
 
@@ -66,9 +66,9 @@ void dynamicCarDemo(app::DynamicCarPlanning& setup)
         //path.interpolate(); // uncomment if you want to plot the path
         for (unsigned int i=0; i<path.states.size(); ++i)
         {
-            const base::SE2StateSpace::StateType& s0 = 
+            const base::SE2StateSpace::StateType& s0 =
                 *path.states[i]->as<base::CompoundState>()->as<base::SE2StateSpace::StateType>(0);
-            const base::RealVectorStateSpace::StateType& s1 = 
+            const base::RealVectorStateSpace::StateType& s1 =
                 *path.states[i]->as<base::CompoundState>()->as<base::RealVectorStateSpace::StateType>(1);
             std::cout << s0.getX() <<' '<< s0.getY() << ' ' << s0.getYaw() << ' ';
             std::cout << s1[0] <<' '<< s1[1] << ' ';
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
     dynamicCarSetup(car);
 
     // If any command line arguments are given, solve the problem multiple
-    // times with different planners and collect benchmark statistics. 
+    // times with different planners and collect benchmark statistics.
     // Otherwise, solve the problem once for each car type and print the path.
     if (argc>1)
         dynamicCarBenchmark(car);

@@ -48,7 +48,11 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
 void kinematicCarDemo(app::KinematicCarPlanning& setup)
 {
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
-    setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
+    setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    std::vector<double> cs(2);
+    cs[0] = cs[1] = 0.1;
+    setup.setup();
+    setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
 
     // try to solve the problem
     if (setup.solve(20))
