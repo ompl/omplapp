@@ -13,45 +13,48 @@
 #include <ompl/benchmark/Benchmark.h>
 #include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/kpiece/KPIECE1.h>
-#include <omplapp/apps/DynamicCarPlanning.h>
+#include <omplapp/apps/QuadrotorPlanning.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
 
-void dynamicCarSetup(app::DynamicCarPlanning& setup)
+void quadrotorSetup(app::QuadrotorPlanning& setup)
 {
-    // plan for dynamic car in SE(2)
     base::StateSpacePtr stateSpace(setup.getStateSpace());
 
-    // set the bounds for the R^2 part of SE(2)
-    base::RealVectorBounds bounds(2);
+    // set the bounds for the R^2 part of SE(3)
+    base::RealVectorBounds bounds(3);
     bounds.setLow(-10);
     bounds.setHigh(10);
-    stateSpace->as<base::CompoundStateSpace>()->as<base::SE2StateSpace>(0)->setBounds(bounds);
+    stateSpace->as<base::CompoundStateSpace>()->as<base::SE3StateSpace>(0)->setBounds(bounds);
 
     // define start state
-    base::ScopedState<> start(stateSpace);
-    start[0] = start[1] = start[2] = start[3] = start[4] = 0.;
-
+    base::ScopedState<base::SE3StateSpace> start(setup.getGeometricComponentStateSpace());
+    start->setX(0.);
+    start->setY(0.);
+    start->setZ(0.);
+    start->rotation().setIdentity();
+    
     // define goal state
-    base::ScopedState<> goal(stateSpace);
-    goal[0] = goal[1] = 8.;
-    goal[2] = 0;
-    goal[3] = goal[4] = 0.;
+    base::ScopedState<base::SE3StateSpace> goal(setup.getGeometricComponentStateSpace());
+    goal->setX(5.);
+    goal->setY(5.);
+    goal->setZ(5.);
+    goal->rotation().setIdentity();
 
     // set the start & goal states
-    setup.setStartAndGoalStates(start, goal, .1);
+    setup.setStartAndGoalStates(
+        setup.getFullStateFromGeometricComponent(start),
+        setup.getFullStateFromGeometricComponent(goal), .1);
 }
 
-void dynamicCarDemo(app::DynamicCarPlanning& setup)
+void quadrotorDemo(app::QuadrotorPlanning& setup)
 {
+    unsigned int i, j;
+    std::vector<double> coords;
+    
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
-    //setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
-    setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
-    std::vector<double> cs(2);
-    cs[0] = cs[1] = 0.1;
-    setup.setup();
-    setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
+    setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
 
     // try to solve the problem
     if (setup.solve(40))
@@ -60,34 +63,35 @@ void dynamicCarDemo(app::DynamicCarPlanning& setup)
         // and controls required to get from one state to the next
         control::PathControl& path(setup.getSolutionPath());
         //path.interpolate(); // uncomment if you want to plot the path
-        for (unsigned int i=0; i<path.states.size(); ++i)
+        for (i=0; i<path.states.size(); ++i)
         {
-            const base::SE2StateSpace::StateType& s0 =
-                *path.states[i]->as<base::CompoundState>()->as<base::SE2StateSpace::StateType>(0);
-            const base::RealVectorStateSpace::StateType& s1 =
-                *path.states[i]->as<base::CompoundState>()->as<base::RealVectorStateSpace::StateType>(1);
-            std::cout << s0.getX() <<' '<< s0.getY() << ' ' << s0.getYaw() << ' ';
-            std::cout << s1[0] <<' '<< s1[1] << ' ';
+            coords = base::ScopedState<>(setup.getStateSpace(), path.states[i]).reals();
+            for (j=0; j<coords.size(); ++j)
+                std::cout << coords[j] << ' ';
+
             if (i==0)
                 // null controls applied for zero seconds to get to start state
-                std::cout << "0 0 0";
+                std::cout << "0 0 0 0 0";
             else
             {
                 // print controls and control duration needed to get from state i-1 to state i
                 const double* c = path.controls[i-1]->as<control::RealVectorControlSpace::ControlType>()->values;
-                std::cout << c[0] << ' ' << c[1] << ' ' << path.controlDurations[i-1];
+                for (j=0; j<4; ++j)
+                    std::cout << c[j] << ' ';
+                std::cout << path.controlDurations[i-1];
             }
             std::cout << std::endl;
         }
+
         if (!setup.haveExactSolutionPath())
         {
             std::cout << "Solution is approximate. Distance to actual goal is " <<
                 setup.getGoal()->getDifference() << std::endl;
         }
     }
-
 }
-void dynamicCarBenchmark(app::DynamicCarPlanning& setup)
+
+void quadrotorBenchmark(app::QuadrotorPlanning& setup)
 {
     double runtime_limit = 100.0;
     double memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
@@ -102,15 +106,15 @@ void dynamicCarBenchmark(app::DynamicCarPlanning& setup)
 
 int main(int argc, char* argv[])
 {
-    app::DynamicCarPlanning car;
-    dynamicCarSetup(car);
+    app::QuadrotorPlanning quadrotor;
+    quadrotorSetup(quadrotor);
 
     // If any command line arguments are given, solve the problem multiple
     // times with different planners and collect benchmark statistics.
     // Otherwise, solve the problem once and print the path.
     if (argc>1)
-        dynamicCarBenchmark(car);
+        quadrotorBenchmark(quadrotor);
     else
-        dynamicCarDemo(car);
+        quadrotorDemo(quadrotor);
     return 0;
 }

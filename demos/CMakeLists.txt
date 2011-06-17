@@ -1,29 +1,18 @@
 if (OMPL_BUILD_DEMOS)
     set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app)
 
-    # create executable for SE3 rigid body planning application
-    add_executable(SE3RigidBodyPlanning SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
-    target_link_libraries(SE3RigidBodyPlanning ${OMPLAPP_DEMO_LIBRARIES})
+    macro(add_omplapp_demo demo_name)
+      add_executable(${ARGV})
+      target_link_libraries(${demo_name} ${OMPLAPP_DEMO_LIBRARIES})
+    endmacro(add_omplapp_demo)
 
-    # create executable for SE3 planning with controls application
-    add_executable(SE3ControlPlanning SE3RigidBodyPlanning/SE3ControlPlanning.cpp)
-    target_link_libraries(SE3ControlPlanning ${OMPLAPP_DEMO_LIBRARIES})
-
-    # create executable for SE3 rigid body benchmarking application
-    add_executable(SE3RigidBodyPlanningBenchmark SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
-    target_link_libraries(SE3RigidBodyPlanningBenchmark ${OMPLAPP_DEMO_LIBRARIES})
-
-    # create executable for SE2 rigid body planning application
-    add_executable(SE2RigidBodyPlanning SE2RigidBodyPlanning/SE2RigidBodyPlanning.cpp)
-    target_link_libraries(SE2RigidBodyPlanning ${OMPLAPP_DEMO_LIBRARIES})
-
-    # create executable for kinematic car planning application
-    add_executable(KinematicCarPlanning SE2RigidBodyPlanning/KinematicCarPlanning.cpp)
-    target_link_libraries(KinematicCarPlanning ${OMPLAPP_DEMO_LIBRARIES})
-
-    # create executable for dynamic car planning application
-    add_executable(DynamicCarPlanning SE2RigidBodyPlanning/DynamicCarPlanning.cpp)
-    target_link_libraries(DynamicCarPlanning ${OMPLAPP_DEMO_LIBRARIES})
+    add_omplapp_demo(SE3RigidBodyPlanningBenchmark SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
+    add_omplapp_demo(demo_SE3RigidBodyPlanning SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
+    add_omplapp_demo(demo_SE2RigidBodyPlanning SE2RigidBodyPlanning/SE2RigidBodyPlanning.cpp)
+    add_omplapp_demo(demo_KinematicCarPlanning SE2RigidBodyPlanning/KinematicCarPlanning.cpp)
+    add_omplapp_demo(demo_DynamicCarPlanning SE2RigidBodyPlanning/DynamicCarPlanning.cpp)
+    add_omplapp_demo(demo_BlimpPlanning SE3RigidBodyPlanning/BlimpPlanning.cpp)
+    add_omplapp_demo(demo_QuadrotorPlanning SE3RigidBodyPlanning/QuadrotorPlanning.cpp)
 
     # create executable for planning with ODE
     if (ODE_FOUND AND DRAWSTUFF_FOUND)
@@ -34,11 +23,10 @@ if (OMPL_BUILD_DEMOS)
         include_directories(${ODE_INCLUDE} ${DRAWSTUFF_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
 
         aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
-        add_executable(OpenDEPlanning ${OpenDEPlanning_SRC})
+        add_executable(demo_OpenDEPlanning ${OpenDEPlanning_SRC})
         target_link_libraries(OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
     endif()
 endif(OMPL_BUILD_DEMOS)
 
-file(GLOB_RECURSE OMPLAPP_DEMO_CXX_FILES "*.cpp")
-file(GLOB_RECURSE OMPLAPP_DEMO_PY_FILES "*.py")
-install(FILES ${OMPLAPP_DEMO_CXX_FILES} ${OMPLAPP_DEMO_PY_FILES} DESTINATION ${OMPL_DEMO_INSTALL_DIR})
+file(GLOB_RECURSE OMPLAPP_DEMO_FILES "*/*")
+install(FILES ${OMPLAPP_DEMO_FILES} DESTINATION ${OMPL_DEMO_INSTALL_DIR})

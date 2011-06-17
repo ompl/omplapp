@@ -148,8 +148,7 @@ class MainWindow(QtGui.QMainWindow):
             # full state
             start = self.omplSetup.getDefaultStartState()
             # just the first geometric component
-            start = ob.State(self.omplSetup.getGeometricComponentStateSpace(),
-                self.omplSetup.getGeometricComponentState(start(),0))
+            start = self.omplSetup.getGeometricComponentState(start,0)
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(start, self.is3D)
             if self.isGeometric:
@@ -205,7 +204,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def setSolutionPath(self, path):
             ns = len(path.states)
-            self.path = [ self.omplSetup.getGeometricComponentState(path.states[i], 0) for i in range(ns) ]
+            self.path = [ self.omplSetup.getGeometricComponentState(
+                ob.State(self.omplSetup.getGeometricComponentStateSpace(),path.states[i]), 0) for i in range(ns) ]
             self.mainWidget.glViewer.setSolutionPath(self.path)
 
     def randMotion(self):
@@ -587,7 +587,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.pathIndex = (self.pathIndex + 1) % len(self.solutionPath)
             self.updateGL()
     def setSolutionPath(self, path):
-        self.solutionPath = [ self.getTransform(state) for state in path ]
+        self.solutionPath = [ self.getTransform(state()) for state in path ]
         self.pathIndex = 0
         self.updateGL()
     def setRobot(self, robot):

@@ -47,10 +47,11 @@ class ompl_app_generator_t(code_generator_t):
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateSpace", &::ompl::geometric::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
 
-        for cls in ['SE3ControlPlanning', 'GSE3ControlPlanning',
-            'KinematicCarPlanning', 'DubinsCarPlanning', 'ReedsSheppCarPlanning',
+        for cls in ['KinematicCarPlanning', 'DubinsCarPlanning', 'ReedsSheppCarPlanning',
             'GKinematicCarPlanning', 'GDubinsCarPlanning', 'GReedsSheppCarPlanning',
-            'DynamicCarPlanning', 'GDynamicCarPlanning']:
+            'DynamicCarPlanning', 'GDynamicCarPlanning',
+            'BlimpPlanning', 'GBlimpPlanning',
+            'QuadrotorPlanning', 'GQuadrotorPlanning']:
             self.ompl_ns.class_(cls).add_registration_code(
             'def("solve", &::ompl::control::SimpleSetup::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % cls)
             self.ompl_ns.class_(cls).add_registration_code(

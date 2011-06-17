@@ -112,12 +112,9 @@ namespace ompl
             static base::StateSpacePtr constructStateSpace(void)
             {
                 base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
-                base::RealVectorStateSpace *rv = new base::RealVectorStateSpace(2);
-                base::RealVectorBounds b(2);
-                b.setLow(-1); b.setHigh(1);
-                rv->setBounds(b);
                 stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE2StateSpace()), 1.);
-                stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(rv), .3);
+                stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(2)), .3);
+                stateSpace->as<base::CompoundStateSpace>()->lock();
                 return stateSpace;
             }
 
