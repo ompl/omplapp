@@ -24,7 +24,7 @@ if (OMPL_BUILD_DEMOS)
 
         aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
         add_executable(demo_OpenDEPlanning ${OpenDEPlanning_SRC})
-        target_link_libraries(OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
+        target_link_libraries(demo_OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
     endif()
 endif(OMPL_BUILD_DEMOS)
 
