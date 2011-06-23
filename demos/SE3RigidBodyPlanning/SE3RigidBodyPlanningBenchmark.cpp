@@ -12,7 +12,7 @@
 
 #include <omplapp/config.h>
 #include <omplapp/apps/SE3RigidBodyPlanning.h>
-#include <ompl/benchmark/Benchmark.h>
+#include <ompl/tools/benchmark/Benchmark.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>

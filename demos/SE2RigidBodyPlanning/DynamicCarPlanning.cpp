@@ -10,7 +10,7 @@
 
 /* Author: Mark Moll */
 
-#include <ompl/benchmark/Benchmark.h>
+#include <ompl/tools/benchmark/Benchmark.h>
 #include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/kpiece/KPIECE1.h>
 #include <omplapp/apps/DynamicCarPlanning.h>
