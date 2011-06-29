@@ -46,7 +46,7 @@ namespace ompl
         {
         public:
             AppBase(const typename AppTypeSelector<T>::SpaceType &space, MotionModel model) :
-		AppTypeSelector<T>::SimpleSetup(space), RigidBodyGeometry(model)
+                AppTypeSelector<T>::SimpleSetup(space), RigidBodyGeometry(model)
             {
             }
 
@@ -117,7 +117,7 @@ namespace ompl
                     AppTypeSelector<T>::SimpleSetup::getStateSpace()->
                         registerDefaultProjection(allocGeometricStateProjector(AppTypeSelector<T>::SimpleSetup::getStateSpace(),
                                                                                mtype_, getGeometricComponentStateSpace(),
-									       getGeometricStateExtractor()));
+                                                                               getGeometricStateExtractor()));
 
                 AppTypeSelector<T>::SimpleSetup::setup();
             }

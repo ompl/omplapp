@@ -94,7 +94,7 @@ namespace ompl
                 return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 4));
             }
             static base::StateSpacePtr constructStateSpace(void);
-            
+
             double timeStep_;
             double massInv_;
             double beta_;

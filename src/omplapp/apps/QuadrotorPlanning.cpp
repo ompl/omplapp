@@ -65,7 +65,7 @@ void ompl::app::QuadrotorPlanning::propagate(const base::State *from, const cont
     base::SO3StateSpace::StateType&         rot = pose.rotation();
     base::SO3StateSpace::StateType&        drot = dpose.rotation();
     base::SO3StateSpace SO3;
-    
+
     getStateSpace()->copyState(result, from);
     for (i=0; i<nsteps; ++i)
     {
@@ -99,7 +99,7 @@ void ompl::app::QuadrotorPlanning::ode(const base::State *state, const control::
     base::SO3StateSpace::StateType qomega;
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
     double delta, w=rot.w, x=rot.x, y=rot.y, z=rot.z;
-    
+
     // derivative of position
     dpose.setXYZ(vel[0], vel[1], vel[2]);
     // derivative of orientation
@@ -120,12 +120,12 @@ void ompl::app::QuadrotorPlanning::ode(const base::State *state, const control::
 
     // derivative of velocity
     // the z-axis of the body frame in world coordinates is equal to
-    // (2(wy+xz), 2(yz-wx), w^2-x^2-y^2+z^2). 
+    // (2(wy+xz), 2(yz-wx), w^2-x^2-y^2+z^2).
     // This can be easily verified by working out q * (0,0,1).
     dvel[0] = massInv_*(-2*u[0]*(w*y+x*z)         - beta_ * vel[0]);
     dvel[1] = massInv_*(-2*u[0]*(y*z-w*x)         - beta_ * vel[1]);
     dvel[2] = massInv_*(  -u[0]*(w*w-x*x-y*y+z*z) - beta_ * vel[2]) - 9.81;
-    
+
     // derivative of rotational velocity
     dvel[3] = u[1];
     dvel[4] = u[2];
@@ -135,7 +135,7 @@ void ompl::app::QuadrotorPlanning::ode(const base::State *state, const control::
 ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace(void)
 {
     base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
-    
+
     stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
     stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(6)), .3);
     stateSpace->as<base::CompoundStateSpace>()->lock();
@@ -145,7 +145,7 @@ ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace(void
 void ompl::app::QuadrotorPlanning::setDefaultBounds()
 {
     base::RealVectorBounds velbounds(6), controlbounds(4);
-    
+
     velbounds.setLow(-1);
     velbounds.setHigh(1);
     getStateSpace()->as<base::CompoundStateSpace>()->as<base::RealVectorStateSpace>(1)->setBounds(velbounds);

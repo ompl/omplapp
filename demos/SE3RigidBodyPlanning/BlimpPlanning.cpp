@@ -34,7 +34,7 @@ void blimpSetup(app::BlimpPlanning& setup)
     start->setY(0.);
     start->setZ(0.);
     start->rotation().setIdentity();
-    
+
     // define goal state
     base::ScopedState<base::SE3StateSpace> goal(setup.getGeometricComponentStateSpace());
     goal->setX(5.);
@@ -52,7 +52,7 @@ void blimpDemo(app::BlimpPlanning& setup)
 {
     unsigned int i, j;
     std::vector<double> coords;
-    
+
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
     setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
 

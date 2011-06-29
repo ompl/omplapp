@@ -62,9 +62,9 @@ namespace ompl
             }
 
             virtual void setDefaultBounds();
-    
+
         protected:
-    
+
             virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const
             {
                 return state->as<base::CompoundState>()->components[0];
@@ -79,7 +79,7 @@ namespace ompl
                 return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 3));
             }
             static base::StateSpacePtr constructStateSpace(void);
-            
+
             double timeStep_;
         };
 

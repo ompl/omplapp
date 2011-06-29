@@ -28,7 +28,7 @@ ompl::base::ScopedState<> ompl::app::BlimpPlanning::getFullStateFromGeometricCom
     const base::SO3StateSpace::StateType& rot = state->as<base::SE3StateSpace::StateType>()->rotation();
     double norm = sqrt(rot.z * rot.z + rot.w * rot.w);
     base::ScopedState<> s(getStateSpace());
-    base::SO3StateSpace::StateType& rot2 = 
+    base::SO3StateSpace::StateType& rot2 =
         s->as<base::CompoundStateSpace::StateType>()->as<base::SE3StateSpace::StateType>(0)->rotation();
     s = 0.0;
     // set x,y,z
@@ -100,7 +100,7 @@ void ompl::app::BlimpPlanning::ode(const base::State *state, const control::Cont
 ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace(void)
 {
     base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
-    
+
     stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
     stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), .3);
     stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(1)), .3);
@@ -111,7 +111,7 @@ ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace(void)
 void ompl::app::BlimpPlanning::setDefaultBounds()
 {
     base::RealVectorBounds velbounds(3), omegabounds(1), controlbounds(3);
-    
+
     velbounds.setLow(-1);
     velbounds.setHigh(1);
     getStateSpace()->as<base::CompoundStateSpace>()->as<base::RealVectorStateSpace>(1)->setBounds(velbounds);
@@ -123,5 +123,5 @@ void ompl::app::BlimpPlanning::setDefaultBounds()
     controlbounds.setLow(2,-.3);
     controlbounds.setHigh(2,.3);
     getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(controlbounds);
-    
+
 }
