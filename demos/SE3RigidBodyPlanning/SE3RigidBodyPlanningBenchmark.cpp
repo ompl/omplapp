@@ -123,6 +123,14 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     run_count     = 50;
 }
 
+void preRunEvent(const base::PlannerPtr &planner)
+{
+}
+
+void postRunEvent(const base::PlannerPtr &planner, Benchmark::RunProperties &run)
+{
+}
+
 int main(int argc, char **argv)
 {
     app::SE3RigidBodyPlanning setup;
@@ -138,6 +146,11 @@ int main(int argc, char **argv)
 
     // create the benchmark object and add all the planners we'd like to run
     Benchmark b(setup, benchmark_name);
+
+    // optionally set pre & pos run events
+    b.setPreRunEvent(boost::bind(&preRunEvent, _1));
+    b.setPostRunEvent(boost::bind(&postRunEvent, _1, _2));
+
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::BKPIECE1(setup.getSpaceInformation())));

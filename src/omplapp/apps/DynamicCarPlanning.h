@@ -46,7 +46,7 @@ namespace ompl
             {
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
-                getControlSpace()->setPropagationFunction(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
+                si_->setStatePropagator(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
             }
             ~DynamicCarPlanning()
             {

@@ -40,7 +40,7 @@ namespace ompl
             {
                 name_ = std::string("Blimp");
                 setDefaultBounds();
-                getControlSpace()->setPropagationFunction(boost::bind(&BlimpPlanning::propagate, this, _1, _2, _3, _4));
+                si_->setStatePropagator(boost::bind(&BlimpPlanning::propagate, this, _1, _2, _3, _4));
             }
             ~BlimpPlanning()
             {

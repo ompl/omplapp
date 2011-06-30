@@ -40,7 +40,7 @@ namespace ompl
             {
                 name_ = std::string("Quadrotor");
                 setDefaultBounds();
-                getControlSpace()->setPropagationFunction(boost::bind(&QuadrotorPlanning::propagate, this, _1, _2, _3, _4));
+                si_->setStatePropagator(boost::bind(&QuadrotorPlanning::propagate, this, _1, _2, _3, _4));
             }
             ~QuadrotorPlanning()
             {
