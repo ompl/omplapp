@@ -24,7 +24,8 @@ set(CPACK_SOURCE_IGNORE_FILES
     "TODO"
     "/external/assimp"
     "/pqp-1.3"
-    "releaseChecklist.txt")
+    "releaseChecklist.txt"
+    "exposed_decl.pypp.txt")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ;ZIP")
 
