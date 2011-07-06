@@ -8,7 +8,7 @@ To compile OMPL and OMPL.app the following two packages are required:
 - <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt4</a> or <a href="http://www.pyside.org/">PySide</a> (which, in turn, require <a href="http://qt.nokia.com/downloads">Qt4</a>), and
 - <a href="http://pyopengl.sourceforge.net/">PyOpenGL</a>.
 .
-For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://www.language-binding.net/pyplusplus/pyplusplus.html">Py++</a>. To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
+For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://sourceforge.net/projects/pygccxml/">Py++</a>. To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
 
 Below are installation instructions for <a href="#install_linux">Linux</a>, <a href="#install_osx">OS X</a>, and <a href="#install_windows">Windows</a>.
 <br>
