@@ -13,7 +13,7 @@ target_link_libraries(ompl_app ompl ${OMPLAPP_LIBRARIES})
 if(WIN32)
   set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}")
 else(WIN32)
-  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" SOVERSION "${OMPLAPP_MAJOR_VERSION}")
+  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" SOVERSION "${OMPLAPP_ABI_VERSION}")
 endif(WIN32)
 
 install(TARGETS ompl_app DESTINATION lib)
