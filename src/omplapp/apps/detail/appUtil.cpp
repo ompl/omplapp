@@ -105,8 +105,8 @@ namespace ompl
                 virtual void project(const base::State *state, base::EuclideanProjection &projection) const
                 {
                     const base::State *gs = se_(state, 0);
-                    projection.values[0] = gs->as<base::SE2StateSpace::StateType>()->getX();
-                    projection.values[1] = gs->as<base::SE2StateSpace::StateType>()->getY();
+                    projection(0) = gs->as<base::SE2StateSpace::StateType>()->getX();
+                    projection(1) = gs->as<base::SE2StateSpace::StateType>()->getY();
                 }
 
                 virtual void defaultCellSizes(void)
@@ -140,9 +140,9 @@ namespace ompl
                 virtual void project(const base::State *state, base::EuclideanProjection &projection) const
                 {
                     const base::State *gs = se_(state, 0);
-                    projection.values[0] = gs->as<base::SE3StateSpace::StateType>()->getX();
-                    projection.values[1] = gs->as<base::SE3StateSpace::StateType>()->getY();
-                    projection.values[2] = gs->as<base::SE3StateSpace::StateType>()->getZ();
+                    projection(0) = gs->as<base::SE3StateSpace::StateType>()->getX();
+                    projection(1) = gs->as<base::SE3StateSpace::StateType>()->getY();
+                    projection(2) = gs->as<base::SE3StateSpace::StateType>()->getZ();
                 }
 
                 virtual void defaultCellSizes(void)
