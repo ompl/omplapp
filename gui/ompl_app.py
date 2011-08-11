@@ -266,7 +266,7 @@ class MainWindow(QtGui.QMainWindow):
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.LBKPIECERange.value())
                 planner.setBorderFraction(self.mainWidget.plannerWidget.geometricPlanning.LBKPIECEBorderFraction.value())
             elif self.planner==3:
-                planner = og.BasicPRM(si)
+                planner = og.PRM(si)
                 planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.geometricPlanning.PRMMaxNearestNeighbors.value())
             elif self.planner==4:
                 planner = og.SBL(si)
@@ -982,7 +982,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.plannerSelect.addItem('KPIECE')
         self.plannerSelect.addItem('Bi-directional KPIECE')
         self.plannerSelect.addItem('Lazy Bi-directional KPIECE')
-        self.plannerSelect.addItem('BasicPRM')
+        self.plannerSelect.addItem('PRM')
         self.plannerSelect.addItem('SBL')
         self.plannerSelect.addItem('RRT Connect')
         self.plannerSelect.addItem('RRT')
@@ -1056,7 +1056,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.LBKPIECEOptions.setLayout(layout)
 
         # PRM options
-        self.PRMOptions = QtGui.QGroupBox('BasicPRM options')
+        self.PRMOptions = QtGui.QGroupBox('PRM options')
         PRMmaxNearestNeighborsLabel = QtGui.QLabel('Max. nearest neighbors')
         self.PRMMaxNearestNeighbors = QtGui.QSpinBox()
         self.PRMMaxNearestNeighbors.setRange(0, 1000)
