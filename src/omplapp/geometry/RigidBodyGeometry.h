@@ -33,7 +33,7 @@ namespace ompl
         {
         public:
 
-            /** \brief Constructor expects a manifold that can represent a rigid body */
+            /** \brief Constructor expects a state space that can represent a rigid body */
             explicit
             RigidBodyGeometry(MotionModel mtype) : mtype_(mtype), factor_(1.0), add_(0.0), msg_("Geometry")
             {

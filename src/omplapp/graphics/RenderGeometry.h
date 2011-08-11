@@ -25,7 +25,7 @@ namespace ompl
         {
         public:
 
-            /** \brief Constructor expects a manifold that can represent a rigid body */
+            /** \brief Constructor expects a state space that can represent a rigid body */
             RenderGeometry(const RigidBodyGeometry &rbg, const GeometricStateExtractor &se) : rbg_(rbg), se_(se)
             {
             }
