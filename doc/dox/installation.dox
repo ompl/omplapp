@@ -52,25 +52,25 @@ This is it. You are done. It will take quite a while, though, to download, build
 - If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, PQP, ODE, PyQt4, and PyOpenGL. If you have MacPorts installed, type the following:
 \code
 sudo port selfupdate
-sudo port install boost +python26 \; install cmake assimp pqp ode py26-pyqt4 py26-opengl
+sudo port install boost +python27 \; install cmake assimp pqp ode py27-pyqt4 py27-opengl
 \endcode
-If you omit the \c +python26 part, Boost.Python will not be installed, and the Python bindings for OMPL cannot be compiled. Since MacPorts compiles everything from source, the commands above can take quite a while to complete. It is recommended to let this running overnight.
-- It is <b>very</b> important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you <b>must</b> use the MacPorts version of python 2.6 (most likely installed in <tt>/opt/local/bin</tt>). To make this version the default python version, make sure <tt>/opt/local/bin</tt> appears before <tt>/usr/bin</tt> in your PATH. You can add a line like this to your <tt>${HOME}/.bash_profile</tt>:
+If you omit the \c +python27 part, Boost.Python will not be installed, and the Python bindings for OMPL cannot be compiled. Since MacPorts compiles everything from source, the commands above can take quite a while to complete. It is recommended to let this running overnight.
+- It is <b>very</b> important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you <b>must</b> use the MacPorts version of python 2.7 (most likely installed in <tt>/opt/local/bin</tt>). To make this version the default python version, make sure <tt>/opt/local/bin</tt> appears before <tt>/usr/bin</tt> in your PATH. You can add a line like this to your <tt>${HOME}/.bash_profile</tt>:
 \code
 export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 \endcode
 Next, execute the following commands:
 \code
 sudo port install python_select
-sudo python_select python26
+sudo python_select python27
 \endcode
-You can check if the MacPorts-installed python 2.6 is the default one by typing the following command:
+You can check if the MacPorts-installed python 2.7 is the default one by typing the following command:
 \code
 ls -l `which python`
 \endcode
 - To be able to build tests, generate documentation, and regenerate the Python bindings, Google Test, Doxygen, and Py++ are also needed:
 \code
-sudo port install google-test doxygen py26-pyplusplus-devel
+sudo port install google-test doxygen py27-pyplusplus-devel
 \endcode
 - Follow the common steps \ref common_steps "below".
 
