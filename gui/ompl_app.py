@@ -267,7 +267,8 @@ class MainWindow(QtGui.QMainWindow):
                 planner.setBorderFraction(self.mainWidget.plannerWidget.geometricPlanning.LBKPIECEBorderFraction.value())
             elif self.planner==3:
                 planner = og.PRM(si)
-                #planner.setMaxNearestNeighbors(self.mainWidget.plannerWidget.geometricPlanning.PRMMaxNearestNeighbors.value())
+                k = self.mainWidget.plannerWidget.geometricPlanning.PRMMaxNearestNeighbors.value()
+                planner.setMaxNearestNeighbors(k)
             elif self.planner==4:
                 planner = og.SBL(si)
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.SBLRange.value())
@@ -336,17 +337,6 @@ class MainWindow(QtGui.QMainWindow):
                 self.mainWidget.plannerWidget.controlPlanning.minControlDuration.value(),
                 self.mainWidget.plannerWidget.controlPlanning.maxControlDuration.value())
         self.omplSetup.setup()
-        
-        # This doesn't work yet; disable for now
-        # # can only set the connection strategy after setup() has been called
-        # if self.planner==3:
-        #     k = self.mainWidget.plannerWidget.geometricPlanning.PRMMaxNearestNeighbors.value()
-        #     planner = self.omplSetup.getPlanner() 
-        #     nn = planner.getNearestNeighbors()
-        #     strategy = og.KStrategy(k, nn)
-        #     planner.setConnectionStrategy(strategy)
-        #     self.omplSetup.setPlanner(planner)
-        
 
     def solve(self):
         self.configureApp()
@@ -1074,9 +1064,8 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.PRMMaxNearestNeighbors.setSingleStep(1)
         self.PRMMaxNearestNeighbors.setValue(10)
         layout = QtGui.QGridLayout()
-        # This doesn't work yet
-        # layout.addWidget(PRMmaxNearestNeighborsLabel, 0, 0, QtCore.Qt.AlignRight)
-        # layout.addWidget(self.PRMMaxNearestNeighbors, 0, 1)
+        layout.addWidget(PRMmaxNearestNeighborsLabel, 0, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.PRMMaxNearestNeighbors, 0, 1)
         self.PRMOptions.setLayout(layout)
 
         # SBL options
