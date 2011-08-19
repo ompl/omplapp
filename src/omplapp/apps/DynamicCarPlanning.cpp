@@ -30,7 +30,7 @@ ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState(vo
 void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
     const double duration, base::State *result)
 {
-    int i, nsteps = ceil(duration/timeStep_);
+    int i, nsteps = static_cast<int>(ceil(duration/timeStep_));
     double dt = duration/(double)nsteps;
     base::State *dstate = getStateSpace()->allocState();
     base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();

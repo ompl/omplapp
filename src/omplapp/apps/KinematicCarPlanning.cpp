@@ -51,7 +51,7 @@ void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
 void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
     const double duration, base::State *result)
 {
-    int i, nsteps = floor(0.5 + duration/timeStep_);
+    int i, nsteps = static_cast<int>(floor(0.5 + duration/timeStep_));
     double dt = duration/(double)nsteps;
     base::State *dstate = getStateSpace()->allocState();
     base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
