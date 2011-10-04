@@ -28,17 +28,21 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-find_package(Boost COMPONENTS date_time thread filesystem system python REQUIRED)
-find_package(OpenGL REQUIRED)
+find_package(Boost COMPONENTS date_time thread filesystem system REQUIRED)
+find_package(Boost COMPONENTS python)
+find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
-find_package(Python REQUIRED)
+find_package(Python)
 find_python_module(PyQt4 QUIET)
 find_python_module(PySide QUIET)
 if(NOT PY_PYQT4 AND NOT PY_PYSIDE)
-    message(SEND_ERROR "Either PyQt4 or PySide needs to be installed.")
+    message(WARNING "Either PyQt4 or PySide needs to be installed to use the GUI.")
 endif()
-find_python_module(OpenGL REQUIRED)
+find_python_module(OpenGL)
+if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
+    message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
+endif()
 find_package(ODE QUIET)
 find_package(Drawstuff QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
@@ -59,9 +63,11 @@ include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
-    "${OPENGL_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIR}"
     "${PQP_INCLUDE_DIR}")
+if(OPENGL_INCLUDE_DIR)
+    include_directories("${OPENGL_INCLUDE_DIR}")
+endif()
 
 set(OMPL_EXTENSION_ODE ${ODE_FOUND})
 if (ODE_FOUND)

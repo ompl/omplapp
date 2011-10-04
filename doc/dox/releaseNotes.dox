@@ -1,6 +1,12 @@
 /**
 \page releaseNotes Release Notes
 
+\section release_0_9_5 OMPL.app 0.9.5 (October 4, 2011)
+- Added control sampler functions that allow specifying an intended direction of propagation
+- Made python, Boost.Python, PyOpenGL, and PyQt optional; the omplapp library is useful even without the GUI or python bindings.
+- Removed pre-generated Python binding code. It turns out that they are dependent on the particular Boost version.
+- Bug fixes
+
 \section release_0_9_4 OMPL.app 0.9.4 (August 16, 2011)
 - Renamed StateManifold to StateSpace and ControlManifold to ControlSpace
 - Added RRTstar contribution
