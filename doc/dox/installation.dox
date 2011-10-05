@@ -2,13 +2,19 @@
 \page installation Installation
 
 To compile OMPL and OMPL.app the following two packages are required:
-- <a href="http://www.boost.org">Boost</a> (version 1.42 or higher),
-- <a href="http://www.cmake.org">CMake</a> (version 2.8.2 or higher),
-- <a href="http://www.python.org">Python</a> (including libraries and header files),
-- <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt4</a> or <a href="http://www.pyside.org/">PySide</a> (which, in turn, require <a href="http://qt.nokia.com/downloads">Qt4</a>), and
+- <a href="http://www.boost.org">Boost</a> (version 1.42 or higher) and
+- <a href="http://www.cmake.org">CMake</a> (version 2.8.2 or higher)
+.
+
+To be able to generate python bindings the following dependencies are also required
+- <a href="http://www.python.org">Python</a> (including libraries and header files) and
+- \ref installPyPlusPlus "Py++"
+
+Finally, to use the GUI the following dependencies are required (in addition to the ones above):
+- <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt4</a> or <a href="http://www.pyside.org/">PySide</a> (which, in turn, require <a href="http://qt.nokia.com/downloads">Qt4</a>) and
 - <a href="http://pyopengl.sourceforge.net/">PyOpenGL</a>.
 .
-For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. If you want to be able to regenerate the python bindings (which would be necessary if you change the C++ API), then you need to install <a href="http://sourceforge.net/projects/pygccxml/">Py++</a>. To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
+For running the tests, you will also need <a href="http://code.google.com/p/googletest/">Google Test</a>. To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
 
 Below are installation instructions for <a href="#install_linux">Linux</a>, <a href="#install_osx">OS X</a>, and <a href="#install_windows">Windows</a>.
 <br>
@@ -36,7 +42,7 @@ sudo apt-get install libboost-all-dev cmake subversion automake libtool python-d
 \code
 sudo apt-get install libgtest-dev doxygen graphviz libode-dev
 \endcode
-- To be able to regenerate Python bindings, follow \ref installPyPlusPlus "these" instructions.
+- To be able to generate Python bindings, follow \ref installPyPlusPlus "these" instructions.
 - Follow the common steps \ref common_steps "below".
 
 
@@ -49,28 +55,31 @@ sudo port selfupdate
 sudo port install ompl +app
 \endcode
 This is it. You are done. It will take quite a while, though, to download, build, and install OMPL.app and all its dependencies. The GUI is invoked from the command line by \c /opt/local/bin/ompl_app. Demo programs and input files for the GUI can be found in \c /opt/local/share/ompl.
-- If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, PQP, ODE, PyQt4, and PyOpenGL. If you have MacPorts installed, type the following:
+- If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, PQP, ODE, PyQt4, PyOpenGL, and Py++. If you have MacPorts installed, type the following:
 \code
 sudo port selfupdate
-sudo port install boost +python27 \; install cmake assimp pqp ode py27-pyqt4 py27-opengl
+sudo port install boost +python27 \; install cmake assimp pqp ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
 \endcode
-If you omit the \c +python27 part, Boost.Python will not be installed, and the Python bindings for OMPL cannot be compiled. Since MacPorts compiles everything from source, the commands above can take quite a while to complete. It is recommended to let this running overnight.
+If you omit the \c +python27 part, Boost.Python will not be installed, and the Python bindings for OMPL cannot be compiled. Since MacPorts compiles everything from source, the commands above can take quite a while to complete. It is recommended to let this running overnight. If you do not care for the Python bindings or the GUI, you can reduce the total number of dependencies that need to be installed significantly by typing the following commands instead of the ones above:
+\code
+sudo port selfupdate
+sudo port install boost cmake assimp pqp ode
+\endcode
 - It is <b>very</b> important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you <b>must</b> use the MacPorts version of python 2.7 (most likely installed in <tt>/opt/local/bin</tt>). To make this version the default python version, make sure <tt>/opt/local/bin</tt> appears before <tt>/usr/bin</tt> in your PATH. You can add a line like this to your <tt>${HOME}/.bash_profile</tt>:
 \code
 export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 \endcode
-Next, execute the following commands:
+Next, execute the following command:
 \code
-sudo port install python_select
-sudo python_select python27
+sudo port select python python27
 \endcode
 You can check if the MacPorts-installed python 2.7 is the default one by typing the following command:
 \code
 ls -l `which python`
 \endcode
-- To be able to build tests, generate documentation, and regenerate the Python bindings, Google Test, Doxygen, and Py++ are also needed:
+- To be able to build tests and generate documentation, Google Test and Doxygen are also needed:
 \code
-sudo port install google-test doxygen py27-pyplusplus-devel
+sudo port install google-test doxygen
 \endcode
 - Follow the common steps \ref common_steps "below".
 
