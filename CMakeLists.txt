@@ -21,7 +21,6 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 include(OMPLVersion)
-include(OMPLUtils)
 set(OMPLAPP_MAJOR_VERSION ${OMPL_MAJOR_VERSION})
 set(OMPLAPP_MINOR_VERSION ${OMPL_MINOR_VERSION})
 set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
@@ -86,6 +85,8 @@ set(OMPLAPP_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
     ${PQP_LIBRARY})
+
+include(OMPLUtils)
 
 add_subdirectory(ompl/src)
 add_subdirectory(ompl/py-bindings)
