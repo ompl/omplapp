@@ -16,3 +16,9 @@ if(OMPL_BUILD_PYBINDINGS)
             "${CMAKE_CURRENT_SOURCE_DIR}/../ompl/py-bindings/ompl" ompl_app)
     endif()
 endif(OMPL_BUILD_PYBINDINGS)
+
+add_custom_target(clean_bindings2
+    ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/bindings
+    COMMAND ${CMAKE_COMMAND} -E remove -f pyplusplus_app.{cache,log}
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+add_dependencies(clean_bindings clean_bindings2)
