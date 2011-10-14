@@ -61,9 +61,9 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
-        s.setX(s.getX() + timeStep_ * ds.getX());
-        s.setY(s.getY() + timeStep_ * ds.getY());
-        s.setYaw(s.getYaw() + timeStep_ * ds.getYaw());
+        s.setX(s.getX() + dt * ds.getX());
+        s.setY(s.getY() + dt * ds.getY());
+        s.setYaw(s.getYaw() + dt * ds.getYaw());
     }
     getStateSpace()->freeState(dstate);
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);

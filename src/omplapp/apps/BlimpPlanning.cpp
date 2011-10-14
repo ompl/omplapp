@@ -63,12 +63,12 @@ void ompl::app::BlimpPlanning::propagate(const base::State *from, const control:
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
-        pose.setX(pose.getX() + timeStep_ * dpose.getX());
-        pose.setY(pose.getY() + timeStep_ * dpose.getY());
-        pose.setZ(pose.getZ() + timeStep_ * dpose.getZ());
-        theta += timeStep_ * dtheta;
-        for (j=0; j<3; ++j) vel[j] += timeStep_ * dvel[j];
-        omega += timeStep_ * domega;
+        pose.setX(pose.getX() + dt * dpose.getX());
+        pose.setY(pose.getY() + dt * dpose.getY());
+        pose.setZ(pose.getZ() + dt * dpose.getZ());
+        theta += dt * dtheta;
+        for (j=0; j<3; ++j) vel[j] += dt * dvel[j];
+        omega += dt * domega;
     }
     getStateSpace()->freeState(dstate);
     // convert heading back to a quaternion

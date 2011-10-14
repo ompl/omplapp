@@ -70,16 +70,16 @@ void ompl::app::QuadrotorPlanning::propagate(const base::State *from, const cont
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
-        pose.setX(pose.getX() + timeStep_ * dpose.getX());
-        pose.setY(pose.getY() + timeStep_ * dpose.getY());
-        pose.setZ(pose.getZ() + timeStep_ * dpose.getZ());
-        rot.w += timeStep_ * drot.w;
-        rot.x += timeStep_ * drot.x;
-        rot.y += timeStep_ * drot.y;
-        rot.z += timeStep_ * drot.z;
+        pose.setX(pose.getX() + dt * dpose.getX());
+        pose.setY(pose.getY() + dt * dpose.getY());
+        pose.setZ(pose.getZ() + dt * dpose.getZ());
+        rot.w += dt * drot.w;
+        rot.x += dt * drot.x;
+        rot.y += dt * drot.y;
+        rot.z += dt * drot.z;
         SO3.enforceBounds(&rot); // make sure we have a unit quaternion
         for (j=0; j<6; ++j)
-            vel[j] += timeStep_ * dvel[j];
+            vel[j] += dt * dvel[j];
     }
     getStateSpace()->freeState(dstate);
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);

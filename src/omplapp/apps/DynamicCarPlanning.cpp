@@ -44,11 +44,11 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
     for (i=0; i<nsteps; ++i)
     {
         ode(result, ctrl, dstate);
-        pose.setX(pose.getX() + timeStep_ * dpose.getX());
-        pose.setY(pose.getY() + timeStep_ * dpose.getY());
-        pose.setYaw(pose.getYaw() + timeStep_ * dpose.getYaw());
-        vel[0] += timeStep_ * dvel[0];
-        vel[1] += timeStep_ * dvel[1];
+        pose.setX(pose.getX() + dt * dpose.getX());
+        pose.setY(pose.getY() + dt * dpose.getY());
+        pose.setYaw(pose.getYaw() + dt * dpose.getYaw());
+        vel[0] += dt * dvel[0];
+        vel[1] += dt * dvel[1];
     }
     getStateSpace()->freeState(dstate);
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
