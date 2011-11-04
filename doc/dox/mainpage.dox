@@ -17,6 +17,9 @@ The Open Motion Planning Library (\b OMPL) consists of many state-of-the-art sam
 We have also developed a \ref education "teaching module on motion planning" that is centered around OMPL.app.  We are looking for educational partners to use and further develop the material. Please contact us for more information.
 
 \htmlonly<div></div>\endhtmlonly
+The core OMPL library is used within <a href="http://www.ros.org">ROS</a>. The ROS interface to OMPL is described <a href="http://www.ros.org/wiki/ompl_ros_interface">here</a>, while a tutorial on using OMPL within ROS is available <a href="http://kavrakilab.org/OMPLtutorial">here</a>.
+
+\htmlonly<div></div>\endhtmlonly
 For example uses of OMPL, see \ref gallery "our gallery page".
 
 <br>
