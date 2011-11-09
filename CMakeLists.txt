@@ -54,6 +54,7 @@ if(${CMAKE_VERSION} VERSION_LESS 2.8.2 AND
             "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
 endif()
 include(UsePQP)
+include(UseFCL)
 include(UseAssimp)
 
 enable_testing()
@@ -64,6 +65,14 @@ include_directories(
     "${Boost_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIR}"
     "${PQP_INCLUDE_DIR}")
+
+if (FCL_INCLUDE_DIR)
+include_directories(
+    "${FCL_INCLUDE_DIR}"
+    "${ANN_INCLUDE_DIR}"
+    "${CCD_INCLUDE_DIR}")
+endif ()
+
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
@@ -77,14 +86,16 @@ endif()
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
-    ${PQP_LIBRARY}
+    ${PQP_LIBRARY}   
+    ${FCL_LIBRARIES} 
     ${OMPL_APP_LIBRARY})
 set(OMPLAPP_LIBRARIES
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
-    ${PQP_LIBRARY})
+    ${PQP_LIBRARY}
+    ${FCL_LIBRARIES})
 
 include(OMPLUtils)
 
@@ -114,6 +125,10 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     # need assimp header files to generate python bindings
     if(TARGET assimp)
         add_dependencies(update_app_bindings assimp)
+    endif()
+    # need fcl header files to generate python bindings
+    if(TARGET fcl)
+        add_dependencies(update_app_bindings fcl)
     endif()
 endif()
 

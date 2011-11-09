@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 2.8)
+project(fcl)
+include(CompilerSettings)
+set (FCL_INCLUDE_DIRS "include" 
+                    "${CCD_INCLUDE_DIR}"
+                    "${ANN_INCLUDE_DIR}")
+include_directories(${FCL_INCLUDE_DIRS})
+file (GLOB FCL_SRC "src/*.cpp")
+
+add_library(fcl STATIC ${FCL_SRC})

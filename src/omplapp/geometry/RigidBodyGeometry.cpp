@@ -12,6 +12,7 @@
 
 #include "omplapp/geometry/RigidBodyGeometry.h"
 #include "omplapp/geometry/detail/PQPStateValidityChecker.h"
+#include "omplapp/geometry/detail/FCLStateValidityChecker.h"
 #include <boost/lexical_cast.hpp>
 
 bool ompl::app::RigidBodyGeometry::setRobotMesh(const std::string &robot)
@@ -127,7 +128,7 @@ const ompl::app::GeometrySpecification& ompl::app::RigidBodyGeometry::getGeometr
 
 void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void)
 {
-    pqp_svc_.reset();
+    validitySvc_.reset();
     geom_.obstacles.clear();
     geom_.obstaclesShift.clear();
     geom_.robot.clear();
@@ -156,17 +157,51 @@ aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(unsigned int robotIndex)
     return s;
 }
 
+void ompl::app::RigidBodyGeometry::setStateValidityCheckerType (CollisionChecker ctype)
+{
+    if (ctype != ctype_)
+    {
+        ctype_ = ctype;
+        if (validitySvc_)
+        {
+            validitySvc_.reset ();
+        }
+
+        assert (!validitySvc_);
+    }
+}
+
 const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision)
 {
-    if (pqp_svc_)
-        return pqp_svc_;
+    if (validitySvc_)
+        return validitySvc_;
 
     GeometrySpecification geom = getGeometrySpecification();
 
-    if (mtype_ == Motion_2D)
-        pqp_svc_.reset(new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
-    else
-        pqp_svc_.reset(new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+    switch (ctype_)
+    {
+        case PQP:
+            if (mtype_ == Motion_2D)
+                validitySvc_.reset (new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
+            else
+                validitySvc_.reset (new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+            break;
 
-    return pqp_svc_;
+        case FCL:
+            #ifdef USE_FCL
+            if (mtype_ == Motion_2D)
+                validitySvc_.reset (new FCLStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
+            else
+                validitySvc_.reset (new FCLStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+            break;
+            #else
+            msg_.error ("FCL support is not compiled.  Install FCL library to use FCL collision checker");
+            #endif
+            break;
+            
+        default:
+            msg_.error ("Unexpected collision checker type (%d) encountered", ctype_);
+    };
+
+    return validitySvc_;
 }
