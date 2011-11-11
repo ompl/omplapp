@@ -138,61 +138,61 @@ namespace ompl
             {
                 typedef typename OMPL_FCL_StateType<T>::type StateType;
 
-                // It is assumed that s1 is valid.  Make sure s2 is within bounds
-                bool valid = si_->satisfiesBounds (s2) && environment_.num_tris > 0;
+                bool valid (true);
+                collisionTime = 1.0;
 
-                collisionTime = std::numeric_limits<double>::infinity ();
-                boost::mutex::scoped_lock slock(mutex_);
-                
-                transformRobot (s1);
+                fcl::SimpleQuaternion quat1, quat2;
+                fcl::Vec3f trans1, trans2;
+                fcl::Vec3f rot1[3], rot2[3];
+                std::vector <fcl::Contact> contacts;
 
-                for (size_t i = 0; i < robotParts_.size () && valid; ++i)
+                // Checking for collision with environment
+                if (environment_.num_tris > 0)
                 {
-                    fcl::SimpleQuaternion quaternion;
-                    fcl::Vec3f translation;
-                    stateConvertor_.FCLPoseFromState (translation, quaternion, *static_cast<const StateType*>(extractState_(s2, i)));
+                    for (size_t i = 0; i < robotParts_.size () && valid; ++i)
+                    {
+                        // Getting the translation and rotation from s1 and s2
+                        stateConvertor_.FCLPoseFromState (trans1, quat1, *static_cast<const StateType*>(extractState_(s1, i)));
+                        stateConvertor_.FCLPoseFromState (trans2, quat2, *static_cast<const StateType*>(extractState_(s2, i)));
+                        quat1.toRotation (rot1);
+                        quat2.toRotation (rot2);
 
-                    fcl::Vec3f rotation[3];
-                    quaternion.toRotation (rotation);
-                    fcl::InterpMotion<BVType> robot_motion (robotParts_[i].getRotation (), robotParts_[i].getTranslation (),
-                                                            rotation, translation);
+                        // Interpolating part i from s1 to s2
+                        fcl::InterpMotion<BVType> motion1 (rot1, trans1, rot2, trans2);
+                        // The environment does not move
+                        fcl::InterpMotion<BVType> motion2;
 
-                    fcl::InterpMotion<BVType> env_motion;
-                    std::vector <fcl::Contact> contacts;
-
-                    valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &robot_motion, &environment_, &env_motion,
-                                                           1, false, false, contacts, collisionTime) == 0);
+                        // Checking for collision
+                        valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &motion1, &environment_, &motion2,
+                                                                         1, false, false, contacts, collisionTime) == 0);
+                    }
                 }
 
                 // Checking for self collision
                 if (selfCollision_ && valid)
                 {
-                    std::vector <fcl::Contact> contacts;
                     for (std::size_t i = 0 ; i < robotParts_.size () && valid; ++i)
                     {
-                        fcl::SimpleQuaternion quaternion_i;
-                        fcl::Vec3f translation_i;
-                        stateConvertor_.FCLPoseFromState (translation_i, quaternion_i, *static_cast<const StateType*>(extractState_(s2, i)));
+                        stateConvertor_.FCLPoseFromState (trans1, quat1, *static_cast<const StateType*>(extractState_(s1, i)));
+                        stateConvertor_.FCLPoseFromState (trans2, quat2, *static_cast<const StateType*>(extractState_(s2, i)));
+                        quat1.toRotation (rot1);
+                        quat2.toRotation (rot2);
 
-                        fcl::Vec3f rotation_i[3];
-                        quaternion_i.toRotation (rotation_i);
+                        // Interpolating part i from s1 to s2
+                        fcl::InterpMotion<BVType> motion_i (rot1, trans1, rot2, trans2);
 
-                        fcl::InterpMotion<BVType> i_motion (robotParts_[i].getRotation (), robotParts_[i].getTranslation (),
-                                                            rotation_i, translation_i);
-
-                        for (std::size_t j  = i + 1 ; j < robotParts_.size () && valid; ++j)
+                        for (std::size_t j = i+1; j < robotParts_.size () && valid; ++j)
                         {
-                            fcl::SimpleQuaternion quaternion_j;
-                            fcl::Vec3f translation_j;
-                            stateConvertor_.FCLPoseFromState (translation_j, quaternion_j, *static_cast<const StateType*>(extractState_(s2, j)));
+                            stateConvertor_.FCLPoseFromState (trans1, quat1, *static_cast<const StateType*>(extractState_(s1, j)));
+                            stateConvertor_.FCLPoseFromState (trans2, quat2, *static_cast<const StateType*>(extractState_(s2, j)));
+                            quat1.toRotation (rot1);
+                            quat2.toRotation (rot2);
 
-                            fcl::Vec3f rotation_j[3];
-                            quaternion_j.toRotation (rotation_j);
+                            // Interpolating part j from s1 to s2
+                            fcl::InterpMotion<BVType> motion_j (rot1, trans1, rot2, trans2);
 
-                            fcl::InterpMotion<BVType> j_motion (robotParts_[j].getRotation (), robotParts_[j].getTranslation (),
-                                                                rotation_j, translation_j);
-
-                            valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &i_motion, &robotParts_[j], &j_motion,
+                            // Checking for collision
+                            valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &motion_i, &robotParts_[j], &motion_j,
                                                                              1, false, false, contacts, collisionTime) == 0);
                         }
                     }
