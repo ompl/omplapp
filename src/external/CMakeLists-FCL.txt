@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(fcl)
 include(CompilerSettings)
+find_package(Boost)
 set (FCL_INCLUDE_DIRS "include" 
+                    "${Boost_INCLUDE_DIR}"
                     "${CCD_INCLUDE_DIR}"
                     "${ANN_INCLUDE_DIR}")
 include_directories(${FCL_INCLUDE_DIRS})
