@@ -13,7 +13,7 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_FCL_CONTINUOUS_MOTION_VALIDATOR_
 #define OMPLAPP_GEOMETRY_DETAIL_FCL_CONTINUOUS_MOTION_VALIDATOR_
 
-#ifdef USE_FCL
+#ifdef OMPL_HAS_FCL
 
 #include <ompl/base/MotionValidator.h>
 #include <ompl/base/SpaceInformation.h>
@@ -160,7 +160,7 @@ namespace ompl
                         msg_.warn ("Unknown motion model specified: %u", mm);
                         break;
                 }
-                
+
                 if (!fclWrapper_)
                 {
                     // Be extra verbose in this fatal error
@@ -181,6 +181,6 @@ namespace ompl
     }
 }
 
-#endif // USE_FCL
+#endif // OMPL_HAS_FCL
 
 #endif

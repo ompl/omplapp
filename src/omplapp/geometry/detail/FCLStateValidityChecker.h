@@ -13,7 +13,7 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_FCL_COLLISION_CHECKER_
 #define OMPLAPP_GEOMETRY_DETAIL_FCL_COLLISION_CHECKER_
 
-#ifdef USE_FCL
+#ifdef OMPL_HAS_FCL
 
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/StateValidityChecker.h>
@@ -42,7 +42,7 @@ namespace ompl
             void FCLPoseFromState(fcl::Vec3f &trans, fcl::SimpleQuaternion &quat, const ob::State *state) const
             {
                 const type * derived = static_cast <const type*> (state);
-                
+
                 trans.setValue (derived->getX (), derived->getY (), derived->getZ ());
                 quat.getW () = derived->rotation ().w;
                 quat.getX () = derived->rotation ().x;
@@ -123,6 +123,6 @@ namespace ompl
     }
 }
 
-#endif // USE_FCL
+#endif // OMPL_HAS_FCL
 
 #endif

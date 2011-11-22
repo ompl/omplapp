@@ -67,10 +67,8 @@ include_directories(
     "${PQP_INCLUDE_DIR}")
 
 if (FCL_INCLUDE_DIR)
-include_directories(
-    "${FCL_INCLUDE_DIR}"
-    "${ANN_INCLUDE_DIR}"
-    "${CCD_INCLUDE_DIR}")
+    include_directories("${FCL_INCLUDE_DIR}")
+    set(OMPL_HAS_FCL 1)
 endif ()
 
 if(OPENGL_INCLUDE_DIR)
@@ -86,8 +84,8 @@ endif()
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
-    ${PQP_LIBRARY}   
-    ${FCL_LIBRARIES} 
+    ${PQP_LIBRARY}
+    ${FCL_LIBRARIES}
     ${OMPL_APP_LIBRARY})
 set(OMPLAPP_LIBRARIES
     ${Boost_FILESYSTEM_LIBRARY}
@@ -108,7 +106,7 @@ add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(py-bindings)
-install(DIRECTORY resources DESTINATION share/ompl 
+install(DIRECTORY resources DESTINATION share/ompl
     PATTERN ".svn" EXCLUDE
     PATTERN ".DS_Store" EXCLUDE)
 

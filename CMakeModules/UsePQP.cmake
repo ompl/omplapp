@@ -7,6 +7,8 @@ if(PQP_LIBRARY AND PQP_INCLUDE_DIR)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(pqp DEFAULT_MSG PQP_LIBRARY PQP_INCLUDE_DIR)
 else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
+
+    message (STATUS "PQP library not found.  Will download and compile.")
     include(ExternalProject)
     # download and build PQP
     ExternalProject_Add(pqp

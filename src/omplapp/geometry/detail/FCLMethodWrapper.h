@@ -13,7 +13,7 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_FCL_METHOD_WRAPPER_
 #define OMPLAPP_GEOMETRY_DETAIL_FCL_METHOD_WRAPPER_
 
-#ifdef USE_FCL
+#ifdef OMPL_HAS_FCL
 
 // OMPL and OMPL.app headers
 #include "omplapp/geometry/GeometrySpecification.h"
@@ -322,6 +322,6 @@ namespace ompl
     }
 }
 
-#endif // USE_FCL
+#endif // OMPL_HAS_FCL
 
 #endif
