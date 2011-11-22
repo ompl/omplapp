@@ -27,7 +27,7 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-find_package(Boost COMPONENTS date_time thread filesystem system REQUIRED)
+find_package(Boost COMPONENTS date_time thread program_options filesystem system REQUIRED)
 find_package(Boost COMPONENTS python)
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
@@ -88,6 +88,8 @@ set(OMPLAPP_MODULE_LIBRARIES
     ${FCL_LIBRARIES}
     ${OMPL_APP_LIBRARY})
 set(OMPLAPP_LIBRARIES
+    ${Boost_DATE_TIME_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
@@ -105,6 +107,7 @@ add_subdirectory(gui)
 add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
+add_subdirectory(benchmark)
 add_subdirectory(py-bindings)
 install(DIRECTORY resources DESTINATION share/ompl
     PATTERN ".svn" EXCLUDE
