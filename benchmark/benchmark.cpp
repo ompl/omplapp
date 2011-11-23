@@ -35,6 +35,8 @@ using namespace ompl;
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <fstream>
 
 static const std::string KNOWN_PLANNERS[] = {
@@ -155,6 +157,10 @@ public:
     {
         if (readOptions(filename))
         {
+            boost::filesystem::path path(filename);
+            path_ = boost::filesystem::absolute(path);
+            path_.remove_filename();
+
             if (isSE2Problem())
                 configureSE2();
             else
@@ -212,13 +218,14 @@ public:
 
         benchmark_->benchmark(tl, ml, rc, true, true);
         if (!opt_["benchmark.output"].empty())
-            benchmark_->saveResultsToFile(opt_["benchmark.output"].c_str());
+            benchmark_->saveResultsToFile((path_ / opt_["benchmark.output"]).c_str());
         else
             benchmark_->saveResultsToFile();
     }
 
 private:
 
+    boost::filesystem::path                                    path_;
     std::map<std::string, std::string>                         opt_;
     std::map<std::string, std::map<std::string, std::string> > planners_;
     boost::shared_ptr<app::SE3RigidBodyPlanning>               setup_se3_;
@@ -297,8 +304,8 @@ private:
     void configureSE3(void)
     {
         setup_se3_.reset(new app::SE3RigidBodyPlanning());
-        setup_se3_->setRobotMesh(opt_["problem.robot"].c_str());
-        setup_se3_->setEnvironmentMesh(opt_["problem.world"].c_str());
+        setup_se3_->setRobotMesh((path_ / opt_["problem.robot"]).c_str());
+        setup_se3_->setEnvironmentMesh((path_ / opt_["problem.world"]).c_str());
         base::ScopedState<base::SE3StateSpace> start(setup_se3_->getStateSpace());
         try
         {
@@ -347,8 +354,8 @@ private:
     void configureSE2(void)
     {
         setup_se2_.reset(new app::SE2RigidBodyPlanning());
-        setup_se2_->setRobotMesh(opt_["problem.robot"].c_str());
-        setup_se2_->setEnvironmentMesh(opt_["problem.world"].c_str());
+        setup_se2_->setRobotMesh((path_ / opt_["problem.robot"]).c_str());
+        setup_se2_->setEnvironmentMesh((path_ / opt_["problem.world"]).c_str());
         base::ScopedState<base::SE2StateSpace> start(setup_se2_->getStateSpace());
         try
         {
