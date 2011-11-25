@@ -68,88 +68,7 @@ base::ValidStateSamplerPtr allocMaximizeClearanceStateSampler(const base::SpaceI
     return base::ValidStateSamplerPtr(s);
 }
 
-void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
-                double& runtime_limit, double& memory_limit, int& run_count)
-{
-    benchmark_name = std::string("cubicles");
-    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_robot.dae";
-    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
-
-    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
-    start->setX(-4.96);
-    start->setY(-40.62);
-    start->setZ(70.57);
-    start->rotation().setIdentity();
-
-    base::ScopedState<base::SE3StateSpace> goal(start);
-    goal->setX(200.49);
-    goal->setY(-40.62);
-    goal->setZ(70.57);
-    goal->rotation().setIdentity();
-
-    setup.setStartAndGoalStates(start, goal);
-    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
-    setup.setup();
-
-    std::vector<double> cs(3);
-    cs[0] = 35; cs[1] = 35; cs[2] = 35;
-    setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
-
-    runtime_limit = 10.0;
-    memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 500;
-}
-
-void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
-                double& runtime_limit, double& memory_limit, int& run_count)
-{
-    benchmark_name = std::string("Twistycool");
-    std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_robot.dae";
-    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
-
-    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
-    start->setX(270.);
-    start->setY(160.);
-    start->setZ(-200.);
-    start->rotation().setIdentity();
-
-    base::ScopedState<base::SE3StateSpace> goal(start);
-    goal->setX(270.);
-    goal->setY(160.);
-    goal->setZ(-400.);
-    goal->rotation().setIdentity();
-
-    base::RealVectorBounds bounds(3);
-    bounds.setHigh(0,400.);
-    bounds.setHigh(1,275.);
-    bounds.setHigh(2,-100.);
-    bounds.setLow(0,60.);
-    bounds.setLow(1,0.);
-    bounds.setLow(2,-480.);
-    setup.getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
-
-    setup.setStartAndGoalStates(start, goal);
-    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-
-    runtime_limit = 90.0;
-    memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 50;
-}
-
-void preRunEvent(const base::PlannerPtr &planner)
-{
-}
-
-void postRunEvent(const base::PlannerPtr &planner, Benchmark::RunProperties &run)
-{
-}
 */
-
 class GeometricPlanningBenchmark
 {
 public:
@@ -225,12 +144,13 @@ public:
 
 private:
 
-    boost::filesystem::path                                    path_;
-    std::map<std::string, std::string>                         opt_;
-    std::map<std::string, std::map<std::string, std::string> > planners_;
-    boost::shared_ptr<app::SE3RigidBodyPlanning>               setup_se3_;
-    boost::shared_ptr<app::SE2RigidBodyPlanning>               setup_se2_;
-    boost::shared_ptr<Benchmark>                               benchmark_;
+    typedef std::map<std::string, std::string> PlannerOpt;
+    boost::filesystem::path                         path_;
+    std::map<std::string, std::string>              opt_;
+    std::map<std::string, std::vector<PlannerOpt> > planners_;
+    boost::shared_ptr<app::SE3RigidBodyPlanning>    setup_se3_;
+    boost::shared_ptr<app::SE2RigidBodyPlanning>    setup_se2_;
+    boost::shared_ptr<Benchmark>                    benchmark_;
 
     bool readOptions(const char *filename)
     {
@@ -263,37 +183,38 @@ private:
 
             ("benchmark.time_limit", boost::program_options::value<std::string>(), "Time limit for each run of a planner")
             ("benchmark.mem_limit", boost::program_options::value<std::string>(), "Memory limit for each run of a planner")
-            ("benchmark.run_count", boost::program_options::value<std::string>(), "Number of times to run each planner");
+            ("benchmark.run_count", boost::program_options::value<std::string>(), "Number of times to run each planner")
+            ("benchmark.output", boost::program_options::value<std::string>(), "Location where to save the results");
 
         boost::program_options::variables_map vm;
         boost::program_options::parsed_options po = boost::program_options::parse_config_file(cfg, desc, true);
         cfg.close();
         boost::program_options::store(po, vm);
-        std::vector<std::string> unr = boost::program_options::collect_unrecognized(po.options, boost::program_options::exclude_positional);
-        std::map<std::string, std::string> rest;
-        for (std::size_t i = 0 ; i < unr.size() / 2 ; ++i)
-            rest[boost::to_lower_copy(unr[i * 2])] = unr[i * 2 + 1];
-
         opt_.clear();
         for (boost::program_options::variables_map::iterator it = vm.begin() ; it != vm.end() ; ++it)
             opt_[it->first] = boost::any_cast<std::string>(vm[it->first].value());
 
+        std::vector<std::string> unr = boost::program_options::collect_unrecognized(po.options, boost::program_options::exclude_positional);
         planners_.clear();
-        for (std::map<std::string, std::string>::iterator it = rest.begin() ; it != rest.end() ; ++it)
+        for (std::size_t i = 0 ; i < unr.size() / 2 ; ++i)
         {
-            if (it->first.substr(0, 8) != "planner.")
+            std::string key = boost::to_lower_copy(unr[i * 2]);
+            std::string val = unr[i * 2 + 1];
+            if (key.substr(0, 8) != "planner.")
                 continue;
-            std::string op = it->first.substr(8);
+            std::string op = key.substr(8);
             for (std::size_t i = 0 ; i < sizeof(KNOWN_PLANNERS) / sizeof(std::string) ; ++i)
                 if (op.substr(0, KNOWN_PLANNERS[i].length()) == KNOWN_PLANNERS[i])
                 {
                     if (op == KNOWN_PLANNERS[i])
-                        planners_[op];
+                        planners_[op].resize(planners_[op].size() + 1);
                     else
                         if (op[KNOWN_PLANNERS[i].length()] == '.')
                         {
                             op = op.substr(KNOWN_PLANNERS[i].length() + 1);
-                            planners_[KNOWN_PLANNERS[i]][op] = it->second;
+                            if (planners_[KNOWN_PLANNERS[i]].empty())
+                                planners_[KNOWN_PLANNERS[i]].resize(1);
+                            planners_[KNOWN_PLANNERS[i]].back()[op] = val;
                         }
                     break;
                 }
@@ -393,7 +314,7 @@ private:
         benchmark_.reset(new Benchmark(*setup_se2_, opt_["problem.name"]));
     }
 
-    base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si, const std::string &name, const std::map<std::string, std::string> &opt) const
+    base::PlannerPtr allocPlanner(const base::SpaceInformationPtr &si, const std::string &name, const PlannerOpt &opt) const
     {
         ompl::base::Planner *p = NULL;
         if (name == "rrt")
@@ -417,14 +338,18 @@ private:
         else
             std::cerr << "Unknown planner: " << name << std::endl;
         if (p)
+        {
             p->setParams(opt);
+            std::cout << "Allocated " << p->getName() << std::endl;
+        }
         return base::PlannerPtr(p);
     }
 
     void allocPlanners(void)
     {
-        for (std::map<std::string, std::map<std::string, std::string> >::iterator it = planners_.begin() ; it != planners_.end() ; ++it)
-            benchmark_->addPlannerAllocator(boost::bind(&GeometricPlanningBenchmark::allocPlanner, this, _1, boost::cref(it->first), boost::cref(it->second)));
+        for (std::map<std::string, std::vector<PlannerOpt> >::iterator it = planners_.begin() ; it != planners_.end() ; ++it)
+            for (std::size_t i = 0 ; i < it->second.size() ; ++i)
+                benchmark_->addPlannerAllocator(boost::bind(&GeometricPlanningBenchmark::allocPlanner, this, _1, boost::cref(it->first), boost::cref(it->second[i])));
     }
 
 };
