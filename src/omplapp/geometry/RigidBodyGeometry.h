@@ -45,7 +45,7 @@ namespace ompl
             }
 
             /// \brief Constructor expects a state space that can represent a rigid body
-            /// \param mtype The motion model (2D or 3D) for the rigid body. 
+            /// \param mtype The motion model (2D or 3D) for the rigid body.
             /// \remarks This constructor defaults to a PQP state validity checker
             explicit
             RigidBodyGeometry(MotionModel mtype) : mtype_(mtype), factor_(1.0), add_(0.0), msg_("Geometry"), ctype_(PQP)
