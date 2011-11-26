@@ -269,6 +269,7 @@ private:
             setup_se3_->setStartAndGoalStates(start, goal);
         }
         setup_se3_->setup();
+	setup_se3_->print();	
         benchmark_.reset(new Benchmark(*setup_se3_, opt_["problem.name"]));
     }
 
@@ -311,6 +312,7 @@ private:
             setup_se2_->setStartAndGoalStates(start, goal);
         }
         setup_se2_->setup();
+	setup_se2_->print();	
         benchmark_.reset(new Benchmark(*setup_se2_, opt_["problem.name"]));
     }
 
@@ -339,7 +341,7 @@ private:
             std::cerr << "Unknown planner: " << name << std::endl;
         if (p)
         {
-            p->setParams(opt);
+            p->params().setParams(opt);
             std::cout << "Allocated " << p->getName() << std::endl;
         }
         return base::PlannerPtr(p);
