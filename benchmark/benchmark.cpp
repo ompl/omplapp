@@ -205,8 +205,8 @@ private:
 
         std::vector<std::string> unr = boost::program_options::collect_unrecognized(po.options, boost::program_options::exclude_positional);
         planners_.clear();
-	context_.clear();
-	ContextOpt temp_context;
+        context_.clear();
+        ContextOpt temp_context;
         std::string last_planner;
         for (std::size_t i = 0 ; i < unr.size() / 2 ; ++i)
         {
@@ -215,15 +215,15 @@ private:
             if (key.substr(0, 8) == "problem.")
             {
                 std::string p = key.substr(8);
-		context_[p] = val;
+                context_[p] = val;
                 continue;
             }
-	    
+
             if (key.substr(0, 8) != "planner.")
-                continue;   
-	    
+                continue;
+
             std::string op = key.substr(8);
-	    if (op.substr(0, 8) == "problem.")
+            if (op.substr(0, 8) == "problem.")
             {
                 std::string p = op.substr(8);
                 if (last_planner.empty())
@@ -310,7 +310,7 @@ private:
             setup_se3_->setStartAndGoalStates(start, goal);
         }
         setup_se3_->setup();
-	setup_se3_->params().setParams(context_);
+        setup_se3_->params().setParams(context_);
         setup_se3_->setup();
         setup_se3_->print();
         benchmark_.reset(new Benchmark(*setup_se3_, opt_["problem.name"]));
@@ -354,7 +354,7 @@ private:
         {
             setup_se2_->setStartAndGoalStates(start, goal);
         }
-        setup_se2_->setup();	
+        setup_se2_->setup();
         setup_se2_->params().setParams(context_);
         setup_se2_->setup();
         setup_se2_->print();
@@ -400,7 +400,7 @@ private:
                 benchmark_->addPlannerAllocator(boost::bind(&GeometricPlanningBenchmark::allocPlanner, this, _1,
                                                             boost::cref(it->first), boost::cref(it->second[i])));
         benchmark_->setPlannerSwitchEvent(boost::bind(&GeometricPlanningBenchmark::preSwitchEvent, this, _1));
-	//        benchmark_->setPostRunEvent(boost::bind(&GeometricPlanningBenchmark::postRunEvent, this, _1, _2));
+        //        benchmark_->setPostRunEvent(boost::bind(&GeometricPlanningBenchmark::postRunEvent, this, _1, _2));
     }
 
     void preSwitchEvent(const base::PlannerPtr &planner)
