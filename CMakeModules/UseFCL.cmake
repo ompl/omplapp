@@ -67,7 +67,7 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
             SVN_REPOSITORY "https://kforge.ros.org/fcl/fcl_ros/trunk/fcl"
-            SVN_REVISION "-r44"
+            SVN_REVISION "-r45"
             UPDATE_COMMAND ""
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
@@ -85,18 +85,6 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
                 "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/CMakeLists.txt"
             DEPENDEES download
             DEPENDERS configure)
-
-        # HACK ALERT:
-        # FCL expects ANN headers to be inside a directory called 'ann', not 'ANN'.
-        # We cannot simply rename the directory without breaking the ANN code.
-        # Adding a symbolic link isn't likely to be transferable across OS lines, so
-        # lets just copy the directory locally and use that for fcl.
-        ExternalProject_Add_Step (fcl copyANNincludes
-            COMMAND mkdir -p ${CMAKE_BINARY_DIR}/ann/include/
-            COMMAND cp -r
-                ${ANN_INCLUDE_DIR}/ANN
-                ${CMAKE_BINARY_DIR}/ann/include/ann
-            DEPENDERS build)
 
         # Make sure ccd exists before building fcl.
         add_dependencies(fcl ccd)
