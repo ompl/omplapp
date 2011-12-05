@@ -77,7 +77,7 @@ public:
         if (readOptions(filename))
         {
             boost::filesystem::path path(filename);
-            path_ = boost::filesystem::absolute(path);
+            path_ = boost::filesystem::complete(path);
             path_.remove_filename();
 
             if (isSE2Problem())
@@ -137,7 +137,7 @@ public:
 
         benchmark_->benchmark(tl, ml, rc, true, true);
         if (!opt_["benchmark.output"].empty())
-            benchmark_->saveResultsToFile((path_ / opt_["benchmark.output"]).c_str());
+            benchmark_->saveResultsToFile((path_ / opt_["benchmark.output"]).string().c_str ());
         else
             benchmark_->saveResultsToFile();
     }
@@ -266,8 +266,8 @@ private:
     void configureSE3(void)
     {
         setup_se3_.reset(new app::SE3RigidBodyPlanning());
-        setup_se3_->setRobotMesh((path_ / opt_["problem.robot"]).c_str());
-        setup_se3_->setEnvironmentMesh((path_ / opt_["problem.world"]).c_str());
+        setup_se3_->setRobotMesh((path_ / opt_["problem.robot"]).string());
+        setup_se3_->setEnvironmentMesh((path_ / opt_["problem.world"]).string());
         base::ScopedState<base::SE3StateSpace> start(setup_se3_->getStateSpace());
         try
         {
@@ -319,8 +319,8 @@ private:
     void configureSE2(void)
     {
         setup_se2_.reset(new app::SE2RigidBodyPlanning());
-        setup_se2_->setRobotMesh((path_ / opt_["problem.robot"]).c_str());
-        setup_se2_->setEnvironmentMesh((path_ / opt_["problem.world"]).c_str());
+        setup_se2_->setRobotMesh((path_ / opt_["problem.robot"]).string());
+        setup_se2_->setEnvironmentMesh((path_ / opt_["problem.world"]).string());
         base::ScopedState<base::SE2StateSpace> start(setup_se2_->getStateSpace());
         try
         {
