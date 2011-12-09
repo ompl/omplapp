@@ -1,0 +1,48 @@
+\documentclass [letterpaper]{report}
+
+\usepackage {graphicx}
+\usepackage {times}
+\usepackage {fancyhdr}
+\usepackage {amsfonts}
+\usepackage [chapter]{algorithm}
+\usepackage [noend]{algorithmic}
+\usepackage {url}
+\usepackage[T1]{fontenc}
+\usepackage {verbatim}
+\pagestyle {fancy}
+
+\begin {document}
+
+% Setup header and footer
+\fancyhf{} % clear all fields
+\fancyfoot[R]{Open Motion Planning Library : A Primer $\|$ \thepage}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+\fancyhead[C]{\leftmark}
+
+% Inserting title page
+\input {TitlePage}
+
+% Generate Table of Contents with roman numeral page numbering
+\newpage
+\pagenumbering{roman}
+\tableofcontents
+
+% Ensure the rest of the document has arabic numerals
+\newpage
+\pagenumbering{arabic}
+
+\input {Ch1_Introduction}
+
+\input {Ch2_Introduction}
+
+\input {Ch3_GetStarted}
+
+\input {Ch4_UsingOMPL}
+
+\input {Ch5_AdvancedOMPL}
+
+\bibliographystyle {unsrt}
+\bibliography {Primer}
+
+\end {document}
+
