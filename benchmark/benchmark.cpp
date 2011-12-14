@@ -77,7 +77,7 @@ public:
         if (readOptions(filename))
         {
             boost::filesystem::path path(filename);
-            path_ = boost::filesystem::complete(path);
+            path_ = boost::filesystem3::complete(path);
             path_.remove_filename();
 
             if (isSE2Problem())
