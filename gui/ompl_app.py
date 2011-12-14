@@ -288,7 +288,7 @@ class MainWindow(QtGui.QMainWindow):
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.ESTRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.ESTGoalBias.value())
             elif self.planner==9:
-                planner = og.GNAT(si,self.mainWidget.plannerWidget.geometricPlanning.GNATProjected.value(),self.mainWidget.plannerWidget.geometricPlanning.GNATDegree.value())
+                planner = og.GNAT(si,self.mainWidget.plannerWidget.geometricPlanning.GNATProjected.value(),self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[0].value(), self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[1].value(), self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[2].value())
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.GNATRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.GNATGoalBias.value())
 
@@ -1159,10 +1159,10 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.GNATOptions = QtGui.QGroupBox('GNAT options')
         GNATgoalBiasLabel = QtGui.QLabel('Goal bias')
         GNATrangeLabel = QtGui.QLabel('Range')
-        GNATdegreeLabel = QtGui.QLabel('Degree')
+        GNATdegreeLabel = QtGui.QLabel('Degree Info (Global Degree,Min,Max)')
         GNATUseProjectedLabel = QtGui.QLabel('Use Projected Distance')
         self.GNATRange = QtGui.QDoubleSpinBox()
-        self.GNATDegree = QtGui.QSpinBox()
+        self.GNATDegree = (QtGui.QSpinBox(),QtGui.QSpinBox(),QtGui.QSpinBox())
         self.GNATProjected = QtGui.QSpinBox()
         self.GNATProjected.setRange(0,1);
         self.GNATProjected.setValue(0);
@@ -1173,16 +1173,20 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.GNATGoalBias.setRange(0, 1)
         self.GNATGoalBias.setSingleStep(.05)
         self.GNATGoalBias.setValue(0.05)
-        self.GNATDegree.setRange(2,1000)
-        self.GNATDegree.setSingleStep(1)
-        self.GNATDegree.setValue(16)
+        for k in range(0,len(self.GNATDegree)):
+          self.GNATDegree[k].setRange(2,1000)
+          self.GNATDegree[k].setSingleStep(1)
+        self.GNATDegree[0].setValue(16)
+        self.GNATDegree[0].setValue(3)
+        self.GNATDegree[0].setValue(6)
         layout = QtGui.QGridLayout()
         layout.addWidget(GNATrangeLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATRange, 0, 1)
         layout.addWidget(GNATgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATGoalBias, 1, 1)
         layout.addWidget(GNATdegreeLabel,2,0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.GNATDegree,2,1)
+        for k in range(0,len(self.GNATDegree)):
+          layout.addWidget(self.GNATDegree[k],2,k+1)
         layout.addWidget(GNATUseProjectedLabel,3,0,QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATProjected,3,1);
         self.GNATOptions.setLayout(layout)
