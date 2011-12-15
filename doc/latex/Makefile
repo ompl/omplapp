@@ -1,10 +1,13 @@
 export BIBINPUTS=.:./bib:$BIBINPUTS::
 
-all:	primer
+all:    primer
 
 primer:
-	rubber --pdf --verbose --texpath=./images OMPL_Primer.tex
+    pdflatex OMPL_Primer.tex
+    bibtex OMPL_Primer.aux
+    pdflatex OMPL_Primer.tex
+    pdflatex OMPL_Primer.tex
 
 clean:
-	rubber --clean --verbose --texpath=./images OMPL_Primer.tex
+    rm -f OMPL_Primer.{aux,bbl,blg,log,toc} images/*-eps-converted-to.pdf
 
