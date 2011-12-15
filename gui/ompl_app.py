@@ -1161,10 +1161,12 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         GNATrangeLabel = QtGui.QLabel('Range')
         GNATdegreeLabel = QtGui.QLabel('Degree Info (Global Degree,Min,Max)')
         GNATdataNumLabel = QtGui.QLabel('Max Data Number')
+        GNATborderFractionLabel = QtGui.QLabel('Border Fraction')
         GNATUseProjectedLabel = QtGui.QLabel('Use Projected Distance')
         self.GNATRange = QtGui.QDoubleSpinBox()
         self.GNATDegree = (QtGui.QSpinBox(),QtGui.QSpinBox(),QtGui.QSpinBox())
         self.GNATDataNum = QtGui.QSpinBox()
+        self.GNATBorderFraction = QtGui.QDoubleSpinBox()
         self.GNATProjected = QtGui.QSpinBox()
         self.GNATProjected.setRange(0,1);
         self.GNATProjected.setValue(0);
@@ -1184,6 +1186,9 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.GNATDataNum.setRange(0,1000);
         self.GNATDataNum.setSingleStep(1);
         self.GNATDataNum.setValue(50);
+        self.GNATBorderFraction.setRange(0,1.0);
+        self.GNATBorderFraction.setSingleStep(0.01);
+        self.GNATBorderFraction.setValue(0.0);
         layout = QtGui.QGridLayout()
         layout.addWidget(GNATrangeLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATRange, 0, 1)
@@ -1191,11 +1196,13 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         layout.addWidget(self.GNATGoalBias, 1, 1)
         layout.addWidget(GNATdegreeLabel,2,0, QtCore.Qt.AlignRight)
         for k in range(0,len(self.GNATDegree)):
-          layout.addWidget(self.GNATDegree[k],2,k+1)
-        layout.addWidget(GNATdataNumLabel,3,0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.GNATDataNum,3,1, QtCore.Qt.AlignRight)
-        layout.addWidget(GNATUseProjectedLabel,4,0,QtCore.Qt.AlignRight)
-        layout.addWidget(self.GNATProjected,4,1);
+          layout.addWidget(self.GNATDegree[k],2+k,1)
+        layout.addWidget(GNATdataNumLabel,5,0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.GNATDataNum,5,1, QtCore.Qt.AlignRight)
+        layout.addWidget(GNATborderFractionLabel,6,0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.GNATBorderFraction,6,1, QtCore.Qt.AlignRight)
+        layout.addWidget(GNATUseProjectedLabel,7,0,QtCore.Qt.AlignRight)
+        layout.addWidget(self.GNATProjected,7,1);
         self.GNATOptions.setLayout(layout)
 
 
