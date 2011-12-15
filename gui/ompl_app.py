@@ -1181,8 +1181,8 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
           self.GNATDegree[k].setRange(2,1000)
           self.GNATDegree[k].setSingleStep(1)
         self.GNATDegree[0].setValue(16)
-        self.GNATDegree[1].setValue(7)
-        self.GNATDegree[2].setValue(12)
+        self.GNATDegree[1].setValue(4)
+        self.GNATDegree[2].setValue(24)
         self.GNATDataNum.setRange(0,1000);
         self.GNATDataNum.setSingleStep(1);
         self.GNATDataNum.setValue(50);
