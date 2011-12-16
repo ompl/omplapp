@@ -419,6 +419,7 @@ class MainWindow(QtGui.QMainWindow):
             bounds = ob.RealVectorBounds(2)
             (bounds.low[0],bounds.low[1]) = self.mainWidget.glViewer.bounds_low[:2]
             (bounds.high[0],bounds.high[1]) = self.mainWidget.glViewer.bounds_high[:2]
+        self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
         if self.isGeometric:
             self.omplSetup.setStartAndGoalStates(startPose, goalPose, 1e-6)
             self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
