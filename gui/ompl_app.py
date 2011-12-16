@@ -25,6 +25,7 @@ except:
 from OpenGL import GL, GLU
 import webbrowser, re
 from math import cos, sin, asin, atan2, pi, pow, ceil
+import ConfigParser
 
 try:
     from ompl.util import OutputHandler, useOutputHandler
@@ -155,6 +156,61 @@ class MainWindow(QtGui.QMainWindow):
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                     self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+
+    def openConfig(self):
+        fname = QtGui.QFileDialog.getOpenFileName(self, "Open Problem Configuration", "", "*.cfg")
+        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
+        if len(fname)>0:
+            print "Loading " + fname
+            config = ConfigParser.ConfigParser()
+            config.readfp(open(fname))
+            if "start.z" in [t[0] for t in config.items("problem")]:
+                robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
+                self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
+                self.setPlanner(0)
+            else:
+                robotType = [t[0] for t in self.robotTypes].index('GSE2RigidBodyPlanning')
+                self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
+                self.setPlanner(0)
+            cfg_dir = dirname(fname)
+            self.environmentFile = join(cfg_dir, config.get("problem", "world"))
+            self.robotFile = join(cfg_dir, config.get("problem", "robot"))
+            self.omplSetup.setEnvironmentMesh(self.environmentFile)
+            self.omplSetup.setRobotMesh(self.robotFile)
+            self.mainWidget.glViewer.setEnvironment(self.omplSetup.renderEnvironment())
+            self.mainWidget.glViewer.setRobot(self.omplSetup.renderRobot())
+            self.resetBounds()
+            if self.isGeometric:
+                self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
+                    self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
+            self.omplSetup.inferEnvironmentBounds()
+            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+            start = ob.State(self.omplSetup.getGeometricComponentStateSpace())
+            goal = ob.State(self.omplSetup.getGeometricComponentStateSpace())
+            if self.is3D:
+                start().setX(config.getfloat("problem", "start.x"))
+                start().setY(config.getfloat("problem", "start.y"))
+                start().setZ(config.getfloat("problem", "start.z"))
+                start().rotation().setAxisAngle(config.getfloat("problem", "start.axis.x"),
+                                                config.getfloat("problem", "start.axis.y"),
+                                                config.getfloat("problem", "start.axis.z"),
+                                                config.getfloat("problem", "start.theta"))
+                goal().setX(config.getfloat("problem", "goal.x"))
+                goal().setY(config.getfloat("problem", "goal.y"))
+                goal().setZ(config.getfloat("problem", "goal.z"))
+                goal().rotation().setAxisAngle(config.getfloat("problem", "goal.axis.x"),
+                                               config.getfloat("problem", "goal.axis.y"),
+                                               config.getfloat("problem", "goal.axis.z"),
+                                               config.getfloat("problem", "goal.theta"))
+            else:
+                start().setX(config.getfloat("problem", "start.x"))
+                start().setY(config.getfloat("problem", "start.y"))
+                start().setYaw(config.getfloat("problem", "start.theta"))
+                goal().setX(config.getfloat("problem", "goal.x"))
+                goal().setY(config.getfloat("problem", "goal.y"))
+                goal().setYaw(config.getfloat("problem", "goal.theta"))
+            self.mainWidget.problemWidget.setStartPose(start, self.is3D)
+            self.mainWidget.problemWidget.setGoalPose(goal, self.is3D)
 
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
@@ -395,6 +451,9 @@ class MainWindow(QtGui.QMainWindow):
         self.openRobotAct = QtGui.QAction('Open &Robot', self,
             shortcut='Ctrl+R', statusTip='Open a robot model',
             triggered=self.openRobot)
+        self.openConfigAct = QtGui.QAction('Open Problem &Configuration', self,
+            shortcut='Ctrl+P', statusTip='Open a problem configuration (.cfg file)',
+            triggered=self.openConfig)
         self.openPathAct = QtGui.QAction('&Open Path', self,
             shortcut='Ctrl+O', statusTip='Open a path',
             triggered=self.openPath)
@@ -421,6 +480,7 @@ class MainWindow(QtGui.QMainWindow):
         self.fileMenu = self.menuBar().addMenu('&File')
         self.fileMenu.addAction(self.openEnvironmentAct)
         self.fileMenu.addAction(self.openRobotAct)
+        self.fileMenu.addAction(self.openConfigAct)
         self.fileMenu.addAction(self.openPathAct)
         self.fileMenu.addAction(self.savePathAct)
         self.fileMenu.addSeparator()
