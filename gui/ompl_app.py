@@ -24,7 +24,7 @@ except:
     from PySide.QtCore import Signal
 from OpenGL import GL, GLU
 import webbrowser, re
-from math import cos, sin, asin, atan2, pi, pow, ceil
+from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
 import ConfigParser
 
 try:
@@ -163,8 +163,8 @@ class MainWindow(QtGui.QMainWindow):
         if len(fname)>0:
             print "Loading " + fname
             config = ConfigParser.ConfigParser()
-            config.readfp(open(fname))
-            if "start.z" in [t[0] for t in config.items("problem")]:
+            config.readfp(open(fname, 'r'))
+            if config.has_option("problem", "start.z"):
                 robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
                 self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
                 self.setPlanner(0)
@@ -211,6 +211,44 @@ class MainWindow(QtGui.QMainWindow):
                 goal().setYaw(config.getfloat("problem", "goal.theta"))
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(goal, self.is3D)
+
+    def saveConfig(self):
+        fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))
+        if len(fname)>0:
+            config = ConfigParser.ConfigParser() 
+            config.add_section("problem")
+            config.set("problem", "robot", self.robotFile)
+            config.set("problem", "world", self.environmentFile)
+            startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
+            goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
+            if self.is3D:
+                config.set("problem", "start.x", startPose().getX())
+                config.set("problem", "start.y", startPose().getY())
+                config.set("problem", "start.z", startPose().getZ())
+                rs = startPose().rotation()
+                config.set("problem", "start.theta", 2 * acos(rs.w))
+                ds = sqrt(1.0 - rs.w * rs.w)
+                config.set("problem", "start.axis.x", rs.x / ds)
+                config.set("problem", "start.axis.y", rs.y / ds)
+                config.set("problem", "start.axis.z", rs.z / ds)
+                config.set("problem", "goal.x", goalPose().getX())
+                config.set("problem", "goal.y", goalPose().getY())
+                config.set("problem", "goal.z", goalPose().getZ())
+                rg = startPose().rotation()
+                config.set("problem", "goal.theta", 2 * acos(rg.w))
+                dg = sqrt(1.0 - rg.w * rg.w)
+                config.set("problem", "goal.axis.x", rg.x / dg)
+                config.set("problem", "goal.axis.y", rg.y / dg)
+                config.set("problem", "goal.axis.z", rg.z / dg)
+            else:
+                config.set("problem", "start.x", startPose().getX())
+                config.set("problem", "start.y", startPose().getY())
+                config.set("problem", "start.theta", startPose().getYaw())
+                config.set("problem", "goal.x", goalPose().getX())
+                config.set("problem", "goal.y", goalPose().getY())
+                config.set("problem", "goal.theta", goalPose().getYaw())
+            config.write(open(fname, 'wb'))
+            print "Saved " + fname
 
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
@@ -454,6 +492,9 @@ class MainWindow(QtGui.QMainWindow):
         self.openConfigAct = QtGui.QAction('Open Problem &Configuration', self,
             shortcut='Ctrl+P', statusTip='Open a problem configuration (.cfg file)',
             triggered=self.openConfig)
+        self.saveConfigAct = QtGui.QAction('Save Problem Con&figuration', self,
+            shortcut='Ctrl+A', statusTip='Save a problem configuration (.cfg file)',
+            triggered=self.saveConfig)
         self.openPathAct = QtGui.QAction('&Open Path', self,
             shortcut='Ctrl+O', statusTip='Open a path',
             triggered=self.openPath)
@@ -481,6 +522,7 @@ class MainWindow(QtGui.QMainWindow):
         self.fileMenu.addAction(self.openEnvironmentAct)
         self.fileMenu.addAction(self.openRobotAct)
         self.fileMenu.addAction(self.openConfigAct)
+        self.fileMenu.addAction(self.saveConfigAct)
         self.fileMenu.addAction(self.openPathAct)
         self.fileMenu.addAction(self.savePathAct)
         self.fileMenu.addSeparator()
