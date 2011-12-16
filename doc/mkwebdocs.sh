@@ -17,6 +17,8 @@ mkdir -p ${ASSET_DIR}
 for f in html/*.html; do
     sed 's/="..\//=".\//g' $f > ${ASSET_DIR}/`basename $f`
 done
+cd latex && make primer clean && cp OMPL_Primer.pdf ../${ASSET_DIR}
+cd ..
 cp -r css js php images html/*.png html/*.map html/search ${ASSET_DIR}
 
 # add symlink to OMPL
