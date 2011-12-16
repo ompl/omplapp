@@ -77,7 +77,7 @@ public:
         if (readOptions(filename))
         {
             boost::filesystem::path path(filename);
-#if BOOST_FILESYSTEM_VERSION == 2
+#if BOOST_VERSION < 104600
             path_ = boost::filesystem::complete(path);
 #else
             path_ = boost::filesystem::absolute(path);
