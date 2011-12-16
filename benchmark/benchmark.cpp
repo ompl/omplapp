@@ -77,7 +77,11 @@ public:
         if (readOptions(filename))
         {
             boost::filesystem::path path(filename);
-            path_ = boost::filesystem3::complete(path);
+#if BOOST_FILESYSTEM_VERSION == 2
+            path_ = boost::filesystem::complete(path);
+#else
+            path_ = boost::filesystem::absolute(path);
+#endif
             path_.remove_filename();
 
             if (isSE2Problem())

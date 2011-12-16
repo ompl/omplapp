@@ -4,6 +4,7 @@
 \section gettingStarted Getting Started
 
 - Follow the instructions to \ref download "download" and \ref installation "install" OMPL.app.
+- Read the <a href="OMPL_Primer.pdf">OMPL primer</a>.
 - Learn how to use the \ref gui "OMPL.app GUI".
 - Read the \ref api_overview "API overview".
 - Familiarize yourself with the \ref boost "Boost structures" used throughout the OMPL API.

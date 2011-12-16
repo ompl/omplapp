@@ -27,7 +27,7 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-find_package(Boost COMPONENTS date_time thread program_options filesystem system REQUIRED)
+find_package(Boost COMPONENTS date_time thread program_options filesystem system program_options REQUIRED)
 find_package(Boost COMPONENTS python)
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
