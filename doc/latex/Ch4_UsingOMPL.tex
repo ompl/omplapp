@@ -80,7 +80,7 @@ At a high level, the MotionValidator must be able to evaluate whether the motion
 between two states is collision free and respects all the motion constraints of
 the robot.  OMPL contains the DiscreteMotionValidator, which uses the
 interpolated movements between two states (computed by the StateSpace) to
-determine if a particular motion is valid.
+determine if a particular motion is valid. This is an approximate computation as only a finite number of states along the motion are checked for validity (using the StateValidityChecker).
 
 \paragraph {ProblemDefinition} A motion planning query is specified by the
 ProblemDefinition object.  Instances of this class define a start state and goal
@@ -157,16 +157,16 @@ with other compilers.
 \section {Benchmarking}
 The ability to compare two or more planners has never been easier than with
 OMPL.  OMPL provides a Benchmark class that attempts a specific query a given
-number of time, and allows the user to try any number of planners.
+number of times, and allows the user to try any number of planners.
 Additionally, the Benchmark instance can be configured to fail an attempt after
 a specific amount of time or when the planner exhausts a given amount of memory.
 
 When the benchmarking has finished, the Benchmark instance will write a log
 file to the current working directory containing information regarding every
 planning attempt.  OMPL is packaged with a Python script to parse this log file
-and create an SQL database with the planning information.  The python script can
+and create an SQL database with the planning information.  The Python script can
 also query this database and generate a series of plots using matplotlib, like
-those in figures \ref {fig:benchmark:plot}.
+those in figures \ref {fig:benchmark:plot}. {\bf BasicPRM no longer exists. Can we have updated plots?}
 
 \begin {figure}
 \centering
