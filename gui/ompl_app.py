@@ -1307,7 +1307,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.GNATDataNum.setValue(50);
         self.GNATBorderFraction.setRange(0,1.0);
         self.GNATBorderFraction.setSingleStep(0.01);
-        self.GNATBorderFraction.setValue(0.0);
+        self.GNATBorderFraction.setValue(0.5);
         layout = QtGui.QGridLayout()
         layout.addWidget(GNATrangeLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATRange, 0, 1)
