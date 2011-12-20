@@ -25,7 +25,11 @@ except:
 from OpenGL import GL, GLU
 import webbrowser, re
 from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
-import ConfigParser
+# The ConfigParser module has been renamed to configparser in Python 3.0
+try:
+    import ConfigParser
+except:
+    import configparser as ConfigParser
 
 try:
     from ompl.util import OutputHandler, useOutputHandler
@@ -161,7 +165,7 @@ class MainWindow(QtGui.QMainWindow):
         fname = QtGui.QFileDialog.getOpenFileName(self, "Open Problem Configuration", "", "*.cfg")
         fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
         if len(fname)>0:
-            print "Loading " + fname
+            self.msgInform("Loading " + fname)
             config = ConfigParser.ConfigParser()
             config.readfp(open(fname, 'r'))
             if config.has_option("problem", "start.z"):
@@ -215,7 +219,7 @@ class MainWindow(QtGui.QMainWindow):
     def saveConfig(self):
         fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))
         if len(fname)>0:
-            config = ConfigParser.ConfigParser() 
+            config = ConfigParser.ConfigParser()
             config.add_section("problem")
             config.set("problem", "robot", self.robotFile)
             config.set("problem", "world", self.environmentFile)
@@ -226,20 +230,32 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "start.y", startPose().getY())
                 config.set("problem", "start.z", startPose().getZ())
                 rs = startPose().rotation()
-                config.set("problem", "start.theta", 2 * acos(rs.w))
-                ds = sqrt(1.0 - rs.w * rs.w)
-                config.set("problem", "start.axis.x", rs.x / ds)
-                config.set("problem", "start.axis.y", rs.y / ds)
-                config.set("problem", "start.axis.z", rs.z / ds)
+                if rs.w==1:
+                    config.set("problem", "start.theta", 0)
+                    config.set("problem", "start.axis.x", 1)
+                    config.set("problem", "start.axis.y", 0)
+                    config.set("problem", "start.axis.z", 0)
+                else:
+                    config.set("problem", "start.theta", 2 * acos(rs.w))
+                    ds = sqrt(1.0 - rs.w * rs.w)
+                    config.set("problem", "start.axis.x", rs.x / ds)
+                    config.set("problem", "start.axis.y", rs.y / ds)
+                    config.set("problem", "start.axis.z", rs.z / ds)
                 config.set("problem", "goal.x", goalPose().getX())
                 config.set("problem", "goal.y", goalPose().getY())
                 config.set("problem", "goal.z", goalPose().getZ())
                 rg = startPose().rotation()
-                config.set("problem", "goal.theta", 2 * acos(rg.w))
-                dg = sqrt(1.0 - rg.w * rg.w)
-                config.set("problem", "goal.axis.x", rg.x / dg)
-                config.set("problem", "goal.axis.y", rg.y / dg)
-                config.set("problem", "goal.axis.z", rg.z / dg)
+                if rg.w==1:
+                    config.set("problem", "goal.theta", 0)
+                    config.set("problem", "goal.axis.x", 1)
+                    config.set("problem", "goal.axis.y", 0)
+                    config.set("problem", "goal.axis.z", 0)
+                else:
+                    config.set("problem", "goal.theta", 2 * acos(rg.w))
+                    dg = sqrt(1.0 - rg.w * rg.w)
+                    config.set("problem", "goal.axis.x", rg.x / dg)
+                    config.set("problem", "goal.axis.y", rg.y / dg)
+                    config.set("problem", "goal.axis.z", rg.z / dg)
             else:
                 config.set("problem", "start.x", startPose().getX())
                 config.set("problem", "start.y", startPose().getY())
@@ -248,7 +264,7 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "goal.y", goalPose().getY())
                 config.set("problem", "goal.theta", goalPose().getYaw())
             config.write(open(fname, 'wb'))
-            print "Saved " + fname
+            self.msgInform("Saved " + fname)
 
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
@@ -318,7 +334,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.setSolutionPath(pc.asGeometric())
             else:
                 self.msgError("Unable to generate random valid path")
-                
+
     def showLogWindow(self):
         if self.logWindow.isHidden():
             self.logWindow.show()
@@ -424,6 +440,7 @@ class MainWindow(QtGui.QMainWindow):
             bounds = ob.RealVectorBounds(2)
             (bounds.low[0],bounds.low[1]) = self.mainWidget.glViewer.bounds_low[:2]
             (bounds.high[0],bounds.high[1]) = self.mainWidget.glViewer.bounds_high[:2]
+        self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
         if self.isGeometric:
             self.omplSetup.setStartAndGoalStates(startPose, goalPose, 1e-6)
             self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(

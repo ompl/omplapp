@@ -77,13 +77,15 @@ public:
         if (readOptions(filename))
         {
             boost::filesystem::path path(filename);
-#if BOOST_FILESYSTEM_VERSION == 2
+#if BOOST_VERSION < 104600
             path_ = boost::filesystem::complete(path);
 #else
             path_ = boost::filesystem::absolute(path);
 #endif
+	    outfile_ = path_.filename();
             path_.remove_filename();
-
+	    outfile_.replace_extension(".log");
+	    
             if (isSE2Problem())
                 configureSE2();
             else
@@ -141,9 +143,9 @@ public:
 
         benchmark_->benchmark(tl, ml, rc, true, true);
         if (!opt_["benchmark.output"].empty())
-            benchmark_->saveResultsToFile((path_ / opt_["benchmark.output"]).string().c_str ());
+            benchmark_->saveResultsToFile(((path_ / opt_["benchmark.output"]) / outfile_).string().c_str ());
         else
-            benchmark_->saveResultsToFile();
+            benchmark_->saveResultsToFile((path_ / outfile_).string().c_str());
     }
 
 private:
@@ -157,6 +159,7 @@ private:
     };
 
     boost::filesystem::path                      path_;
+    boost::filesystem::path                      outfile_;
     std::map<std::string, std::string>           opt_;
     ContextOpt                                   context_;
     std::map<std::string, std::vector<Options> > planners_;
