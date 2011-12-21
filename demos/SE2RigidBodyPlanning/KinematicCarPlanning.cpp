@@ -47,7 +47,6 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
 
 void kinematicCarDemo(app::KinematicCarPlanning& setup)
 {
-    std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
     setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
     std::vector<double> cs(2);
     cs[0] = cs[1] = 0.1;
@@ -100,28 +99,15 @@ void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
 int main(int argc, char* argv[])
 {
     app::KinematicCarPlanning regularCar;
-    app::ReedsSheppCarPlanning rsCar;
-    app::DubinsCarPlanning dCar;
 
     kinematicCarSetup(regularCar);
-    kinematicCarSetup(rsCar);
-    kinematicCarSetup(dCar);
 
     // If any command line arguments are given, solve the problem multiple
-    // times for each car type with different planners and collect benchmark
-    // statistics. Otherwise, solve the problem once for each car type and
-    // print the path.
+    // times with different planners and collect benchmark statistics. 
+	// Otherwise, solve the problem once for each car type and print the path.
     if (argc>1)
-    {
         kinematicCarBenchmark(regularCar);
-        kinematicCarBenchmark(rsCar);
-        kinematicCarBenchmark(dCar);
-    }
     else
-    {
         kinematicCarDemo(regularCar);
-        kinematicCarDemo(rsCar);
-        kinematicCarDemo(dCar);
-    }
     return 0;
 }

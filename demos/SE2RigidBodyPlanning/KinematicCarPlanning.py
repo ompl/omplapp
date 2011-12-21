@@ -31,8 +31,6 @@ except:
     from ompl import app as oa
 
 def kinematicCarDemo(setup):
-    print "\n\n***** Planning for a %s *****\n" % setup.getName()
-
     SE2 = setup.getStateSpace()
 
     bounds = ob.RealVectorBounds(2)
@@ -80,10 +78,5 @@ def kinematicCarDemo(setup):
                 setup.getGoal().getDifference()
 
 if __name__ == '__main__':
-    regularCar = oa.KinematicCarPlanning()
-    rsCar = oa.ReedsSheppCarPlanning()
-    dCar = oa.DubinsCarPlanning()
-
-    kinematicCarDemo(regularCar)
-    kinematicCarDemo(rsCar)
-    kinematicCarDemo(dCar)
+    car = oa.KinematicCarPlanning()
+    kinematicCarDemo(car)
