@@ -80,32 +80,3 @@ void ompl::app::KinematicCarPlanning::ode(const base::State *state, const contro
     qdot.setY(u[0] * sin(q.getYaw()));
     qdot.setYaw(u[0] * lengthInv_ * tan(u[1]));
 }
-
-void ompl::app::DubinsCarPlanning::DubinsControlSampler::sample(control::Control* control)
-{
-    const base::RealVectorBounds &bounds = static_cast<const control::RealVectorControlSpace*>(space_)->getBounds();
-
-    control::RealVectorControlSpace::ControlType *rcontrol =
-        static_cast<control::RealVectorControlSpace::ControlType*>(control);
-    switch (rng_.uniformInt(0,1))
-    {
-        case 0: rcontrol->values[0] = 0; break;
-        case 1: rcontrol->values[0] = bounds.high[0];
-    }
-    rcontrol->values[1] = rng_.uniformReal(bounds.low[1], bounds.high[1]);
-}
-
-void ompl::app::ReedsSheppCarPlanning::ReedsSheppControlSampler::sample(control::Control* control)
-{
-    const base::RealVectorBounds &bounds = static_cast<const control::RealVectorControlSpace*>(space_)->getBounds();
-
-    control::RealVectorControlSpace::ControlType *rcontrol =
-        static_cast<control::RealVectorControlSpace::ControlType*>(control);
-    switch (rng_.uniformInt(-1,1))
-    {
-        case -1: rcontrol->values[0] = bounds.low[0]; break;
-        case 0: rcontrol->values[0] = 0; break;
-        case 1: rcontrol->values[0] = bounds.high[0];
-    }
-    rcontrol->values[1] = rng_.uniformReal(bounds.low[1], bounds.high[1]);
-}

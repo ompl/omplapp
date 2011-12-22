@@ -35,37 +35,6 @@ namespace ompl
             {
             }
         };
-
-        class GReedsSheppCarPlanning : public ReedsSheppCarPlanning,
-                                    public RenderGeometry
-        {
-        public:
-
-            GReedsSheppCarPlanning(void) : ReedsSheppCarPlanning(),
-                                        RenderGeometry(*dynamic_cast<const RigidBodyGeometry*>(this), getGeometricStateExtractor())
-            {
-            }
-
-            virtual ~GReedsSheppCarPlanning(void)
-            {
-            }
-        };
-
-        class GDubinsCarPlanning : public DubinsCarPlanning,
-                                    public RenderGeometry
-        {
-        public:
-
-            GDubinsCarPlanning(void) : DubinsCarPlanning(),
-                                        RenderGeometry(*dynamic_cast<const RigidBodyGeometry*>(this), getGeometricStateExtractor())
-            {
-            }
-
-            virtual ~GDubinsCarPlanning(void)
-            {
-            }
-        };
-
     }
 }
 
