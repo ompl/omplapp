@@ -9,11 +9,11 @@ OMPL.app has the following required dependencies:
  * PyOpenGL
  * assimp
  * PQP
+ * Py++ (version from repository, needed to generate Python bindings)
 
 The following dependencies are optional:
  * ODE (needed to compile support for planning using ODE)
  * Google-test (needed to run the test programs)
- * Py++ (needed to regenerate Python bindings)
  * Doxygen (needed to create a local copy of the documentation at
    http://ompl.kavrakilab.org)
 
