@@ -187,8 +187,28 @@ class MainWindow(QtGui.QMainWindow):
             if self.isGeometric:
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                     self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.omplSetup.inferEnvironmentBounds()
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+            if self.is3D:
+                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and config.has_option("problem", "volume.min.z") and 
+                    config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y") and config.has_option("problem", "volume.max.z")):
+                    b = ob.RealVectorBounds(3)
+                    bounds.low[0] = config.getfloat("problem", "volume.min.x")
+                    bounds.low[1] = config.getfloat("problem", "volume.min.y")
+                    bounds.low[2] = config.getfloat("problem", "volume.min.z")
+                    bounds.high[0] = config.getfloat("problem", "volume.max.x")
+                    bounds.high[1] = config.getfloat("problem", "volume.max.y")
+                    bounds.high[2] = config.getfloat("problem", "volume.max.z")
+                    self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
+                    self.setBounds(b)
+            else:
+                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and 
+                    config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y")):
+                    b = ob.RealVectorBounds(2)
+                    bounds.low[0] = config.getfloat("problem", "volume.min.x")
+                    bounds.low[1] = config.getfloat("problem", "volume.min.y")
+                    bounds.high[0] = config.getfloat("problem", "volume.max.x")
+                    bounds.high[1] = config.getfloat("problem", "volume.max.y")
+                    self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
+                    self.setBounds(b)
             start = ob.State(self.omplSetup.getGeometricComponentStateSpace())
             goal = ob.State(self.omplSetup.getGeometricComponentStateSpace())
             if self.is3D:
@@ -225,6 +245,7 @@ class MainWindow(QtGui.QMainWindow):
             config.set("problem", "world", self.environmentFile)
             startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
             goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
+            b = self.omplSetup.getGeometricComponentStateSpace().getBounds()
             if self.is3D:
                 config.set("problem", "start.x", startPose().getX())
                 config.set("problem", "start.y", startPose().getY())
@@ -256,6 +277,12 @@ class MainWindow(QtGui.QMainWindow):
                     config.set("problem", "goal.axis.x", rg.x / dg)
                     config.set("problem", "goal.axis.y", rg.y / dg)
                     config.set("problem", "goal.axis.z", rg.z / dg)
+                config.set("problem", "volume.min.x", b.low[0])
+                config.set("problem", "volume.min.y", b.low[1])
+                config.set("problem", "volume.min.z", b.low[2])
+                config.set("problem", "volume.max.x", b.high[0])
+                config.set("problem", "volume.max.y", b.high[1])
+                config.set("problem", "volume.max.z", b.high[2])
             else:
                 config.set("problem", "start.x", startPose().getX())
                 config.set("problem", "start.y", startPose().getY())
@@ -263,6 +290,10 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "goal.x", goalPose().getX())
                 config.set("problem", "goal.y", goalPose().getY())
                 config.set("problem", "goal.theta", goalPose().getYaw())
+                config.set("problem", "volume.min.x", b.low[0])
+                config.set("problem", "volume.min.y", b.low[1])
+                config.set("problem", "volume.max.x", b.high[0])
+                config.set("problem", "volume.max.y", b.high[1])
             config.write(open(fname, 'wb'))
             self.msgInform("Saved " + fname)
 
