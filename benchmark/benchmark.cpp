@@ -82,10 +82,10 @@ public:
 #else
             path_ = boost::filesystem::absolute(path);
 #endif
-	    outfile_ = path_.filename();
+            outfile_ = path_.filename();
             path_.remove_filename();
-	    outfile_.replace_extension(".log");
-	    
+            outfile_.replace_extension(".log");
+
             if (isSE2Problem())
                 configureSE2();
             else
@@ -196,6 +196,12 @@ private:
             ("problem.goal.axis.z", boost::program_options::value<std::string>(), "Goal position: rotation axis z value")
             ("problem.goal.theta", boost::program_options::value<std::string>(), "Goal position: theta value")
             ("problem.threshold", boost::program_options::value<std::string>(), "Threshold to reach goal position")
+            ("volume.min.x", boost::program_options::value<std::string>(), "Min X for bounding volume")
+            ("volume.min.y", boost::program_options::value<std::string>(), "Min Y for bounding volume")
+            ("volume.min.z", boost::program_options::value<std::string>(), "Min Z for bounding volume")
+            ("volume.max.x", boost::program_options::value<std::string>(), "Max X for bounding volume")
+            ("volume.max.y", boost::program_options::value<std::string>(), "Max Y for bounding volume")
+            ("volume.max.z", boost::program_options::value<std::string>(), "Max Z for bounding volume")
 
             ("benchmark.time_limit", boost::program_options::value<std::string>(), "Time limit for each run of a planner")
             ("benchmark.mem_limit", boost::program_options::value<std::string>(), "Memory limit for each run of a planner")
@@ -316,6 +322,26 @@ private:
         {
             setup_se3_->setStartAndGoalStates(start, goal);
         }
+
+        try
+        {
+            if (opt_.find("problem.volume.min.x") != opt_.end() && opt_.find("problem.volume.min.y") != opt_.end() && opt_.find("problem.volume.min.z") != opt_.end() &&
+                opt_.find("problem.volume.max.x") != opt_.end() && opt_.find("problem.volume.max.y") != opt_.end() && opt_.find("problem.volume.max.y") != opt_.end())
+            {
+                base::RealVectorBounds bounds(3);
+                bounds.setLow(0, boost::lexical_cast<double>(opt_["problem.volume.min.x"]));
+                bounds.setLow(1, boost::lexical_cast<double>(opt_["problem.volume.min.y"]));
+                bounds.setLow(2, boost::lexical_cast<double>(opt_["problem.volume.min.z"]));
+                bounds.setHigh(0, boost::lexical_cast<double>(opt_["problem.volume.max.x"]));
+                bounds.setHigh(1, boost::lexical_cast<double>(opt_["problem.volume.max.y"]));
+                bounds.setHigh(2, boost::lexical_cast<double>(opt_["problem.volume.max.z"]));
+                setup_se3_->getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
+            }
+        }
+        catch(boost::bad_lexical_cast &)
+        {
+        }
+
         setup_se3_->setup();
         setup_se3_->params().setParams(context_);
         setup_se3_->setup();
@@ -360,6 +386,23 @@ private:
         catch(boost::bad_lexical_cast &)
         {
             setup_se2_->setStartAndGoalStates(start, goal);
+        }
+
+        try
+        {
+            if (opt_.find("problem.volume.min.x") != opt_.end() && opt_.find("problem.volume.min.y") != opt_.end() &&
+                opt_.find("problem.volume.max.x") != opt_.end() && opt_.find("problem.volume.max.y") != opt_.end())
+            {
+                base::RealVectorBounds bounds(2);
+                bounds.setLow(0, boost::lexical_cast<double>(opt_["problem.volume.min.x"]));
+                bounds.setLow(1, boost::lexical_cast<double>(opt_["problem.volume.min.y"]));
+                bounds.setHigh(0, boost::lexical_cast<double>(opt_["problem.volume.max.x"]));
+                bounds.setHigh(1, boost::lexical_cast<double>(opt_["problem.volume.max.y"]));
+                setup_se2_->getStateSpace()->as<base::SE2StateSpace>()->setBounds(bounds);
+            }
+        }
+        catch(boost::bad_lexical_cast &)
+        {
         }
         setup_se2_->setup();
         setup_se2_->params().setParams(context_);
@@ -407,7 +450,6 @@ private:
                 benchmark_->addPlannerAllocator(boost::bind(&GeometricPlanningBenchmark::allocPlanner, this, _1,
                                                             boost::cref(it->first), boost::cref(it->second[i])));
         benchmark_->setPlannerSwitchEvent(boost::bind(&GeometricPlanningBenchmark::preSwitchEvent, this, _1));
-        //        benchmark_->setPostRunEvent(boost::bind(&GeometricPlanningBenchmark::postRunEvent, this, _1, _2));
     }
 
     void preSwitchEvent(const base::PlannerPtr &planner)
