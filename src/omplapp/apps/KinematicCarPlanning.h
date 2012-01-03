@@ -15,6 +15,7 @@
 
 #include "omplapp/apps/AppBase.h"
 #include <ompl/base/spaces/SE2StateSpace.h>
+#include <ompl/control/ODESolver.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 
 namespace ompl
@@ -79,7 +80,8 @@ namespace ompl
             }
             void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
-            virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);
+
+            virtual void ode(const std::vector<double>&q, const control::Control *ctrl, double time, std::vector<double>& qdot);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {
@@ -92,6 +94,7 @@ namespace ompl
 
             double timeStep_;
             double lengthInv_;
+            control::ODEBasicSolver <> odeSolver;
         };
     }
 }

@@ -15,6 +15,7 @@
 
 #include "omplapp/apps/AppBase.h"
 #include <ompl/base/spaces/SE3StateSpace.h>
+#include <ompl/control/ODESolver.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 
 namespace ompl
@@ -41,6 +42,9 @@ namespace ompl
                 name_ = std::string("Blimp");
                 setDefaultBounds();
                 si_->setStatePropagator(boost::bind(&BlimpPlanning::propagate, this, _1, _2, _3, _4));
+
+                odeSolver.setStateSpace(si_->getStateSpace ());
+                odeSolver.setODE(boost::bind(&ompl::app::BlimpPlanning::ode, this, _1, _2, _3, _4));
             }
             ~BlimpPlanning()
             {
@@ -72,7 +76,8 @@ namespace ompl
 
             void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
-            virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);
+
+            virtual void ode(const std::vector<double>&q, const control::Control *ctrl, double time, std::vector<double>& qdot);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {
@@ -81,6 +86,7 @@ namespace ompl
             static base::StateSpacePtr constructStateSpace(void);
 
             double timeStep_;
+            control::ODEBasicSolver <> odeSolver;
         };
 
     }

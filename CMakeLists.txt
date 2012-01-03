@@ -56,6 +56,7 @@ endif()
 include(UsePQP)
 include(UseFCL)
 include(UseAssimp)
+include(UseBoost.ODEInt)
 
 enable_testing()
 
@@ -64,7 +65,8 @@ include_directories(
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIR}"
-    "${PQP_INCLUDE_DIR}")
+    "${PQP_INCLUDE_DIR}"
+    "${ODEINT_INCLUDE_DIR}")
 
 if (FCL_INCLUDE_DIR)
     include_directories("${FCL_INCLUDE_DIR}")
@@ -130,6 +132,10 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     # need fcl header files to generate python bindings
     if(TARGET fcl)
         add_dependencies(update_app_bindings fcl)
+    endif()
+    # need ODEInt to generate python bindings
+    if (TARGET Boost.ODEInt)
+        add_dependencies(update_control_bindings Boost.ODEInt)
     endif()
 endif()
 

@@ -18,6 +18,9 @@ ompl::app::KinematicCarPlanning::KinematicCarPlanning()
     name_ = std::string("Kinematic car");
     setDefaultControlBounds();
     si_->setStatePropagator(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
+
+    odeSolver.setStateSpace(si_->getStateSpace ());
+    odeSolver.setODE(boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3, _4));
 }
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
@@ -51,32 +54,22 @@ void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
 void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
     const double duration, base::State *result)
 {
-    int i, nsteps = static_cast<int>(floor(0.5 + duration/timeStep_));
-    double dt = duration/(double)nsteps;
-    base::State *dstate = getStateSpace()->allocState();
-    base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
-    base::SE2StateSpace::StateType& ds = *dstate->as<base::SE2StateSpace::StateType>();
+    odeSolver.propagate (from, ctrl, duration, result);
 
-    getStateSpace()->copyState(result, from);
-    for (i=0; i<nsteps; ++i)
-    {
-        ode(result, ctrl, dstate);
-        s.setX(s.getX() + dt * ds.getX());
-        s.setY(s.getY() + dt * ds.getY());
-        s.setYaw(s.getYaw() + dt * ds.getYaw());
-    }
-    getStateSpace()->freeState(dstate);
+    // Enforce control bounds
+    base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::KinematicCarPlanning::ode(const base::State *state, const control::Control *ctrl,
-    base::State *dstate)
+void ompl::app::KinematicCarPlanning::ode(const std::vector<double>&q, const control::Control *ctrl,
+    double /*time*/, std::vector<double>& qdot)
 {
-    const base::SE2StateSpace::StateType& q = *state->as<base::SE2StateSpace::StateType>();
-    base::SE2StateSpace::StateType& qdot = *dstate->as<base::SE2StateSpace::StateType>();
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
-    qdot.setX(u[0] * cos(q.getYaw()));
-    qdot.setY(u[0] * sin(q.getYaw()));
-    qdot.setYaw(u[0] * lengthInv_ * tan(u[1]));
+    // zero out qdot
+    qdot.resize (q.size (), 0);
+
+    qdot[0] = u[0] * cos(q[2]);
+    qdot[1] = u[0] * sin(q[2]);
+    qdot[2] = u[0] * lengthInv_ * tan(u[1]);
 }

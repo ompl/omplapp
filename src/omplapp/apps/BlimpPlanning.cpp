@@ -11,6 +11,7 @@
 /* Author: Mark Moll */
 
 #include "omplapp/apps/BlimpPlanning.h"
+#include "ompl/util/Profiler.h"
 
 ompl::base::ScopedState<> ompl::app::BlimpPlanning::getDefaultStartState(void) const
 {
@@ -43,58 +44,35 @@ ompl::base::ScopedState<> ompl::app::BlimpPlanning::getFullStateFromGeometricCom
 void ompl::app::BlimpPlanning::propagate(const base::State *from, const control::Control *ctrl,
     const double duration, base::State *result)
 {
-    int i, j, nsteps = ceil(duration/timeStep_);
-    double dt = duration/(double)nsteps;
-    base::State *dstate = getStateSpace()->allocState();
-    base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
-    base::CompoundStateSpace::StateType& ds = *dstate->as<base::CompoundStateSpace::StateType>();
-    base::SE3StateSpace::StateType& pose = *s.as<base::SE3StateSpace::StateType>(0);
-    base::SE3StateSpace::StateType& dpose = *ds.as<base::SE3StateSpace::StateType>(0);
-    double& theta = pose.rotation().x;
-    double& dtheta = dpose.rotation().x;
-    base::RealVectorStateSpace::StateType& vel = *s.as<base::RealVectorStateSpace::StateType>(1);
-    base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
-    double& omega = s.as<base::RealVectorStateSpace::StateType>(2)->values[0];
-    double& domega = ds.as<base::RealVectorStateSpace::StateType>(2)->values[0];
+    odeSolver.propagate (from, ctrl, duration, result);
 
-    getStateSpace()->copyState(result, from);
-    // use first quaternion component to store heading
-    theta = 2. * atan2(pose.rotation().z, pose.rotation().w);
-    for (i=0; i<nsteps; ++i)
-    {
-        ode(result, ctrl, dstate);
-        pose.setX(pose.getX() + dt * dpose.getX());
-        pose.setY(pose.getY() + dt * dpose.getY());
-        pose.setZ(pose.getZ() + dt * dpose.getZ());
-        theta += dt * dtheta;
-        for (j=0; j<3; ++j) vel[j] += dt * dvel[j];
-        omega += dt * domega;
-    }
-    getStateSpace()->freeState(dstate);
-    // convert heading back to a quaternion
-    pose.rotation().setAxisAngle(0,0,1,theta);
+    // Setting the quaternion representation of the blimp rotation
+    base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
+    base::SE3StateSpace::StateType& pose = *s.as<base::SE3StateSpace::StateType>(0);
+    pose.rotation().setAxisAngle(0,0,1, pose.rotation().x);
+
+    // Enforcing control bounds
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::BlimpPlanning::ode(const base::State *state, const control::Control *ctrl,
-    base::State *dstate)
+void ompl::app::BlimpPlanning::ode(const std::vector<double>& q, const control::Control *ctrl, double /*time*/, std::vector<double>& qdot)
 {
-    const base::CompoundStateSpace::StateType& s = *state->as<base::CompoundStateSpace::StateType>();
-    base::CompoundStateSpace::StateType& ds = *dstate->as<base::CompoundStateSpace::StateType>();
-    base::SE3StateSpace::StateType& dpose = *ds.as<base::SE3StateSpace::StateType>(0);
-    double theta = s.as<base::SE3StateSpace::StateType>(0)->rotation().x;
-    const base::RealVectorStateSpace::StateType& vel = *s.as<base::RealVectorStateSpace::StateType>(1);
-    base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
-    double omega = s.as<base::RealVectorStateSpace::StateType>(2)->values[0];
-    double& domega = ds.as<base::RealVectorStateSpace::StateType>(2)->values[0];
+    // Retrieving control inputs
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
-    dpose.setXYZ(vel[0], vel[1], vel[2]);
-    dpose.rotation().x = omega;
-    dvel[0] = u[0] * cos(theta);
-    dvel[1] = u[0] * sin(theta);
-    dvel[2] = u[1];
-    domega = u[2];
+    // zero out qdot
+    qdot.resize (q.size (), 0);
+
+    qdot[0] = q[7];
+    qdot[1] = q[8];
+    qdot[2] = q[9];
+
+    qdot[3] = q[10];
+
+    qdot[7] = u[0] * cos(q[3]);
+    qdot[8] = u[0] * sin(q[3]);
+    qdot[9] = u[1]; 
+    qdot[10] = u[2];
 }
 
 ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace(void)
