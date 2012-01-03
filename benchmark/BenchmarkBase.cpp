@@ -272,5 +272,28 @@ bool BenchmarkBase::readOptions(const char *filename)
 
 void BenchmarkBase::runBenchmark(void)
 {
+    if (!isValid())
+	return;
+    double tl = 0.0;
+    double ml = 0.0;
+    unsigned int rc = 0;
+    
+    try
+    {
+	tl = boost::lexical_cast<double>(declared_options_["benchmark.time_limit"]);
+	ml = boost::lexical_cast<double>(declared_options_["benchmark.mem_limit"]);
+	rc = boost::lexical_cast<unsigned int>(declared_options_["benchmark.run_count"]);
+    }
+    catch(boost::bad_lexical_cast &)
+    {
+	std::cerr << "Unable to parse benchmark parameters" << std::endl;
+	return;
+    }
+    
+    benchmark_->benchmark(tl, ml, rc, true, true);
+    if (!declared_options_["benchmark.output"].empty())
+	benchmark_->saveResultsToFile(((path_ / declared_options_["benchmark.output"]) / outfile_).string().c_str ());
+    else
+	benchmark_->saveResultsToFile((path_ / outfile_).string().c_str());
     
 }
