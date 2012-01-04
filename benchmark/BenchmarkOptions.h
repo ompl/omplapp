@@ -34,32 +34,22 @@
 
 /* Author: Ioan Sucan */
 
-#include <ompl/tools/benchmark/Benchmark.h>
+#include <map>
+#include <string>
+#include <vector>
 #include <boost/filesystem/path.hpp>
 
-class BenchmarkBase
-{
-public:
-    
-    BenchmarkBase(void)
+struct BenchmarkOptions
+{  
+    BenchmarkOptions(void)
     {
     }
     
-    virtual ~BenchmarkBase(void)
+    BenchmarkOptions(const char *filename)
     {
-    }
-
-    bool load(const char *filename);
-    
-    bool isValid(void) const
-    {
-        return benchmark_;
+	readOptions(filename);
     }
     
-    void runBenchmark(void);
-    
-protected:
-
     typedef std::map<std::string, std::string> PlannerOpt; // options specific to the planner
     typedef std::map<std::string, std::string> ContextOpt; // other options (not specific to the planner)
     
@@ -70,27 +60,14 @@ protected:
         PlannerOpt p;
     };
     
-    virtual void configure(void) = 0;
-    bool readOptions(const char *filename);
-    
     std::map<std::string, std::string>              declared_options_;
     std::map<std::string, std::vector<AllOptions> > planners_;
-    
-    std::map<ompl::base::Planner*, ContextOpt>      pcontext_;
-    ContextOpt                                      activeParams_;
-    
-    boost::shared_ptr<ompl::Benchmark>              benchmark_;
     
     // the path where the input .cfg file is located
     boost::filesystem::path                         path_;
 
     // the file to which benchmark results should be written
     boost::filesystem::path                         outfile_;
-    
-    ompl::base::PlannerPtr allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const AllOptions &opt);
-    ompl::base::ValidStateSamplerPtr allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type);
-    
-    void setupBenchmark(void);
-    void preSwitchEvent(const ompl::base::PlannerPtr &planner);
-    
+
+    bool readOptions(const char *filename);
 };

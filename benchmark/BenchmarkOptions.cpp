@@ -34,23 +34,7 @@
 
 /* Author: Ioan Sucan */
 
-#include "BenchmarkBase.h"
-
-#include <omplapp/config.h>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/rrt/LazyRRT.h>
-#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
-#include <ompl/geometric/planners/kpiece/BKPIECE1.h>
-#include <ompl/geometric/planners/kpiece/KPIECE1.h>
-#include <ompl/geometric/planners/sbl/SBL.h>
-#include <ompl/geometric/planners/est/EST.h>
-#include <ompl/geometric/planners/prm/PRM.h>
-
-#include <ompl/base/samplers/UniformValidStateSampler.h>
-#include <ompl/base/samplers/GaussianValidStateSampler.h>
-#include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
-#include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
+#include "BenchmarkOptions.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options/parsers.hpp>
@@ -59,104 +43,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <fstream>
 
-
-bool BenchmarkBase::load(const char *filename)
-{
-    if (readOptions(filename))
-    {
-	boost::filesystem::path path(filename);
-#if BOOST_VERSION < 104600
-	path_ = boost::filesystem::complete(path);
-#else
-	path_ = boost::filesystem::absolute(path);
-#endif
-	outfile_ = path_.filename();
-	path_.remove_filename();
-	outfile_.replace_extension(".log");
-	configure();
-	if (benchmark_)
-	    setupBenchmark();
-	return true;
-    }
-    else
-	return false;
-}
-
-ompl::base::PlannerPtr BenchmarkBase::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const AllOptions &opt)
-{
-    ompl::base::Planner *p = NULL;
-    if (name == "rrt")
-	p = new ompl::geometric::RRT(si);
-    else if (name == "rrtconnect")
-	p = new ompl::geometric::RRTConnect(si);
-    else if (name == "lazyrrt")
-	p = new ompl::geometric::LazyRRT(si);
-    else if (name == "est")
-	p = new ompl::geometric::EST(si);
-    else if (name == "sbl")
-	p = new ompl::geometric::SBL(si);
-    else if (name == "kpiece")
-	p = new ompl::geometric::KPIECE1(si);
-    else if (name == "bkpiece")
-	p = new ompl::geometric::BKPIECE1(si);
-    else if (name == "lbkpiece")
-	p = new ompl::geometric::LBKPIECE1(si);
-    else if (name == "prm")
-	p = new ompl::geometric::PRM(si);
-    else
-	std::cerr << "Unknown planner: " << name << std::endl;
-    if (p)
-    {
-	p->params().setParams(opt.p);
-	pcontext_[p] = opt.c;
-	std::cout << "Allocated " << p->getName() << std::endl;
-    }
-    return ompl::base::PlannerPtr(p);
-}
-
-ompl::base::ValidStateSamplerPtr BenchmarkBase::allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type)
-{
-    ompl::base::ValidStateSampler *vss = NULL;
-    if (type == "uniform")
-	vss = new ompl::base::UniformValidStateSampler(si);
-    else if (type == "gaussian")
-	vss = new ompl::base::GaussianValidStateSampler(si);
-    else if (type == "obstacle_based")
-	vss = new ompl::base::ObstacleBasedValidStateSampler(si);
-    else if (type == "max_clearance")
-	vss = new ompl::base::MaximizeClearanceValidStateSampler(si);
-    else
-	std::cerr << "Unknown sampler type: " << type << std::endl;
-    if (vss)
-    {
-	vss->params().setParams(activeParams_, true);
-	return ompl::base::ValidStateSamplerPtr(vss);
-    }
-    else
-	return ompl::base::ValidStateSamplerPtr();
-}
-
-void BenchmarkBase::setupBenchmark(void)
-{
-    for (std::map<std::string, std::vector<AllOptions> >::iterator it = planners_.begin() ; it != planners_.end() ; ++it)
-	for (std::size_t i = 0 ; i < it->second.size() ; ++i)
-	    benchmark_->addPlannerAllocator(boost::bind(&BenchmarkBase::allocPlanner, this, _1,
-							boost::cref(it->first), boost::cref(it->second[i])));
-    benchmark_->setPlannerSwitchEvent(boost::bind(&BenchmarkBase::preSwitchEvent, this, _1));
-}
-
-void BenchmarkBase::preSwitchEvent(const ompl::base::PlannerPtr &planner)
-{
-    activeParams_ = pcontext_[planner.get()];
-    if (activeParams_.find("sampler") != activeParams_.end())
-	planner->getSpaceInformation()->setValidStateSamplerAllocator(boost::bind(&BenchmarkBase::allocValidStateSampler, this, _1,
-										  boost::cref(activeParams_["sampler"])));
-    else
-	planner->getSpaceInformation()->clearValidStateSamplerAllocator();
-    planner->getSpaceInformation()->params().setParams(activeParams_, true);
-}
-
-bool BenchmarkBase::readOptions(const char *filename)
+bool BenchmarkOptions::readOptions(const char *filename)
 {
     static const std::string KNOWN_PLANNERS[] = {
 	"rrtconnect", "lazyrrt",
@@ -190,6 +77,7 @@ bool BenchmarkBase::readOptions(const char *filename)
 	("problem.goal.axis.z", boost::program_options::value<std::string>(), "Goal position: rotation axis z value")
 	("problem.goal.theta", boost::program_options::value<std::string>(), "Goal position: theta value")
 	("problem.threshold", boost::program_options::value<std::string>(), "Threshold to reach goal position")
+	("problem.solution_length", boost::program_options::value<std::string>(), "Maximum desired solution length")
 	("problem.volume.min.x", boost::program_options::value<std::string>(), "Min X for bounding volume")
 	("problem.volume.min.y", boost::program_options::value<std::string>(), "Min Y for bounding volume")
 	("problem.volume.min.z", boost::program_options::value<std::string>(), "Min Z for bounding volume")
@@ -291,32 +179,16 @@ bool BenchmarkBase::readOptions(const char *filename)
 			planner_options[jt->first] = jt->second;
 		}
     }
-    return true;
-}
 
-void BenchmarkBase::runBenchmark(void)
-{
-    if (!isValid())
-	return;
-    double tl = 0.0;
-    double ml = 0.0;
-    unsigned int rc = 0;
+    boost::filesystem::path path(filename);
+#if BOOST_VERSION < 104600
+    path_ = boost::filesystem::complete(path);
+#else
+    path_ = boost::filesystem::absolute(path);
+#endif
+    outfile_ = path_.filename();
+    path_.remove_filename();
+    outfile_.replace_extension(".log");
     
-    try
-    {
-	tl = boost::lexical_cast<double>(declared_options_["benchmark.time_limit"]);
-	ml = boost::lexical_cast<double>(declared_options_["benchmark.mem_limit"]);
-	rc = boost::lexical_cast<unsigned int>(declared_options_["benchmark.run_count"]);
-    }
-    catch(boost::bad_lexical_cast &)
-    {
-	std::cerr << "Unable to parse benchmark parameters" << std::endl;
-	return;
-    }
-    
-    benchmark_->benchmark(tl, ml, rc, true, true);
-    if (!declared_options_["benchmark.output"].empty())
-	benchmark_->saveResultsToFile(((path_ / declared_options_["benchmark.output"]) / outfile_).string().c_str ());
-    else
-	benchmark_->saveResultsToFile((path_ / outfile_).string().c_str());
+    return true;
 }
