@@ -34,33 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-
-#include <omplapp/config.h>
-
 #include <ompl/tools/benchmark/Benchmark.h>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/rrt/LazyRRT.h>
-#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
-#include <ompl/geometric/planners/kpiece/BKPIECE1.h>
-#include <ompl/geometric/planners/kpiece/KPIECE1.h>
-#include <ompl/geometric/planners/sbl/SBL.h>
-#include <ompl/geometric/planners/est/EST.h>
-#include <ompl/geometric/planners/prm/PRM.h>
-
-#include <ompl/base/samplers/UniformValidStateSampler.h>
-#include <ompl/base/samplers/GaussianValidStateSampler.h>
-#include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
-#include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
-
-
-#include <boost/lexical_cast.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <fstream>
 
 class BenchmarkBase
 {

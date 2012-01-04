@@ -36,11 +36,29 @@
 
 #include "BenchmarkBase.h"
 
-static const std::string KNOWN_PLANNERS[] = {
-    "rrtconnect", "lazyrrt",
-    "kpiece", "bkpiece", "lbkpiece",
-    "est", "sbl", "prm", "rrt"
-};
+#include <omplapp/config.h>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/rrt/LazyRRT.h>
+#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
+#include <ompl/geometric/planners/kpiece/BKPIECE1.h>
+#include <ompl/geometric/planners/kpiece/KPIECE1.h>
+#include <ompl/geometric/planners/sbl/SBL.h>
+#include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/prm/PRM.h>
+
+#include <ompl/base/samplers/UniformValidStateSampler.h>
+#include <ompl/base/samplers/GaussianValidStateSampler.h>
+#include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
+#include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <fstream>
+
 
 bool BenchmarkBase::load(const char *filename)
 {
@@ -140,6 +158,12 @@ void BenchmarkBase::preSwitchEvent(const ompl::base::PlannerPtr &planner)
 
 bool BenchmarkBase::readOptions(const char *filename)
 {
+    static const std::string KNOWN_PLANNERS[] = {
+	"rrtconnect", "lazyrrt",
+	"kpiece", "bkpiece", "lbkpiece",
+	"est", "sbl", "prm", "rrt"
+    };
+    
     std::ifstream cfg(filename);
     if (!cfg.good())
     {
@@ -166,12 +190,12 @@ bool BenchmarkBase::readOptions(const char *filename)
 	("problem.goal.axis.z", boost::program_options::value<std::string>(), "Goal position: rotation axis z value")
 	("problem.goal.theta", boost::program_options::value<std::string>(), "Goal position: theta value")
 	("problem.threshold", boost::program_options::value<std::string>(), "Threshold to reach goal position")
-	("volume.min.x", boost::program_options::value<std::string>(), "Min X for bounding volume")
-	("volume.min.y", boost::program_options::value<std::string>(), "Min Y for bounding volume")
-	("volume.min.z", boost::program_options::value<std::string>(), "Min Z for bounding volume")
-	("volume.max.x", boost::program_options::value<std::string>(), "Max X for bounding volume")
-	("volume.max.y", boost::program_options::value<std::string>(), "Max Y for bounding volume")
-	("volume.max.z", boost::program_options::value<std::string>(), "Max Z for bounding volume")
+	("problem.volume.min.x", boost::program_options::value<std::string>(), "Min X for bounding volume")
+	("problem.volume.min.y", boost::program_options::value<std::string>(), "Min Y for bounding volume")
+	("problem.volume.min.z", boost::program_options::value<std::string>(), "Min Z for bounding volume")
+	("problem.volume.max.x", boost::program_options::value<std::string>(), "Max X for bounding volume")
+	("problem.volume.max.y", boost::program_options::value<std::string>(), "Max Y for bounding volume")
+	("problem.volume.max.z", boost::program_options::value<std::string>(), "Max Z for bounding volume")
 	
 	("benchmark.time_limit", boost::program_options::value<std::string>(), "Time limit for each run of a planner")
 	("benchmark.mem_limit", boost::program_options::value<std::string>(), "Memory limit for each run of a planner")
@@ -295,5 +319,4 @@ void BenchmarkBase::runBenchmark(void)
 	benchmark_->saveResultsToFile(((path_ / declared_options_["benchmark.output"]) / outfile_).string().c_str ());
     else
 	benchmark_->saveResultsToFile((path_ / outfile_).string().c_str());
-    
 }
