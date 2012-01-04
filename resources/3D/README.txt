@@ -8,7 +8,7 @@ exported as COLLADA files. From each SketchUp file, two COLLADA files
 are exported: <problem>_env.dae and <problem>_robot.dae; these files
 represent the environment and robot geometries. The *.cfg files
 specify a motion planning problem and can be loaded with the GUI. The
-*.path files contain sample solutions for the corresponding .cfg file
+*.path files contain sample solutions for the corresponding .cfg file.
 
 * Cubicles. A simple office-like environment. Depending on the start and goal
   state, the robot may have to fly through the basement. Created by Nick Bridle
