@@ -45,7 +45,7 @@ void blimpSetup(app::BlimpPlanning& setup)
     // set the start & goal states
     setup.setStartAndGoalStates(
         setup.getFullStateFromGeometricComponent(start),
-        setup.getFullStateFromGeometricComponent(goal), .1);
+        setup.getFullStateFromGeometricComponent(goal), .5);
 }
 
 void blimpDemo(app::BlimpPlanning& setup)
@@ -96,6 +96,8 @@ void blimpBenchmark(app::BlimpPlanning& setup)
     double runtime_limit = 100.0;
     double memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
     int    run_count     = 10;
+
+    setup.setup();
 
     Benchmark b(setup, setup.getName());
     b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));

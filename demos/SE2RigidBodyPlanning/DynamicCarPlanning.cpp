@@ -40,7 +40,7 @@ void dynamicCarSetup(app::DynamicCarPlanning& setup)
     goal[3] = goal[4] = 0.;
 
     // set the start & goal states
-    setup.setStartAndGoalStates(start, goal, .1);
+    setup.setStartAndGoalStates(start, goal, .5);
 }
 
 void dynamicCarDemo(app::DynamicCarPlanning& setup)
@@ -92,6 +92,8 @@ void dynamicCarBenchmark(app::DynamicCarPlanning& setup)
     double runtime_limit = 100.0;
     double memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
     int    run_count     = 10;
+
+    setup.setup ();
 
     Benchmark b(setup, setup.getName());
     b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
