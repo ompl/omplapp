@@ -41,6 +41,7 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <iostream>
 #include <fstream>
 
 bool BenchmarkOptions::readOptions(const char *filename)
