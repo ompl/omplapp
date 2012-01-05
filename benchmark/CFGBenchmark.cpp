@@ -126,11 +126,18 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
 }
 
+void CFGBenchmark::setup(void)
+{
+    configure();
+    if (benchmark_)
+	setupBenchmark();    
+}
 
 void CFGBenchmark::runBenchmark(void)
 {
     if (!isValid())
 	return;
+
     double tl = 0.0;
     double ml = 0.0;
     unsigned int rc = 0;
