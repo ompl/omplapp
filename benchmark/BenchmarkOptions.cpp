@@ -193,3 +193,29 @@ bool BenchmarkOptions::readOptions(const char *filename)
     
     return true;
 }
+
+bool BenchmarkOptions::isSE2Problem(void) const
+{
+    return declared_options_.find("problem.start.x") != declared_options_.end() &&  declared_options_.find("problem.start.y") != declared_options_.end() && 
+	declared_options_.find("problem.start.theta") != declared_options_.end() &&
+	declared_options_.find("problem.goal.x") != declared_options_.end() &&  declared_options_.find("problem.goal.y") != declared_options_.end() &&
+	declared_options_.find("problem.goal.theta") != declared_options_.end() &&
+	declared_options_.find("problem.start.z") == declared_options_.end() && declared_options_.find("problem.start.axis.x") == declared_options_.end() &&
+	declared_options_.find("problem.start.axis.y") == declared_options_.end() &&
+	declared_options_.find("problem.start.axis.z") == declared_options_.end() && declared_options_.find("problem.goal.z") == declared_options_.end() &&
+	declared_options_.find("problem.goal.axis.x") == declared_options_.end() &&
+	declared_options_.find("problem.goal.axis.y") == declared_options_.end() && declared_options_.find("problem.goal.axis.z") == declared_options_.end();
+}
+
+bool BenchmarkOptions::isSE3Problem(void) const
+{
+    return declared_options_.find("problem.start.x") != declared_options_.end() &&  declared_options_.find("problem.start.y") != declared_options_.end() &&
+	declared_options_.find("problem.start.theta") != declared_options_.end() &&
+	declared_options_.find("problem.goal.x") != declared_options_.end() &&  declared_options_.find("problem.goal.y") != declared_options_.end() &&
+	declared_options_.find("problem.goal.theta") != declared_options_.end() &&
+	declared_options_.find("problem.start.z") != declared_options_.end() && declared_options_.find("problem.start.axis.x") != declared_options_.end() &&
+	declared_options_.find("problem.start.axis.y") != declared_options_.end() &&
+	declared_options_.find("problem.start.axis.z") != declared_options_.end() && declared_options_.find("problem.goal.z") != declared_options_.end() &&
+	declared_options_.find("problem.goal.axis.x") != declared_options_.end() &&
+	declared_options_.find("problem.goal.axis.y") != declared_options_.end() && declared_options_.find("problem.goal.axis.z") != declared_options_.end();
+}

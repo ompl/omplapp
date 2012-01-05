@@ -34,42 +34,36 @@
 
 /* Author: Ioan Sucan */
 
-#include <map>
-#include <string>
-#include <vector>
-#include <boost/filesystem/path.hpp>
+#include "CFGBenchmark.h"
+#include "omplapp/apps/SE2RigidBodyPlanning.h"
+#include "omplapp/apps/SE3RigidBodyPlanning.h"
 
-struct BenchmarkOptions
-{  
-    BenchmarkOptions(void)
+class SE2Benchmark : public CFGBenchmark
+{ 
+public:
+    SE2Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
     {
     }
-    
-    BenchmarkOptions(const char *filename)
-    {
-	readOptions(filename);
-    }
-    
-    typedef std::map<std::string, std::string> PlannerOpt; // options specific to the planner
-    typedef std::map<std::string, std::string> ContextOpt; // other options (not specific to the planner)
-    
-    // all the options for a benchmark execution
-    struct AllOptions
-    {
-        ContextOpt c;
-        PlannerOpt p;
-    };
-    
-    std::map<std::string, std::string>              declared_options_;
-    std::map<std::string, std::vector<AllOptions> > planners_;
-    
-    // the path where the input .cfg file is located
-    boost::filesystem::path                         path_;
 
-    // the file to which benchmark results should be written
-    boost::filesystem::path                         outfile_;
+protected:
 
-    bool readOptions(const char *filename);
-    bool isSE2Problem(void) const;
-    bool isSE3Problem(void) const;
+    virtual void configure(void);
+    
+    boost::shared_ptr<ompl::app::SE2RigidBodyPlanning> setup_se2_;
 };
+
+class SE3Benchmark : public CFGBenchmark
+{ 
+public:
+    SE3Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
+    {
+    }
+
+protected:
+
+    virtual void configure(void);
+    
+    boost::shared_ptr<ompl::app::SE3RigidBodyPlanning> setup_se3_;
+};
+
+    
