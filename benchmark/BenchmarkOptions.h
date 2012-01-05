@@ -34,29 +34,42 @@
 
 /* Author: Ioan Sucan */
 
-#include "GeometricBenchmark.h"
+#include <map>
+#include <string>
+#include <vector>
+#include <boost/filesystem/path.hpp>
 
-int main(int argc, char **argv)
-{
-    if (argc < 2)
+struct BenchmarkOptions
+{  
+    BenchmarkOptions(void)
     {
-        std::cerr << "Usage:\n\t " << argv[0] << " problem.cfg" << std::endl;
-        return 1;
     }
     
-    BenchmarkOptions bo;
-    if (bo.readOptions(argv[1]))
+    BenchmarkOptions(const char *filename)
     {
-	CFGBenchmark *b = NULL;
-	if (bo.isSE2Problem())
-	    b = new SE2Benchmark(bo);
-	else
-	    if (bo.isSE3Problem())
-		b = new SE3Benchmark(bo);
-	if (b)
-	    b->runBenchmark();
-	delete b;
+	readOptions(filename);
     }
     
-    return 0;
-}
+    typedef std::map<std::string, std::string> PlannerOpt; // options specific to the planner
+    typedef std::map<std::string, std::string> ContextOpt; // other options (not specific to the planner)
+    
+    // all the options for a benchmark execution
+    struct AllOptions
+    {
+        ContextOpt c;
+        PlannerOpt p;
+    };
+    
+    std::map<std::string, std::string>              declared_options_;
+    std::map<std::string, std::vector<AllOptions> > planners_;
+    
+    // the path where the input .cfg file is located
+    boost::filesystem::path                         path_;
+
+    // the file to which benchmark results should be written
+    boost::filesystem::path                         outfile_;
+
+    bool readOptions(const char *filename);
+    bool isSE2Problem(void) const;
+    bool isSE3Problem(void) const;
+};

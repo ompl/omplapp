@@ -34,29 +34,41 @@
 
 /* Author: Ioan Sucan */
 
-#include "GeometricBenchmark.h"
+#include <ompl/tools/benchmark/Benchmark.h>
+#include "BenchmarkOptions.h"
 
-int main(int argc, char **argv)
+class CFGBenchmark
 {
-    if (argc < 2)
-    {
-        std::cerr << "Usage:\n\t " << argv[0] << " problem.cfg" << std::endl;
-        return 1;
+public:
+    
+    CFGBenchmark(const BenchmarkOptions &bo) : bo_(bo)
+    {    
     }
     
-    BenchmarkOptions bo;
-    if (bo.readOptions(argv[1]))
+    virtual ~CFGBenchmark(void)
     {
-	CFGBenchmark *b = NULL;
-	if (bo.isSE2Problem())
-	    b = new SE2Benchmark(bo);
-	else
-	    if (bo.isSE3Problem())
-		b = new SE3Benchmark(bo);
-	if (b)
-	    b->runBenchmark();
-	delete b;
     }
     
-    return 0;
-}
+    bool isValid(void) const
+    {
+        return benchmark_;
+    }
+    
+    void runBenchmark(void);
+    
+protected:
+    
+    virtual void configure(void) = 0;
+    
+    BenchmarkOptions                                             bo_;    
+    std::map<ompl::base::Planner*, BenchmarkOptions::ContextOpt> pcontext_;
+    BenchmarkOptions::ContextOpt                                 activeParams_;
+    boost::shared_ptr<ompl::Benchmark>                           benchmark_;
+    
+private:
+    
+    ompl::base::PlannerPtr allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt);
+    ompl::base::ValidStateSamplerPtr allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type);
+    void setupBenchmark(void);
+    void preSwitchEvent(const ompl::base::PlannerPtr &planner);    
+};

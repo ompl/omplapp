@@ -58,18 +58,11 @@ namespace ompl
 
             void FCLPoseFromState (fcl::Vec3f &trans, fcl::SimpleQuaternion &quat, const ob::State *state) const
             {
+                static const Vec3f zaxis(0., 0., 1.);
                 const type * derived = static_cast <const type*> (state);
 
                 trans.setValue (derived->getX (), derived->getY (), 0.0);
-                const double ca = cos (derived->getYaw ());
-                const double sa = sin (derived->getYaw ());
-
-                fcl::Vec3f rot[3];
-                rot[0].setValue (ca, -sa,  0.0);
-                rot[1].setValue (sa,  ca,  0.0);
-                rot[2].setValue (0.0, 0.0, 1.0);
-
-                quat.fromRotation (rot);
+                quat.fromAxisAngle(zaxis, derived->getYaw ());
             }
         };
         /// @endcond

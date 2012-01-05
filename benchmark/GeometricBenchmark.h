@@ -34,29 +34,36 @@
 
 /* Author: Ioan Sucan */
 
-#include "GeometricBenchmark.h"
+#include "CFGBenchmark.h"
+#include "omplapp/apps/SE2RigidBodyPlanning.h"
+#include "omplapp/apps/SE3RigidBodyPlanning.h"
 
-int main(int argc, char **argv)
-{
-    if (argc < 2)
+class SE2Benchmark : public CFGBenchmark
+{ 
+public:
+    SE2Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
     {
-        std::cerr << "Usage:\n\t " << argv[0] << " problem.cfg" << std::endl;
-        return 1;
     }
+
+protected:
+
+    virtual void configure(void);
     
-    BenchmarkOptions bo;
-    if (bo.readOptions(argv[1]))
+    boost::shared_ptr<ompl::app::SE2RigidBodyPlanning> setup_se2_;
+};
+
+class SE3Benchmark : public CFGBenchmark
+{ 
+public:
+    SE3Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
     {
-	CFGBenchmark *b = NULL;
-	if (bo.isSE2Problem())
-	    b = new SE2Benchmark(bo);
-	else
-	    if (bo.isSE3Problem())
-		b = new SE3Benchmark(bo);
-	if (b)
-	    b->runBenchmark();
-	delete b;
     }
+
+protected:
+
+    virtual void configure(void);
     
-    return 0;
-}
+    boost::shared_ptr<ompl::app::SE3RigidBodyPlanning> setup_se3_;
+};
+
+    
