@@ -13,18 +13,17 @@
 #include "omplapp/apps/KinematicCarPlanning.h"
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning()
-    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.)
+    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_->getStateSpace ()))
 {
     name_ = std::string("Kinematic car");
     setDefaultControlBounds();
     si_->setStatePropagator(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
 
-    odeSolver.setStateSpace(si_->getStateSpace ());
     odeSolver.setODE(boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3, _4));
 }
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
-    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.)
+    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_->getStateSpace ()))
 {
     setDefaultControlBounds();
     si_->setStatePropagator(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
@@ -56,7 +55,7 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
 {
     odeSolver.propagate (from, ctrl, duration, result);
 
-    // Enforce control bounds
+    // Enforce velocity bounds
     base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }

@@ -32,7 +32,7 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
 {
     odeSolver.propagate (from, ctrl, duration, result);
 
-    // Enforce control bounds
+    // Enforce velocity bounds
     base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }

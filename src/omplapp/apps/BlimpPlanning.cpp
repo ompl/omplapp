@@ -51,7 +51,7 @@ void ompl::app::BlimpPlanning::propagate(const base::State *from, const control:
     base::SE3StateSpace::StateType& pose = *s.as<base::SE3StateSpace::StateType>(0);
     pose.rotation().setAxisAngle(0,0,1, pose.rotation().x);
 
-    // Enforcing control bounds
+    // Enforcing velocity bounds
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
