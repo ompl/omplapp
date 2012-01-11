@@ -13,6 +13,7 @@
 #ifndef OMPLAPP_GEOMETRY_RIGID_BODY_GEOMETRY_
 #define OMPLAPP_GEOMETRY_RIGID_BODY_GEOMETRY_
 
+#include "omplapp/config.h"
 #include "omplapp/geometry/GeometrySpecification.h"
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorBounds.h>
