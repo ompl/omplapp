@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include "GeometricBenchmark.h"
+#include <iostream>
 
 int main(int argc, char **argv)
 {
@@ -54,9 +55,16 @@ int main(int argc, char **argv)
 	    if (bo.isSE3Problem())
 		b = new SE3Benchmark(bo);
 	if (b)
+	{
+	    b->setup();
 	    b->runBenchmark();
+	}
+	else
+	    std::cerr << "No known benchmark" << std::endl;
 	delete b;
     }
+    else
+	std::cerr << "Unable to load options" << std::endl;
     
     return 0;
 }

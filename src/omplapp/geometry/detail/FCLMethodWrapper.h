@@ -13,7 +13,9 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_FCL_METHOD_WRAPPER_
 #define OMPLAPP_GEOMETRY_DETAIL_FCL_METHOD_WRAPPER_
 
-#ifdef OMPL_HAS_FCL
+#include "omplapp/config.h"
+
+#if OMPL_HAS_FCL
 
 // OMPL and OMPL.app headers
 #include "omplapp/geometry/GeometrySpecification.h"
@@ -73,13 +75,17 @@ namespace ompl
 
                 if (environment_.num_tris > 0)
                 {
-                    // Need to adjust robotParts_ for the state configuration.
-                    transformRobot (state);
-
                     // Performing collision checking with environment.
                     for (size_t i = 0; i < robotParts_.size () && valid; ++i)
                     {
-                        valid &= fcl::collide (&robotParts_[i], &environment_, 1, false, false, contacts) == 0;
+                        fcl::SimpleQuaternion quaternion;
+                        fcl::Vec3f translation;
+                        poseFromStateCallback_(translation, quaternion, extractState_(state, i));
+
+                        fcl::SimpleTransform transform;
+                        transform.setTransform (quaternion, translation);
+
+                        valid &= fcl::collide (&robotParts_[i], transform, &environment_, fcl::SimpleTransform(), 1, false, false, contacts) == 0;
                     }
                 }
 
@@ -88,9 +94,23 @@ namespace ompl
                 {
                     for (std::size_t i = 0 ; i < robotParts_.size () && valid; ++i)
                     {
+                        fcl::SimpleQuaternion qi;
+                        fcl::Vec3f ti;
+                        poseFromStateCallback_(ti, qi, extractState_(state, i));
+
+                        fcl::SimpleTransform trans_i;
+                        trans_i.setTransform (qi, ti);
+
                         for (std::size_t j  = i + 1 ; j < robotParts_.size () && valid; ++j)
                         {
-                            valid &= fcl::collide (&robotParts_[i], &robotParts_[j], 1, false, false, contacts) == 0;
+                            fcl::SimpleQuaternion qj;
+                            fcl::Vec3f tj;
+                            poseFromStateCallback_(tj, qj, extractState_(state, j));
+
+                            fcl::SimpleTransform trans_j;
+                            trans_i.setTransform (qj, tj);
+
+                            valid &= fcl::collide (&robotParts_[i], trans_i, &robotParts_[j], trans_j, 1, false, false, contacts) == 0;
                         }
                     }
                 }
@@ -107,7 +127,7 @@ namespace ompl
 
                 fcl::SimpleQuaternion quat1, quat2;
                 fcl::Vec3f trans1, trans2;
-                fcl::Vec3f rot1[3], rot2[3];
+                fcl::Matrix3f rot1, rot2;
                 std::vector <fcl::Contact> contacts;
 
                 // Checking for collision with environment
@@ -177,13 +197,17 @@ namespace ompl
                 {
                     boost::mutex::scoped_lock slock(mutex_);
 
-                    // Need to adjust robotParts_ for the state configuration.
-                    transformRobot (state);
-
                     for (size_t i = 0; i < robotParts_.size (); ++i)
                     {
+                        fcl::SimpleQuaternion q1;
+                        fcl::Vec3f t1;
+                        poseFromStateCallback_(t1, q1, extractState_(state, i));
+
+                        fcl::SimpleTransform tr1, tr2;
+                        tr1.setTransform (q1, t1);
+
                         fcl::MeshDistanceTraversalNodeRSS distanceNode;
-                        initialize (distanceNode, environment_, robotParts_[i]);
+                        fcl::initialize (distanceNode, robotParts_[i], tr1, environment_, tr2);
 
                         // computing minimum distance
                         fcl::distance (&distanceNode);
@@ -197,20 +221,6 @@ namespace ompl
             }
 
          protected:
-
-            /// \brief Transforms (translate and rotate) the components of the
-            /// robot to correspond to the given state.
-            void transformRobot (const base::State *state) const
-            {
-                for (size_t i = 0; i < robotParts_.size (); ++i)
-                {
-                    fcl::SimpleQuaternion quaternion;
-                    fcl::Vec3f translation;
-                    poseFromStateCallback_(translation, quaternion, extractState_(state, i));
-
-                    robotParts_[i].setTransform (quaternion, translation);
-                }
-            }
 
             /// \brief Configures the geometry of the robot and the environment
             /// to setup validity checking.

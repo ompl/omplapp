@@ -1,0 +1,19 @@
+/**
+\addtogroup demos
+@{
+\section appdemos OMPL.app Demos
+
+- <a href="demos_2SE2RigidBodyPlanning_2SE2RigidBodyPlanning_8cpp_source.html"><strong>Rigid body planning in 2D using meshes and collision checking.</strong></a>
+- <a href="demos_2SE3RigidBodyPlanning_2SE3RigidBodyPlanning_8cpp_source.html"><strong>Rigid body planning in 3D using meshes and collision checking.</strong></a>
+- <a href="demos_2SE2RigidBodyPlanning_2KinematicCarPlanning_8cpp_source.html"><strong>Planning for a first-order car.</strong></a>
+- <a href="demos_2SE2RigidBodyPlanning_2DynamicCarPlanning_8cpp_source.html"><strong>Planning for a second-order car.</strong></a>
+- <a href="demos_2SE3RigidBodyPlanning_2BlimpPlanning_8cpp_source.html"><strong>Planning for a blimp.</strong></a>
+- <a href="demos_2SE3RigidBodyPlanning_2QuadrotorPlanning_8cpp_source.html"><strong>Planning for a quadrotor.</strong></a>
+- <a href="planODE_8cpp_source.html"><strong>Rigid body planning using the Open Dynamics Engine (ODE) with graphics. </strong></a>
+A car-like robot pushes obstacles out of the way to get to the goal position.
+- <a href="SE3RigidBodyPlanningBenchmark_8cpp_source.html"><strong>Benchmarking planners on rigid body motion planning problems in 3D.</strong></a>
+.
+
+@}
+
+*/

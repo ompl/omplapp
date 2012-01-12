@@ -56,6 +56,8 @@ public:
     
     void runBenchmark(void);
     
+    void setup(void);
+    
 protected:
     
     virtual void configure(void) = 0;

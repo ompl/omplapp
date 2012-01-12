@@ -188,7 +188,7 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
             break;
 
         case FCL:
-            #ifdef OMPL_HAS_FCL
+            #if OMPL_HAS_FCL
             if (mtype_ == Motion_2D)
                 validitySvc_.reset (new FCLStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
             else

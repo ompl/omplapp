@@ -22,7 +22,7 @@ void quadrotorSetup(app::QuadrotorPlanning& setup)
 {
     base::StateSpacePtr stateSpace(setup.getStateSpace());
 
-    // set the bounds for the R^2 part of SE(3)
+    // set the bounds for the R^3 part of SE(3)
     base::RealVectorBounds bounds(3);
     bounds.setLow(-10);
     bounds.setHigh(10);
