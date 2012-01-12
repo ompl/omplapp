@@ -37,8 +37,7 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::DynamicCarPlanning::ode (const std::vector<double>&q, const control::Control *ctrl, double /*time*/,
-                                         std::vector<double>& qdot)
+void ompl::app::DynamicCarPlanning::ode (const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot)
 {
     // Retrieving control inputs
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;

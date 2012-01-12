@@ -68,8 +68,7 @@ void ompl::app::QuadrotorPlanning::propagate(const base::State *from, const cont
     SO3.enforceBounds(&rot); 
 }
 
-void ompl::app::QuadrotorPlanning::ode(const std::vector<double>&q, const control::Control *ctrl,
-    double time, std::vector<double>& qdot)
+void ompl::app::QuadrotorPlanning::ode(const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot)
 {
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 

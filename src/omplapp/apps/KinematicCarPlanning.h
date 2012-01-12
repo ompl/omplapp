@@ -81,7 +81,7 @@ namespace ompl
             void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
 
-            virtual void ode(const std::vector<double>&q, const control::Control *ctrl, double time, std::vector<double>& qdot);
+            virtual void ode(const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {

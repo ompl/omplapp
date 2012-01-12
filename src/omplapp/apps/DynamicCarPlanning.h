@@ -49,7 +49,7 @@ namespace ompl
                 setDefaultBounds();
                 si_->setStatePropagator(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
 
-                odeSolver.setODE(boost::bind(&ompl::app::DynamicCarPlanning::ode, this, _1, _2, _3, _4));
+                odeSolver.setODE(boost::bind(&ompl::app::DynamicCarPlanning::ode, this, _1, _2, _3));
             }
             ~DynamicCarPlanning()
             {
@@ -107,7 +107,7 @@ namespace ompl
             void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
 
-            virtual void ode(const std::vector<double>&q, const control::Control *ctrl, double time, std::vector<double>& qdot);
+            virtual void ode(const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {

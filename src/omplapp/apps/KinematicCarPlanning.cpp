@@ -19,7 +19,7 @@ ompl::app::KinematicCarPlanning::KinematicCarPlanning()
     setDefaultControlBounds();
     si_->setStatePropagator(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
 
-    odeSolver.setODE(boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3, _4));
+    odeSolver.setODE(boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3));
 }
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
@@ -55,13 +55,12 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
 {
     odeSolver.propagate (from, ctrl, duration, result);
 
-    // Enforce velocity bounds
+    // Ensure that the car's orientation lies between 0 and pi.
     base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
     getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::KinematicCarPlanning::ode(const std::vector<double>&q, const control::Control *ctrl,
-    double /*time*/, std::vector<double>& qdot)
+void ompl::app::KinematicCarPlanning::ode(const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot)
 {
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
