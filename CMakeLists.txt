@@ -29,6 +29,13 @@ set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
 find_package(Boost COMPONENTS date_time thread program_options filesystem system program_options REQUIRED)
 find_package(Boost COMPONENTS python)
+
+find_package(Boost COMPONENTS odeint QUIET)
+if(NOT Boost_ODEINT_FOUND)
+    # Include bundled version of boost::odeint if it isn't installed natively
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
+endif()
+
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
@@ -56,7 +63,6 @@ endif()
 include(UsePQP)
 include(UseFCL)
 include(UseAssimp)
-include(UseBoost.ODEInt)
 
 enable_testing()
 
@@ -65,8 +71,7 @@ include_directories(
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIR}"
-    "${PQP_INCLUDE_DIR}"
-    "${ODEINT_INCLUDE_DIR}")
+    "${PQP_INCLUDE_DIR}")
 
 if (FCL_INCLUDE_DIR)
     include_directories("${FCL_INCLUDE_DIR}" "${CCD_INCLUDE_DIR}" "${ANN_INCLUDE_DIR}")
