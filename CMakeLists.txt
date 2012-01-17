@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
-add_definitions(-Werror)
 
 set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
@@ -33,7 +32,8 @@ find_package(Boost COMPONENTS python)
 find_package(Boost COMPONENTS odeint QUIET)
 if(NOT Boost_ODEINT_FOUND)
     # Include bundled version of boost::odeint if it isn't installed natively
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
+    set(ODEINT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external)
+    include_directories("${ODEINT_INCLUDE_DIR}")
 endif()
 
 find_package(OpenGL)
