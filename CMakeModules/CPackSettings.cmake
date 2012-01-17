@@ -19,6 +19,7 @@ set(CPACK_SOURCE_IGNORE_FILES
     "/blueprint"
     ".DS_Store"
     ".tmproj$"
+    ".tm_properties"
     "mkwebdocs.sh"
     "/html/"
     "/bindings/"
