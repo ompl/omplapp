@@ -54,13 +54,9 @@ void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const c
     const double duration, base::State *result)
 {
     odeSolver.propagate (from, ctrl, duration, result);
-
-    // Ensure that the car's orientation lies between 0 and pi.
-    base::SE2StateSpace::StateType& s = *result->as<base::SE2StateSpace::StateType>();
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::KinematicCarPlanning::ode(const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot)
+void ompl::app::KinematicCarPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 

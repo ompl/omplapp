@@ -57,18 +57,9 @@ void ompl::app::QuadrotorPlanning::propagate(const base::State *from, const cont
     const double duration, base::State *result)
 {
     odeSolver.propagate (from, ctrl, duration, result);
-
-    // Enforce velocity bounds
-    base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
-    
-    // Make sure we have a unit quaternion
-    base::SO3StateSpace::StateType& rot = (*s.as<base::SE3StateSpace::StateType>(0)).rotation ();
-    base::SO3StateSpace SO3;
-    SO3.enforceBounds(&rot); 
 }
 
-void ompl::app::QuadrotorPlanning::ode(const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot)
+void ompl::app::QuadrotorPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 

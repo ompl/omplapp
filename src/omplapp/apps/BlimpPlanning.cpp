@@ -50,12 +50,9 @@ void ompl::app::BlimpPlanning::propagate(const base::State *from, const control:
     base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
     base::SE3StateSpace::StateType& pose = *s.as<base::SE3StateSpace::StateType>(0);
     pose.rotation().setAxisAngle(0,0,1, pose.rotation().x);
-
-    // Enforcing velocity bounds
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::BlimpPlanning::ode(const std::vector<double>& q, const control::Control *ctrl, std::vector<double>& qdot)
+void ompl::app::BlimpPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     // Retrieving control inputs
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;

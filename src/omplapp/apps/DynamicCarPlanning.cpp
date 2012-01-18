@@ -31,13 +31,9 @@ void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const con
     const double duration, base::State *result)
 {
     odeSolver.propagate (from, ctrl, duration, result);
-
-    // Enforce velocity bounds
-    base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
 }
 
-void ompl::app::DynamicCarPlanning::ode (const std::vector<double>&q, const control::Control *ctrl, std::vector<double>& qdot)
+void ompl::app::DynamicCarPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     // Retrieving control inputs
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
