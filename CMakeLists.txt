@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
 
-
 set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
@@ -29,6 +28,14 @@ set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
 find_package(Boost COMPONENTS date_time thread program_options filesystem system program_options REQUIRED)
 find_package(Boost COMPONENTS python)
+
+find_package(Boost COMPONENTS odeint QUIET)
+if(NOT Boost_ODEINT_FOUND)
+    # Include bundled version of boost::odeint if it isn't installed natively
+    set(ODEINT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external)
+    include_directories("${ODEINT_INCLUDE_DIR}")
+endif()
+
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
@@ -42,7 +49,7 @@ find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
 endif()
-find_package(ODE QUIET)
+find_package(OpenDE QUIET)
 find_package(Drawstuff QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
@@ -75,10 +82,10 @@ if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
 
-set(OMPL_EXTENSION_ODE ${ODE_FOUND})
-if (ODE_FOUND)
-    add_definitions(${ODE_DEFINITIONS})
-    include_directories(${ODE_INCLUDE_DIR})
+set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
+if (OPENDE_FOUND)
+    add_definitions(${OPENDE_DEFINITIONS})
+    include_directories(${OPENDE_INCLUDE_DIR})
 endif()
 
 set(OMPLAPP_MODULE_LIBRARIES
@@ -113,7 +120,7 @@ install(DIRECTORY resources DESTINATION share/ompl
     PATTERN ".svn" EXCLUDE
     PATTERN ".DS_Store" EXCLUDE)
 
-# HACK ALERT: just in case the version of ODE used for libdrawstuff is used for libompl
+# HACK ALERT: just in case the version of OpenDE used for libdrawstuff is used for libompl
 if(TARGET drawstuff)
     add_dependencies(ompl drawstuff)
 endif()
@@ -130,6 +137,10 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     # need fcl header files to generate python bindings
     if(TARGET fcl)
         add_dependencies(update_app_bindings fcl)
+    endif()
+    # need ODEInt to generate python bindings
+    if (TARGET Boost.ODEInt)
+        add_dependencies(update_control_bindings Boost.ODEInt)
     endif()
 endif()
 

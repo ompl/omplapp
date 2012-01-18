@@ -14,17 +14,17 @@ if (OMPL_BUILD_DEMOS)
     add_omplapp_demo(demo_BlimpPlanning SE3RigidBodyPlanning/BlimpPlanning.cpp)
     add_omplapp_demo(demo_QuadrotorPlanning SE3RigidBodyPlanning/QuadrotorPlanning.cpp)
 
-    # create executable for planning with ODE
-    if (ODE_FOUND AND DRAWSTUFF_FOUND)
+    # create executable for planning with OPENDE
+    if (OPENDE_FOUND AND DRAWSTUFF_FOUND)
         if(APPLE)
             find_package(GLUT)
         endif(APPLE)
-        add_definitions(${ODE_DEFINITIONS})
-        include_directories(${ODE_INCLUDE} ${DRAWSTUFF_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
+        add_definitions(${OPENDE_DEFINITIONS})
+        include_directories(${OPENDE_INCLUDE} ${DRAWSTUFF_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
 
         aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
         add_executable(demo_OpenDEPlanning ${OpenDEPlanning_SRC})
-        target_link_libraries(demo_OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
+        target_link_libraries(demo_OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${OPENDE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
     endif()
 endif(OMPL_BUILD_DEMOS)
 

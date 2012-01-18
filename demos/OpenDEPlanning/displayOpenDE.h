@@ -22,11 +22,11 @@
 #endif
 
 /// @cond IGNORE
-class DisplayODESpaces
+class DisplayOpenDESpaces
 {
 public:
 
-    DisplayODESpaces(void)
+    DisplayOpenDESpaces(void)
     {
         m_activeColor.r = m_activeColor.g = m_activeColor.b = 0.5;
     }
