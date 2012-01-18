@@ -22,7 +22,7 @@ void quadrotorSetup(app::QuadrotorPlanning& setup)
 {
     base::StateSpacePtr stateSpace(setup.getStateSpace());
 
-    // set the bounds for the R^2 part of SE(3)
+    // set the bounds for the R^3 part of SE(3)
     base::RealVectorBounds bounds(3);
     bounds.setLow(-10);
     bounds.setHigh(10);
@@ -45,7 +45,7 @@ void quadrotorSetup(app::QuadrotorPlanning& setup)
     // set the start & goal states
     setup.setStartAndGoalStates(
         setup.getFullStateFromGeometricComponent(start),
-        setup.getFullStateFromGeometricComponent(goal), .1);
+        setup.getFullStateFromGeometricComponent(goal), .5);
 }
 
 void quadrotorDemo(app::QuadrotorPlanning& setup)
@@ -96,6 +96,8 @@ void quadrotorBenchmark(app::QuadrotorPlanning& setup)
     double runtime_limit = 100.0;
     double memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
     int    run_count     = 10;
+
+    setup.setup ();
 
     Benchmark b(setup, setup.getName());
     b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));

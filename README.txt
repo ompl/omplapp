@@ -2,18 +2,18 @@ Visit http://ompl.kavrakilab.org/installation.html for
 detailed installation instructions.
 
 OMPL.app has the following required dependencies:
- * Boost (version 1.42 or higher)
+ * Boost (version 1.44 or higher)
  * CMake (version 2.8.2 or higher)
  * Python including libraries and header files)
  * PyQt4
  * PyOpenGL
  * assimp
  * PQP
+ * Py++ (version from repository, needed to generate Python bindings)
 
 The following dependencies are optional:
  * ODE (needed to compile support for planning using ODE)
  * Google-test (needed to run the test programs)
- * Py++ (needed to regenerate Python bindings)
  * Doxygen (needed to create a local copy of the documentation at
    http://ompl.kavrakilab.org)
 

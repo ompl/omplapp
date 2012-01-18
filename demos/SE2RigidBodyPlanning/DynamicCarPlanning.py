@@ -52,7 +52,7 @@ def dynamicCarDemo(setup):
     goal[3] = goal[4] = 0.
 
     # set the start & goal states
-    setup.setStartAndGoalStates(start, goal, .1)
+    setup.setStartAndGoalStates(start, goal, .5)
 
     # set the planner
     planner = oc.RRT(setup.getSpaceInformation())

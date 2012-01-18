@@ -7,7 +7,7 @@
 - Added an implementation of EST for planning with controls.
 - New generic interface for parameter settings for almost anything that is user-configurable. This was done to simplify reading parameters from an input file (see next bullet).
 - New benchmark program that allows one to easily specify benchmark problems with simple configuration files.
-- New state spaces for Dubins vehicles and Reeds-Shepp vehicles. This allows one to use any geometric planner to compute feasible paths for such vehicles.
+- New state spaces for Dubins vehicles and Reeds-Shepp vehicles. This allows one to use any geometric planner to compute feasible paths for such vehicles. See the demo program demo_GeometricCarPlanning
 - Added path hybridization, a technique for combining several solutions to a motion planning query to form a better bath. We also introduced a utility class called ParallelPlan that runs several planner instances in parallel and (optionally) uses path hybridization.
 - Added a new path shortcutting method.
 - Added support for FCL collision checking library. PQP is actually still faster, and is therefore still the default.

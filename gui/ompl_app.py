@@ -187,8 +187,6 @@ class MainWindow(QtGui.QMainWindow):
             if self.isGeometric:
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                     self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.omplSetup.inferEnvironmentBounds()
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
             start = ob.State(self.omplSetup.getGeometricComponentStateSpace())
             goal = ob.State(self.omplSetup.getGeometricComponentStateSpace())
             if self.is3D:
@@ -215,6 +213,28 @@ class MainWindow(QtGui.QMainWindow):
                 goal().setYaw(config.getfloat("problem", "goal.theta"))
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(goal, self.is3D)
+            if self.is3D:
+                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and config.has_option("problem", "volume.min.z") and 
+                    config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y") and config.has_option("problem", "volume.max.z")):
+                    bounds = ob.RealVectorBounds(3)
+                    bounds.low[0] = config.getfloat("problem", "volume.min.x")
+                    bounds.low[1] = config.getfloat("problem", "volume.min.y")
+                    bounds.low[2] = config.getfloat("problem", "volume.min.z")
+                    bounds.high[0] = config.getfloat("problem", "volume.max.x")
+                    bounds.high[1] = config.getfloat("problem", "volume.max.y")
+                    bounds.high[2] = config.getfloat("problem", "volume.max.z")
+                    self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
+                    self.mainWidget.glViewer.setBounds(bounds)
+            else:
+                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and 
+                    config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y")):
+                    bounds = ob.RealVectorBounds(2)
+                    bounds.low[0] = config.getfloat("problem", "volume.min.x")
+                    bounds.low[1] = config.getfloat("problem", "volume.min.y")
+                    bounds.high[0] = config.getfloat("problem", "volume.max.x")
+                    bounds.high[1] = config.getfloat("problem", "volume.max.y")
+                    self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
+                    self.setBounds(bounds)
 
     def saveConfig(self):
         fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))
@@ -225,6 +245,7 @@ class MainWindow(QtGui.QMainWindow):
             config.set("problem", "world", self.environmentFile)
             startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
             goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
+            b = self.omplSetup.getGeometricComponentStateSpace().getBounds()
             if self.is3D:
                 config.set("problem", "start.x", startPose().getX())
                 config.set("problem", "start.y", startPose().getY())
@@ -256,6 +277,12 @@ class MainWindow(QtGui.QMainWindow):
                     config.set("problem", "goal.axis.x", rg.x / dg)
                     config.set("problem", "goal.axis.y", rg.y / dg)
                     config.set("problem", "goal.axis.z", rg.z / dg)
+                config.set("problem", "volume.min.x", b.low[0])
+                config.set("problem", "volume.min.y", b.low[1])
+                config.set("problem", "volume.min.z", b.low[2])
+                config.set("problem", "volume.max.x", b.high[0])
+                config.set("problem", "volume.max.y", b.high[1])
+                config.set("problem", "volume.max.z", b.high[2])
             else:
                 config.set("problem", "start.x", startPose().getX())
                 config.set("problem", "start.y", startPose().getY())
@@ -263,6 +290,10 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "goal.x", goalPose().getX())
                 config.set("problem", "goal.y", goalPose().getY())
                 config.set("problem", "goal.theta", goalPose().getYaw())
+                config.set("problem", "volume.min.x", b.low[0])
+                config.set("problem", "volume.min.y", b.low[1])
+                config.set("problem", "volume.max.x", b.high[0])
+                config.set("problem", "volume.max.y", b.high[1])
             config.write(open(fname, 'wb'))
             self.msgInform("Saved " + fname)
 
@@ -299,8 +330,10 @@ class MainWindow(QtGui.QMainWindow):
                 self.path.append(s)
                 self.mainWidget.glViewer.solutionPath.append(
                     self.mainWidget.glViewer.getTransform(s()))
+            bounds = self.mainWidget.glViewer.getBounds()
             self.mainWidget.problemWidget.setStartPose(self.path[0], self.is3D)
             self.mainWidget.problemWidget.setGoalPose(self.path[-1], self.is3D)
+            self.mainWidget.glViewer.setBounds(bounds)
 
     def savePath(self):
         if self.path:
@@ -512,16 +545,16 @@ class MainWindow(QtGui.QMainWindow):
             shortcut='Ctrl+R', statusTip='Open a robot model',
             triggered=self.openRobot)
         self.openConfigAct = QtGui.QAction('Open Problem &Configuration', self,
-            shortcut='Ctrl+P', statusTip='Open a problem configuration (.cfg file)',
+            shortcut='Ctrl+O', statusTip='Open a problem configuration (.cfg file)',
             triggered=self.openConfig)
         self.saveConfigAct = QtGui.QAction('Save Problem Con&figuration', self,
-            shortcut='Ctrl+A', statusTip='Save a problem configuration (.cfg file)',
+            shortcut='Ctrl+S', statusTip='Save a problem configuration (.cfg file)',
             triggered=self.saveConfig)
         self.openPathAct = QtGui.QAction('&Open Path', self,
-            shortcut='Ctrl+O', statusTip='Open a path',
+            shortcut='Ctrl+Alt+O', statusTip='Open a path',
             triggered=self.openPath)
         self.savePathAct = QtGui.QAction('Save &Path', self,
-            shortcut='Ctrl+S', statusTip='Save a path',
+            shortcut='Ctrl+Alt+S', statusTip='Save a path',
             triggered=self.savePath)
         self.exitAct = QtGui.QAction('E&xit', self, shortcut='Ctrl+Q',
             statusTip='Exit the application', triggered=self.close)
@@ -646,6 +679,12 @@ class GLViewer(QtOpenGL.QGLWidget):
         if angle != self.cameraPose[axisIndex]:
             self.cameraPose[axisIndex] = angle
             self.updateGL()
+    def getBounds(self):
+        bounds = ob.RealVectorBounds(3)
+        for i in range(3):
+            bounds.low[i] = self.bounds_low[i]
+            bounds.high[i] = self.bounds_high[i]
+        return bounds
     def setBounds(self, bounds):
         self.bounds_low = [x for x in bounds.low ]
         self.bounds_high = [x for x in bounds.high ]
@@ -1340,7 +1379,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
 
         timeLimitLabel = QtGui.QLabel('Time (sec.)')
         self.timeLimit = QtGui.QDoubleSpinBox()
-        self.timeLimit.setRange(0, 1000)
+        self.timeLimit.setRange(0, 10000)
         self.timeLimit.setSingleStep(1)
         self.timeLimit.setValue(10.0)
 

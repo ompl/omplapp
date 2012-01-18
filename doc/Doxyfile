@@ -650,6 +650,7 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ../ompl/demos \
+                         ../demos \
                          ../ompl/doc/dox/code
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the

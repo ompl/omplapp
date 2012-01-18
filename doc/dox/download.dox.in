@@ -6,7 +6,7 @@
 - \b OMPL.app @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ (<a href="releaseNotes.html">release notes</a>):<br>
 <a href="https://sourceforge.net/projects/ompl/files/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="download">TGZ</a>
 <a href="https://sourceforge.net/projects/ompl/files/omplapp-@OMPLAPP_VERSION@-Source.zip" class="download">ZIP</a><br>
-Just the core \b OMPL library (no GUI, no bindings to PQP and assimp):<br>
+Just the core \b OMPL library (no GUI, no bindings to <a href="http://gamma.cs.unc.edu/SSV/">PQP</a>, <a href="https://kforge.ros.org/projects/fcl/">FCL</a> and <a href="http://assimp.sf.net">assimp</a>):<br>
 <a href="https://sourceforge.net/projects/ompl/files/ompl-@OMPL_VERSION@-Source.tar.gz" class="download">TGZ</a>
 <a href="https://sourceforge.net/projects/ompl/files/ompl-@OMPL_VERSION@-Source.zip" class="download">ZIP</a>
 - <a href="http://sourceforge.net/projects/ompl/files">Older releases</a>. See the \ref releaseNotes "release notes" for a brief a description of changes for each release.
