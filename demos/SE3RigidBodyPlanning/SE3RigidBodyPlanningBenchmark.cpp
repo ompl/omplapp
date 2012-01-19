@@ -138,6 +138,7 @@ int main(int argc, char **argv)
     double runtime_limit, memory_limit;
     int run_count;
     int benchmark_id = argc > 1 ? ((argv[1][0] - '0') % 2) : 0;
+    Benchmark::Request request(runtime_limit, memory_limit, run_count);
 
     if (benchmark_id==0)
         benchmark0(benchmark_name, setup, runtime_limit, memory_limit, run_count);
@@ -167,7 +168,7 @@ int main(int argc, char **argv)
         // run all planners with a uniform valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
         b.setExperimentName(benchmark_name + "_uniform_sampler");
-        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.benchmark(request);
         b.saveResultsToFile();
     }
 
@@ -176,7 +177,7 @@ int main(int argc, char **argv)
         // run all planners with a Gaussian valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocGaussianStateSampler);
         b.setExperimentName(benchmark_name + "_gaussian_sampler");
-        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.benchmark(request);
         b.saveResultsToFile();
     }
 
@@ -185,7 +186,7 @@ int main(int argc, char **argv)
         // run all planners with a obstacle-based valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
         b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
-        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.benchmark(request);
         b.saveResultsToFile();
     }
 
@@ -194,7 +195,7 @@ int main(int argc, char **argv)
         // run all planners with a maximum-clearance valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocMaximizeClearanceStateSampler);
         b.setExperimentName(benchmark_name + "_maxclearance_sampler");
-        b.benchmark(runtime_limit, memory_limit, run_count, true);
+        b.benchmark(request);
         b.saveResultsToFile();
     }
 

@@ -85,14 +85,12 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
 }
 void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
 {
-    double runtime_limit = 20.0;
-    double memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    int    run_count     = 10;
+    Benchmark::Request request(20., 10000., 10); // runtime (s), memory (MB), run count
 
     Benchmark b(setup, setup.getName());
     b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
-    b.benchmark(runtime_limit, memory_limit, run_count, true);
+    b.benchmark(request);
     b.saveResultsToFile();
 }
 

@@ -30,46 +30,23 @@ ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState(vo
 void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
     const double duration, base::State *result)
 {
-    int i, nsteps = static_cast<int>(ceil(duration/timeStep_));
-    double dt = duration/(double)nsteps;
-    base::State *dstate = getStateSpace()->allocState();
-    base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
-    base::CompoundStateSpace::StateType& ds = *dstate->as<base::CompoundStateSpace::StateType>();
-    base::SE2StateSpace::StateType& pose = *s.as<base::SE2StateSpace::StateType>(0);
-    base::SE2StateSpace::StateType& dpose = *ds.as<base::SE2StateSpace::StateType>(0);
-    base::RealVectorStateSpace::StateType& vel = *s.as<base::RealVectorStateSpace::StateType>(1);
-    base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
-
-    getStateSpace()->copyState(result, from);
-    for (i=0; i<nsteps; ++i)
-    {
-        ode(result, ctrl, dstate);
-        pose.setX(pose.getX() + dt * dpose.getX());
-        pose.setY(pose.getY() + dt * dpose.getY());
-        pose.setYaw(pose.getYaw() + dt * dpose.getYaw());
-        vel[0] += dt * dvel[0];
-        vel[1] += dt * dvel[1];
-    }
-    getStateSpace()->freeState(dstate);
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
+    odeSolver.propagate (from, ctrl, duration, result);
 }
 
-void ompl::app::DynamicCarPlanning::ode(const base::State *state, const control::Control *ctrl,
-    base::State *dstate)
+void ompl::app::DynamicCarPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
-    const base::CompoundStateSpace::StateType& s = *state->as<base::CompoundStateSpace::StateType>();
-    base::CompoundStateSpace::StateType& ds = *dstate->as<base::CompoundStateSpace::StateType>();
-    const base::SE2StateSpace::StateType& pose = *s.as<base::SE2StateSpace::StateType>(0);
-    base::SE2StateSpace::StateType& dpose = *ds.as<base::SE2StateSpace::StateType>(0);
-    const base::RealVectorStateSpace::StateType& vel = *s.as<base::RealVectorStateSpace::StateType>(1);
-    base::RealVectorStateSpace::StateType& dvel = *ds.as<base::RealVectorStateSpace::StateType>(1);
+    // Retrieving control inputs
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
 
-    dpose.setX(vel[0] * cos(pose.getYaw()));
-    dpose.setY(vel[0] * sin(pose.getYaw()));
-    dpose.setYaw(vel[0] * mass_ * lengthInv_ * tan(vel[1]));
-    dvel[0] = u[0];
-    dvel[1] = u[1];
+    // zero out qdot
+    qdot.resize (q.size (), 0);
+
+    qdot[0] = q[3] * cos(q[2]);
+    qdot[1] = q[3] * sin(q[2]);
+    qdot[2] = q[3] * mass_ * lengthInv_ * tan(q[4]);
+
+    qdot[3] = u[0];
+    qdot[4] = u[1];
 }
 
 void ompl::app::DynamicCarPlanning::setDefaultBounds()

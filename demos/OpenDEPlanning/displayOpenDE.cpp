@@ -10,7 +10,7 @@
 
 /* Author: Ioan Sucan */
 
-#include "displayODE.h"
+#include "displayOpenDE.h"
 
 #ifdef dDOUBLE
 #define dsDrawBox dsDrawBoxD
@@ -23,8 +23,8 @@
 #endif
 
 
-// copied from an ODE demo program
-void DisplayODESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R, int show_aabb)
+// copied from an OpenDE demo program
+void DisplayOpenDESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R, int show_aabb)
 {
     int i;
 
@@ -104,7 +104,7 @@ void DisplayODESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R, in
     }
 }
 
-void DisplayODESpaces::displaySpace(dSpaceID space)
+void DisplayOpenDESpaces::displaySpace(dSpaceID space)
 {
     int ngeoms = dSpaceGetNumGeoms(space);
     for (int i = 0 ; i < ngeoms ; ++i)
@@ -119,7 +119,7 @@ void DisplayODESpaces::displaySpace(dSpaceID space)
     }
 }
 
-void DisplayODESpaces::displaySpaces(void)
+void DisplayOpenDESpaces::displaySpaces(void)
 {
     for (unsigned int i = 0 ; i < m_spaces.size() ; ++i)
     {
@@ -128,20 +128,20 @@ void DisplayODESpaces::displaySpaces(void)
     }
 }
 
-void DisplayODESpaces::addSpace(dSpaceID space, float r, float g, float b)
+void DisplayOpenDESpaces::addSpace(dSpaceID space, float r, float g, float b)
 {
     Color c = {r, g, b};
     m_colors.push_back(c);
     m_spaces.push_back(space);
 }
 
-void DisplayODESpaces::setGeomColor(dGeomID geom, float r, float g, float b)
+void DisplayOpenDESpaces::setGeomColor(dGeomID geom, float r, float g, float b)
 {
     Color c = {r, g, b};
     m_gcolors[geom] = c;
 }
 
-void DisplayODESpaces::clear(void)
+void DisplayOpenDESpaces::clear(void)
 {
     m_spaces.clear();
     m_colors.clear();

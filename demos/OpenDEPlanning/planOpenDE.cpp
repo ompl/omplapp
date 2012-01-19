@@ -10,11 +10,11 @@
 
 /* Author: Ioan Sucan */
 
-#include "ODEWorld.inc"
+#include "OpenDEWorld.inc"
 #include "OMPLEnvironment.inc"
 #include "OMPLSetup.inc"
 
-#include "displayODE.h"
+#include "displayOpenDE.h"
 #include "omplapp/config.h"
 
 #include <drawstuff/drawstuff.h>
@@ -28,7 +28,7 @@
 #define dsDrawCapsule dsDrawCapsuleD
 #endif
 
-static DisplayODESpaces                         DISP;
+static DisplayOpenDESpaces                         DISP;
 static std::vector< std::pair<double, double> > POINTS;
 static bool                                     drawTree = true;
 
@@ -65,7 +65,7 @@ static void simLoop (int pause)
     boost::this_thread::sleep(d);
 }
 
-static void playPath(oc::ODESimpleSetup *ss)
+static void playPath(oc::OpenDESimpleSetup *ss)
 {
     while (1)
     {
@@ -104,12 +104,12 @@ int main(int argc, char **argv)
     DISP.setGeomColor(movable_box_geom[3], 0.1, 0.8, 0.8);
     DISP.setGeomColor(goal_geom, 0.0, 0.9, 0.1);
 
-    oc::ODEEnvironmentPtr ce(new CarEnvironment());
+    oc::OpenDEEnvironmentPtr ce(new CarEnvironment());
     ob::StateSpacePtr sm(new CarStateSpace(ce));
 
     oc::ControlSpacePtr cm(new CarControlSpace(sm));
 
-    oc::ODESimpleSetup ss(cm);
+    oc::OpenDESimpleSetup ss(cm);
     ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), GOAL_X, GOAL_Y)));
     ob::RealVectorBounds vb(3);
     vb.low[0] = -50;
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
     if (ss.solve(60))
     {
         std::cout << "Solved!" << std::endl;
-        ob::ScopedState<oc::ODEStateSpace> last(ss.getSpaceInformation());
+        ob::ScopedState<oc::OpenDEStateSpace> last(ss.getSpaceInformation());
         last = ss.getSolutionPath().states.back();
         std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
 
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
         const ob::PlannerData &pd = ss.getPlannerData();
         for (unsigned int i = 0 ; i < pd.states.size() ; ++i)
         {
-            const double *pos = pd.states[i]->as<oc::ODEStateSpace::StateType>()->getBodyPosition(0);
+            const double *pos = pd.states[i]->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
         }
 

@@ -10,15 +10,15 @@
 
 /* Author: Ioan Sucan */
 
-#include <ompl/extensions/ode/ODEEnvironment.h>
+#include <ompl/extensions/opende/OpenDEEnvironment.h>
 
 /// @cond IGNORE
 
-class CarEnvironment : public ompl::control::ODEEnvironment
+class CarEnvironment : public ompl::control::OpenDEEnvironment
 {
 public:
 
-    CarEnvironment(void) : ompl::control::ODEEnvironment()
+    CarEnvironment(void) : ompl::control::OpenDEEnvironment()
     {
     setPlanningParameters();
     }

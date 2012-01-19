@@ -15,6 +15,7 @@
 
 #include "omplapp/apps/AppBase.h"
 #include <ompl/base/spaces/SE2StateSpace.h>
+#include <ompl/control/ODESolver.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 
 namespace ompl
@@ -42,11 +43,13 @@ namespace ompl
         {
         public:
             DynamicCarPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.)
+                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.), odeSolver(control::ODEBasicSolver <>(si_->getStateSpace ()))
             {
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
                 si_->setStatePropagator(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
+
+                odeSolver.setODE(boost::bind(&ompl::app::DynamicCarPlanning::ode, this, _1, _2, _3));
             }
             ~DynamicCarPlanning()
             {
@@ -103,7 +106,8 @@ namespace ompl
 
             void propagate(const base::State *from, const control::Control *ctrl,
                 const double duration, base::State *result);
-            virtual void ode(const base::State *q, const control::Control *ctrl, base::State *qdot);
+
+            virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {
@@ -121,6 +125,7 @@ namespace ompl
             double timeStep_;
             double lengthInv_;
             double mass_;
+            control::ODEBasicSolver <> odeSolver;
         };
 
     }

@@ -12,6 +12,7 @@
 - Added a new path shortcutting method.
 - Added support for FCL collision checking library. PQP is actually still faster, and is therefore still the default.
 - All versions of EST and SBL use the new PDF class to sample more efficiently from empirical probability distribution functions.
+- Added a wrapper for boost::numeric::odeint to support high-order numerical integration of ordinary differential equations.
 
 
 \section release_0_9_5 OMPL.app 0.9.5 (October 4, 2011)

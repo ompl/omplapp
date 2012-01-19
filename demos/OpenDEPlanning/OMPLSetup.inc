@@ -10,7 +10,7 @@
 
 /* Author: Ioan Sucan */
 
-#include <ompl/extensions/ode/ODESimpleSetup.h>
+#include <ompl/extensions/opende/OpenDESimpleSetup.h>
 #include <ompl/base/GoalRegion.h>
 #include <ompl/config.h>
 
@@ -32,8 +32,8 @@ public:
 
     virtual double distanceGoal(const ob::State *st) const
     {
-    const double *pos = st->as<oc::ODEStateSpace::StateType>()->getBodyPosition(0);
-    const double *vel = st->as<oc::ODEStateSpace::StateType>()->getBodyLinearVelocity(0);
+    const double *pos = st->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
+    const double *vel = st->as<oc::OpenDEStateSpace::StateType>()->getBodyLinearVelocity(0);
     double dx = x_ - pos[0];
     double dy = y_ - pos[1];
     double dot = dx * vel[0] + dy * vel[1];
@@ -75,7 +75,7 @@ public:
 
     virtual void project(const ob::State *state, ob::EuclideanProjection &projection) const
     {
-    const double *pos = state->as<oc::ODEStateSpace::StateType>()->getBodyPosition(0);
+    const double *pos = state->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
     projection[0] = pos[0];
     projection[1] = pos[1];
     }
@@ -83,18 +83,18 @@ public:
 };
 
 // Define our own space, to include a distance function we want and register a default projection
-class CarStateSpace : public oc::ODEStateSpace
+class CarStateSpace : public oc::OpenDEStateSpace
 {
 public:
 
-    CarStateSpace(const oc::ODEEnvironmentPtr &env) : oc::ODEStateSpace(env)
+    CarStateSpace(const oc::OpenDEEnvironmentPtr &env) : oc::OpenDEStateSpace(env)
     {
     }
 
     virtual double distance(const ob::State *s1, const ob::State *s2) const
     {
-    const double *p1 = s1->as<oc::ODEStateSpace::StateType>()->getBodyPosition(0);
-    const double *p2 = s1->as<oc::ODEStateSpace::StateType>()->getBodyPosition(0);
+    const double *p1 = s1->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
+    const double *p2 = s1->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
     double dx = fabs(p1[0] - p2[0]);
     double dy = fabs(p1[1] - p2[1]);
     return sqrt(dx * dx + dy * dy);
@@ -118,10 +118,10 @@ public:
     virtual void sampleNext(oc::Control *control, const oc::Control *previous)
     {
     space_->copyControl(control, previous);
-    const ob::RealVectorBounds &b = space_->as<oc::ODEControlSpace>()->getBounds();
+    const ob::RealVectorBounds &b = space_->as<oc::OpenDEControlSpace>()->getBounds();
     if (rng_.uniform01() > 0.3)
     {
-        double &v = control->as<oc::ODEControlSpace::ControlType>()->values[0];
+        double &v = control->as<oc::OpenDEControlSpace::ControlType>()->values[0];
         static const double DT0 = 0.05;
         v += (rng_.uniformBool() ? 1 : -1) * DT0;
         if (v > b.high[0])
@@ -131,7 +131,7 @@ public:
     }
     if (rng_.uniform01() > 0.3)
     {
-        double &v = control->as<oc::ODEControlSpace::ControlType>()->values[1];
+        double &v = control->as<oc::OpenDEControlSpace::ControlType>()->values[1];
         static const double DT1 = 0.05;
         v += (rng_.uniformBool() ? 1 : -1) * DT1;
         if (v > b.high[1])
@@ -147,11 +147,11 @@ public:
     }
 };
 
-class CarControlSpace : public oc::ODEControlSpace
+class CarControlSpace : public oc::OpenDEControlSpace
 {
 public:
 
-    CarControlSpace(const ob::StateSpacePtr &m) : oc::ODEControlSpace(m)
+    CarControlSpace(const ob::StateSpacePtr &m) : oc::OpenDEControlSpace(m)
     {
     }
 
