@@ -48,52 +48,82 @@ int main()
 
     // setting collision checking resolution to 1% of the space extent
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    
+
     // make sure the planners run until the time limit, and get the best possible solution
     setup.getGoal()->setMaximumPathLength(0.0);
-    
-    setup.setup();    
+
+    setup.setup();
 
     std::stringstream res;
-    
+
     // run with RRT*
     setup.setPlanner(base::PlannerPtr(new geometric::RRTstar(setup.getSpaceInformation())));
     res << "RRT*" << std::endl;
     for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
     {
-	setup.clear();
-	double length = -1.0;
-	// try to solve the problem
-	if (setup.solve(time))
-	    length = setup.getSolutionPath().length();
-	res << "time = "  << setup.getLastPlanComputationTime() << " \t length = " << length << std::endl;
+        setup.clear();
+        double length = -1.0;
+        // try to solve the problem
+        if (setup.solve(time))
+            length = setup.getSolutionPath().length();
+        res << "time = "  << setup.getLastPlanComputationTime() << " \t length = " << length << std::endl;
     }
-    
+
     OptimizePlan op(setup.getProblemDefinition());
-    res << "RRTConnect with path hybridization" << std::endl;
+    res << "RRTConnect with path hybridization (one thread)" << std::endl;
     for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
     {
-	setup.clear();
-	op.clearPlanners();
+        setup.clear();
+        op.clearPlanners();
 
-	// add one planer only, so there is only one planning thread in use
-	op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+        // add one planer only, so there is only one planning thread in use
+        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
 
-	double length = -1.0;
-	double duration = 0.0;
-	
-	time::point start = time::now();
-	// try to solve the problem
-	if (op.solve(time, 30))
-	{
-	    duration = time::seconds(time::now() - start);
-	    length = setup.getSolutionPath().length();
-	}
-	else
-	    duration = time::seconds(time::now() - start);
-	
-	res << "time = " << duration << "s \t length = " << length << std::endl;
+        double length = -1.0;
+        double duration = 0.0;
+
+        time::point start = time::now();
+        // try to solve the problem
+        if (op.solve(time, 20, 1))
+        {
+            duration = time::seconds(time::now() - start);
+            length = setup.getSolutionPath().length();
+        }
+        else
+            duration = time::seconds(time::now() - start);
+
+        res << "time = " << duration << "s \t length = " << length << std::endl;
     }
-    
+
+    res << "RRTConnect with path hybridization (four threads)" << std::endl;
+    for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
+    {
+        setup.clear();
+        op.clearPlanners();
+
+        // add one planer only, so there is only one planning thread in use
+        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+
+        double length = -1.0;
+        double duration = 0.0;
+
+        time::point start = time::now();
+        // try to solve the problem
+        if (op.solve(time, 20, 4))
+        {
+            duration = time::seconds(time::now() - start);
+            length = setup.getSolutionPath().length();
+        }
+        else
+            duration = time::seconds(time::now() - start);
+
+        res << "time = " << duration << "s \t length = " << length << std::endl;
+    }
+
+    std::cout << res.str();
+
     return 0;
 }
