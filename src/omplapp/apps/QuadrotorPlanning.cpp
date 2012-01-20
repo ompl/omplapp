@@ -53,12 +53,6 @@ ompl::base::ScopedState<> ompl::app::QuadrotorPlanning::getFullStateFromGeometri
     return s;
 }
 
-void ompl::app::QuadrotorPlanning::propagate(const base::State *from, const control::Control *ctrl,
-    const double duration, base::State *result)
-{
-    odeSolver.propagate (from, ctrl, duration, result);
-}
-
 void ompl::app::QuadrotorPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
