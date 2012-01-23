@@ -50,7 +50,7 @@ namespace ompl
         {
         public:
 
-            typedef boost::function3 <void, fcl::Vec3f&, fcl::SimpleQuaternion&, const base::State*> FCLPoseFromStateCallback;
+            typedef boost::function<void(fcl::Vec3f&, fcl::SimpleQuaternion&, const base::State*)> FCLPoseFromStateCallback;
 
             FCLMethodWrapper (const GeometrySpecification &geom,
                               const GeometricStateExtractor &se,

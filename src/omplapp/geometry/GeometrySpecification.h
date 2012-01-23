@@ -26,7 +26,7 @@ namespace ompl
         /// Specify whether bodies are moving in 2D or bodies moving in 3D
         enum MotionModel { Motion_2D, Motion_3D };
 
-        typedef boost::function2<const base::State*, const base::State*, unsigned int> GeometricStateExtractor;
+        typedef boost::function<const base::State*(const base::State*, unsigned int)> GeometricStateExtractor;
 
         class GeometrySpecification
         {
