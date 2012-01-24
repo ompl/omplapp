@@ -27,12 +27,6 @@ ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState(vo
     return s;
 }
 
-void ompl::app::DynamicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
-    const double duration, base::State *result)
-{
-    odeSolver.propagate (from, ctrl, duration, result);
-}
-
 void ompl::app::DynamicCarPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     // Retrieving control inputs
@@ -47,6 +41,14 @@ void ompl::app::DynamicCarPlanning::ode(const control::ODESolver::StateType& q, 
 
     qdot[3] = u[0];
     qdot[4] = u[1];
+}
+
+void ompl::app::DynamicCarPlanning::postPropagate(const control::Control* /*ctrl*/, base::State* state)
+{
+    // Normalize orientation value between 0 and 2*pi
+    base::SO2StateSpace SO2;
+    base::SE2StateSpace::StateType* se2 = state->as<base::CompoundStateSpace::StateType>()->as<base::SE2StateSpace::StateType>(1);
+    SO2.enforceBounds(se2);
 }
 
 void ompl::app::DynamicCarPlanning::setDefaultBounds()

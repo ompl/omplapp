@@ -101,8 +101,8 @@ int main(int argc, char* argv[])
     kinematicCarSetup(regularCar);
 
     // If any command line arguments are given, solve the problem multiple
-    // times with different planners and collect benchmark statistics. 
-	// Otherwise, solve the problem once for each car type and print the path.
+    // times with different planners and collect benchmark statistics.
+        // Otherwise, solve the problem once for each car type and print the path.
     if (argc>1)
         kinematicCarBenchmark(regularCar);
     else

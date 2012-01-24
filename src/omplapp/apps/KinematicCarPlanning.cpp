@@ -13,20 +13,20 @@
 #include "omplapp/apps/KinematicCarPlanning.h"
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning()
-    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_->getStateSpace ()))
+    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_, boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3)))
 {
     name_ = std::string("Kinematic car");
     setDefaultControlBounds();
-    si_->setStatePropagator(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
 
-    odeSolver.setODE(boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3));
+    si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&ompl::app::KinematicCarPlanning::postPropagate, this, _1, _2)));
 }
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
-    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_->getStateSpace ()))
+    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_, boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3)))
 {
     setDefaultControlBounds();
-    si_->setStatePropagator(boost::bind(&KinematicCarPlanning::propagate, this, _1, _2, _3, _4));
+
+    si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&ompl::app::KinematicCarPlanning::postPropagate, this, _1, _2)));
 }
 
 ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(void) const
@@ -50,12 +50,6 @@ void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
     getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(cbounds);
 }
 
-void ompl::app::KinematicCarPlanning::propagate(const base::State *from, const control::Control *ctrl,
-    const double duration, base::State *result)
-{
-    odeSolver.propagate (from, ctrl, duration, result);
-}
-
 void ompl::app::KinematicCarPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
 {
     const double *u = ctrl->as<control::RealVectorControlSpace::ControlType>()->values;
@@ -66,4 +60,12 @@ void ompl::app::KinematicCarPlanning::ode(const control::ODESolver::StateType& q
     qdot[0] = u[0] * cos(q[2]);
     qdot[1] = u[0] * sin(q[2]);
     qdot[2] = u[0] * lengthInv_ * tan(u[1]);
+}
+
+void ompl::app::KinematicCarPlanning::postPropagate(const control::Control* ctrl, base::State* state)
+{
+    // Normalize orientation value between 0 and 2*pi
+    base::SO2StateSpace SO2;
+    base::SE2StateSpace::StateType* se2 = state->as<base::SE2StateSpace::StateType>();
+    SO2.enforceBounds(se2);
 }

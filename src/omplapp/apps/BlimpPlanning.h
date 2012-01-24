@@ -37,13 +37,12 @@ namespace ompl
         {
         public:
             BlimpPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), odeSolver (control::ODEBasicSolver<>(si_->getStateSpace ()))
+                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), odeSolver (control::ODEBasicSolver<>(si_, boost::bind(&BlimpPlanning::ode, this, _1, _2, _3)))
             {
                 name_ = std::string("Blimp");
                 setDefaultBounds();
-                si_->setStatePropagator(boost::bind(&BlimpPlanning::propagate, this, _1, _2, _3, _4));
 
-                odeSolver.setODE(boost::bind(&ompl::app::BlimpPlanning::ode, this, _1, _2, _3));
+                si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&BlimpPlanning::postPropagate, this, _1, _2)));
             }
             ~BlimpPlanning()
             {
@@ -73,8 +72,7 @@ namespace ompl
                 return state->as<base::CompoundState>()->components[0];
             }
 
-            void propagate(const base::State *from, const control::Control *ctrl,
-                const double duration, base::State *result);
+            void postPropagate(const control::Control *ctrl, base::State *result);
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
 

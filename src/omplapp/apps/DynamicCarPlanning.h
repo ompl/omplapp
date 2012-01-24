@@ -43,13 +43,12 @@ namespace ompl
         {
         public:
             DynamicCarPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.), odeSolver(control::ODEBasicSolver <>(si_->getStateSpace ()))
+                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.), odeSolver(control::ODEBasicSolver <>(si_, boost::bind(&ompl::app::DynamicCarPlanning::ode, this, _1, _2, _3)))
             {
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
-                si_->setStatePropagator(boost::bind(&DynamicCarPlanning::propagate, this, _1, _2, _3, _4));
 
-                odeSolver.setODE(boost::bind(&ompl::app::DynamicCarPlanning::ode, this, _1, _2, _3));
+                si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&DynamicCarPlanning::postPropagate, this, _1, _2)));
             }
             ~DynamicCarPlanning()
             {
@@ -104,10 +103,9 @@ namespace ompl
                 return state->as<base::CompoundState>()->components[0];
             }
 
-            void propagate(const base::State *from, const control::Control *ctrl,
-                const double duration, base::State *result);
-
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
+
+            virtual void postPropagate(const control::Control* ctrl, base::State* state);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {

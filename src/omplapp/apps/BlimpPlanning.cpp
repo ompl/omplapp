@@ -41,15 +41,18 @@ ompl::base::ScopedState<> ompl::app::BlimpPlanning::getFullStateFromGeometricCom
     return s;
 }
 
-void ompl::app::BlimpPlanning::propagate(const base::State *from, const control::Control *ctrl,
-    const double duration, base::State *result)
+void ompl::app::BlimpPlanning::postPropagate(const control::Control *ctrl, base::State *result)
 {
-    odeSolver.propagate (from, ctrl, duration, result);
-
-    // Normalizing the quaternion representation of the blimp orientation
+    // Constrain orientation of the blimp about the z axis.
     base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();
     base::SE3StateSpace::StateType& pose = *s.as<base::SE3StateSpace::StateType>(0);
     pose.rotation().setAxisAngle(0,0,1, pose.rotation().x);
+
+    // Enforce velocity bounds
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
+
+    // Enforce steering bounds
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(2)->enforceBounds(s[2]);
 }
 
 void ompl::app::BlimpPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
