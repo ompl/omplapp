@@ -48,7 +48,7 @@ namespace ompl
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
 
-                si_->setStatePropagator(odeSolver.getStatePropagator());
+                si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&DynamicCarPlanning::postPropagate, this, _1, _2)));
             }
             ~DynamicCarPlanning()
             {
@@ -104,6 +104,8 @@ namespace ompl
             }
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
+
+            virtual void postPropagate(const control::Control* ctrl, base::State* state);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {

@@ -18,7 +18,7 @@ ompl::app::KinematicCarPlanning::KinematicCarPlanning()
     name_ = std::string("Kinematic car");
     setDefaultControlBounds();
 
-    si_->setStatePropagator(odeSolver.getStatePropagator());
+    si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&ompl::app::KinematicCarPlanning::postPropagate, this, _1, _2)));
 }
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
@@ -26,7 +26,7 @@ ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpac
 {
     setDefaultControlBounds();
 
-    si_->setStatePropagator(odeSolver.getStatePropagator());
+    si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&ompl::app::KinematicCarPlanning::postPropagate, this, _1, _2)));
 }
 
 ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(void) const
@@ -60,4 +60,12 @@ void ompl::app::KinematicCarPlanning::ode(const control::ODESolver::StateType& q
     qdot[0] = u[0] * cos(q[2]);
     qdot[1] = u[0] * sin(q[2]);
     qdot[2] = u[0] * lengthInv_ * tan(u[1]);
+}
+
+void ompl::app::KinematicCarPlanning::postPropagate(const control::Control* ctrl, base::State* state)
+{
+    // Normalize orientation value between 0 and 2*pi
+    base::SO2StateSpace SO2;
+    base::SE2StateSpace::StateType* se2 = state->as<base::SE2StateSpace::StateType>();
+    SO2.enforceBounds(se2);
 }

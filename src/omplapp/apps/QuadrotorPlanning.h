@@ -37,12 +37,12 @@ namespace ompl
         {
         public:
             QuadrotorPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), massInv_(1.), beta_(1.), odeSolver (control::ODEBasicSolver <>(si_, boost::bind(&ompl::app::QuadrotorPlanning::ode, this, _1, _2, _3)))
+                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), massInv_(1.), beta_(1.), odeSolver (control::ODEBasicSolver <>(si_, boost::bind(&QuadrotorPlanning::ode, this, _1, _2, _3)))
             {
                 name_ = std::string("Quadrotor");
                 setDefaultBounds();
 
-                si_->setStatePropagator(odeSolver.getStatePropagator());
+                si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&QuadrotorPlanning::postPropagate, this, _1, _2)));
             }
             ~QuadrotorPlanning()
             {
@@ -88,6 +88,8 @@ namespace ompl
             }
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
+
+            virtual void postPropagate(const control::Control* ctrl, base::State* state);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {
