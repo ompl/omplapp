@@ -18,7 +18,7 @@
 - All these planners operate on very abstractly defined state spaces. Many commonly used state spaces are already implemented and listed \ref availableStateSpaces "here".
 - \ref api_overview "API overview"
 - If you are interested in the <a href="http://www.ros.org/wiki/ompl_ros_interface">ROS interface to OMPL</a>, please read the <a href="http://kavrakilab.org/OMPLtutorial">tutorial on using OMPL within ROS</a>.
-- Documentation for just the OMPL core library (i.e., without the “app” layer) is available here <a href="core/">here</a>.
+- Documentation for just the OMPL core library (i.e., without the “app” layer) is available here <a href="/core">here</a>.
 
 \htmlonly</div><div class="span-7 push-1">\endhtmlonly
 \section gettingStarted Getting Started
