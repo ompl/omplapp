@@ -32,9 +32,11 @@ find_package(Boost COMPONENTS python)
 find_package(Boost COMPONENTS odeint QUIET)
 if(NOT Boost_ODEINT_FOUND)
     # Include bundled version of boost::odeint if it isn't installed natively
-    set(ODEINT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external)
+    set(ODEINT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
     include_directories("${ODEINT_INCLUDE_DIR}")
 endif()
+# needed to compile ODESolver demo. ODEsolver is *required* to compile ompl_app.
+set(OMPL_ODESOLVER ON)
 
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
