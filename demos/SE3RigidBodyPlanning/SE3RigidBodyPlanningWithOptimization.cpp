@@ -82,7 +82,7 @@ int main()
         double length = -1.0;
         double duration = 0.0;
 
-        time::point start = time::now();
+        ompl::time::point start = ompl::time::now();
         // try to solve the problem
         if (op.solve(time, 20, 1))
         {
