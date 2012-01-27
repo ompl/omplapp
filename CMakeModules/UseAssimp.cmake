@@ -15,7 +15,7 @@ else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
         URL_MD5 "9f41662501bd9d9533c4cf03b7c25d5b"
         PATCH_COMMAND "${CMAKE_COMMAND}" -E copy_if_different
             "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-assimp.txt"
-            "${CMAKE_BINARY_DIR}/assimp-prefix/src/assimp/code/CMakeLists.txt"
+            "${CMAKE_BINARY_DIR}/assimp-prefix/src/assimp/CMakeLists.txt"
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/assimp-prefix"
             "-DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/ompl/CMakeModules"
@@ -23,7 +23,20 @@ else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
             "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/assimp-prefix/lib")
 
     # set the library and include variables
-    set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    if(MINGW)
+        set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp${CMAKE_SHARED_LIBRARY_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    else(MINGW)
+        set(ASSIMP_LIBRARY "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    endif(MINGW)
+    
+    # Be sure to install the assimp library on windows
+    if(WIN32)
+        if(MINGW)
+            install(FILES "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp${CMAKE_SHARED_LIBRARY_SUFFIX}" DESTINATION lib/)
+        endif(MINGW)
+        install(FILES ${ASSIMP_LIBRARY} DESTINATION lib/)
+    endif(WIN32)
+    
     if(EXISTS "${ASSIMP_LIBRARY}")
         set(ASSIMP_LIBRARY "${ASSIMP_LIBRARY}" CACHE FILEPATH "Location of 3D asset importer library" FORCE)
     endif()
