@@ -15,6 +15,7 @@
 #include <ompl/control/planners/kpiece/KPIECE1.h>
 #include <omplapp/apps/KinematicCarPlanning.h>
 #include <omplapp/config.h>
+#include <boost/math/constants/constants.hpp>
 
 using namespace ompl;
 
@@ -39,7 +40,7 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
     base::ScopedState<base::SE2StateSpace> goal(SE2);
     goal->setX(2);
     goal->setY(2);
-    goal->setYaw(M_PI);
+    goal->setYaw(boost::math::constants::pi<double>());
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .1);

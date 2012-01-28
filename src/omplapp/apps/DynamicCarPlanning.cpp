@@ -11,6 +11,7 @@
 /* Author: Mark Moll */
 
 #include "omplapp/apps/DynamicCarPlanning.h"
+#include <boost/math/constants/constants.hpp>
 
 ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState(void) const
 {
@@ -56,12 +57,12 @@ void ompl::app::DynamicCarPlanning::setDefaultBounds()
     base::RealVectorBounds bounds(2);
     bounds.low[0] = -1.;
     bounds.high[0] = 1.;
-    bounds.low[1] = -M_PI * 30. / 180.;
-    bounds.high[1] = M_PI * 30. / 180.;
+    bounds.low[1] = -boost::math::constants::pi<double>() * 30. / 180.;
+    bounds.high[1] = boost::math::constants::pi<double>() * 30. / 180.;
     getStateSpace()->as<base::CompoundStateSpace>()->as<base::RealVectorStateSpace>(1)->setBounds(bounds);
     bounds.low[0] = -.5;
     bounds.high[0] = .5;
-    bounds.low[1] = -M_PI * 2. / 180.;
-    bounds.high[1] = M_PI * 2. / 180.;
+    bounds.low[1] = -boost::math::constants::pi<double>() * 2. / 180.;
+    bounds.high[1] = boost::math::constants::pi<double>() * 2. / 180.;
     getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(bounds);
 }

@@ -13,6 +13,10 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_ASSIMP_UTIL_
 #define OMPLAPP_GEOMETRY_DETAIL_ASSIMP_UTIL_
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <assimp.hpp>
 #include <assimp.h>
 #include <aiScene.h>
