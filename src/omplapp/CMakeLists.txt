@@ -1,7 +1,12 @@
 # create a library with the common parts of applications
 file(GLOB_RECURSE OMPLAPP_SRC *.cpp)
 
-add_library(ompl_app SHARED ${OMPLAPP_SRC})
+if(MSVC OR MSVC90 OR MSVC10)
+    add_library(ompl_app STATIC ${OMPLAPP_SRC})
+else(MSVC OR MSVC90 OR MSVC10)
+    add_library(ompl_app SHARED ${OMPLAPP_SRC})
+endif(MSVC OR MSVC90 OR MSVC10)
+
 if(TARGET assimp)
     add_dependencies(ompl_app assimp)
 endif()
@@ -14,7 +19,7 @@ endif()
 target_link_libraries(ompl_app ompl ${OMPLAPP_LIBRARIES})
 
 if(WIN32)
-  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}")
+  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" STATIC_LIBRARY_FLAGS "psapi.lib ws2_32.lib glu32.lib opengl32.lib \"${ASSIMP_LIBRARY}\" \"${PQP_LIBRARY}\"")
 else(WIN32)
   set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" SOVERSION "${OMPLAPP_ABI_VERSION}")
 endif(WIN32)
