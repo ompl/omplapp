@@ -26,7 +26,7 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-find_package(Boost COMPONENTS date_time thread program_options filesystem system program_options REQUIRED)
+find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system program_options REQUIRED)
 find_package(Boost COMPONENTS python)
 
 find_package(Boost COMPONENTS odeint QUIET)
@@ -99,6 +99,7 @@ set(OMPLAPP_MODULE_LIBRARIES
 set(OMPLAPP_LIBRARIES
     ${Boost_DATE_TIME_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    ${Boost_SERIALIZATION}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
