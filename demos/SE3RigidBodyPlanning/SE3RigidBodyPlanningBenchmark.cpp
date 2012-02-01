@@ -138,7 +138,6 @@ int main(int argc, char **argv)
     double runtime_limit, memory_limit;
     int run_count;
     int benchmark_id = argc > 1 ? ((argv[1][0] - '0') % 2) : 0;
-    Benchmark::Request request(runtime_limit, memory_limit, run_count);
 
     if (benchmark_id==0)
         benchmark0(benchmark_name, setup, runtime_limit, memory_limit, run_count);
@@ -146,6 +145,7 @@ int main(int argc, char **argv)
         benchmark1(benchmark_name, setup, runtime_limit, memory_limit, run_count);
 
     // create the benchmark object and add all the planners we'd like to run
+    Benchmark::Request request(runtime_limit, memory_limit, run_count);
     Benchmark b(setup, benchmark_name);
 
     // optionally set pre & pos run events
