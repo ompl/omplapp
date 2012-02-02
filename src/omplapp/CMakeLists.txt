@@ -1,11 +1,11 @@
 # create a library with the common parts of applications
 file(GLOB_RECURSE OMPLAPP_SRC *.cpp)
 
-if(MSVC OR MSVC90 OR MSVC10)
+if(MSVC)
     add_library(ompl_app STATIC ${OMPLAPP_SRC})
-else(MSVC OR MSVC90 OR MSVC10)
+else(MSVC)
     add_library(ompl_app SHARED ${OMPLAPP_SRC})
-endif(MSVC OR MSVC90 OR MSVC10)
+endif(MSVC)
 
 if(TARGET assimp)
     add_dependencies(ompl_app assimp)
@@ -25,13 +25,13 @@ else(WIN32)
 endif(WIN32)
 
 install(TARGETS ompl_app DESTINATION lib)
-if(!MSVC AND !MSVC90 AND !MSVC10)
+if(!MSVC)
     get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
     add_custom_command(TARGET ompl_app POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
         WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
-endif(!MSVC AND !MSVC90 AND !MSVC10)
+endif(!MSVC)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
     "${CMAKE_CURRENT_SOURCE_DIR}/config.h")

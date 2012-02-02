@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
 
+# This shouldn't be necessary, but there has been trouble 
+# with MSVC being set off, but MSVCXX ON.
+if(MSVC OR MSVC90 OR MSVC10)
+    set(MSVC ON)
+endif (MSVC OR MSVC90 OR MSVC10)
+
 set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
@@ -26,10 +32,10 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-if(MSVC OR MSVC90 OR MSVC10)
+if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
-endif(MSVC OR MSVC90 OR MSVC10)
+endif(MSVC)
 
 find_package(Boost COMPONENTS date_time thread program_options filesystem system REQUIRED)
 find_package(Boost COMPONENTS python)
@@ -126,29 +132,6 @@ add_subdirectory(py-bindings)
 install(DIRECTORY resources DESTINATION share/ompl
     PATTERN ".svn" EXCLUDE
     PATTERN ".DS_Store" EXCLUDE)
-    
-# Bundling Windows runtime dependencies (DLLS)
-if(WIN32)
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
-    install(FILES "${CMAKE_SOURCE_DIR}/README-Windows.txt" DESTINATION "." RENAME README.txt)
-    install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" DESTINATION "." RENAME LICENSE.txt)
-    set(WINDOWS_DEPS ${ASSIMP_LIBRARY} ${Boost_DATE_TIME_LIBRARY} 
-                  ${Boost_PROGRAM_OPTIONS_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} 
-                  ${Boost_SYSTEM_LIBRARY})
-
-    if(Boost_PYTHON_LIBRARY)
-        set(WINDOWS_DEPS ${WINDOWS_DEPS} ${Boost_PYTHON_LIBRARY})
-    endif(Boost_PYTHON_LIBRARY)
-
-    # The Boost on Windows are import libraries that reference the DLL.
-    # We want to bundle the DLL, not the import library.
-    FOREACH (DEP ${WINDOWS_DEPS})
-        string(REGEX REPLACE "([^ ]+)lib$" "\\1dll" DLL ${DEP})
-        set(WINDOWS_DLLS ${WINDOWS_DLLS} ${DLL})
-    ENDFOREACH(DEP)
-
-    install(FILES ${WINDOWS_DLLS} DESTINATION lib)
-endif(WIN32)
 
 # HACK ALERT: just in case the version of OpenDE used for libdrawstuff is used for libompl
 if(TARGET drawstuff)

@@ -29,17 +29,26 @@ else(PQP_LIBRARY AND PQP_INCLUDE_DIR)
         DEPENDEES download
         DEPENDERS configure)
     # if using Visual Studio, the code is automatically patched
-    if(MSVC_IDE)
+    if(MSVC)
         ExternalProject_Add_Step(pqp patchForMSVC
             COMMAND ${CMAKE_COMMAND}
                 -D "PQP_INCLUDE=${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp/PQP_v1.3/src"
                 -P "${CMAKE_SOURCE_DIR}/src/external/patchPQP-MSVC.cmake"
             DEPENDEES download
             DEPENDERS configure)
-    endif(MSVC_IDE)
+    endif(MSVC)
 
     # set the library and include variables
-    set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    if(MSVC)
+        # Microsoft changed the name of the configuration macro between VC9 and VC10
+        if(MSVC10)
+            set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/$(Configuration)/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        else(MSVC10)
+            set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/$(ConfigurationName)/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        endif(MSVC10)
+    else(MSVC)
+        set(PQP_LIBRARY "${CMAKE_BINARY_DIR}/pqp-prefix/src/pqp-build/${CMAKE_SHARED_LIBRARY_PREFIX}PQP${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    endif(MSVC)
     if(EXISTS "${PQP_LIBRARY}")
         set(PQP_LIBRARY "${PQP_LIBRARY}" CACHE FILEPATH "Location of PQP proximity query library" FORCE)
     endif()
