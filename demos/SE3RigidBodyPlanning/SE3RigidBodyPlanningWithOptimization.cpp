@@ -64,7 +64,7 @@ int main()
         setup.clear();
         double length = -1.0;
         // try to solve the problem
-        if (setup.solve(time))
+        if (setup.solve(time) && setup.haveExactSolutionPath())
             length = setup.getSolutionPath().length();
         res << "time = "  << setup.getLastPlanComputationTime() << " \t length = " << length << std::endl;
     }
@@ -84,7 +84,7 @@ int main()
 
         ompl::time::point start = ompl::time::now();
         // try to solve the problem
-        if (op.solve(time, 20, 1))
+        if (op.solve(time, 20, 1) && setup.haveExactSolutionPath())
         {
             duration = time::seconds(time::now() - start);
             length = setup.getSolutionPath().length();
@@ -112,7 +112,7 @@ int main()
 
         time::point start = time::now();
         // try to solve the problem
-        if (op.solve(time, 20, 4))
+        if (op.solve(time, 20, 4) && setup.haveExactSolutionPath())
         {
             duration = time::seconds(time::now() - start);
             length = setup.getSolutionPath().length();
