@@ -37,7 +37,7 @@ if(MSVC)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 endif(MSVC)
 
-find_package(Boost COMPONENTS date_time thread program_options filesystem system REQUIRED)
+find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system REQUIRED)
 find_package(Boost COMPONENTS python)
 
 find_package(Boost COMPONENTS odeint QUIET)
@@ -105,11 +105,11 @@ set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
     ${PQP_LIBRARY}
-    ${FCL_LIBRARIES}
-    ${OMPL_APP_LIBRARY})
+    ${FCL_LIBRARIES})
 set(OMPLAPP_LIBRARIES
     ${Boost_DATE_TIME_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    ${Boost_SERIALIZATION}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
@@ -156,5 +156,21 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
         add_dependencies(update_control_bindings Boost.ODEInt)
     endif()
 endif()
+
+
+if (NOT MSVC)
+    set(PKG_DESC "The Open Motion Planning Library")
+    set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/ompl.pc")
+    configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
+    install(FILES ${pkg_conf_file} DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
+endif()
+
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 include(CPackSettings)

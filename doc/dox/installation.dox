@@ -52,7 +52,7 @@ sudo apt-get install libgtest-dev doxygen graphviz libode-dev
 - If you do not need to modify or see the source code of OMPL.app, then the easiest way to install OMPL.app is with the MacPorts \c port command:
 \code
 sudo port selfupdate
-sudo port install ompl +app
+sudo port install ompl +app +python27
 \endcode
 This is it. You are done. It will take quite a while, though, to download, build, and install OMPL.app and all its dependencies. The GUI is invoked from the command line by \c /opt/local/bin/ompl_app. Demo programs and input files for the GUI can be found in \c /opt/local/share/ompl.
 - If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, PQP, OpenDE, PyQt4, PyOpenGL, and Py++. If you have MacPorts installed, type the following:
