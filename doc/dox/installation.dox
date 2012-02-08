@@ -116,10 +116,12 @@ bindings for OMPL or run the OMPL.app gui with this compiler.
 - <a href="http://www.mingw.org/">MinGW</a> (recommended) or Visual Studio compiler
 
 - Boost: OMPL and OMPL.app require <a href="http://www.boost.org/">Boost</a>, version 1.44 or greater.
-It is recommended to make a complete Boost compilation from source.  Set the environment variables 
-<tt>BOOST_ROOT</tt> and <tt>BOOST_LIBRARYDIR</tt> to the locations where boost and the libraries are 
-installed.  The default locations are <tt>C:\\Boost</tt> and <tt>C:\\Boost\\lib</tt>.  Make sure that 
-<tt>BOOST_LIBRARYDIR</tt> is also in the system PATH so that dlls are loaded properly at runtime.
+It is recommended to make a complete Boost compilation from source.  If using Visual Studio, this
+process can be automated using the <a href="http://www.boostpro.com/download">BoostPro</a> installer.  
+Once complete, set the environment variables <tt>BOOST_ROOT</tt> and <tt>BOOST_LIBRARYDIR</tt> to 
+the locations where Boost and its libraries are installed.  The default locations are <tt>C:\\Boost</tt> and 
+<tt>C:\\Boost\\lib</tt>.  Ensure that <tt>BOOST_LIBRARYDIR</tt> is also in the system PATH so 
+that any necessary Boost dlls are loaded properly at runtime.
 
 - <a href="http://assimp.sourceforge.net/">Assimp</a>: If not already installed, the last release
 (version 2.0) is downloaded and compiled automatically via CMake.  If using Visual Studio 2010, this 
@@ -130,8 +132,8 @@ include and lib directories are in the system PATH.
 \subsection opt-dependencies Optional Dependencies (Python bindings and OMPL.app gui)
 - <a href="http://cvs.nongnu.org/">CVS</a> and <a href="http://subversion.apache.org/">Subversion</a>
 
-- A <b>32-bit</b> version of <a href="http://python.org/">Python</a> 2.x.  Ensure that this is installed
-before building Boost.
+- A <b>32-bit</b> version of <a href="http://python.org/">Python</a> 2.7.  Ensure that this is installed
+<b>before building Boost</b> so that Boost.Python is properly compiled.
 
 - Ensure that svn, cvs, and Python are all added to the system <tt>PATH</tt>.
 
@@ -139,7 +141,8 @@ before building Boost.
 A batch file has been included to automate this process (analogous to the Linux/Mac
 installation) that can be executed via cmake.  Instructions can be found 
 \ref installPyPlusPlus "here".  Note that this process assumes the MinGW compiler,
-and installs gccxml to <tt>C:\\gccxml</tt>.  Once installed, it is recommended that
+and installs gccxml to <tt>C:\\gccxml</tt>.  You will need to be in a shell with administrator
+privileges to execute this batch file.  Once installed, it is recommended that
 you open a new shell to realize the new environment settings.
 
 - <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQT4</a> and <a href="http://pyopengl.sourceforge.net/">PyOpenGL</a> must be installed to run the OMPL.app gui.
@@ -181,7 +184,7 @@ Consult the CMake documentation for other generators.
 - Open omplapp.sln and build the solution.  Two static libraries will be created (ompl.lib and ompl_app.lib) 
 to link your code against, as well as several demo programs.
 - You can install OMPL and OMPL.app by building the "INSTALL" project inside of the solution.  Note that this
-will attempt to copy files to <tt>C:\Program Files (x86)\omplapp</tt> (the default).  The installation will 
+will attempt to copy files to <tt>C:\\Program Files (x86)\\omplapp</tt> (the default).  The installation will 
 fail unless Visual Studio is opened with administrator privileges, or a non-system install prefix is specified
 when cmake is run.
 
