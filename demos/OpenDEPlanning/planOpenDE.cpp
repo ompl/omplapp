@@ -130,7 +130,7 @@ int main(int argc, char **argv)
     {
         std::cout << "Solved!" << std::endl;
         ob::ScopedState<oc::OpenDEStateSpace> last(ss.getSpaceInformation());
-        last = ss.getSolutionPath().states.back();
+        last = ss.getSolutionPath().getStates().back();
         std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
 
         POINTS.clear();

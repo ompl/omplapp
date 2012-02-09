@@ -63,9 +63,9 @@ void blimpDemo(app::BlimpPlanning& setup)
         // and controls required to get from one state to the next
         control::PathControl& path(setup.getSolutionPath());
         path.interpolate(); // uncomment if you want to plot the path
-        for (i=0; i<path.states.size(); ++i)
+        for (i=0; i<path.getStateCount(); ++i)
         {
-            coords = base::ScopedState<>(setup.getStateSpace(), path.states[i]).reals();
+            coords = base::ScopedState<>(setup.getStateSpace(), path.getState(i)).reals();
             for (j=0; j<coords.size(); ++j)
                 std::cout << coords[j] << ' ';
 
@@ -75,10 +75,10 @@ void blimpDemo(app::BlimpPlanning& setup)
             else
             {
                 // print controls and control duration needed to get from state i-1 to state i
-                const double* c = path.controls[i-1]->as<control::RealVectorControlSpace::ControlType>()->values;
+                const double* c = path.getControl(i-1)->as<control::RealVectorControlSpace::ControlType>()->values;
                 for (j=0; j<3; ++j)
                     std::cout << c[j] << ' ';
-                std::cout << path.controlDurations[i-1];
+                std::cout << path.getControlDuration(i-1);
             }
             std::cout << std::endl;
         }
