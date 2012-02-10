@@ -11,6 +11,7 @@
 /* Author: Mark Moll */
 
 #include "omplapp/apps/KinematicCarPlanning.h"
+#include <boost/math/constants/constants.hpp>
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning()
     : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(control::ODEBasicSolver<>(si_, boost::bind(&ompl::app::KinematicCarPlanning::ode, this, _1, _2, _3)))
@@ -45,8 +46,8 @@ void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
     base::RealVectorBounds cbounds(2);
     cbounds.low[0] = -5.;
     cbounds.high[0] = 5.;
-    cbounds.low[1] = -M_PI * 30. / 180.;
-    cbounds.high[1] = M_PI * 30. / 180.;
+    cbounds.low[1] = -boost::math::constants::pi<double>() * 30. / 180.;
+    cbounds.high[1] = boost::math::constants::pi<double>() * 30. / 180.;
     getControlSpace()->as<control::RealVectorControlSpace>()->setBounds(cbounds);
 }
 

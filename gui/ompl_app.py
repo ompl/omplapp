@@ -346,9 +346,9 @@ class MainWindow(QtGui.QMainWindow):
                 open(fname,'w').write(pathstr)
 
     def setSolutionPath(self, path):
-            ns = len(path.states)
+            ns = len(path.getStates())
             self.path = [ self.omplSetup.getGeometricComponentState(
-                ob.State(self.omplSetup.getGeometricComponentStateSpace(),path.states[i]), 0) for i in range(ns) ]
+                ob.State(self.omplSetup.getGeometricComponentStateSpace(),path.getState(i)), 0) for i in range(ns) ]
             self.mainWidget.glViewer.setSolutionPath(self.path)
 
     def randMotion(self):
@@ -514,11 +514,11 @@ class MainWindow(QtGui.QMainWindow):
                     self.msgError("Path reported by planner seems to be invalid!")
 
             ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateSpace().getMaximumExtent()))
-            if self.isGeometric and len(path.states) < ns:
+            if self.isGeometric and len(path.getStates()) < ns:
                 self.msgDebug("Interpolating solution path to " + str(ns) + " states")
                 path.interpolate(ns)
-                if len(path.states) != ns:
-                    self.msgError("Interpolation produced " + str(len(path.states)) + " states instead of " + str(ns) + " states!")
+                if len(path.getStates()) != ns:
+                    self.msgError("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states!")
 #            if path.check() == False:
 #                self.msgError("Something wicked happened to the path during interpolation")
             self.setSolutionPath(path)

@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
 
+# This shouldn't be necessary, but there has been trouble 
+# with MSVC being set off, but MSVCXX ON.
+if(MSVC OR MSVC90 OR MSVC10)
+    set(MSVC ON)
+endif (MSVC OR MSVC90 OR MSVC10)
+
 set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
@@ -26,15 +32,22 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-find_package(Boost COMPONENTS date_time thread program_options filesystem system program_options REQUIRED)
+if(MSVC)
+    add_definitions(-DBOOST_ALL_NO_LIB)
+    add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
+endif(MSVC)
+
+find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system REQUIRED)
 find_package(Boost COMPONENTS python)
 
 find_package(Boost COMPONENTS odeint QUIET)
 if(NOT Boost_ODEINT_FOUND)
     # Include bundled version of boost::odeint if it isn't installed natively
-    set(ODEINT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external)
+    set(ODEINT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
     include_directories("${ODEINT_INCLUDE_DIR}")
 endif()
+# needed to compile ODESolver demo. ODEsolver is *required* to compile ompl_app.
+set(OMPL_ODESOLVER ON)
 
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
@@ -92,11 +105,11 @@ set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
     ${PQP_LIBRARY}
-    ${FCL_LIBRARIES}
-    ${OMPL_APP_LIBRARY})
+    ${FCL_LIBRARIES})
 set(OMPLAPP_LIBRARIES
     ${Boost_DATE_TIME_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    ${Boost_SERIALIZATION}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
@@ -143,5 +156,21 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
         add_dependencies(update_control_bindings Boost.ODEInt)
     endif()
 endif()
+
+
+if (NOT MSVC)
+    set(PKG_DESC "The Open Motion Planning Library")
+    set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/ompl.pc")
+    configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
+    install(FILES ${pkg_conf_file} DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
+endif()
+
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 include(CPackSettings)

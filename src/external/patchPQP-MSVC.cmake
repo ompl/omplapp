@@ -29,3 +29,9 @@ string(REPLACE "struct CollisionPair" "struct __declspec(dllexport) CollisionPai
 string(REPLACE "struct PQP_CollideResult" "struct __declspec(dllexport) PQP_CollideResult" PQPINTERNAL_H "${PQPINTERNAL_H_2}")
 file(WRITE "${PQP_INCLUDE}/PQP_Internal.h" "${PQPINTERNAL_H}")
 message(STATUS "Patched ${PQP_INCLUDE}/PQP_Internal.h")
+
+ompl_backup("${PQP_INCLUDE}/GetTime.h")
+file(READ "${PQP_INCLUDE}/GetTime.h.orig" GETTIME_H_ORIG)
+string(REPLACE "#ifdef WIN32" "#if defined (WIN32) || defined(_WIN32)" GETTIME_H "${GETTIME_H_ORIG}")
+file(WRITE "${PQP_INCLUDE}/GetTime.h" "${GETTIME_H}")
+message(STATUS "Patched ${PQP_Include}/GetTime.h")

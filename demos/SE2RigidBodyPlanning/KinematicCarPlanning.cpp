@@ -15,6 +15,7 @@
 #include <ompl/control/planners/kpiece/KPIECE1.h>
 #include <omplapp/apps/KinematicCarPlanning.h>
 #include <omplapp/config.h>
+#include <boost/math/constants/constants.hpp>
 
 using namespace ompl;
 
@@ -39,7 +40,7 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
     base::ScopedState<base::SE2StateSpace> goal(SE2);
     goal->setX(2);
     goal->setY(2);
-    goal->setYaw(M_PI);
+    goal->setYaw(boost::math::constants::pi<double>());
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .1);
@@ -60,9 +61,9 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
         // and controls required to get from one state to the next
         control::PathControl& path(setup.getSolutionPath());
         //path.interpolate(); // uncomment if you want to plot the path
-        for (unsigned int i=0; i<path.states.size(); ++i)
+        for (unsigned int i=0; i<path.getStateCount(); ++i)
         {
-            const base::SE2StateSpace::StateType& s = *path.states[i]->as<base::SE2StateSpace::StateType>();
+            const base::SE2StateSpace::StateType& s = *path.getState(i)->as<base::SE2StateSpace::StateType>();
             std::cout << s.getX() <<' '<< s.getY() << ' ' << s.getYaw() << ' ';
             if (i==0)
                 // null controls applied for zero seconds to get to start state
@@ -70,8 +71,8 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
             else
             {
                 // print controls and control duration needed to get from state i-1 to state i
-                const double* c = path.controls[i-1]->as<control::RealVectorControlSpace::ControlType>()->values;
-                std::cout << c[0] << ' ' << c[1] << ' ' << path.controlDurations[i-1];
+                const double* c = path.getControl(i-1)->as<control::RealVectorControlSpace::ControlType>()->values;
+                std::cout << c[0] << ' ' << c[1] << ' ' << path.getControlDuration(i-1);
             }
             std::cout << std::endl;
         }

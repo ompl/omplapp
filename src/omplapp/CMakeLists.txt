@@ -1,7 +1,12 @@
 # create a library with the common parts of applications
 file(GLOB_RECURSE OMPLAPP_SRC *.cpp)
 
-add_library(ompl_app SHARED ${OMPLAPP_SRC})
+if(MSVC)
+    add_library(ompl_app STATIC ${OMPLAPP_SRC})
+else(MSVC)
+    add_library(ompl_app SHARED ${OMPLAPP_SRC})
+endif(MSVC)
+
 if(TARGET assimp)
     add_dependencies(ompl_app assimp)
 endif()
@@ -14,17 +19,27 @@ endif()
 target_link_libraries(ompl_app ompl ${OMPLAPP_LIBRARIES})
 
 if(WIN32)
-  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}")
+  if(MSVC10 OR MINGW)
+    set(WIN32_STATIC_LIBRARY_FLAGS "psapi.lib ws2_32.lib glu32.lib opengl32.lib \"${ASSIMP_LIBRARY}\" \"${PQP_LIBRARY}\"")
+  else(MSVC10 OR MINGW)
+    set(WIN32_STATIC_LIBRARY_FLAGS "psapi.lib ws2_32.lib glu32.lib opengl32.lib &quot;${ASSIMP_LIBRARY}&quot; &quot;${PQP_LIBRARY}&quot;")
+  endif(MSVC10 OR MINGW)
+  set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" STATIC_LIBRARY_FLAGS "${WIN32_STATIC_LIBRARY_FLAGS}")
+  if(MINGW)
+    set_target_properties(ompl_app PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols")
+  endif(MINGW)
 else(WIN32)
   set_target_properties(ompl_app PROPERTIES VERSION "${OMPLAPP_VERSION}" SOVERSION "${OMPLAPP_ABI_VERSION}")
 endif(WIN32)
 
 install(TARGETS ompl_app DESTINATION lib)
-get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
-add_custom_command(TARGET ompl_app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
-    WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+if(NOT MSVC)
+    get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
+    add_custom_command(TARGET ompl_app POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+endif(NOT MSVC)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
     "${CMAKE_CURRENT_SOURCE_DIR}/config.h")

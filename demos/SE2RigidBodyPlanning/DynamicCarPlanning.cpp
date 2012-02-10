@@ -60,12 +60,12 @@ void dynamicCarDemo(app::DynamicCarPlanning& setup)
         // and controls required to get from one state to the next
         control::PathControl& path(setup.getSolutionPath());
         //path.interpolate(); // uncomment if you want to plot the path
-        for (unsigned int i=0; i<path.states.size(); ++i)
+        for (unsigned int i=0; i<path.getStateCount(); ++i)
         {
             const base::SE2StateSpace::StateType& s0 =
-                *path.states[i]->as<base::CompoundState>()->as<base::SE2StateSpace::StateType>(0);
+                *path.getState(i)->as<base::CompoundState>()->as<base::SE2StateSpace::StateType>(0);
             const base::RealVectorStateSpace::StateType& s1 =
-                *path.states[i]->as<base::CompoundState>()->as<base::RealVectorStateSpace::StateType>(1);
+                *path.getState(i)->as<base::CompoundState>()->as<base::RealVectorStateSpace::StateType>(1);
             std::cout << s0.getX() <<' '<< s0.getY() << ' ' << s0.getYaw() << ' ';
             std::cout << s1[0] <<' '<< s1[1] << ' ';
             if (i==0)
@@ -74,8 +74,8 @@ void dynamicCarDemo(app::DynamicCarPlanning& setup)
             else
             {
                 // print controls and control duration needed to get from state i-1 to state i
-                const double* c = path.controls[i-1]->as<control::RealVectorControlSpace::ControlType>()->values;
-                std::cout << c[0] << ' ' << c[1] << ' ' << path.controlDurations[i-1];
+                const double* c = path.getControl(i-1)->as<control::RealVectorControlSpace::ControlType>()->values;
+                std::cout << c[0] << ' ' << c[1] << ' ' << path.getControlDuration(i-1);
             }
             std::cout << std::endl;
         }
