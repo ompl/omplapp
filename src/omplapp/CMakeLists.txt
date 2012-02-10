@@ -33,13 +33,13 @@ else(WIN32)
 endif(WIN32)
 
 install(TARGETS ompl_app DESTINATION lib)
-if(!MSVC)
+if(NOT MSVC)
     get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
     add_custom_command(TARGET ompl_app POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
         WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
-endif(!MSVC)
+endif(NOT MSVC)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
     "${CMAKE_CURRENT_SOURCE_DIR}/config.h")
