@@ -111,7 +111,7 @@ void CFGBenchmark::setupBenchmark(void)
     for (std::map<std::string, std::vector<BenchmarkOptions::AllOptions> >::iterator it = bo_.planners_.begin() ; it != bo_.planners_.end() ; ++it)
 	for (std::size_t i = 0 ; i < it->second.size() ; ++i)
 	    benchmark_->addPlannerAllocator(boost::bind(&CFGBenchmark::allocPlanner, this, _1,
-							boost::cref(it->first), boost::cref(it->second[i])));
+							it->first, it->second[i]));
     benchmark_->setPlannerSwitchEvent(boost::bind(&CFGBenchmark::preSwitchEvent, this, _1));
 }
 
@@ -120,7 +120,7 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
     activeParams_ = pcontext_[planner.get()];
     if (activeParams_.find("sampler") != activeParams_.end())
 	planner->getSpaceInformation()->setValidStateSamplerAllocator(boost::bind(&CFGBenchmark::allocValidStateSampler, this, _1,
-										  boost::cref(activeParams_["sampler"])));
+										  activeParams_["sampler"]));
     else
 	planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
