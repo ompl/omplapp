@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
 
+# This shouldn't be necessary, but there has been trouble 
+# with MSVC being set off, but MSVCXX ON.
+if(MSVC OR MSVC90 OR MSVC10)
+    set(MSVC ON)
+endif (MSVC OR MSVC90 OR MSVC10)
+
 set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
@@ -26,7 +32,12 @@ set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
 set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
 set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
-find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system program_options REQUIRED)
+if(MSVC)
+    add_definitions(-DBOOST_ALL_NO_LIB)
+    add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
+endif(MSVC)
+
+find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system REQUIRED)
 find_package(Boost COMPONENTS python)
 
 find_package(Boost COMPONENTS odeint QUIET)
