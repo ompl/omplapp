@@ -37,7 +37,7 @@ in an empty workspace.
 
 Another optional parameter is the sampler to be used by the planner. The
 following samplers are available:
-- <b>sample=uniform</b> (this is the default if no sampler is specified)
+- <b>sampler=uniform</b> (this is the default if no sampler is specified)
 - <b>sampler=gaussian</b>
 - <b>sampler=obstacle_based</b>
 - <b>sampler=max_clearance</b>
@@ -125,7 +125,7 @@ problem.sampler=obstacle_based
 
 When using multiple planner instances, a useful parameter is “name”, as it can be used to rename a planner. For example, two
 instances of geometric::PRM can be created but named differently. Having different names is useful when processing the 
-resulting log data using the \ref benchmark_log "bechmark script".
+resulting log data using the \ref benchmark_log "benchmark script".
 \code
 prm=
 problem.sampler="uniform"
