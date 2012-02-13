@@ -94,7 +94,7 @@ It is also convenient to specify the bounds of the workspace to plan in.  Withou
 specification, OMPL.app assumes a tight bounding box around the start and goal states,
 but depending on the environment this may not be a good assumption.  It is easy to
 redefine the bounding box under the problem heading using the “volume” configuration:
-- <b>volume.[min|max].[x|y|x]</b>
+- <b>volume.[min|max].[x|y|z]</b>
 
 There are many other optional parameters that can be specified or changed.  The benchmark
 executable takes advantage of the ompl::base::ParamSet class, and uses this functionality to
