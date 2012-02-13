@@ -79,7 +79,9 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
     {
 	p->params().setParams(opt.p);
 	pcontext_[p] = opt.c;
-	std::cout << "Allocated " << p->getName() << std::endl;
+        if (opt.p.find("name") != opt.p.end())
+            p->setName(opt.p["name"]);
+        std::cout << "Allocated " << p->getName() << std::endl;
     }
     return ompl::base::PlannerPtr(p);
 }

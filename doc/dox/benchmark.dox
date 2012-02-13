@@ -1,7 +1,7 @@
 /** 
 \page benchmark How to benchmark planners
 
-OMPL contains a Benchmark class that facilitates solving a motion planning
+OMPL contains a ompl::Benchmark class that facilitates solving a motion planning
 problem repeatedly with different planners, different samplers, or even 
 differently configured versions of the same planning algorithm. Below, we
 will describe how you can use this class.
@@ -97,7 +97,7 @@ redefine the bounding box under the problem heading using the “volume” confi
 - <b>volume.[min|max].[x|y|x]</b>
 
 There are many other optional parameters that can be specified or changed.  The benchmark
-executable takes advantage of the base::ParamSet class, and uses this functionality to
+executable takes advantage of the ompl::base::ParamSet class, and uses this functionality to
 set any parameter defined in the file.  If a class exposes a parameter, chances are that
 it is possible to tune it via the config file.  OMPL.app provides two example configuration
 files inside of the benchmark directory, example.cfg and example_complex.cfg showing the
@@ -121,6 +121,18 @@ kpiece=
 problem.projection.cellsize_factor = 4.0
 # specify a different sampler
 problem.sampler=obstacle_based
+\endcode
+
+When using multiple planner instances, a useful parameter is “name”, as it can be used to rename a planner. For example, two
+instances of geometric::PRM can be created but named differently. Having different names is useful when processing the 
+resulting log data using the \ref benchmark_log "bechmark script".
+\code
+prm=
+problem.sampler="uniform"
+prm.name="uniprm"
+prm=
+problem.sampler="obstacle_based"
+prm.name="obprm"
 \endcode
 
 Finally, to execute the benchmark configuration file, simply run the \c benchmark executable
