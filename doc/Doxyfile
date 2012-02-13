@@ -621,7 +621,7 @@ EXCLUDE                = ../ompl/doc/dox/installation.dox \
                          ../ompl/doc/dox/license.dox \
                          ../ompl/doc/dox/mainpage.dox \
                          ../ompl/doc/dox/releaseNotes.dox \
-                         ../ompl/doc/dox/documentation.dox
+                         ../ompl/doc/dox/benchmark.dox
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
 # directories that are symbolic links (a Unix filesystem feature) are excluded
