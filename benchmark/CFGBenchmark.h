@@ -74,3 +74,4 @@ private:
     void setupBenchmark(void);
     void preSwitchEvent(const ompl::base::PlannerPtr &planner);    
 };
+

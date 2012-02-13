@@ -56,30 +56,31 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
 {
     ompl::base::Planner *p = NULL;
     if (name == "rrt")
-	p = new ompl::geometric::RRT(si);
+        p = new ompl::geometric::RRT(si);
     else if (name == "rrtconnect")
-	p = new ompl::geometric::RRTConnect(si);
+        p = new ompl::geometric::RRTConnect(si);
     else if (name == "lazyrrt")
-	p = new ompl::geometric::LazyRRT(si);
+        p = new ompl::geometric::LazyRRT(si);
     else if (name == "est")
-	p = new ompl::geometric::EST(si);
+        p = new ompl::geometric::EST(si);
     else if (name == "sbl")
-	p = new ompl::geometric::SBL(si);
+        p = new ompl::geometric::SBL(si);
     else if (name == "kpiece")
-	p = new ompl::geometric::KPIECE1(si);
+        p = new ompl::geometric::KPIECE1(si);
     else if (name == "bkpiece")
-	p = new ompl::geometric::BKPIECE1(si);
+        p = new ompl::geometric::BKPIECE1(si);
     else if (name == "lbkpiece")
-	p = new ompl::geometric::LBKPIECE1(si);
+        p = new ompl::geometric::LBKPIECE1(si);
     else if (name == "prm")
-	p = new ompl::geometric::PRM(si);
+        p = new ompl::geometric::PRM(si);
     else
-	std::cerr << "Unknown planner: " << name << std::endl;
+        std::cerr << "Unknown planner: " << name << std::endl;
+
     if (p)
     {
-	p->params().setParams(opt.p);
-	pcontext_[p] = opt.c;
-    BenchmarkOptions::PlannerOpt::const_iterator iter = opt.p.find("name");
+        p->params().setParams(opt.p);
+        pcontext_[p] = opt.c;
+        BenchmarkOptions::PlannerOpt::const_iterator iter = opt.p.find("name");
         if (iter != opt.p.end())
             p->setName(iter->second);
         std::cout << "Allocated " << p->getName() << std::endl;
@@ -91,30 +92,31 @@ ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl
 {
     ompl::base::ValidStateSampler *vss = NULL;
     if (type == "uniform")
-	vss = new ompl::base::UniformValidStateSampler(si);
+        vss = new ompl::base::UniformValidStateSampler(si);
     else if (type == "gaussian")
-	vss = new ompl::base::GaussianValidStateSampler(si);
+        vss = new ompl::base::GaussianValidStateSampler(si);
     else if (type == "obstacle_based")
-	vss = new ompl::base::ObstacleBasedValidStateSampler(si);
+        vss = new ompl::base::ObstacleBasedValidStateSampler(si);
     else if (type == "max_clearance")
-	vss = new ompl::base::MaximizeClearanceValidStateSampler(si);
+        vss = new ompl::base::MaximizeClearanceValidStateSampler(si);
     else
-	std::cerr << "Unknown sampler type: " << type << std::endl;
+        std::cerr << "Unknown sampler type: " << type << std::endl;
     if (vss)
     {
-	vss->params().setParams(activeParams_, true);
-	return ompl::base::ValidStateSamplerPtr(vss);
+        vss->params().setParams(activeParams_, true);
+        return ompl::base::ValidStateSamplerPtr(vss);
     }
     else
-	return ompl::base::ValidStateSamplerPtr();
+        return ompl::base::ValidStateSamplerPtr();
 }
 
 void CFGBenchmark::setupBenchmark(void)
 {
-    for (std::map<std::string, std::vector<BenchmarkOptions::AllOptions> >::iterator it = bo_.planners_.begin() ; it != bo_.planners_.end() ; ++it)
-	for (std::size_t i = 0 ; i < it->second.size() ; ++i)
-	    benchmark_->addPlannerAllocator(boost::bind(&CFGBenchmark::allocPlanner, this, _1,
-							it->first, it->second[i]));
+    std::map<std::string, std::vector<BenchmarkOptions::AllOptions> >::iterator it;
+    for (it = bo_.planners_.begin() ; it != bo_.planners_.end() ; ++it)
+        for (std::size_t i = 0 ; i < it->second.size() ; ++i)
+            benchmark_->addPlannerAllocator(boost::bind(&CFGBenchmark::allocPlanner, this, _1,
+                                            it->first, it->second[i]));
     benchmark_->setPlannerSwitchEvent(boost::bind(&CFGBenchmark::preSwitchEvent, this, _1));
 }
 
@@ -122,10 +124,10 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
 {
     activeParams_ = pcontext_[planner.get()];
     if (activeParams_.find("sampler") != activeParams_.end())
-	planner->getSpaceInformation()->setValidStateSamplerAllocator(boost::bind(&CFGBenchmark::allocValidStateSampler, this, _1,
-										  activeParams_["sampler"]));
+        planner->getSpaceInformation()->setValidStateSamplerAllocator(boost::bind(&CFGBenchmark::allocValidStateSampler, this, _1,
+                                                                      activeParams_["sampler"]));
     else
-	planner->getSpaceInformation()->clearValidStateSamplerAllocator();
+        planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
 }
 
@@ -133,13 +135,13 @@ void CFGBenchmark::setup(void)
 {
     configure();
     if (benchmark_)
-	setupBenchmark();    
+        setupBenchmark();    
 }
 
 void CFGBenchmark::runBenchmark(void)
 {
     if (!isValid())
-	return;
+        return;
 
     double tl = 0.0;
     double ml = 0.0;
@@ -147,16 +149,16 @@ void CFGBenchmark::runBenchmark(void)
     
     try
     {
-	tl = boost::lexical_cast<double>(bo_.declared_options_["benchmark.time_limit"]);
-	ml = boost::lexical_cast<double>(bo_.declared_options_["benchmark.mem_limit"]);
-	rc = boost::lexical_cast<unsigned int>(bo_.declared_options_["benchmark.run_count"]);
+        tl = boost::lexical_cast<double>(bo_.declared_options_["benchmark.time_limit"]);
+        ml = boost::lexical_cast<double>(bo_.declared_options_["benchmark.mem_limit"]);
+        rc = boost::lexical_cast<unsigned int>(bo_.declared_options_["benchmark.run_count"]);
     }
     catch(boost::bad_lexical_cast &)
     {
-	std::cerr << "Unable to parse benchmark parameters" << std::endl;
-	return;
+        std::cerr << "Unable to parse benchmark parameters" << std::endl;
+        return;
     }
-    
+
     ompl::Benchmark::Request req;
     req.maxTime = tl;
     req.maxMem = ml;
@@ -166,7 +168,7 @@ void CFGBenchmark::runBenchmark(void)
     req.useThreads = true;
     benchmark_->benchmark(req);
     if (!bo_.declared_options_["benchmark.output"].empty())
-	benchmark_->saveResultsToFile(((bo_.path_ / bo_.declared_options_["benchmark.output"]) / bo_.outfile_).string().c_str());
+        benchmark_->saveResultsToFile(((bo_.path_ / bo_.declared_options_["benchmark.output"]) / bo_.outfile_).string().c_str());
     else
-	benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
+	    benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
 }
