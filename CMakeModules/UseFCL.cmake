@@ -1,6 +1,6 @@
 include(FindPackageHandleStandardArgs)
 
-find_library (ANN_LIBRARY ann DOC "Location of the ANN (approximate nearest neighbor library)")
+find_library (ANN_LIBRARY NAMES ann ANN DOC "Location of the ANN (approximate nearest neighbor library)")
 find_path (ANN_INCLUDE_DIR ANN)
 
 if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
@@ -22,26 +22,17 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
         # download ccd
         ExternalProject_Add (ccd
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            URL "http://libccd.danfis.cz/files/libccd-1.0.tar.gz"
-            URL_MD5 "b63414b5fe906b3907e2f2ea163a7eb4"
+            URL "http://libccd.danfis.cz/files/libccd-1.1.tar.gz"
+            URL_MD5 "9c8d3606486188f6e09fe4836711537c"
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
                 "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
                 "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build"
-                "-DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/ompl/CMakeModules"
-                "-DCMAKE_VERBOSE_MAKEFILE=ON"
+                "-DCMAKE_VERBOSE_MAKEFILE=ON" "-DCCD_DOUBLE=1"
             INSTALL_COMMAND "")
 
-        # use a CMakeLists.txt file to configure build of ccd
-        ExternalProject_Add_Step(ccd addCMakeList
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-CCD.txt"
-                "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd/CMakeLists.txt"
-            DEPENDEES download
-            DEPENDERS configure)
-
         # Set the CCD_LIBRARY Variable
-        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_SHARED_LIBRARY_SUFFIX}")
+        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${CCD_LIBRARY}")
             set(CCD_LIBRARY "${CCD_LIBRARY}" CACHE FILEPATH "Location of convex collision detection library" FORCE)
         endif()
