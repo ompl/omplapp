@@ -28,7 +28,7 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
                 "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
                 "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build"
-                "-DCMAKE_VERBOSE_MAKEFILE=ON" "-DCCD_DOUBLE=1"
+                "-DCMAKE_VERBOSE_MAKEFILE=ON" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC"
             INSTALL_COMMAND "")
 
         # Set the CCD_LIBRARY Variable
