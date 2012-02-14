@@ -58,7 +58,7 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
             SVN_REPOSITORY "https://kforge.ros.org/fcl/fcl_ros/trunk/fcl"
-            SVN_REVISION "-r63"
+            SVN_REVISION "-r71"
             SVN_TRUST_CERT 1
             UPDATE_COMMAND ""
             CMAKE_ARGS
