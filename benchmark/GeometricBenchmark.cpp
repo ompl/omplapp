@@ -95,7 +95,7 @@ void SE2Benchmark::configure(void)
     }
     setup_se2_->setup();
     setup_se2_->print();
-    benchmark_.reset(new ompl::Benchmark(*setup_se2_, bo_.declared_options_["problem.name"]));
+    benchmark_.reset(new ompl::tools::Benchmark(*setup_se2_, bo_.declared_options_["problem.name"]));
 }
 
 void SE3Benchmark::configure(void)
@@ -170,6 +170,6 @@ void SE3Benchmark::configure(void)
 
     setup_se3_->setup();
     setup_se3_->print();
-    benchmark_.reset(new ompl::Benchmark(*setup_se3_, bo_.declared_options_["problem.name"]));
+    benchmark_.reset(new ompl::tools::Benchmark(*setup_se3_, bo_.declared_options_["problem.name"]));
 }
 

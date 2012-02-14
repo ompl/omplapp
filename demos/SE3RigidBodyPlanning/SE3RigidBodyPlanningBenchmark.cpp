@@ -127,7 +127,7 @@ void preRunEvent(const base::PlannerPtr &planner)
 {
 }
 
-void postRunEvent(const base::PlannerPtr &planner, Benchmark::RunProperties &run)
+void postRunEvent(const base::PlannerPtr &planner, tools::Benchmark::RunProperties &run)
 {
 }
 
@@ -145,8 +145,8 @@ int main(int argc, char **argv)
         benchmark1(benchmark_name, setup, runtime_limit, memory_limit, run_count);
 
     // create the benchmark object and add all the planners we'd like to run
-    Benchmark::Request request(runtime_limit, memory_limit, run_count);
-    Benchmark b(setup, benchmark_name);
+    tools::Benchmark::Request request(runtime_limit, memory_limit, run_count);
+    tools::Benchmark b(setup, benchmark_name);
 
     // optionally set pre & pos run events
     b.setPreRunEvent(boost::bind(&preRunEvent, _1));

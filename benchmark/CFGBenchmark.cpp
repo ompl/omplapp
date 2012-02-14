@@ -159,7 +159,7 @@ void CFGBenchmark::runBenchmark(void)
         return;
     }
 
-    ompl::Benchmark::Request req;
+    ompl::tools::Benchmark::Request req;
     req.maxTime = tl;
     req.maxMem = ml;
     req.runCount = rc;
