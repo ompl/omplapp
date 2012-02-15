@@ -70,10 +70,10 @@
 - The <a href="OMPL_Primer.pdf">OMPL primer</a> provides a brief background on sampling-based motion planning, and an overview of OMPL.
 - \ref download "Download" and \ref installation "install" OMPL.
 - Learn how to use the \ref gui "OMPL.app GUI".
+- \ref demos "Demos" and \ref tutorials "tutorials"
+- \ref FAQ
 - Familiarize yourself with the \ref boost "Boost structures" used throughout OMPL.
 - Learn how to integrate your own code with \ref buildSystem "OMPL's build system".
-- \ref demos
-- \ref tutorials
 - If interested in using Python, make sure to read \ref python "the documentation for the Python bindings".
 
 \htmlonly</div><div class="span4">\endhtmlonly
