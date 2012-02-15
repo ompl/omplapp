@@ -78,11 +78,17 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
 
     if (p)
     {
-        p->params().setParams(opt.p);
         pcontext_[p] = opt.c;
         BenchmarkOptions::PlannerOpt::const_iterator iter = opt.p.find("name");
         if (iter != opt.p.end())
+        {
             p->setName(iter->second);
+            BenchmarkOptions::PlannerOpt temp = opt.p;
+            temp.erase(iter->first);
+            p->params().setParams(temp);
+        }
+        else
+            p->params().setParams(opt.p);
         std::cout << "Allocated " << p->getName() << std::endl;
     }
     return ompl::base::PlannerPtr(p);
@@ -135,7 +141,7 @@ void CFGBenchmark::setup(void)
 {
     configure();
     if (benchmark_)
-        setupBenchmark();    
+        setupBenchmark();
 }
 
 void CFGBenchmark::runBenchmark(void)
@@ -146,7 +152,7 @@ void CFGBenchmark::runBenchmark(void)
     double tl = 0.0;
     double ml = 0.0;
     unsigned int rc = 0;
-    
+
     try
     {
         tl = boost::lexical_cast<double>(bo_.declared_options_["benchmark.time_limit"]);
@@ -170,5 +176,5 @@ void CFGBenchmark::runBenchmark(void)
     if (!bo_.declared_options_["benchmark.output"].empty())
         benchmark_->saveResultsToFile(((bo_.path_ / bo_.declared_options_["benchmark.output"]) / bo_.outfile_).string().c_str());
     else
-	    benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
+            benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
 }

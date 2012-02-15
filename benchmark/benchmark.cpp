@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         else
             if (bo.isSE3Problem())
                 b = new SE3Benchmark(bo);
-	
+
         if (b)
         {
             b->setup();
