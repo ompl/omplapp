@@ -39,7 +39,7 @@
 #include "omplapp/apps/SE3RigidBodyPlanning.h"
 
 class SE2Benchmark : public CFGBenchmark
-{ 
+{
 public:
     SE2Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
     {
@@ -48,12 +48,12 @@ public:
 protected:
 
     virtual void configure(void);
-    
+
     boost::shared_ptr<ompl::app::SE2RigidBodyPlanning> setup_se2_;
 };
 
 class SE3Benchmark : public CFGBenchmark
-{ 
+{
 public:
     SE3Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
     {
@@ -62,8 +62,6 @@ public:
 protected:
 
     virtual void configure(void);
-    
+
     boost::shared_ptr<ompl::app::SE3RigidBodyPlanning> setup_se3_;
 };
-
-    
