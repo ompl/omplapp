@@ -29,7 +29,7 @@ namespace ompl
     /** \brief Namespace containing code specific to OMPL.app */
     namespace app
     {
-
+        /** \brief Enumeration of the possible collision checker types */
         enum CollisionChecker
             { PQP, FCL };
 

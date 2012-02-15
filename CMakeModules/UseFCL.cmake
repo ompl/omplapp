@@ -28,19 +28,11 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
                 "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
                 "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build"
-                "-DCMAKE_VERBOSE_MAKEFILE=ON" "-DCCD_DOUBLE=1"
+                "-DCMAKE_VERBOSE_MAKEFILE=ON" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC"
             INSTALL_COMMAND "")
-            
-        # use a CMakeLists.txt file to configure build of libccd
-        ExternalProject_Add_Step(ccd addCMakeList
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-CCD.txt"
-                "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd/CMakeLists.txt"
-            DEPENDEES download
-            DEPENDERS configure)
 
         # Set the CCD_LIBRARY Variable
-        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_SHARED_LIBRARY_SUFFIX}")
+        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${CCD_LIBRARY}")
             set(CCD_LIBRARY "${CCD_LIBRARY}" CACHE FILEPATH "Location of convex collision detection library" FORCE)
         endif()
@@ -99,6 +91,8 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
         endif()
     endif (FCL_LIBRARY AND FCL_INCLUDE_DIR)
 
-    set(FCL_LIBRARIES ${ANN_LIBRARY} ${CCD_LIBRARY} ${FCL_LIBRARY})
+    # Very important that CCD be linked AFTER FCL.  Otherwise, symbols in CCD
+    # used by FCL may be optimized out in shared libraries.
+    set(FCL_LIBRARIES ${ANN_LIBRARY} ${FCL_LIBRARY} ${CCD_LIBRARY})
 
 endif (ANN_LIBRARY AND ANN_INCLUDE_DIR)
