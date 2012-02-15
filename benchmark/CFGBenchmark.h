@@ -65,7 +65,7 @@ protected:
     BenchmarkOptions                                             bo_;    
     std::map<ompl::base::Planner*, BenchmarkOptions::ContextOpt> pcontext_;
     BenchmarkOptions::ContextOpt                                 activeParams_;
-    boost::shared_ptr<ompl::Benchmark>                           benchmark_;
+    boost::shared_ptr<ompl::tools::Benchmark>                    benchmark_;
     
 private:
     
@@ -74,3 +74,4 @@ private:
     void setupBenchmark(void);
     void preSwitchEvent(const ompl::base::PlannerPtr &planner);    
 };
+

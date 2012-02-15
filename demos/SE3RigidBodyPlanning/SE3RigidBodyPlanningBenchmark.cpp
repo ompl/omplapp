@@ -107,18 +107,18 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     goal->rotation().setIdentity();
 
     base::RealVectorBounds bounds(3);
-    bounds.setHigh(0,400.);
-    bounds.setHigh(1,275.);
-    bounds.setHigh(2,-100.);
-    bounds.setLow(0,60.);
-    bounds.setLow(1,0.);
-    bounds.setLow(2,-480.);
+    bounds.setHigh(0,350.);
+    bounds.setHigh(1,250.);
+    bounds.setHigh(2,-150.);
+    bounds.setLow(0,200.);
+    bounds.setLow(1,75.);
+    bounds.setLow(2,-450.);
     setup.getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
 
-    runtime_limit = 90.0;
+    runtime_limit = 60.0;
     memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
     run_count     = 50;
 }
@@ -127,7 +127,7 @@ void preRunEvent(const base::PlannerPtr &planner)
 {
 }
 
-void postRunEvent(const base::PlannerPtr &planner, Benchmark::RunProperties &run)
+void postRunEvent(const base::PlannerPtr &planner, tools::Benchmark::RunProperties &run)
 {
 }
 
@@ -145,8 +145,8 @@ int main(int argc, char **argv)
         benchmark1(benchmark_name, setup, runtime_limit, memory_limit, run_count);
 
     // create the benchmark object and add all the planners we'd like to run
-    Benchmark::Request request(runtime_limit, memory_limit, run_count);
-    Benchmark b(setup, benchmark_name);
+    tools::Benchmark::Request request(runtime_limit, memory_limit, run_count);
+    tools::Benchmark b(setup, benchmark_name);
 
     // optionally set pre & pos run events
     b.setPreRunEvent(boost::bind(&preRunEvent, _1));

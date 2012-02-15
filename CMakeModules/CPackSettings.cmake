@@ -9,14 +9,11 @@ set(CPACK_PACKAGE_VERSION_PATCH "${OMPLAPP_PATCH_VERSION}")
 
 set(CPACK_SOURCE_IGNORE_FILES
     "/.hg"
-    "/.svn/"
     "/build/"
     ".pyc$"
     ".pyo$"
     ".so$"
     ".dylib$"
-    ".md5$"
-    "/blueprint"
     ".DS_Store"
     ".tmproj$"
     ".tm_properties"
@@ -27,7 +24,11 @@ set(CPACK_SOURCE_IGNORE_FILES
     "/external/assimp"
     "/pqp-1.3"
     "releaseChecklist.txt"
-    "exposed_decl.pypp.txt")
+    "exposed_decl.pypp.txt"
+    "ompl.pc$"
+    "installPyPlusPlus.bat$"
+    "installPyPlusPlus.sh$"
+    "config.h$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ;ZIP")
 

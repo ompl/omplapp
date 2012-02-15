@@ -93,11 +93,11 @@ void blimpDemo(app::BlimpPlanning& setup)
 
 void blimpBenchmark(app::BlimpPlanning& setup)
 {
-    Benchmark::Request request(100., 10000., 10); // runtime (s), memory (MB), run count
+    tools::Benchmark::Request request(100., 10000., 10); // runtime (s), memory (MB), run count
 
     setup.setup();
 
-    Benchmark b(setup, setup.getName());
+    tools::Benchmark b(setup, setup.getName());
     b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
     b.benchmark(request);

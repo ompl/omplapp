@@ -47,7 +47,7 @@ struct BenchmarkOptions
     
     BenchmarkOptions(const char *filename)
     {
-	readOptions(filename);
+        readOptions(filename);
     }
     
     typedef std::map<std::string, std::string> PlannerOpt; // options specific to the planner
@@ -73,3 +73,4 @@ struct BenchmarkOptions
     bool isSE2Problem(void) const;
     bool isSE3Problem(void) const;
 };
+

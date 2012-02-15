@@ -69,7 +69,7 @@ int main()
         res << "time = "  << setup.getLastPlanComputationTime() << " \t length = " << length << std::endl;
     }
 
-    OptimizePlan op(setup.getProblemDefinition());
+    tools::OptimizePlan op(setup.getProblemDefinition());
     res << "RRTConnect with path hybridization (one thread)" << std::endl;
     for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
     {

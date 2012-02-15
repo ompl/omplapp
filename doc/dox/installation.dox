@@ -21,6 +21,14 @@ Below are installation instructions for <a href="#install_linux">Linux</a>, <a h
 
 \note If you are using <a href="http://code.ros.org">ROS</a>, please see the <a href="http://www.ros.org/wiki/ompl">OMPL package in ROS</a>.
 
+\htmlonly
+<div class="btn-group">
+  <a class="btn" href="#install_linux_ubuntu">Linux</a>
+  <a class="btn" href="#install_mac_os">OS X</a>
+  <a class="btn" href="#install_windows">Windows</a>
+</div>
+\endhtmlonly
+
 \section install_linuxosx Installation on Linux and Mac OS X
 
 Below are installation instructions for Ubuntu Linux and Mac OS X. Similar steps can be taken for other distributions, but package names may not be identical.
@@ -102,13 +110,15 @@ If the last command does not work and you are sure you have Py++ installed, you 
 
 \section install_windows Installation on Windows
 
-It is possible to run OMPL and OMPL.app natively on Windows, although it must be 
+It is possible to run OMPL and OMPL.app natively on Windows, although it must be
 stressed that <b>extensive testing on Windows is not performed</b> at this time,
 and running OMPL on Windows is considered experimental.
-For best performance, the <a href="http://www.mingw.org/">MinGW</a> compiler is 
-recommended.  Visual Studio can also be used to build the core OMPL and OMPL.app 
-libraries, but currently it is not possible to generate and build the python 
-bindings for OMPL or run the OMPL.app gui with this compiler.
+For best performance, the <a href="http://www.mingw.org/">MinGW</a> compiler is
+recommended.  Visual Studio can also be used to build the core OMPL and OMPL.app
+libraries, but currently it is not possible to generate the python
+bindings for OMPL with this compiler. However, if the bindings are generated with
+MinGW, the bindings can be compiled by Visual Studio with some minor tweaks to the
+code (not recommended, unless you are an experienced Windows developer).
 
 \subsection req-dependencies Required Dependencies
 - <a href="http://www.cmake.org/">CMake</a>
@@ -117,15 +127,15 @@ bindings for OMPL or run the OMPL.app gui with this compiler.
 
 - Boost: OMPL and OMPL.app require <a href="http://www.boost.org/">Boost</a>, version 1.44 or greater.
 It is recommended to make a complete Boost compilation from source.  If using Visual Studio, this
-process can be automated using the <a href="http://www.boostpro.com/download">BoostPro</a> installer.  
-Once complete, set the environment variables <tt>BOOST_ROOT</tt> and <tt>BOOST_LIBRARYDIR</tt> to 
-the locations where Boost and its libraries are installed.  The default locations are <tt>C:\\Boost</tt> and 
-<tt>C:\\Boost\\lib</tt>.  Ensure that <tt>BOOST_LIBRARYDIR</tt> is also in the system PATH so 
+process can be automated using the <a href="http://www.boostpro.com/download">BoostPro</a> installer.
+Once complete, set the environment variables <tt>BOOST_ROOT</tt> and <tt>BOOST_LIBRARYDIR</tt> to
+the locations where Boost and its libraries are installed.  The default locations are <tt>C:\\Boost</tt> and
+<tt>C:\\Boost\\lib</tt>.  Ensure that <tt>BOOST_LIBRARYDIR</tt> is also in the system PATH so
 that any necessary Boost dlls are loaded properly at runtime.
 
 - <a href="http://assimp.sourceforge.net/">Assimp</a>: If not already installed, the last release
-(version 2.0) is downloaded and compiled automatically via CMake.  If using Visual Studio 2010, this 
-version will <b>NOT</b> compile.  It is recommended to checkout Assimp from their svn repository and 
+(version 2.0) is downloaded and compiled automatically via CMake.  If using Visual Studio 2010, this
+version will <b>NOT</b> compile.  It is recommended to checkout Assimp from their svn repository and
 install assimp.lib/dll manually if using VS2010.  Ensure that Assimp is installed and that the
 include and lib directories are in the system PATH.
 
@@ -139,7 +149,7 @@ include and lib directories are in the system PATH.
 
 - Py++: To generate the Python bindings, Py++ and its dependencies must be installed.
 A batch file has been included to automate this process (analogous to the Linux/Mac
-installation) that can be executed via cmake.  Instructions can be found 
+installation) that can be executed via cmake.  Instructions can be found
 \ref installPyPlusPlus "here".  Note that this process assumes the MinGW compiler,
 and installs gccxml to <tt>C:\\gccxml</tt>.  You will need to be in a shell with administrator
 privileges to execute this batch file.  Once installed, it is recommended that
@@ -174,17 +184,17 @@ privileges to install to the default directory.
 \code
 mingw32-make install
 \endcode
-- Make sure to add the install path's \lib subdirectory to the PATH so that the DLLs are found when code 
+- Make sure to add the install path's \\lib subdirectory to the PATH so that the DLLs are found when code
 is loaded.
 
 \subsubsection msvc Visual Studio
 - The CMake generator for Visual Studio depends on the version of Visual Studio to generate a solution for.
-The generator for VS 2010 is <tt>"Visual Studio 10"</tt>, and the generator for VS 2008 is <tt>"Visual Studio 9 2008"</tt>.  
+The generator for VS 2010 is <tt>"Visual Studio 10"</tt>, and the generator for VS 2008 is <tt>"Visual Studio 9 2008"</tt>.
 Consult the CMake documentation for other generators.
-- Open omplapp.sln and build the solution.  Two static libraries will be created (ompl.lib and ompl_app.lib) 
+- Open omplapp.sln and build the solution.  Two static libraries will be created (ompl.lib and ompl_app.lib)
 to link your code against, as well as several demo programs.
 - You can install OMPL and OMPL.app by building the "INSTALL" project inside of the solution.  Note that this
-will attempt to copy files to <tt>C:\\Program Files (x86)\\omplapp</tt> (the default).  The installation will 
+will attempt to copy files to <tt>C:\\Program Files (x86)\\omplapp</tt> (the default).  The installation will
 fail unless Visual Studio is opened with administrator privileges, or a non-system install prefix is specified
 when cmake is run.
 

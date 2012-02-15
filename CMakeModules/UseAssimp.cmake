@@ -7,6 +7,8 @@ if(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(assimp DEFAULT_MSG ASSIMP_LIBRARY ASSIMP_INCLUDE_DIR)
 else(ASSIMP_LIBRARY AND ASSIMP_INCLUDE_DIR)
+
+    message (STATUS "Assimp library not found.  Will download and compile.")
     include(ExternalProject)
     # download and build assimp
     ExternalProject_Add(assimp

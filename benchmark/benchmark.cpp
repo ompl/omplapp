@@ -44,27 +44,28 @@ int main(int argc, char **argv)
         std::cerr << "Usage:\n\t " << argv[0] << " problem.cfg" << std::endl;
         return 1;
     }
-    
+
     BenchmarkOptions bo;
     if (bo.readOptions(argv[1]))
     {
-	CFGBenchmark *b = NULL;
-	if (bo.isSE2Problem())
-	    b = new SE2Benchmark(bo);
-	else
-	    if (bo.isSE3Problem())
-		b = new SE3Benchmark(bo);
-	if (b)
-	{
-	    b->setup();
-	    b->runBenchmark();
-	}
-	else
-	    std::cerr << "No known benchmark" << std::endl;
-	delete b;
+        CFGBenchmark *b = NULL;
+        if (bo.isSE2Problem())
+            b = new SE2Benchmark(bo);
+        else
+            if (bo.isSE3Problem())
+                b = new SE3Benchmark(bo);
+	
+        if (b)
+        {
+            b->setup();
+            b->runBenchmark();
+            delete b;
+        }
+        else
+            std::cerr << "No known benchmark" << std::endl;
     }
     else
-	std::cerr << "Unable to load options" << std::endl;
-    
+        std::cerr << "Unable to load options" << std::endl;
+
     return 0;
 }

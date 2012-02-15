@@ -11,7 +11,6 @@
 /* Author: Mark Moll */
 
 #include "omplapp/apps/BlimpPlanning.h"
-#include "ompl/util/Profiler.h"
 
 ompl::base::ScopedState<> ompl::app::BlimpPlanning::getDefaultStartState(void) const
 {

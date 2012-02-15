@@ -86,9 +86,9 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
 }
 void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
 {
-    Benchmark::Request request(20., 10000., 10); // runtime (s), memory (MB), run count
+    tools::Benchmark::Request request(20., 10000., 10); // runtime (s), memory (MB), run count
 
-    Benchmark b(setup, setup.getName());
+    tools::Benchmark b(setup, setup.getName());
     b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
     b.benchmark(request);

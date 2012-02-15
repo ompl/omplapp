@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 
 project(omplapp CXX C)
 
+# set the default build type
+if (NOT CMAKE_BUILD_TYPE)
+   set(CMAKE_BUILD_TYPE Release)
+endif()
+
 # This shouldn't be necessary, but there has been trouble 
 # with MSVC being set off, but MSVCXX ON.
 if(MSVC OR MSVC90 OR MSVC10)
@@ -66,8 +71,9 @@ find_package(OpenDE QUIET)
 find_package(Drawstuff QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
-# module to download and build PQP and Assimp (if they aren't already installed).
-if(${CMAKE_VERSION} VERSION_LESS 2.8.2 AND
+# module to download and build PQP, FCL, and Assimp (if they aren't
+# already installed).
+if(${CMAKE_VERSION} VERSION_LESS 2.8.4 AND
     NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
     file(DOWNLOAD
             "http://cmake.org/gitweb?p=cmake.git;a=blob_plain;f=Modules/ExternalProject.cmake;hb=HEAD"
