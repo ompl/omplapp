@@ -1,11 +1,11 @@
 # create a library with the common parts of applications
 file(GLOB_RECURSE OMPLAPP_SRC *.cpp)
 
-if(MSVC)
+if(MSVC OR IS_ICPC)
     add_library(ompl_app STATIC ${OMPLAPP_SRC})
-else(MSVC)
+else(MSVC OR IS_ICPC)
     add_library(ompl_app SHARED ${OMPLAPP_SRC})
-endif(MSVC)
+endif(MSVC OR IS_ICPC)
 
 if(TARGET assimp)
     add_dependencies(ompl_app assimp)
