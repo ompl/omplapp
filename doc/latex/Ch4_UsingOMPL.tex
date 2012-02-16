@@ -21,7 +21,8 @@ called ``ompl-users'', which contains a forum for posting comments, questions,
 and bug reports.
 
 \section {Design Considerations}
-OMPL is flexible and applicable for a wide variety of robotic systems.  As a
+\label{chp:design}
+OMPL is flexible and applicable to a wide variety of robotic systems.  As a
 consequence to this flexibility, the library does not explicitly represent the
 geometry of the workspace or the robot operating in it.  This is deliberate
 since there exists a vast amount of file formats, data structures and other
@@ -32,13 +33,14 @@ checker in OMPL.  This allows the library to operate with relatively few
 assumptions, allowing it to plan for a huge number of systems while remaining
 compact and portable.
 
-A conscious effort is also given to limit the number of external dependencies
+A conscious effort is also made to limit the number of external dependencies
 necessary to compile and execute the code in OMPL.  The majority of the third
-party code utilized in the library used comes from Boost, which allows OMPL to
-function in most major operating systems.  Currently, OMPL is supported on Linux
-and Mac OS X, but it is possible to install the core OMPL library on Windows.
-However, installing all the additional dependencies introduced by OMPL.app is
-challenging.
+party code utilized in the library used comes from Boost \cite{Boost}, which 
+allows OMPL to function in most major operating systems.  Currently, OMPL is 
+supported on Linux and Mac OS X.  Windows installation of the core OMPL
+library is also possible by compiling from source.  Installation of OMPL.app on
+Windows can also be done, but this is recommended only for experienced Windows
+developers as the installation of the dependencies is challenging.
 
 \section {OMPL Foundations}
 Chapter \ref{chp:motionplanning} showed that many sampling-based motion planners
@@ -59,11 +61,10 @@ of the StateValidityChecker to find valid state space configurations.
 \paragraph {StateValidityChecker} The StateValidityChecker is tasked with
 evaluating a single state to determine if the configuration collides with an
 environment obstacle and respects the constraints of the robot.  A default
-checker is \emph{not} provided by OMPL for reasons stated in the Design
-Considerations section.  Since this component is an integral part of
-sampling-based motion planning it is necessary for the user to provide the
-planner a callback to such a method to ensure that all configurations are
-feasible for the robot.
+checker is \emph{not} provided by OMPL for reasons stated in Section 
+\ref{chp:design}.  Since this component is an integral part of sampling-based 
+motion planning it is necessary for the user to provide the planner a callback 
+to such a method to ensure that all configurations are feasible for the robot.
 
 \paragraph {NearestNeighbors} This is an abstract class that is utilized
 to provide a common interface to the planners for the purpose of performing a
@@ -105,7 +106,7 @@ highlighted in dark blue are required to be instantiated by the user.}
 The object oriented nature of OMPL allows the user to inherit from currently
 existing components or create brand new components to plan for a specific
 system.  When solving a particular query, the user is not required to
-instantiate all of the objects detailed in figure \ref{fig:ompl:hierarchy}.
+instantiate all of the objects detailed in Figure \ref{fig:ompl:hierarchy}.
 In fact, most of these objects have default implementations that are
 sufficient for general planning.
 
@@ -141,7 +142,7 @@ extract the Planner from the SimpleSetup instance to do so.
 Once a new planner, sampler, collision checker, or other motion planning
 component has been developed, it is simple to integrate with OMPL for testing.
 There are two methods for compiling code with OMPL.  If the base library is
-modified (e.g. a new planner is added to  {\tt ompl/geometric/planners}),
+modified (e.g., a new planner is added to  {\tt ompl/geometric/planners}),
 simply re-run \emph{cmake} to reconfigure the makefiles for that particular
 component of the code.  If the new code does not exist in a directory known to
 \emph{cmake}, {\tt ompl/src/ompl/CMakeLists.txt} will need to be updated to
@@ -166,7 +167,7 @@ file to the current working directory containing information regarding every
 planning attempt.  OMPL is packaged with a Python script to parse this log file
 and create an SQL database with the planning information.  The Python script can
 also query this database and generate a series of plots using matplotlib, like
-those in figures \ref {fig:benchmark:plot}.
+those in Figure \ref {fig:benchmark:plot}.
 
 \begin {figure}
 \centering

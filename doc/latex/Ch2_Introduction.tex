@@ -4,14 +4,14 @@
 To put OMPL in context, a short introduction to the principles of
 sampling-based motion planning is first given.  Robotic motion planning seeks
 to find a solution to the problem of ``Go from the start to the goal while
-respecting all of the robot's constraints."  From a computational sense,
-however, such an inquiry can be very difficult due to the potential for a large
-number of degrees of freedom for the robot.  For simplicity, consider the
+respecting all of the robot's constraints."  From a computational point of view,
+however, such an inquiry can be very difficult when the robot has a large
+number of degrees of freedom.  For simplicity, consider the
 classical motion planning problem known as the piano mover's problem.  In this
 formulation, there exists a rigid object in 3D (the piano), as well as a set of
-known obstacles.  The goal of the piano mover's problem is to find the shortest,
+known obstacles.  The goal of the piano mover's problem is to find a
 collision-free path for the piano that begins at its starting position and
-ending at a prescribed goal configuration.  Computing the exact solution to
+ends at a prescribed goal configuration.  Computing the exact solution to
 this problem is very difficult.  In this setup, the piano has six degrees of
 freedom: three for movement in the coordinate planes ($x$,$y$,$z$), and three
 more to represent rotation along the axes of these coordinate planes (roll,
@@ -25,25 +25,25 @@ Choset:2005, LaValle:2006}.
 
 \section {Historical Notes}
 OMPL specializes in sampling-based motion planning, which is presented in
-section~\ref {sect:samplingbasedplanning}.  To put sampling-based methods
-in context, a brief historical overview to the methods that have been proposed
-for motion planning is presented.  Most of these methods were developed before
-sampling-based planning, and are still applicable in many applications.
+Section~\ref {sect:samplingbasedplanning}.  To put sampling-based methods
+in context, a very brief historical overview to the methods that have been 
+proposed for motion planning is presented.  Most of these methods were developed
+before sampling-based planning, but are still applicable in many scenarios.
 
-\paragraph {Cell Decomposition}
-In some instances, it is possible to partition the workspace into discrete
-cells corresponding to the obstacle free portion of the environment.  This
-decomposition can then be modeled as a graph (roadmap), where the vertices
-represent the individual cells and edges indicate adjacency among the cells.
-Utilizing this graph, the problem becomes a classical search from the cell with
-the starting position to the cell containing the goal position.  Such a
-formulation works well in ``controllable'' systems (e.g., an omni-directional base).
-However, when using a robot with complex dynamics it may not be possible for the
-system to move to an adjacent cell in the decomposition given the constraints
-of motion.  Moreover, the movement of a robot is typically performed in its
-state space, which may be of much higher dimension than the workspace.
-Decomposing the robot's state space in the same manner is possible, but
-practically such computation is infeasible.
+\paragraph {Exact and Approximate Cell Decomposition}
+In some instances, it is possible to partition the workspace into discrete 
+cells corresponding to the obstacle free portion of the environment. This 
+decomposition can then be modeled as a graph (roadmap), where the vertices 
+represent the individual cells and edges indicate adjacency among the cells. 
+Utilizing this graph, the problem of moving a point robot becomes a classical 
+search from the cell with the starting position to the cell containing the goal 
+position. Such a formulation also works well in ``controllable'' systems (e.g., 
+omni-directional base). There are cases though, for example when the robot has 
+complex non-linear dynamics, where it is not clear how to move the system from 
+one cell to an adjacent cell.  It should also be noted that the motion of 
+robots are computed in states spaces that are high-dimensional.  Partitioning 
+these spaces into free (or approximately free) cells is difficult and 
+impractical in most cases. 
 
 \paragraph {Control-based Methods}
 Control-based methods attempt to model the equations of motion of the system
@@ -60,51 +60,49 @@ environments, which heavily restrict the valid motions.
 Conceptually, potential fields are a simple and intuitive idea.  The classical
 potential field involves computing a vector at each point in the workspace by
 calculating the sum of an attractive force emanating from the goal, and a
-repulsive force from all of the obstacles. The system can then navigate
-using gradient descent to follow the potentials to the goal. Similar to
-control-based methods, potential fields can be applied to a wide variety of
-systems and can operate in real-time.  Navigating a system using a potential
-field, however, can fail due to local minima in the field itself, which stem
-from the heuristic combination of the forces in the workspace.  Ideally the
-field would be constructed in the state space of the system, but this is
-equivalent to solving the original problem.  Some approaches consider a {\it
-navigation function} where the potential field is guaranteed to have a single
-minimum, but computing such a function is non-trivial in some environments,
-especially cluttered workspaces.
+repulsive force from all of the obstacles. The point robot can then navigate
+using gradient descent to follow the potentials to the goal. Potential fields 
+have been generalized to systems with a rigid body by considering
+multiple points on the robot, and can operate in real-time.  Navigating a system 
+using a potential field, however, can fail due to local minima in the field 
+itself, which stem from the heuristic combination of the forces in the 
+workspace.  Ideally the field would be constructed in the state space of the 
+system, but this is equivalent to solving the original problem.  Some approaches 
+consider a {\it navigation function} where the potential field is guaranteed to 
+have a single minimum, but computing such a function is possible only in 
+low-dimensional spaces and is non-trivial.
 
 \paragraph {Randomized Planning}
 Randomization in otherwise deterministic planners has shown to be very
 effective.  In potential fields, for example, Brownian motions in which a random
 action is applied for a specific amount of time have been shown to be highly
-effective in guiding a system out of a local minima.  Using randomization is
-also possible for planning the motions of high-dimensional or non-holonomic
-systems, where the previous deterministic do not perform well.  Sampling-based
-techniques are a subset of randomized planning algorithms that are particularly
-effective for high degree of freedom or systems with complex dynamics.
+effective in guiding a system out of a local minima.  Randomized methods have 
+also been applied to non-holonomic systems, particularly in the field of 
+sampling-based planning.  Sampling-based methods were inspired by randomization,
+and the use of samples, random or deterministic, when planning are particularly
+effective for high degree of freedom systems or those with complex dynamics.
 
 \section {Sampling-based Motion Planning}
 \label {sect:samplingbasedplanning}
-Sampling-based motion planning is a powerful concept that employs random
-sampling of the state space of the robot in order to quickly and
-effectively answer planning queries, especially for systems with non-holonomic
-constraints or those with many degrees of freedom.  Traditional approaches to
-solving these particular problems may take a very long time due to motion
-constraints or the size of the state space.  Sampling arises out of the need to
-quickly cover a potentially large and complex state space to connect a start
-and goal configuration along a feasible and valid path.
+Sampling-based motion planning is a powerful concept that employs sampling of 
+the state space of the robot in order to quickly and effectively answer planning 
+queries, especially for systems with differential constraints or those with 
+many degrees of freedom.  Traditional approaches to solving these particular 
+problems may take a very long time due to motion constraints or the size of the 
+state space.  Sampling arises out of the need to quickly cover a potentially 
+large and complex state space to connect a start and goal configuration along a 
+feasible and valid path.
 
 The need to reason over the entire continuous state space causes traditional
 approaches to breakdown in high-dimensional spaces.  In contrast, sampling-based
 motion planning reasons over a finite set of configurations in the state space.
-The sampling process itself computes a (generally uniform) set of random robot
-configurations, and connects these samples via collision free paths that respect
-the motion constraints of the robot to answer the query.  Because the continuous
-state space is not explicitly reasoned over, sampling-based methods provide {\it
-probabilistic completeness}.  This indicates that the planner is not guaranteed
-to find a solution, but the probability of finding a solution converges to one
-as the number of samples reasoned over increases to infinity.  This should not
-be confused with algorithmic completeness; sampling-based approaches cannot
-recognize a problem with no solution.
+The sampling process itself computes in the simplest case a generally uniform 
+set of random robot configurations, and connects these samples via collision 
+free paths that respect the motion constraints of the robot to answer the query.
+Most sampling-based methods provide {\it probabilistic completeness}.  This 
+means that if a solution exists, the probability of finding a solution converges
+to one as the number of samples reasoned over increases to infinity.  
+Sampling-based approaches cannot recognize a problem with no solution.
 
 \subsection {Problem Statement and Definitions}
 This section will present the problem to be solved by the motion query using
@@ -120,7 +118,7 @@ point in the state space is a {\it state}.
 \item[Free state space:] A subset of the state space in which each state
 corresponds to an obstacle free configuration of the robot embedded in the
 workspace.
-\item[Path:] A continuous mapping of states in the state space.  The path
+\item[Path:] A continuous mapping of states in the state space.  A path is
 collision free if each element of the path is an element of the free state
 space.
 \end{description}
@@ -128,10 +126,12 @@ space.
 From these definitions, the goal of a sampling-based motion planning query can
 be formalized as the task of finding a collision path in the state space of the
 robot from a distinct start state to a specific goal state, utilizing a path
-composed of random configurations connected by collision free paths.
+composed of configurations connected by collision free paths.
 
 The remainder of this section will discuss two types of sampling-based planners,
-from which many of the state of the art techniques can be derived from.
+from which many of the state-of-the-art techniques can be derived from.  It
+should be noted that many sampling strategies exists, but their presentation
+is beyond the scope of this Primer.
 
 \subsection {Probabilistic Roadmap}
 The probabilistic roadmap ({\tt PRM}) is among the first sampling-based motion
@@ -149,13 +149,13 @@ analogous to a street map of a city.  To illustrate the fundamentals of the
 \label {fig:prm:state}}
 \end {figure}
 
-Consider the workspace in figure \ref{fig:prm:state}.  This image shows a
+Consider the workspace in Figure \ref{fig:prm:state}.  This image shows a
 bounded workspace for the point robot in which the shaded regions are obstacles.
 One particular state for the robot is highlighted.  The {\tt PRM} works by
 uniformly sampling the free state space and making connections between the
 samples to form a roadmap of the free state space.  The roadmap can be stored
 efficiently as a graph data structure where the random samples compose the
-vertices, as in figure \ref{fig:prm:samples}.  It should be noted that the free
+vertices, as in Figure \ref{fig:prm:samples}.  It should be noted that the free
 state space is almost never explicitly known in sampling-based methods. Each
 sample that is generated is checked for collision, and only collision free
 samples are retained. Additionally, there are many different ways to sample the
@@ -172,7 +172,7 @@ planning instances.
 \end {figure}
 
 Once the desired number of free samples have been found, the roadmap itself can
-be constructed by connecting the random samples to form the edges.  The
+be constructed by connecting the random samples to form edges.  The
 canonical {\tt PRM} attempts to connect each sample to the $k$ samples nearest
 to it by using a local planner that is tasked with finding short collision free
 paths. The local planner finds this path by interpolating the motion of the
@@ -195,7 +195,7 @@ that are close to one another using a straight path in the free state space.}
 Once the roadmap is complete, it can be used to answer motion planning queries
 by connecting the start and goal states to the roadmap using the local planner,
 and performing a graph search to find the shortest path in the roadmap.  This
-is seen in figure \ref {fig:prm:query}.
+is seen in Figure \ref {fig:prm:query}.
 
 \begin {figure}[h]
 \centering
@@ -212,16 +212,16 @@ found.}
 There exist many types of sampling-based planners that create tree structures
 of the free state space.  The trees generated by these methods are analogous to
 the probabilistic roadmap, except that the structure contains no cycles.  Due to
-the wide variety of tree-based planners (e.g. {\tt RRT}\cite {LaValle:2001},
+the wide variety of tree-based planners (e.g., {\tt RRT}\cite {LaValle:2001},
 {\tt EST}\cite{Hsu:1999}, {\tt SBL}\cite{Sanchez:2003},
-{\tt KPIECE}\cite{Sucan:2011}), one specific type will not be discussed in detail here.  However,
-a general framework will be described.  These methods begin by rooting a tree at
-the configuration where the robot begins.  With the first node of the tree intact,
-random sampling of the free space then occurs.  The planner employs an
-expansion heuristic, which typically gives the method its name, from which the
-sample is connected to the tree along a collision free path.  Figure
-\ref{fig:tree:start} shows an example in the 2D workspace scenario where the first
-few valid samples are connected to the tree.
+{\tt KPIECE}\cite{Sucan:2011}), one specific type will not be discussed in 
+detail here.  However, a general framework will be described.  These methods 
+begin by rooting a tree at the starting configuration of the robot.  With the 
+first node of the tree intact, random sampling of the free space then occurs.  
+The planner employs an expansion heuristic, which typically gives the method its 
+name, from which the sample is connected to the tree along a collision free 
+path.  Figure \ref{fig:tree:start} shows an example in the 2D workspace scenario
+where the first few valid samples are connected to the tree.
 
 \begin {figure}[h]
 \centering
@@ -253,10 +253,10 @@ an obstacle.}
 \end {figure}
 
 It is important to highlight the difference between the roadmap-based planners
-and the tree-based planners. The tree-based techniques are only good for
+and the tree-based planners. The tree-based techniques are most suitable for
 single-query planning.  These trees do not normally cover the free space in the
 same manner that a roadmap would.  However, when planning with differential
-constraints, it isn't easy to encode control information into an undirected edge.
+constraints, it is not easy to encode control information into an undirected edge.
 Controls are usually directed commands, and require a specific pre-condition in
 order for a particular control to be valid.  Tree-based methods, on the other
 hand, excel at planning with complex dynamics because of the directed, acyclic
@@ -274,33 +274,36 @@ is connected to the tree, ending the search.}
 }
 \end {figure}
 
-Finally, it should be noted that many sampling-based approaches require a much
+Finally, it should be noted that many sampling-based approaches require a 
 smaller memory footprint than other motion planners.  The compactness of these
 planners stems from the sampling process itself, as well as the fact that no
 explicit representation of the state space is needed in order to solve the
-problem.  Storage and search of the underlying data structure (e.g. graph, tree)
-should be efficient to fully maximize the quality of these methods.
+problem.  Storage and search of the underlying data structure (e.g., graph, tree)
+should be efficient to fully maximize the quality of these methods.  However,
+as tree planners are used for increasingly difficult problems, memory requirements
+may increase in order to keep information that guides the expansion of the
+search.
 
 %\clearpage
 \subsection {Primitives of Sampling-based Planning}
-Sampling-based planning is a very powerful tool for planning in high dimensional
+Sampling-based planning is a very powerful tool for planning in high-dimensional
 spaces or for system with complex dynamics.  There exists many kinds of
-sampling-based motion planners, with many commonalities, but the method in which you
-sample the state space is key to computing a solution.
+sampling-based motion planners, with many commonalities, but the method in which
+one samples the state space is key to computing a solution.
 
 Collision checking is a very important part of sampling-based planning.  It is
 used not only in the local planner when attempting to find collision free paths
 between samples, but also during the sampling process itself.  In a complex or
 high-dimensional system it may not be easy to explicitly represent the free
-state space, but in sampling-based methods it isn't necessary to create this
+state space, but in sampling-based methods it is not necessary to create this
 space.  It is the job of the collision checker to accept a configuration of the
 robot and quickly determine whether or not this state is in collision.
 
 Nearest neighbor searching is another cornerstone of sampling-based methods.
 It is from the ability of determining whether two states of the robot are close
 that many of the common approaches are able to effectively find paths through a
-high dimensional space.  Distances, however, are not easy to compute in
-non-euclidean spaces where many of the interesting problems reside.  Kd-trees
+high-dimensional space.  Distances, however, are not easy to compute in
+non-Euclidean spaces where many of the interesting problems reside.  Kd-trees
 offer one way to perform this search, but the optimal connection strategy for
 samples remains elusive.
 
