@@ -58,6 +58,18 @@ class ompl_app_generator_t(code_generator_t):
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateSpace", &::ompl::control::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
 
+        # workaround for internal compiler error in Xcode 4.3 (already fixed in MacPorts clang-3.1)
+        rb = self.ompl_ns.class_('RigidBodyGeometry');
+        rb.member_function('setEnvironmentMesh').exclude()
+        rb.add_registration_code('def("setEnvironmentMesh",&::ompl::app::RigidBodyGeometry::setEnvironmentMesh)')
+        rb.member_function('addEnvironmentMesh').exclude()
+        rb.add_registration_code('def("addEnvironmentMesh",&::ompl::app::RigidBodyGeometry::addEnvironmentMesh)')
+        rb.member_function('setRobotMesh').exclude()
+        rb.add_registration_code('def("setRobotMesh",&::ompl::app::RigidBodyGeometry::setRobotMesh)')
+        rb.member_function('addRobotMesh').exclude()
+        rb.add_registration_code('def("addRobotMesh",&::ompl::app::RigidBodyGeometry::addRobotMesh)')
+        rb.member_function('setStateValidityCheckerType').exclude()
+        rb.add_registration_code('def("setStateValidityCheckerType",&::ompl::app::RigidBodyGeometry::setStateValidityCheckerType)')
 
 if __name__ == '__main__':
     setrecursionlimit(50000)
