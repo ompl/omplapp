@@ -70,7 +70,6 @@ namespace ompl
             virtual bool isValid (const base::State *state) const
             {
                 bool valid = true;
-                boost::mutex::scoped_lock slock(mutex_);
                 std::vector <fcl::Contact> contacts;
 
                 if (environment_.num_tris > 0)
@@ -195,8 +194,6 @@ namespace ompl
 
                 if (environment_.num_tris > 0)
                 {
-                    boost::mutex::scoped_lock slock(mutex_);
-
                     for (size_t i = 0; i < robotParts_.size (); ++i)
                     {
                         fcl::SimpleQuaternion q1;
@@ -322,9 +319,6 @@ namespace ompl
 
             /// \brief Interface used for reporting errors
             msg::Interface              msg_;
-
-            /// \brief Mutex for thread safety.
-            mutable boost::mutex        mutex_;
 
             /// \brief Callback to extract translation and rotation from a state
             FCLPoseFromStateCallback    poseFromStateCallback_;
