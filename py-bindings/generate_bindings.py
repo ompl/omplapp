@@ -16,7 +16,6 @@ from sys import argv, setrecursionlimit
 from os.path import abspath, dirname, join
 import sys
 sys.path.insert(0, join(dirname(dirname(abspath(__file__))),'ompl/py-bindings'))
-print sys.path
 from ompl.bindings_generator import code_generator_t, default_replacement
 
 
@@ -29,8 +28,6 @@ class ompl_app_generator_t(code_generator_t):
 
     def filter_declarations(self):
         code_generator_t.filter_declarations(self)
-        for c in self.ompl_ns.classes():
-            print c.decl_string
         self.mb.class_('::ompl::app::AppBase<(ompl::app::AppType)0>').rename('AppBaseGeometric')
         self.mb.class_('::ompl::app::AppBase<(ompl::app::AppType)1>').rename('AppBaseControl')
         self.mb.class_('::ompl::app::AppTypeSelector<(ompl::app::AppType)0>').rename('AppTypeGeometric')
