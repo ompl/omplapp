@@ -66,4 +66,5 @@ if setup.solve(10):
     setup.simplifySolution()
     path = setup.getSolutionPath()
     path.interpolate(10)
-    print(path, path.check())
+    print(path)
+    print(path.check())

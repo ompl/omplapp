@@ -2,11 +2,11 @@
 \page releaseNotes Release Notes
 
 \section release_0_10_1 OMPL.app 0.10.1 (February 27, 2012)
-- Added representation of discrete control spaces
-- Fixes for XCode 4.3 when compiling the Python bindings
-- Updates to support Python 3.x in existing demo programs
-- Removed mutex from FCL collision checking wrapper.  The newer version of the FCL library is thread-safe.
-- Bug fixes
+- Added representation of discrete control spaces.
+- Fixes for XCode 4.3 when compiling the Python bindings.
+- Updates to support Python 3.x in existing demo programs.
+- Removed mutex from FCL collision checking wrapper. The newer version of the FCL library is thread-safe.
+- Bug fixes.
 
 \section release_0_10_0 OMPL.app 0.10.0 (February 16, 2012)
 - Minimum Boost version is now 1.44.

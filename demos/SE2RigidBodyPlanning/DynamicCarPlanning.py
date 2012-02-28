@@ -67,16 +67,16 @@ def dynamicCarDemo(setup):
         for i in range(path.getStateCount()):
             s0 = path.getState(i)[0]
             s1 = path.getState(i)[1]
-            print(s0.getX(), s0.getY(), s0.getYaw(), s1[0], s1[1],)
             if i==0:
                 # null controls applied for zero seconds to get to start state
-                print("0 0 0")
+                print("%g %g %g %g %g 0 0 0" % (s0.getX(), s0.getY(), s0.getYaw(), s1[0], s1[1]))
             else:
                 # print controls and control duration needed to get from state i-1 to state i
                 c = path.getControl(i-1)
-                print(c[0], c[1], path.getControlDuration(i-1))
+                print("%g %g %g %g %g %g %g %g" % 
+                    (s0.getX(), s0.getY(), s0.getYaw(), s1[0], s1[1], c[0], c[1], path.getControlDuration(i-1)))
         if not setup.haveExactSolutionPath():
-            print("Solution is approximate. Distance to actual goal is ",
+            print("Solution is approximate. Distance to actual goal is %g" %
                 setup.getGoal().getDifference())
 
 if __name__ == '__main__':

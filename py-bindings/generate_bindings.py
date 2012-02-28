@@ -38,9 +38,9 @@ class ompl_app_generator_t(code_generator_t):
         # (even though it does generate some wrapper code for them)
         for cls in ['SE2RigidBodyPlanning', 'SE3RigidBodyPlanning', 'GSE2RigidBodyPlanning', 'GSE3RigidBodyPlanning']:
             self.ompl_ns.class_(cls).add_registration_code(
-            'def("solve", &::ompl::geometric::SimpleSetup::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % cls)
+            'def("solve", &%s_wrapper::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % (cls,cls))
             self.ompl_ns.class_(cls).add_registration_code(
-            'def("clear", &::ompl::geometric::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
+            'def("clear", &%s_wrapper::clear, &%s_wrapper::default_clear)' % (cls,cls))
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateSpace", &::ompl::geometric::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
 
@@ -49,9 +49,9 @@ class ompl_app_generator_t(code_generator_t):
             'BlimpPlanning', 'GBlimpPlanning',
             'QuadrotorPlanning', 'GQuadrotorPlanning']:
             self.ompl_ns.class_(cls).add_registration_code(
-            'def("solve", &::ompl::control::SimpleSetup::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % cls)
+            'def("solve", &%s_wrapper::solve, &%s_wrapper::default_solve, (bp::arg("time")=1.0e+0))' % (cls,cls))
             self.ompl_ns.class_(cls).add_registration_code(
-            'def("clear", &::ompl::control::SimpleSetup::clear, &%s_wrapper::default_clear)' % cls)
+            'def("clear", &%s_wrapper::clear, &%s_wrapper::default_clear)' % (cls,cls))
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateSpace", &::ompl::control::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
 
