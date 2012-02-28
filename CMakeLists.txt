@@ -172,7 +172,7 @@ if (NOT MSVC)
     configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
     install(FILES ${pkg_conf_file} DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
 
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/dox/FindOMPL.cmake"
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/dox/FindOMPL.cmake"
         DESTINATION "share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules/")
 endif()
 
