@@ -58,7 +58,7 @@ setup.getSpaceInformation().setStateValidityCheckingResolution(0.01);
 
 # we call setup just so print() can show more information
 setup.setup()
-print setup
+print(setup)
 
 # try to solve the problem
 if setup.solve(10):
@@ -66,4 +66,5 @@ if setup.solve(10):
     setup.simplifySolution()
     path = setup.getSolutionPath()
     path.interpolate(10)
-    print path, path.check()
+    print(path)
+    print(path.check())

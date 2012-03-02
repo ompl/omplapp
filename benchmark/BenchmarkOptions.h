@@ -40,29 +40,29 @@
 #include <boost/filesystem/path.hpp>
 
 struct BenchmarkOptions
-{  
+{
     BenchmarkOptions(void)
     {
     }
-    
+
     BenchmarkOptions(const char *filename)
     {
         readOptions(filename);
     }
-    
+
     typedef std::map<std::string, std::string> PlannerOpt; // options specific to the planner
     typedef std::map<std::string, std::string> ContextOpt; // other options (not specific to the planner)
-    
+
     // all the options for a benchmark execution
     struct AllOptions
     {
         ContextOpt c;
         PlannerOpt p;
     };
-    
+
     std::map<std::string, std::string>              declared_options_;
     std::map<std::string, std::vector<AllOptions> > planners_;
-    
+
     // the path where the input .cfg file is located
     boost::filesystem::path                         path_;
 
@@ -73,4 +73,3 @@ struct BenchmarkOptions
     bool isSE2Problem(void) const;
     bool isSE3Problem(void) const;
 };
-

@@ -7,10 +7,10 @@ The GUI is written using Python and PyQt.  OMPL.app comes bundled with
 the core OMPL library, and can be found at {\tt ompl.kavrakilab.org}.
 
 By using OMPL.app, introductory users to OMPL can get a sense of the current
-capabilities of the library and sampling-based motion planning.  As of version
-0.9.5, users can use geometric motion planning for rigid bodies in 2D and 3D,
-control a variety of simplified kinodynamic systems (e.g. unicycle, blimp, or car),
-and even a dynamic car using the Open Dynamics Engine.  OMPL.app
+capabilities of the library and sampling-based motion planning.  Currently, 
+users can use geometric motion planning for rigid bodies in 2D and 3D,
+control a variety of simplified kinodynamic systems (e.g., unicycle, blimp, 
+or car), and even a dynamic car using the Open Dynamics Engine.  OMPL.app
 also demonstrates one possible way of representing the geometry of the robot
 and how to provide collision checking to the core library using a particular
 geometric representation.
@@ -19,7 +19,7 @@ geometric representation.
 
 To launch OMPL.app, execute the {\tt ompl\_app.py} python script, which is found
 in the {\tt omplapp/ gui} directory.  When the GUI is loaded, a window will be
-presented as in figure \ref{fig:omplapp:start}.
+presented as in Figure \ref{fig:omplapp:start}.
 
 \begin {figure}[h]
 \centering
@@ -31,12 +31,12 @@ presented as in figure \ref{fig:omplapp:start}.
 \end {figure}
 
 
-OMPL.app requires us to do 3 things to solve a motion planning query: setup the
+OMPL.app requires us to do three things to solve a motion planning query: setup the
 workspace and the robot, select a planner to use, and bound the environment.
 These three items correspond to the tabs located in the upper right portion of
 the window.
 
-\subsection {Selecting a Robot and Environment}
+\subsection {Selecting a Robot and an Environment}
 First, a robot type must be selected.  The traditional ``piano mover's'' problem
 is a rigid body planning in 3D instance, so select ``Rigid body planning (3D)''.
 Next, the environment and the robot itself must be loaded.  OMPL.app comes
@@ -47,7 +47,7 @@ to the {\tt omplapp/resources/3D} directory and select the {\tt Easy\_env.dae}
 mesh to load.  Then select {\it Open Robot} from the file menu and open
 {\tt Easy\_robot.dae} from the same directory.  When the meshes are loaded, you
 will see an environment consisting of a wall partitioning the space into two
-parts with a small opening in the center (figure \ref{fig:omplapp:easy}).
+parts with a small opening in the center (Figure \ref{fig:omplapp:easy}).
 Rotate the view using the mouse to see both sides of the partitioned space and
 the ``L'' shaped robot inside the opening of the wall.
 
@@ -66,7 +66,7 @@ environment, the most interesting queries involve the robot maneuvering through
 the opening in the wall.  One such configuration is $(270, 50, -200)$ and $(270,
 50, -400)$, respectively.  Set the start and goal positions to these values and
 click ``Solve'' to find a solution with the default planner.  The
-default planner shouldn't have too much trouble solving this query.  When a
+default planner should not have too much trouble solving this query.  When a
 solution is found the robot will become animated and travel along the computed
 path.  If the planner fails to find a solution, repeat the solving process
 until one is found.
@@ -154,9 +154,8 @@ to replay the same path.
 OMPL.app builds upon the motion planning functionality in OMPL by specifying
 a geometric representation for the robot and its environment, and provides
 a collision checking mechanism for the representation to the existing planners
-in the library.  Specifically, OMPL.app utilizes PQP \cite{Larsen:2000} by
-default for collision checks, but also provides a wrapper for FCL
-\cite{Jia:2011} collision checking as well. The core Open Motion Planning
+in the library.  OMPL.app makes use of open-source collision checking
+libraries \cite{Larsen:2000, Jia:2011}.  The core Open Motion Planning
 Library does not explicitly represent the robot or the environment, and it is
 up to the user to make this decision for their particular application.
 

@@ -167,7 +167,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
                         }
                     }
                 break;
-	        }
+                }
 
         // now we merge the global (problem context) in all the planner specific contexts
         if (!problem_context.empty())
@@ -197,7 +197,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
 
 bool BenchmarkOptions::isSE2Problem(void) const
 {
-    return declared_options_.find("problem.start.x") != declared_options_.end() &&  declared_options_.find("problem.start.y") != declared_options_.end() && 
+    return declared_options_.find("problem.start.x") != declared_options_.end() &&  declared_options_.find("problem.start.y") != declared_options_.end() &&
     declared_options_.find("problem.start.theta") != declared_options_.end() &&
     declared_options_.find("problem.goal.x") != declared_options_.end() &&  declared_options_.find("problem.goal.y") != declared_options_.end() &&
     declared_options_.find("problem.goal.theta") != declared_options_.end() &&
@@ -220,4 +220,3 @@ bool BenchmarkOptions::isSE3Problem(void) const
     declared_options_.find("problem.goal.axis.x") != declared_options_.end() &&
     declared_options_.find("problem.goal.axis.y") != declared_options_.end() && declared_options_.find("problem.goal.axis.z") != declared_options_.end();
 }
-

@@ -234,7 +234,7 @@ class MainWindow(QtGui.QMainWindow):
                     bounds.high[0] = config.getfloat("problem", "volume.max.x")
                     bounds.high[1] = config.getfloat("problem", "volume.max.y")
                     self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
-                    self.setBounds(bounds)
+                    self.mainWidget.glViewer.setBounds(bounds)
 
     def saveConfig(self):
         fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))

@@ -153,7 +153,7 @@ void SE3Benchmark::configure(void)
             bo_.declared_options_.find("problem.volume.min.z") != bo_.declared_options_.end() &&
             bo_.declared_options_.find("problem.volume.max.x") != bo_.declared_options_.end() && bo_.declared_options_.find("problem.volume.max.y") != bo_.declared_options_.end() &&
             bo_.declared_options_.find("problem.volume.max.y") != bo_.declared_options_.end())
-	    {
+            {
             ompl::base::RealVectorBounds bounds(3);
             bounds.setLow(0, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.x"]));
             bounds.setLow(1, boost::lexical_cast<double>(bo_.declared_options_["problem.volume.min.y"]));
@@ -172,4 +172,3 @@ void SE3Benchmark::configure(void)
     setup_se3_->print();
     benchmark_.reset(new ompl::tools::Benchmark(*setup_se3_, bo_.declared_options_["problem.name"]));
 }
-
