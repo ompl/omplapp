@@ -431,7 +431,7 @@ class MainWindow(QtGui.QMainWindow):
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.ESTRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.ESTGoalBias.value())
             elif self.planner==9:
-                planner = og.GNAT(si,self.mainWidget.plannerWidget.geometricPlanning.GNATProjected.value(),self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[0].value(), self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[1].value(), self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[2].value(),self.mainWidget.plannerWidget.geometricPlanning.GNATDataNum.value())
+                planner = og.GNAT(si,self.mainWidget.plannerWidget.geometricPlanning.GNATProjected.value(),self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[0].value(), self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[1].value(), self.mainWidget.plannerWidget.geometricPlanning.GNATDegree[2].value(),self.mainWidget.plannerWidget.geometricPlanning.GNATDataNum.value(),self.mainWidget.plannerWidget.geometricPlanning.GNATestimatedDimension.value())
                 planner.setRange(self.mainWidget.plannerWidget.geometricPlanning.GNATRange.value())
                 planner.setGoalBias(self.mainWidget.plannerWidget.geometricPlanning.GNATGoalBias.value())
 
@@ -1319,11 +1319,13 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         GNATrangeLabel = QtGui.QLabel('Range')
         GNATdegreeLabel = QtGui.QLabel('Degree Info (Global Degree,Min,Max)')
         GNATdataNumLabel = QtGui.QLabel('Max Data Number')
+        GNATestimatedDimensionLabel = QtGui.QLabel('Estimated Dimension')
         GNATborderFractionLabel = QtGui.QLabel('Border Fraction')
         GNATUseProjectedLabel = QtGui.QLabel('Use Projected Distance')
         self.GNATRange = QtGui.QDoubleSpinBox()
         self.GNATDegree = (QtGui.QSpinBox(),QtGui.QSpinBox(),QtGui.QSpinBox())
         self.GNATDataNum = QtGui.QSpinBox()
+        self.GNATestimatedDimension = QtGui.QDoubleSpinBox()
         self.GNATBorderFraction = QtGui.QDoubleSpinBox()
         self.GNATProjected = QtGui.QSpinBox()
         self.GNATProjected.setRange(0,1);
@@ -1344,6 +1346,9 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.GNATDataNum.setRange(0,1000);
         self.GNATDataNum.setSingleStep(1);
         self.GNATDataNum.setValue(50);
+        self.GNATestimatedDimension.setRange(0.0,10000.0);
+        self.GNATestimatedDimension.setSingleStep(1.0);
+        self.GNATestimatedDimension.setValue(6.0);
         self.GNATBorderFraction.setRange(0,1.0);
         self.GNATBorderFraction.setSingleStep(0.01);
         self.GNATBorderFraction.setValue(0.5);
@@ -1357,8 +1362,8 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
           layout.addWidget(self.GNATDegree[k],2+k,1)
         layout.addWidget(GNATdataNumLabel,5,0, QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATDataNum,5,1, QtCore.Qt.AlignRight)
-        layout.addWidget(GNATborderFractionLabel,6,0, QtCore.Qt.AlignRight)
-        layout.addWidget(self.GNATBorderFraction,6,1, QtCore.Qt.AlignRight)
+        layout.addWidget(GNATestimatedDimensionLabel,6,0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.GNATestimatedDimension,6,1, QtCore.Qt.AlignRight)
         layout.addWidget(GNATUseProjectedLabel,7,0,QtCore.Qt.AlignRight)
         layout.addWidget(self.GNATProjected,7,1);
         self.GNATOptions.setLayout(layout)
