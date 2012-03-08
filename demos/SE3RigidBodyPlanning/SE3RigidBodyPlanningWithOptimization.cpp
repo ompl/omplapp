@@ -82,15 +82,15 @@ int main()
         double length = -1.0;
         double duration = 0.0;
 
-        ompl::time::point start = ompl::time::now();
+        //ompl::time::point start = ompl::time::now();
         // try to solve the problem
         if (op.solve(time, 20, 1) && setup.haveExactSolutionPath())
         {
-            duration = time::seconds(time::now() - start);
+            //duration = time::seconds(time::now() - start);
             length = setup.getSolutionPath().length();
         }
-        else
-            duration = time::seconds(time::now() - start);
+       // else
+            //duration = time::seconds(time::now() - start);
 
         res << "time = " << duration << "s \t length = " << length << std::endl;
     }
@@ -110,15 +110,15 @@ int main()
         double length = -1.0;
         double duration = 0.0;
 
-        time::point start = time::now();
+        //time::point start = time::now();
         // try to solve the problem
         if (op.solve(time, 20, 4) && setup.haveExactSolutionPath())
         {
-            duration = time::seconds(time::now() - start);
+            //duration = time::seconds(time::now() - start);
             length = setup.getSolutionPath().length();
         }
         else
-            duration = time::seconds(time::now() - start);
+            //duration = ompl::time::seconds(time::now() - start);
 
         res << "time = " << duration << "s \t length = " << length << std::endl;
     }
