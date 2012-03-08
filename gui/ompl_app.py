@@ -265,7 +265,7 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "goal.x", goalPose().getX())
                 config.set("problem", "goal.y", goalPose().getY())
                 config.set("problem", "goal.z", goalPose().getZ())
-                rg = startPose().rotation()
+                rg = goalPose().rotation()
                 if rg.w==1:
                     config.set("problem", "goal.theta", 0)
                     config.set("problem", "goal.axis.x", 1)
