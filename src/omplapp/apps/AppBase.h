@@ -120,6 +120,7 @@ namespace ompl
                                                                                getGeometricStateExtractor()));
 
                 AppTypeSelector<T>::SimpleSetup::setup();
+                AppTypeSelector<T>::SimpleSetup::print();
             }
 
         protected:

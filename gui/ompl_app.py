@@ -238,6 +238,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def saveConfig(self):
         fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))
+        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
         if len(fname)>0:
             config = ConfigParser.ConfigParser()
             config.add_section("problem")
