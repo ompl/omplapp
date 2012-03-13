@@ -3,6 +3,8 @@
 ../src/omplapp/apps/AppBase.h
 ../src/omplapp/apps/SE2RigidBodyPlanning.h
 ../src/omplapp/apps/SE3RigidBodyPlanning.h
+../src/omplapp/apps/SE2MultiRigidBodyPlanning.h
+../src/omplapp/apps/SE3MultiRigidBodyPlanning.h
 ../src/omplapp/apps/KinematicCarPlanning.h
 ../src/omplapp/apps/DynamicCarPlanning.h
 ../src/omplapp/apps/BlimpPlanning.h
