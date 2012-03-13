@@ -237,8 +237,7 @@ class MainWindow(QtGui.QMainWindow):
                     self.mainWidget.glViewer.setBounds(bounds)
 
     def saveConfig(self):
-        fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))
-        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
+        fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg')[0])
         if len(fname)>0:
             config = ConfigParser.ConfigParser()
             config.add_section("problem")
@@ -266,7 +265,7 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "goal.x", goalPose().getX())
                 config.set("problem", "goal.y", goalPose().getY())
                 config.set("problem", "goal.z", goalPose().getZ())
-                rg = startPose().rotation()
+                rg = goalPose().rotation()
                 if rg.w==1:
                     config.set("problem", "goal.theta", 0)
                     config.set("problem", "goal.axis.x", 1)
@@ -295,7 +294,7 @@ class MainWindow(QtGui.QMainWindow):
                 config.set("problem", "volume.min.y", b.low[1])
                 config.set("problem", "volume.max.x", b.high[0])
                 config.set("problem", "volume.max.y", b.high[1])
-            config.write(open(fname, 'wb'))
+            config.write(open(fname,"wb"))
             self.msgInform("Saved " + fname)
 
     def openPath(self):
