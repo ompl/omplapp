@@ -16,6 +16,10 @@ if (OMPL_BUILD_DEMOS)
     add_omplapp_demo(demo_QuadrotorPlanning SE3RigidBodyPlanning/QuadrotorPlanning.cpp)
     add_omplapp_demo(demo_SE2MultiRigidBodyPlanning SE2RigidBodyPlanning/SE2MultiRigidBodyPlanning.cpp)
     add_omplapp_demo(demo_SE3MultiRigidBodyPlanning SE3RigidBodyPlanning/SE3MultiRigidBodyPlanning.cpp)
+    
+    if (OMPL_HAS_FCL)
+        add_omplapp_demo(demo_CollisionCheckers SE3RigidBodyPlanning/CollisionCheckers.cpp)
+    endif(OMPL_HAS_FCL)
 
     # create executable for planning with OPENDE
     if (OPENDE_FOUND AND DRAWSTUFF_FOUND)
