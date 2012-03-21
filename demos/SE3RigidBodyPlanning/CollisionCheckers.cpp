@@ -136,9 +136,9 @@ void configureCubiclesProblem (app::SE3RigidBodyPlanning &setup)
     setup.getSpaceInformation ()->getStateSpace ()->as <base::SE3StateSpace> ()->setBounds (bounds);
 }
 
-void test (int tries, std::vector <std::vector<double> > &times, std::vector<int> &attempts, bool fcl=false, bool continuous=false)
+void test (unsigned int tries, std::vector <std::vector<double> > &times, std::vector<int> &attempts, bool fcl=false, bool continuous=false)
 {
-    std::cout << "Evaluating " << (continuous ? "continuous" : "discrete") 
+    std::cout << "Evaluating " << (continuous ? "continuous" : "discrete")
                  << " " << (fcl ? "FCL" : "PQP") << " checker" << std::endl;
 
     std::vector <double> time;
@@ -151,7 +151,7 @@ void test (int tries, std::vector <std::vector<double> > &times, std::vector<int
         if (problem == 0)       std::cout << "- Apartment problem" << std::endl;
         else if (problem == 1) std::cout << "- Cubicles problem"  << std::endl;
         else if (problem == 2) std::cout << "- \'Easy\' problem"  << std::endl;
-        
+
         // plan in SE3
         app::SE3RigidBodyPlanning setup;
 
@@ -159,7 +159,7 @@ void test (int tries, std::vector <std::vector<double> > &times, std::vector<int
         {
             case 0: configureApartmentProblem (setup); break;
             case 1: configureCubiclesProblem (setup); break;
-            case 2: configureEasyProblem (setup); break;             
+            case 2: configureEasyProblem (setup); break;
         }
 
         if (fcl)
@@ -192,7 +192,7 @@ void test (int tries, std::vector <std::vector<double> > &times, std::vector<int
 
         times.push_back (time);
         time.clear ();
-        successful = 0; 
+        successful = 0;
         problem++;
         attempts.push_back (nr_attempts);
     }
@@ -202,18 +202,18 @@ void test (int tries, std::vector <std::vector<double> > &times, std::vector<int
 int main (int argc, char **argv)
 {
     // User can supply number of tries as 2nd command line argument.  Otherwise, use default NR_TRIES.
-    int nr_tries;
+    unsigned int nr_tries;
     if (argc == 2)
     {
         nr_tries = atoi (argv[1]);
 
         // make sure command line input is valid
-        if (nr_tries == INT_MAX || nr_tries == INT_MIN)
-            nr_tries = 20;
+        if (nr_tries == std::numeric_limits<unsigned int>::min() || nr_tries == std::numeric_limits<unsigned int>::max())
+            nr_tries = 20u;
     }
     else
-        nr_tries = 20;
-    
+        nr_tries = 20u;
+
     ompl::msg::noOutputHandler(); // Disable console output from OMPL.
 
     std::vector <std::vector <double> > pqp_times;
@@ -258,7 +258,7 @@ int main (int argc, char **argv)
 
         std::cout << "    Discrete PQP: " << pqp_time / (double) nr_tries << "  " << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
         std::cout << "    Discrete FCL: " << dfcl_time / (double) nr_tries << "  " << nr_tries << "/" << dfcl_attempts[i] << " planning attempts successful" << std::endl;
-        std::cout << "  Continuous FCL: " << cfcl_time / (double) nr_tries << "  " << nr_tries << " total attempts" << std::endl;        
+        std::cout << "  Continuous FCL: " << cfcl_time / (double) nr_tries << "  " << nr_tries << " total attempts" << std::endl;
     }
 
     return 0;
