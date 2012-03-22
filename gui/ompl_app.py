@@ -1066,10 +1066,10 @@ class Pose3DBox(QtGui.QGroupBox):
         c = [ cos(angle*pi/360.) for angle in angles ]
         s = [ sin(angle*pi/360.) for angle in angles ]
         rot = state().rotation()
-        rot.w = c[0]*c[1]*c[2] + s[0]*s[1]*s[2]
-        rot.x = s[0]*c[1]*c[2] - c[0]*s[1]*s[2]
-        rot.y = c[0]*s[1]*c[2] + s[0]*c[1]*s[2]
-        rot.z = c[0]*c[1]*s[2] - s[0]*s[1]*c[2]
+        rot.w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
+        rot.x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
+        rot.y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
+        rot.z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
         return state
 
     def poseChange(self, value):
