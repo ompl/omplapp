@@ -12,21 +12,21 @@
 
 #include "omplapp/config.h"
 #include "omplapp/apps/AppBase.h"
-#include <ompl/base/spaces/SE3StateSpace.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
 
 namespace ompl
 {
     namespace app
     {
 
-        /// @brief Wrapper for ompl::app::RigidBodyPlanning that plans for multiple rigid bodies in SE3.
-        class SE3MultiRigidBodyPlanning : public AppBase<GEOMETRIC>
+        /// @brief Wrapper for ompl::app::RigidBodyPlanning that plans for multiple rigid bodies in SE2.
+        class SE2MultiRigidBodyPlanning : public AppBase<GEOMETRIC>
         {
         public:
-            /// @brief Constructs an instance of multiple rigid bodies for 3D geometric planning.  n is the number of independent bodies in SE(3)
-            SE3MultiRigidBodyPlanning(unsigned int n);
+            /// @brief Constructs an instance of multiple rigid bodies for 2D geometric planning.  n is the number of independent bodies in SE(2)
+            SE2MultiRigidBodyPlanning(unsigned int n);
 
-            virtual ~SE3MultiRigidBodyPlanning(void) {}
+            virtual ~SE2MultiRigidBodyPlanning(void) {}
 
             /// @brief Constructs the default start state where all robots begin at their geometric center.
             /// If robots are all using the same mesh, this state is not likely to be valid.

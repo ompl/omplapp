@@ -39,7 +39,7 @@ int main()
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
 
-    // attempt to solve the problem, and print it to sceen if a solution is found
+    // attempt to solve the problem, and print it to screen if a solution is found
     if (setup.solve())
         setup.getSolutionPath().print(std::cout);
 

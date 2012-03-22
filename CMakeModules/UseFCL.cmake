@@ -1,14 +1,14 @@
 include(FindPackageHandleStandardArgs)
 
-find_library (ANN_LIBRARY NAMES ann ANN DOC "Location of the ANN (approximate nearest neighbor library)")
-find_path (ANN_INCLUDE_DIR ANN)
+find_library (FLANN_LIBRARY NAMES flann FLANN DOC "Location of the FLANN (fast library for approximate nearest neighbors)")
+find_path (FLANN_INCLUDE_DIR flann.h PATH_SUFFIXES flann)
 
-if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
-    find_package_handle_standard_args(ann DEFAULT_MSG ANN_LIBRARY ANN_INCLUDE_DIR)
+if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
+    find_package_handle_standard_args(flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
 
     # Check for FCL and CCD installation, otherwise download them.
-    # ANN is required for FCL, so don't download anything unless
-    # ANN is installed.
+    # FLANN is required for FCL, so don't download anything unless
+    # FLANN is installed.
 
     ### CCD LIBRARY ###
     find_library (CCD_LIBRARY ccd DOC "Location of the CCD library (convex collision detection)")
@@ -58,7 +58,7 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
             SVN_REPOSITORY "https://kforge.ros.org/fcl/fcl_ros/trunk/fcl"
-            SVN_REVISION "-r71"
+            SVN_REVISION "-r80"
             SVN_TRUST_CERT 1
             UPDATE_COMMAND ""
             CMAKE_ARGS
@@ -66,7 +66,7 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
                 "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
                 "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl-build"
                 "-DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/ompl/CMakeModules"
-                "-DANN_INCLUDE_DIR=${ANN_INCLUDE_DIR}"
+                "-DANN_INCLUDE_DIR=${FLANN_INCLUDE_DIR}"
                 "-DCCD_INCLUDE_DIR=${CCD_INCLUDE_DIR}"
             INSTALL_COMMAND "")
 
@@ -91,8 +91,9 @@ if (ANN_LIBRARY AND ANN_INCLUDE_DIR)
         endif()
     endif (FCL_LIBRARY AND FCL_INCLUDE_DIR)
 
-    # Very important that CCD be linked AFTER FCL.  Otherwise, symbols in CCD
-    # used by FCL may be optimized out in shared libraries.
-    set(FCL_LIBRARIES ${ANN_LIBRARY} ${FCL_LIBRARY} ${CCD_LIBRARY})
-
-endif (ANN_LIBRARY AND ANN_INCLUDE_DIR)
+    # Link order is very important here.  If FCL isn't linked first, over-zealous
+    # optimization may needed remove symbols from FLANN and/or CCD in subsequent links.
+    set(FCL_LIBRARIES ${FCL_LIBRARY} ${FLANN_LIBRARY} ${CCD_LIBRARY})
+else (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
+    message (STATUS "FLANN not found.  Install FLANN for FCL collision checker support.")
+endif (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)

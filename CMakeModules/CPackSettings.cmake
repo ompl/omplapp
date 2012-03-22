@@ -12,6 +12,7 @@ set(CPACK_SOURCE_IGNORE_FILES
     "/build/"
     ".pyc$"
     ".pyo$"
+    "__pycache__"
     ".so$"
     ".dylib$"
     ".DS_Store"
