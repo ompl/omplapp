@@ -204,6 +204,7 @@ class MainWindow(QtGui.QMainWindow):
                                                config.getfloat("problem", "goal.axis.y"),
                                                config.getfloat("problem", "goal.axis.z"),
                                                config.getfloat("problem", "goal.theta"))
+                print goal().rotation().x,goal().rotation().y,goal().rotation().z,goal().rotation().w
             else:
                 start().setX(config.getfloat("problem", "start.x"))
                 start().setY(config.getfloat("problem", "start.y"))
@@ -1050,10 +1051,12 @@ class Pose3DBox(QtGui.QGroupBox):
             self.posy.setValue(state.getY())
             self.posz.setValue(state.getZ())
             q = state.rotation()
-            rad2deg = 180/pi
+            rad2deg = 180.0/pi
+            v = q.x*q.y+q.w*q.z;
+            print v
             self.rotx.setValue(rad2deg * atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y)))
-            self.roty.setValue(rad2deg * asin(2.*(q.w*q.y-q.z*q.x)))
             self.rotz.setValue(rad2deg * atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)))
+            self.roty.setValue(rad2deg * asin(2.*(q.w*q.y-q.z*q.x)))
         else:
             self.posx.setValue(state.getX())
             self.posy.setValue(state.getY())
@@ -1068,13 +1071,16 @@ class Pose3DBox(QtGui.QGroupBox):
         state().setY(self.posy.value())
         state().setZ(self.posz.value())
         angles = [self.rotx.value(), self.roty.value(), self.rotz.value()]
-        c = [ cos(angle*pi/360.) for angle in angles ]
-        s = [ sin(angle*pi/360.) for angle in angles ]
+        print "Debug: "
+        print angles;
+        c = [ cos(angle/2.0*pi/180.) for angle in angles ]
+        s = [ sin(angle/2.0*pi/180.) for angle in angles ]
         rot = state().rotation()
         rot.w = c[0]*c[1]*c[2] + s[0]*s[1]*s[2]
         rot.x = s[0]*c[1]*c[2] - c[0]*s[1]*s[2]
         rot.y = c[0]*s[1]*c[2] + s[0]*c[1]*s[2]
         rot.z = c[0]*c[1]*s[2] - s[0]*s[1]*c[2]
+        print rot.w,rot.x,rot.y,rot.z;
         return state
 
     def poseChange(self, value):

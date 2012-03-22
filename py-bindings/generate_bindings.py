@@ -36,7 +36,7 @@ class ompl_app_generator_t(code_generator_t):
         # The virtual functions "solve" and "clear" from SimpleSetup are not redefined
         # in these two derived classes, and for some reason Py++ doesn't export them
         # (even though it does generate some wrapper code for them)
-        for cls in ['SE2RigidBodyPlanning', 'SE3RigidBodyPlanning', 'GSE2RigidBodyPlanning', 'GSE3RigidBodyPlanning']:
+        for cls in ['SE2RigidBodyPlanning', 'SE3RigidBodyPlanning', 'SE3MultiRigidBodyPlanning' , 'GSE2RigidBodyPlanning', 'GSE3RigidBodyPlanning']:
             self.ompl_ns.class_(cls).add_registration_code(
             'def("solve", &%s_wrapper::solve, (bp::arg("time")=1.0e+0))' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
