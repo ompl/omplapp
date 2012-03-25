@@ -19,7 +19,7 @@ For running the tests, you will also need <a href="http://code.google.com/p/goog
 Below are installation instructions for <a href="#install_linux">Linux</a>, <a href="#install_osx">OS X</a>, and <a href="#install_windows">Windows</a>.
 <br>
 
-\note If you are using <a href="http://code.ros.org">ROS</a>, please see the <a href="http://www.ros.org/wiki/ompl">OMPL package in ROS</a>.
+\note If you are using <a href="http://code.ros.org">ROS</a>, please see the <a href="http://www.ros.org/wiki/ompl_ros_interance">ROS interface to OMPL</a>.
 
 \htmlonly
 <div class="btn-group">
