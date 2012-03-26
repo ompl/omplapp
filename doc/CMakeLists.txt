@@ -6,7 +6,7 @@ if(OMPLAPP_BUILD_DOC)
 
     if(DOXYGEN)
         if(UNIX)
-            execute_process(COMMAND date "+%b %d, %Y" 
+            execute_process(COMMAND date "+%b %d, %Y"
                 OUTPUT_VARIABLE OMPL_RELEASE_DATE
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
         endif()
@@ -19,9 +19,6 @@ if(OMPLAPP_BUILD_DOC)
         add_custom_target(doc
             COMMAND ${CMAKE_COMMAND} -E remove_directory html
             COMMAND ${DOXYGEN} "Doxyfile"
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
-        add_custom_command(TARGET doc POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy js/search.js html/search
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
         # add "website" target
