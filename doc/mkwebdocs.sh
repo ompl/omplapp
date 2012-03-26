@@ -25,7 +25,7 @@ cp -r css js php images html/*.png html/*.map html/search ${ASSET_DIR}
 cd $ASSET_DIR && ln -s ../ompl core && cd ..
 
 # copy everything to web server and fix permissions
-tar cf - ${ASSET_DIR} | ssh ${SERVER} 'mkdir -p '${ASSETS_ROOT}'; cd '${ASSETS_ROOT}'; tar xf -; chmod -R a+rX '${ASSET_DIR}'; chgrp -R ompl '${ASSET_DIR}'; chmod -R g+w '${ASSET_DIR}
+tar cf - ${ASSET_DIR} | ssh ${SERVER} 'mkdir -p '${ASSETS_ROOT}'; cd '${ASSETS_ROOT}'; tar xf -; ln -s ../wordpress '${ASSET_DIR}'/blog; chmod -R a+rX '${ASSET_DIR}'; chgrp -R ompl '${ASSET_DIR}'; chmod -R g+w '${ASSET_DIR}
 
 # clean up
 rm -rf ${ASSET_DIR}
