@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 
     std::string benchmark_name("Ring");
     double runtime_limit=1000, memory_limit=8000;
-    int run_count=1;
+    int run_count=30;
     // create the benchmark object and add all the planners we'd like to run
     tools::Benchmark::Request request(runtime_limit, memory_limit, run_count);
     tools::Benchmark b(setup, benchmark_name);
