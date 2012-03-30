@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(omplapp CXX)
+project(omplapp CXX C)
 
 # set the default build type
 if (NOT CMAKE_BUILD_TYPE)
