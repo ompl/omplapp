@@ -83,7 +83,8 @@ int main(int argc, char **argv)
     int plannerNumber(std::numeric_limits<int>::max());
     if(argc > 2)
     {
-        plannerNumber = boost::lexical_cast<int>(std::string(argv[2]));
+        if(plannerNumber != 0)
+            plannerNumber = boost::lexical_cast<int>(std::string(argv[2]));
     }
     size_t ROBOT_COUNT = boost::lexical_cast<size_t>(std::string(argv[1]));
     std::cout<<"Planning on "<<ROBOT_COUNT<<" robots."<<std::endl;
@@ -92,7 +93,7 @@ int main(int argc, char **argv)
 
     // load the robot and the environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/ring.dae";
-    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Easy_env.dae";
+    std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/ring.dae";
     setup.setRobotMesh(robot_fname.c_str());  // The first mesh should use setRobotMesh.
     setup.addRobotMesh(robot_fname.c_str());  // Subsequent robot meshes MUST use addRobotMesh!
 
@@ -108,34 +109,34 @@ int main(int argc, char **argv)
     {
         ompl::base::SE3StateSpace::StateType* start1 = start.get()->as<ompl::base::SE3StateSpace::StateType>(2*k);
         // define start state (robot 1)
-        start1->setX(300 + 54.48);
-        start1->setY(36.96);
-        start1->setZ(-275.00 + 2*k*10.0);
-        start1->rotation().setAxisAngle(0,0,0,1);
+        start1->setX(54.48);
+        start1->setY(28.96);
+        start1->setZ(14.0 + (2*k)*10.0);
+        start1->rotation().setAxisAngle(-0.73579887177,0.655163379006,-0.171350422223,3.42251548301);
         se3.printState(start1,std::cout);
+
         // define goal state (robot 1)
         ompl::base::SE3StateSpace::StateType* goal1 = goal.get()->as<ompl::base::SE3StateSpace::StateType>(2*k);
-        goal1->setX(300 + 54.48);
-        goal1->setY(170.96 - 2*k*10.0);
-        goal1->setZ(-450);
-        goal1->rotation().setAxisAngle(0.338308450819,0.374031211022,-0.863509145963,1.79883884924);
+        goal1->setX(54.48);
+        goal1->setY(27.96);
+        goal1->setZ(-5.0 - (2*k)*10.0);
+        goal1->rotation().setAxisAngle(0.218073032767,0.238335667035,-0.946382725015,1.628349569);
         se3.printState(goal1,std::cout);
 
         ompl::base::SE3StateSpace::StateType* start2 = start.get()->as<ompl::base::SE3StateSpace::StateType>(2*k+1);
         // define start state (robot 2)
-        start2->setX(300 + 54.48);
-        start2->setY(36.96);
-        start2->setZ(-275 + (2*k+1)*10.0);
-        start2->rotation().setAxisAngle(-0.73579887177,0.655163379006,-0.171350422223,3.42251548301);
+        start2->setX(54.48);
+        start2->setY(28.96);
+        start2->setZ(14.0 + (2*k+1)*10.0);
+        start2->rotation().setAxisAngle(0,0,0,1);
         se3.printState(start2,std::cout);
 
         // define goal state (robot 2)
         ompl::base::SE3StateSpace::StateType* goal2 = goal.get()->as<ompl::base::SE3StateSpace::StateType>(2*k+1);
-        goal2->setX(300+56.48);
-        goal2->setY(35.96);
-        goal2->setY(170.96 - (2*k+1)*10.0);
-        goal2->setZ(-450.00);
-        goal2->rotation().setAxisAngle(-0.268761115857,0.67719659038,0.673026403874,3.62553819142);
+        goal2->setX(54.48);
+        goal2->setY(27.96);
+        goal2->setZ(-5.0 - (2*k+1)*10.0);
+        goal2->rotation().setAxisAngle(0,0,0,1);
         se3.printState(goal2,std::cout);
     }
 
@@ -146,18 +147,18 @@ int main(int argc, char **argv)
     setup.setGoalState(goal,1e-4);
 
     // setting collision checking resolution to 1% of the space extent
-    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.001);
+    setup.getSpaceInformation()->setStateValidityCheckingResolution(0.0001);
 
     // use RRT for planning
     //base::PlannerPtr plnr(new geometric::KPIECE1(setup.getSpaceInformation()));
-    //base::PlannerPtr plnr(new geometric::RRTConnect(setup.getSpaceInformation()));
-    base::PlannerPtr plnr(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,3));
+    base::PlannerPtr plnr(new geometric::RRTConnect(setup.getSpaceInformation()));
+    //base::PlannerPtr plnr(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,3));
+    //base::PlannerPtr plnr(new geometric::EST(setup.getSpaceInformation()));
     setup.setPlanner(plnr); 
 
     // we call setup just so print() can show more information
     setup.setup();
     setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
-    setup.params().setParam("goal_bias","0.9");
     setup.print();
 
     //     try to solve the problem
@@ -178,6 +179,14 @@ int main(int argc, char **argv)
             else
             {
                 std::cout << "Exact solution not found" << std::endl;
+
+                // simplify & print the solution
+                setup.simplifySolution();
+                std::cout << "Robot #1:" << std::endl;
+                printMultiRobotPath (setup.getSolutionPath(), 0);  // Robot #0's path
+                std::cout << std::endl << "Robot #2:" << std::endl;
+                printMultiRobotPath (setup.getSolutionPath(), 1);  // Robot #1's path
+
                 exit(0);
             }
         }
