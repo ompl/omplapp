@@ -1,8 +1,8 @@
-/** 
+/**
 \page benchmark How to benchmark planners
 
 OMPL contains a ompl::Benchmark class that facilitates solving a motion planning
-problem repeatedly with different planners, different samplers, or even 
+problem repeatedly with different planners, different samplers, or even
 differently configured versions of the same planning algorithm. Below, we
 will describe how you can use this class.
 
@@ -15,13 +15,13 @@ For more advanced benchmarks, please see <a href="http://plannerarena.org">plann
 
 \section benchmark_config Create a benchmark configuration file
 
-OMPL.app contains a command line program called \c benchmark, that can read
+OMPL.app contains a command line program called \c ompl_benchmark, that can read
 a text based configuration file using an ini style format with key/value
 pairs. This is the same format that can be read and saved with the OMPL.app
 GUI. The GUI ignores the settings related to benchmarking. However, it is
 often convenient to create an initial configuration with the GUI and add
 the benchmark settings with a text editor. Currently the base functionality
-of the \c benchmark program only applies to geometric planning
+of the \c ompl_benchmark program only applies to geometric planning
 in SE(2) and SE(3), but can be extended by the user to other spaces.
 
 There are a number of required parameters necessary to define the problem.  These
@@ -48,6 +48,7 @@ heading:
 - <b>time_limit</b>: The amount of time (seconds) for each plan computation
 - <b>mem_limit</b>: The maximum amount of memory (MB) for each planner
 - <b>run_count</b>: The number of times to repeat the experiment for each planner
+- <b>save_paths</b>: This <i>optional</i> parameter can be set to \c none, \c all, or \c shortest to save <i>no</i> solution paths (the default value), <i>all</i> solution paths (including approximate solutions), or the <i>shortest</i> exact solution for each planner, respectively. These paths can then be “played back” in the \ref gui_paths "OMPL.app GUI".
 
 The last required element to specify are the planners to benchmark.  These are specified
 under the “[planner]” heading.  The following planners are valid for geometric benchmarking:
@@ -96,7 +97,7 @@ but depending on the environment this may not be a good assumption.  It is easy 
 redefine the bounding box under the problem heading using the “volume” configuration:
 - <b>volume.[min|max].[x|y|z]</b>
 
-There are many other optional parameters that can be specified or changed.  The benchmark
+There are many other optional parameters that can be specified or changed.  The \c ompl_benchmark
 executable takes advantage of the ompl::base::ParamSet class, and uses this functionality to
 set any parameter defined in the file.  If a class exposes a parameter, chances are that
 it is possible to tune it via the config file.  OMPL.app provides two example configuration
@@ -135,7 +136,7 @@ problem.sampler="obstacle_based"
 prm.name="obprm"
 \endcode
 
-Finally, to execute the benchmark configuration file, simply run the \c benchmark executable
+Finally, to execute the benchmark configuration file, simply run the \c ompl_benchmark executable
 in the OMPL.app bin directory, and supply the path to the config file as the first argument.
 
 \section benchmark_code Writing benchmarking code

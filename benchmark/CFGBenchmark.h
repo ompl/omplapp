@@ -73,4 +73,8 @@ private:
     ompl::base::ValidStateSamplerPtr allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type);
     void setupBenchmark(void);
     void preSwitchEvent(const ompl::base::PlannerPtr &planner);
+
+    // optional post-run events
+    void saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
+    void saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
 };

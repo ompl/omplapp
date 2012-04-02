@@ -52,6 +52,8 @@
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 #include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
 
+#include <fstream>
+
 ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt)
 {
     ompl::base::Planner *p = NULL;
@@ -124,6 +126,15 @@ void CFGBenchmark::setupBenchmark(void)
             benchmark_->addPlannerAllocator(boost::bind(&CFGBenchmark::allocPlanner, this, _1,
                                             it->first, it->second[i]));
     benchmark_->setPlannerSwitchEvent(boost::bind(&CFGBenchmark::preSwitchEvent, this, _1));
+    if (bo_.declared_options_.find("benchmark.save_paths") != bo_.declared_options_.end())
+    {
+        std::string savePathArg = bo_.declared_options_["benchmark.save_paths"];
+        if (savePathArg.substr(0,3) == std::string("all")) // starts with "all"
+            benchmark_->setPostRunEvent(boost::bind(&CFGBenchmark::saveAllPaths, this, _1, _2));
+        else if (savePathArg.substr(0,8) == std::string("shortest")
+            || savePathArg.substr(0,4) == std::string("best")) // starts with "shortest" or "best"
+            benchmark_->setPostRunEvent(boost::bind(&CFGBenchmark::saveShortestPath, this, _1, _2));
+    }
 }
 
 void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
@@ -135,6 +146,42 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
     else
         planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
+}
+
+void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
+{
+    ompl::base::GoalPtr goal = planner->getProblemDefinition()->getGoal();
+    if (goal->isAchieved())
+    {
+        const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
+        std::string fname = benchmark_->getExperimentName() + std::string("_")
+            + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
+            + std::string(".path");
+        std::ofstream pathfile(fname.c_str());
+        goal->getSolutionPath()->print(pathfile);
+    }
+}
+void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
+{
+    static ompl::base::PathPtr path;
+    static std::string fname;
+    ompl::base::GoalPtr goal = planner->getProblemDefinition()->getGoal();
+    const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
+    if (goal->isAchieved() && !goal->isApproximate())
+    {
+        if (!path || goal->getSolutionPath()->length() < path->length())
+        {
+            path = goal->getSolutionPath();
+            fname = benchmark_->getExperimentName() + std::string("_")
+                + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
+                + std::string(".path");
+        }
+    }
+    if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && path)
+    {
+        std::ofstream pathfile(fname.c_str());
+        path->print(pathfile);
+    }
 }
 
 void CFGBenchmark::setup(void)
