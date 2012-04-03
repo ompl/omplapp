@@ -1,6 +1,12 @@
 /**
 \page releaseNotes Release Notes
 
+\section release_0_10_2 OMPL.app 0.10.2 (March 21, 2012)
+- Created a blog to highlight new features.
+- Added support for multi-robot rigid-body motion planning.
+- Updated FCL (which now uses FLANN instead of ANN for nearest neighbors)
+- Bug fixes.
+
 \section release_0_10_1 OMPL.app 0.10.1 (February 27, 2012)
 - Added representation of discrete control spaces.
 - Fixes for XCode 4.3 when compiling the Python bindings.
