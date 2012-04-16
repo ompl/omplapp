@@ -489,7 +489,9 @@ class MainWindow(QtGui.QMainWindow):
         solved = self.omplSetup.solve(self.timeLimit)
 
         # update the planner data to render, if needed
-        self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(self.omplSetup.getPlannerData())
+        pd = ob.PlannerData()
+        self.omplSetup.getPlannerData(pd)
+        self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(pd)
 
         # update the displayed bounds, in case planning did so
         self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
