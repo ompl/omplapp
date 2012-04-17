@@ -74,11 +74,11 @@ namespace ompl
             if (m == Motion_2D)
                 for (std::size_t i = 0; i < pd.numVertices(); ++i)
                 {
-                    const base::PlannerDataVertex * vtx = pd.getVertex(i);
-                    setStateColor(vtx->getTag());
+                    const base::PlannerDataVertex& vtx = pd.getVertex(i);
+                    setStateColor(vtx.getTag());
                     for (unsigned int r = 0 ; r < count ; ++r)
                     {
-                        const base::State *st = gse(vtx->getState(), r);
+                        const base::State *st = gse(vtx.getState(), r);
                         const base::SE2StateSpace::StateType* se2st = static_cast<const base::SE2StateSpace::StateType*>(st);
                         renderState (*se2st);
                     }
@@ -86,11 +86,11 @@ namespace ompl
             else
                 for (std::size_t i = 0; i < pd.numVertices(); ++i)
                 {
-                    const base::PlannerDataVertex * vtx = pd.getVertex(i);
-                    setStateColor(vtx->getTag());
+                    const base::PlannerDataVertex& vtx = pd.getVertex(i);
+                    setStateColor(vtx.getTag());
                     for (unsigned int r = 0 ; r < count ; ++r)
                     {
-                        const base::State *st = gse(vtx->getState(), r);
+                        const base::State *st = gse(vtx.getState(), r);
                         const base::SE3StateSpace::StateType* se3st = static_cast<const base::SE3StateSpace::StateType*>(st);
                         renderState (*se3st);
                     }
