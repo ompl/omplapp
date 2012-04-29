@@ -15,6 +15,7 @@ set(CPACK_SOURCE_IGNORE_FILES
     "__pycache__"
     ".so$"
     ".dylib$"
+    ".orig$"
     ".DS_Store"
     ".tmproj$"
     ".tm_properties"
