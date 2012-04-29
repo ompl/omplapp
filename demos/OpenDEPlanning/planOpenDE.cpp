@@ -134,10 +134,11 @@ int main(int argc, char **argv)
         std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
 
         POINTS.clear();
-        const ob::PlannerData &pd = ss.getPlannerData();
-        for (unsigned int i = 0 ; i < pd.states.size() ; ++i)
+        ob::PlannerData pd;
+        ss.getPlannerData(pd);
+        for (unsigned int i = 0 ; i < pd.numVertices() ; ++i)
         {
-            const double *pos = pd.states[i]->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
+            const double *pos = pd.getVertex(i).getState()->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
         }
 
