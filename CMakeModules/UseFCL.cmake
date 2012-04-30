@@ -1,7 +1,7 @@
 include(FindPackageHandleStandardArgs)
 
 find_library (FLANN_LIBRARY NAMES flann FLANN DOC "Location of the FLANN (fast library for approximate nearest neighbors)")
-find_path (FLANN_INCLUDE_DIR flann.h PATH_SUFFIXES flann)
+find_path (FLANN_INCLUDE_DIR flann/flann.h)
 
 if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
     find_package_handle_standard_args(flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
