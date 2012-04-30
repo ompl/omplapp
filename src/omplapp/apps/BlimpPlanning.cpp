@@ -48,10 +48,10 @@ void ompl::app::BlimpPlanning::postPropagate(const control::Control *ctrl, base:
     pose.rotation().setAxisAngle(0,0,1, pose.rotation().x);
 
     // Enforce velocity bounds
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(s[1]);
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(1)->enforceBounds(s[1]);
 
     // Enforce steering bounds
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(2)->enforceBounds(s[2]);
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(2)->enforceBounds(s[2]);
 }
 
 void ompl::app::BlimpPlanning::ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
@@ -78,9 +78,9 @@ ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace(void)
 {
     base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
 
-    stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
-    stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), .3);
-    stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(1)), .3);
+    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
+    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), .3);
+    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(1)), .3);
     stateSpace->as<base::CompoundStateSpace>()->lock();
     return stateSpace;
 }

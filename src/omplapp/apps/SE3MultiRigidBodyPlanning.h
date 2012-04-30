@@ -50,7 +50,7 @@ namespace ompl
             /// @brief Returns the state space corresponding for the indexth rigid body
             virtual const base::StateSpacePtr& getGeometricComponentStateSpace(unsigned int index) const
             {
-                return getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(index);
+                return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(index);
             }
 
             virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const

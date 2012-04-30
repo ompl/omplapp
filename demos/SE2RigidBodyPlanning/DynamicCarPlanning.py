@@ -39,7 +39,7 @@ def dynamicCarDemo(setup):
     bounds = ob.RealVectorBounds(2)
     bounds.setLow(-10)
     bounds.setHigh(10)
-    stateSpace.getSubSpace(0).setBounds(bounds)
+    stateSpace.getSubspace(0).setBounds(bounds)
 
     # define start state
     start = ob.State(stateSpace)

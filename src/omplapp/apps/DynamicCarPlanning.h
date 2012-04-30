@@ -75,7 +75,7 @@ namespace ompl
 
             virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
             {
-                return getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(0);
+                return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(0);
             }
 
             double getVehicleLength()
@@ -114,8 +114,8 @@ namespace ompl
             static base::StateSpacePtr constructStateSpace(void)
             {
                 base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
-                stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE2StateSpace()), 1.);
-                stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(2)), .3);
+                stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE2StateSpace()), 1.);
+                stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(2)), .3);
                 stateSpace->as<base::CompoundStateSpace>()->lock();
                 return stateSpace;
             }

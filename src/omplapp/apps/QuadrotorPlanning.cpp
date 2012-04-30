@@ -109,15 +109,15 @@ void ompl::app::QuadrotorPlanning::postPropagate(const control::Control* /*ctrl*
     SO3.enforceBounds(&so3State);
 
     // Enforce velocity bounds
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(1)->enforceBounds(cs[1]);
+    getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(1)->enforceBounds(cs[1]);
 }
 
 ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace(void)
 {
     base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
 
-    stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
-    stateSpace->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::RealVectorStateSpace(6)), .3);
+    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
+    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(6)), .3);
     stateSpace->as<base::CompoundStateSpace>()->lock();
     return stateSpace;
 }
