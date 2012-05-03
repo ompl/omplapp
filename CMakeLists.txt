@@ -41,8 +41,10 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 endif(MSVC)
+# Ensure dynamic linking with boost unit_test_framework
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
-find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system REQUIRED)
+find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system unit_test_framework REQUIRED)
 find_package(Boost COMPONENTS python)
 
 find_package(Boost COMPONENTS odeint QUIET)
