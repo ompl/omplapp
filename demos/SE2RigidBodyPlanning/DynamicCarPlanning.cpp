@@ -82,7 +82,7 @@ void dynamicCarDemo(app::DynamicCarPlanning& setup)
         if (!setup.haveExactSolutionPath())
         {
             std::cout << "Solution is approximate. Distance to actual goal is " <<
-                setup.getGoal()->getDifference() << std::endl;
+                setup.getProblemDefinition()->getDifference() << std::endl;
         }
     }
 

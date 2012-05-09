@@ -150,28 +150,28 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
 
 void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
 {
-    ompl::base::GoalPtr goal = planner->getProblemDefinition()->getGoal();
-    if (goal->isAchieved())
+    ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
+    if (pdef->isAchieved())
     {
         const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
         std::string fname = benchmark_->getExperimentName() + std::string("_")
             + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
             + std::string(".path");
         std::ofstream pathfile(fname.c_str());
-        goal->getSolutionPath()->print(pathfile);
+        pdef->getSolutionPath()->print(pathfile);
     }
 }
 void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
 {
     static ompl::base::PathPtr path;
     static std::string fname;
-    ompl::base::GoalPtr goal = planner->getProblemDefinition()->getGoal();
+    ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
     const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
-    if (goal->isAchieved() && !goal->isApproximate())
+    if (pdef->isAchieved() && !pdef->isApproximate())
     {
-        if (!path || goal->getSolutionPath()->length() < path->length())
+        if (!path || pdef->getSolutionPath()->length() < path->length())
         {
-            path = goal->getSolutionPath();
+            path = pdef->getSolutionPath();
             fname = benchmark_->getExperimentName() + std::string("_")
                 + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
                 + std::string(".path");
