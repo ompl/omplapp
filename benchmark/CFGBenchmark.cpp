@@ -151,7 +151,7 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
 void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
 {
     ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
-    if (pdef->isAchieved())
+    if (pdef->hasSolution())
     {
         const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
         std::string fname = benchmark_->getExperimentName() + std::string("_")
@@ -167,7 +167,7 @@ void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl:
     static std::string fname;
     ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
     const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
-    if (pdef->isAchieved() && !pdef->isApproximate())
+    if (pdef->hasSolution() && !pdef->hasApproximateSolution())
     {
         if (!path || pdef->getSolutionPath()->length() < path->length())
         {

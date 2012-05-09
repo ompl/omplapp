@@ -86,7 +86,7 @@ void blimpDemo(app::BlimpPlanning& setup)
         if (!setup.haveExactSolutionPath())
         {
             std::cout << "Solution is approximate. Distance to actual goal is " <<
-                setup.getProblemDefinition()->getDifference() << std::endl;
+                setup.getProblemDefinition()->getSolutionDifference() << std::endl;
         }
     }
 }
