@@ -28,7 +28,7 @@ and MS Windows. Go to the top-level directory of OMPL.app and type the
 following commands:
    mkdir -p build/Release
    cd build/Release
-   cmake -DCMAKE_BUILD_TYPE=Release ../..
+   cmake ../..
    # next two steps are optional
    make installpyplusplus && cmake . # download & install Py++
    make update_bindings # if you want to use the GUI or Python bindings
