@@ -14,12 +14,12 @@ Finally, to use the GUI the following dependencies are required (in addition to 
 - <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt4</a> or <a href="http://www.pyside.org/">PySide</a> (which, in turn, require <a href="http://qt.nokia.com/downloads">Qt4</a>) and
 - <a href="http://pyopengl.sourceforge.net/">PyOpenGL</a>.
 .
-To (re)generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
+To generate this documentation you will need <a href="http://www.doxygen.org">Doxygen</a>.
 
 Below are installation instructions for <a href="#install_linux">Linux</a>, <a href="#install_osx">OS X</a>, and <a href="#install_windows">Windows</a>.
 <br>
 
-\note If you are using <a href="http://code.ros.org">ROS</a>, please see the <a href="http://www.ros.org/wiki/ompl_ros_interance">ROS interface to OMPL</a>.
+\note If you are using <a href="http://code.ros.org">ROS</a>, please see the <a href="http://www.ros.org/wiki/ompl_ros_interface">ROS interface to OMPL</a>.
 
 \htmlonly
 <div class="btn-group">
