@@ -43,7 +43,7 @@ sudo add-apt-repository ppa:boost-latest/ppa
 You can download the latest version from <a href="http://www.cmake.org/cmake/resources/software.html">here</a>.
 - Install Boost, CMake, automake, libtool, PyQt4, and PyOpenGL.
 \code
-sudo apt-get install libboost-all-dev cmake automake libtool python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
+sudo apt-get install libboost-all-dev cmake automake libtool curl python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
 \endcode
 Some versions of Linux offer multiple versions of Boost. It is strongly advised to install only one version.
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install <a href="http://pypi.python.org/pypi/PyOpenGL-accelerate">PyOpenGL-accelerate</a> to enable OpenGL hardware acceleration.
