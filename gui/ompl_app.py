@@ -489,7 +489,7 @@ class MainWindow(QtGui.QMainWindow):
         solved = self.omplSetup.solve(self.timeLimit)
 
         # update the planner data to render, if needed
-        pd = ob.PlannerData()
+        pd = ob.PlannerData(self.omplSetup.getSpaceInformation())
         self.omplSetup.getPlannerData(pd)
         self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(pd)
 
