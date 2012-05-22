@@ -438,6 +438,10 @@ class MainWindow(QtGui.QMainWindow):
             elif self.planner==1:
                 planner = oc.RRT(si)
                 planner.setGoalBias(self.mainWidget.plannerWidget.controlPlanning.RRTGoalBias.value())
+            elif self.planner==2:
+                planner = oc.EST(si)
+                planner.setRange(self.mainWidget.plannerWidget.controlPlanning.ESTRange.value())
+                planner.setGoalBias(self.mainWidget.plannerWidget.controlPlanning.ESTGoalBias.value())
         return planner
 
     def setRobotType(self, value):
@@ -1355,6 +1359,7 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         self.plannerSelect = QtGui.QComboBox()
         self.plannerSelect.addItem('KPIECE')
         self.plannerSelect.addItem('RRT')
+        self.plannerSelect.addItem('EST')
 
         # control KPIECE options
         self.KPIECEOptions = QtGui.QGroupBox('KPIECE options')
@@ -1386,10 +1391,30 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         layout.addWidget(RRTgoalBiasLabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.RRTGoalBias, 0, 1)
         self.RRTOptions.setLayout(layout)
+        
+        # EST options
+        self.ESTOptions = QtGui.QGroupBox('EST options')        
+        ESTgoalBiasLabel = QtGui.QLabel('Goal bias')
+        ESTrangeLabel = QtGui.QLabel('Range')
+        self.ESTRange = QtGui.QDoubleSpinBox()
+        self.ESTRange.setRange(0, 10000)
+        self.ESTRange.setSingleStep(1)
+        self.ESTRange.setValue(0)
+        self.ESTGoalBias = QtGui.QDoubleSpinBox()
+        self.ESTGoalBias.setRange(0, 1)
+        self.ESTGoalBias.setSingleStep(.05)
+        self.ESTGoalBias.setValue(0.05)
+        layout = QtGui.QGridLayout()
+        layout.addWidget(ESTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.ESTRange, 0, 1)
+        layout.addWidget(ESTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.ESTGoalBias, 1, 1)
+        self.ESTOptions.setLayout(layout)
 
         self.stackedWidget = QtGui.QStackedWidget()
         self.stackedWidget.addWidget(self.KPIECEOptions)
         self.stackedWidget.addWidget(self.RRTOptions)
+        self.stackedWidget.addWidget(self.ESTOptions)
         self.plannerSelect.activated.connect(self.stackedWidget.setCurrentIndex)
 
         timeLimitLabel = QtGui.QLabel('Time (sec.)')
