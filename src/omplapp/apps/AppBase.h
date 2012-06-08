@@ -100,7 +100,7 @@ namespace ompl
 
                 if (AppTypeSelector<T>::SimpleSetup::getProblemDefinition()->getStartStateCount() == 0)
                 {
-                    AppTypeSelector<T>::SimpleSetup::msg_.inform("Adding default start state");
+                    logInform("Adding default start state");
                     AppTypeSelector<T>::SimpleSetup::addStartState(getDefaultStartState());
                 }
 

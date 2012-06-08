@@ -56,7 +56,7 @@ namespace ompl
                               const GeometricStateExtractor &se,
                               bool selfCollision,
                               FCLPoseFromStateCallback poseCallback) : extractState_(se), selfCollision_(selfCollision),
-                                                                       msg_("FCL Wrapper"), poseFromStateCallback_ (poseCallback)
+                                                                       poseFromStateCallback_ (poseCallback)
             {
                 configure (geom);
             }
@@ -233,9 +233,9 @@ namespace ompl
                 environment_.computeLocalAABB ();
 
                 if (environment_.num_tris == 0)
-                    msg_.inform("Empty environment loaded");
+                    logInform("Empty environment loaded");
                 else
-                    msg_.inform("Loaded environment model with %d triangles.", environment_.num_tris);
+                    logInform("Loaded environment model with %d triangles.", environment_.num_tris);
 
                 // Configuring the model of the robot, composed of one or more pieces
                 for (size_t rbt = 0; rbt < geom.robot.size (); ++rbt)
@@ -252,7 +252,7 @@ namespace ompl
                     model.endModel ();
                     model.computeLocalAABB ();
 
-                    msg_.inform("Robot piece with %d triangles loaded", model.num_tris);
+                    logInform("Robot piece with %d triangles loaded", model.num_tris);
                     robotParts_.push_back (model);
                 }
             }
@@ -316,9 +316,6 @@ namespace ompl
 
             /// \brief Flag indicating whether the geometry is checked for self collisions
             bool                        selfCollision_;
-
-            /// \brief Interface used for reporting errors
-            msg::Interface              msg_;
 
             /// \brief Callback to extract translation and rotation from a state
             FCLPoseFromStateCallback    poseFromStateCallback_;

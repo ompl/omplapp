@@ -39,13 +39,13 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
     {
         if (!robotScene->HasMeshes())
         {
-            msg_.error("There is no mesh specified in the indicated robot resource: %s", robot.c_str());
+            logError("There is no mesh specified in the indicated robot resource: %s", robot.c_str());
             importerRobot_.resize(p);
         }
     }
     else
     {
-        msg_.error("Unable to load robot scene: %s", robot.c_str());
+        logError("Unable to load robot scene: %s", robot.c_str());
         importerRobot_.resize(p);
     }
 
@@ -82,13 +82,13 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     {
         if (!envScene->HasMeshes())
         {
-            msg_.error("There is no mesh specified in the indicated environment resource: %s", env.c_str());
+            logError("There is no mesh specified in the indicated environment resource: %s", env.c_str());
             importerEnv_.resize(p);
         }
     }
     else
     {
-        msg_.error("Unable to load environment scene: %s", env.c_str());
+        logError("Unable to load environment scene: %s", env.c_str());
         importerEnv_.resize(p);
     }
 
@@ -195,12 +195,12 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
                 validitySvc_.reset (new FCLStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
             break;
             #else
-            msg_.error ("FCL support is not compiled.  Install FCL library to use FCL collision checker");
+            logError ("FCL support is not compiled.  Install FCL library to use FCL collision checker");
             #endif
             break;
 
         default:
-            msg_.error ("Unexpected collision checker type (%d) encountered", ctype_);
+            logError ("Unexpected collision checker type (%d) encountered", ctype_);
     };
 
     return validitySvc_;

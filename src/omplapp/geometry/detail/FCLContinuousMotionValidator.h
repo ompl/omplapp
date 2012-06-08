@@ -34,13 +34,13 @@ namespace ompl
         public:
 
             /// \brief Constructor
-            FCLContinuousMotionValidator(ob::SpaceInformation* si, MotionModel mm) : ob::MotionValidator(si), msg_("FCL Continuous Validation")
+            FCLContinuousMotionValidator(ob::SpaceInformation* si, MotionModel mm) : ob::MotionValidator(si)
             {
                 defaultSettings(mm);
             }
 
             /// \brief Constructor
-            FCLContinuousMotionValidator(const ob::SpaceInformationPtr &si, MotionModel mm) : ob::MotionValidator(si), msg_("FCL Continuous Validation")
+            FCLContinuousMotionValidator(const ob::SpaceInformationPtr &si, MotionModel mm) : ob::MotionValidator(si)
             {
                 defaultSettings(mm);
             }
@@ -135,7 +135,7 @@ namespace ompl
                         if (!fcl_2d_state_checker)
                         {
                             // Be extra verbose in this fatal error
-                            msg_.error ("Unable to cast state validity checker to FCLStateValidityChecker.");
+                            logError ("Unable to cast state validity checker to FCLStateValidityChecker.");
                             assert (fcl_2d_state_checker != 0);
                         }
 
@@ -149,7 +149,7 @@ namespace ompl
                         if (!fcl_3d_state_checker)
                         {
                             // Be extra verbose in this fatal error
-                            msg_.error ("Unable to cast state validity checker to FCLStateValidityChecker.");
+                            logError ("Unable to cast state validity checker to FCLStateValidityChecker.");
                             assert (fcl_3d_state_checker != 0);
                         }
 
@@ -157,20 +157,17 @@ namespace ompl
                         break;
 
                     default:
-                        msg_.warn ("Unknown motion model specified: %u", mm);
+                        logWarn ("Unknown motion model specified: %u", mm);
                         break;
                 }
 
                 if (!fclWrapper_)
                 {
                     // Be extra verbose in this fatal error
-                    msg_.error ("FCLWrapper object is not valid.");
+                    logError ("FCLWrapper object is not valid.");
                     assert (fclWrapper_ != 0);
                 }
             }
-
-            /// \brief Interface used for reporting errors
-            msg::Interface              msg_;
 
             /// \brief Wrapper for FCL collision and distance methods
             FCLMethodWrapperPtr         fclWrapper_;
