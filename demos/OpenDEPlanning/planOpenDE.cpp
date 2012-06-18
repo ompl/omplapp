@@ -134,7 +134,7 @@ int main(int argc, char **argv)
         std::cout << "Reached: " << last->getBodyPosition(0)[0] << " " << last->getBodyPosition(0)[1] << std::endl;
 
         POINTS.clear();
-        ob::PlannerData pd;
+        ob::PlannerData pd(ss.getSpaceInformation());
         ss.getPlannerData(pd);
         for (unsigned int i = 0 ; i < pd.numVertices() ; ++i)
         {
