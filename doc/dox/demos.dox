@@ -12,6 +12,8 @@
 - <a href="planOpenDE_8cpp_source.html"><strong>Rigid body planning using the Open Dynamics Engine (OpenDE) with graphics. </strong></a>
 A car-like robot pushes obstacles out of the way to get to the goal position.
 - <a href="SE3RigidBodyPlanningBenchmark_8cpp_source.html"><strong>Benchmarking planners on rigid body motion planning problems in 3D.</strong></a>
+- <a href="demos_2SE2RigidBodyPlanning_2SE2MultiRigidBodyPlanning_8cpp_source.html"><strong>Planning for multiple 2D rigid bodies</strong></a>
+- <a href="demos_2SE3RigidBodyPlanning_2SE3MultiRigidBodyPlanning_8cpp_source.html"><strong>Planning for multiple 3D rigid bodies</strong></a>
 .
 
 @}

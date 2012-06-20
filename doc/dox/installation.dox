@@ -30,9 +30,9 @@ Below are installation instructions for <a href="#install_linux">Linux</a>, <a h
 </div>
 \endhtmlonly
 
-\section install_linuxosx Installation on Linux and Mac OS X
+\section install_linuxosx Installation on Linux
 
-Below are installation instructions for Ubuntu Linux and Mac OS X. Similar steps can be taken for other distributions, but package names may not be identical.
+Below are installation instructions for Ubuntu Linux. Similar steps can be taken for other distributions, but package names may not be identical.
 
 \subsection install_linux_ubuntu Ubuntu Linux
 - If using Ubuntu 11.04 or earlier, the supplied Boost version is too old. You need Boost 1.44+ for full functionality. You can install Boost from <a href="http://www.boost.org/users/download/">source</a>, but it is simpler to add another repository:
@@ -69,7 +69,7 @@ make update_bindings
 - If you need to install the library, you can type <tt>sudo make install</tt>. The install location is specified by <tt>CMAKE_INSTALL_PREFIX</tt>. If you install in a non-standard location, you have to set the environment variable PYTHONPATH to the directory where the OMPL python module is installed (e.g., $HOME/lib/python2.7/site-packages).
 .
 
-\subsection install_mac_os Mac OS X
+\subsection install_mac_os Installation on Mac OS X
 
 - It is easiest to install the dependencies through <a href="http://www.macports.org">MacPorts</a>, a package manager for OS X, so install MacPorts first.
 - If you do not need to modify or see the source code of OMPL.app, then the easiest way to install OMPL.app is with the MacPorts \c port command:
