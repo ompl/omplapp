@@ -31,7 +31,7 @@
       </div>
       <div class="item">
         <img src="../images/mp.jpg" class="hidden" style="margin-top: 1px">
-        <div class="carousel-caption carousel-caption-inset"><h4>New in 0.10!</h4>
+        <div class="carousel-caption carousel-caption-inset"><h4>New in 0.11!</h4>
         <ul>
            <li>PlannerData now uses the Boost Graph Library; each planner can store arbitrary metadata in a graph.  All this PlannerData can easily be (de)serialized for messaging or storing/loading of planner data.
            <li>Implementation of PRM is now threaded (one thread for growing the roadmap, one thread for monitoring whether the problem is solved).
@@ -85,7 +85,7 @@
 
 \htmlonly
 </div></div>
-<div class="span12">
+<div class="row"><div class="span12">
 \endhtmlonly
 \section newsevents News & Events
 
@@ -94,7 +94,7 @@
 - <a href="http://kavrakilab.org/OMPLtutorial">IROS 2011 Tutorial on Motion Planning for Real Robots</a>. This hands-on tutorial describes how to use the ROS and OMPL, but it also gives some background on sampling-based motion planning.
 
 \htmlonly
-</div></div>
+</div></div></div>
 \endhtmlonly
 
 */
