@@ -74,7 +74,7 @@ make update_bindings
 - If you need to install the library, you can type <tt>sudo make install</tt>. The install location is specified by <tt>CMAKE_INSTALL_PREFIX</tt>. If you install in a non-standard location, you have to set the environment variable PYTHONPATH to the directory where the OMPL python module is installed (e.g., $HOME/lib/python2.7/site-packages).
 .
 
-\subsection install_mac_os Installation on Mac OS X
+\section install_mac_os Installation on Mac OS X
 
 - It is easiest to install the dependencies through <a href="http://www.macports.org">MacPorts</a>, a package manager for OS X, so install MacPorts first.
 - If you do not need to modify or see the source code of OMPL.app, then the easiest way to install OMPL.app is with the MacPorts \c port command:
