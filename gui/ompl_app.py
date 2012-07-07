@@ -299,7 +299,7 @@ class MainWindow(QtGui.QMainWindow):
             self.msgInform("Saved " + fname)
 
     def openPath(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
+        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path")[0])
         if len(fname)>0:
             pathstr = open(fname,'r').read()
             # Match whitespace-separated sequences of 2 to 4 numbers
@@ -338,7 +338,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def savePath(self):
         if self.path:
-            fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt'))
+            fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt')[0])
             if len(fname)>0:
                 if isinstance(self.path, list):
                     pathstr = ''.join([str(s) for s in self.path])
