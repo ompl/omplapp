@@ -75,7 +75,7 @@ def kinematicCarDemo(setup):
                     (s.getX(), s.getY(), s.getYaw(), c[0], c[1], path.getControlDuration(i-1)))
         if not setup.haveExactSolutionPath():
             print("Solution is approximate. Distance to actual goal is %g" %
-                setup.getGoal().getDifference())
+                setup.getProblemDefinition().getSolutionDifference())
 
 if __name__ == '__main__':
     car = oa.KinematicCarPlanning()

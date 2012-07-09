@@ -60,7 +60,7 @@ namespace ompl
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const;
             virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
             {
-                return getStateSpace()->as<base::CompoundStateSpace>()->getSubSpace(0);
+                return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(0);
             }
             double getMass()
             {

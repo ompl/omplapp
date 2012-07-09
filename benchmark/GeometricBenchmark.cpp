@@ -36,11 +36,21 @@
 
 #include "GeometricBenchmark.h"
 
+boost::filesystem::path getAbsolutePath(const boost::filesystem::path& path, const boost::filesystem::path& prefix)
+{
+    return (path.is_absolute()) ? path : (prefix / path);
+}
+
 void SE2Benchmark::configure(void)
 {
+    boost::filesystem::path robotMeshPath(getAbsolutePath(
+        boost::filesystem::path(bo_.declared_options_["problem.robot"]), bo_.path_));
+    boost::filesystem::path environmentMeshPath(getAbsolutePath(
+        boost::filesystem::path(bo_.declared_options_["problem.world"]), bo_.path_));
+
     setup_se2_.reset(new ompl::app::SE2RigidBodyPlanning());
-    setup_se2_->setRobotMesh((bo_.path_ / bo_.declared_options_["problem.robot"]).string());
-    setup_se2_->setEnvironmentMesh((bo_.path_ / bo_.declared_options_["problem.world"]).string());
+    setup_se2_->setRobotMesh(robotMeshPath.string());
+    setup_se2_->setEnvironmentMesh(environmentMeshPath.string());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_se2_->getStateSpace());
     try
     {
@@ -100,9 +110,14 @@ void SE2Benchmark::configure(void)
 
 void SE3Benchmark::configure(void)
 {
+    boost::filesystem::path robotMeshPath(getAbsolutePath(
+        boost::filesystem::path(bo_.declared_options_["problem.robot"]), bo_.path_));
+    boost::filesystem::path environmentMeshPath(getAbsolutePath(
+        boost::filesystem::path(bo_.declared_options_["problem.world"]), bo_.path_));
+
     setup_se3_.reset(new ompl::app::SE3RigidBodyPlanning());
-    setup_se3_->setRobotMesh((bo_.path_ / bo_.declared_options_["problem.robot"]).string());
-    setup_se3_->setEnvironmentMesh((bo_.path_ / bo_.declared_options_["problem.world"]).string());
+    setup_se3_->setRobotMesh(robotMeshPath.string());
+    setup_se3_->setEnvironmentMesh(environmentMeshPath.string());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_se3_->getStateSpace());
     try
     {

@@ -76,7 +76,6 @@ namespace ompl
         public:
             FCLStateValidityChecker (const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,
                                      const GeometricStateExtractor &se, bool selfCollision) : ob::StateValidityChecker(si),
-                                                                                              msg_("FCL Collision Checker"),
                                                                                               fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision, boost::bind (&OMPL_FCL_StateType<T>::FCLPoseFromState, stateConvertor_, _1, _2, _3)))
             {
             }
@@ -104,9 +103,6 @@ namespace ompl
             }
 
          protected:
-
-            /// \brief Interface used for reporting errors
-            msg::Interface              msg_;
 
             /// \brief Object to convert a configuration of the robot to a type desirable for FCL
             OMPL_FCL_StateType<T>       stateConvertor_;

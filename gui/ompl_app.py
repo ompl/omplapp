@@ -32,14 +32,14 @@ except:
     import configparser as ConfigParser
 
 try:
-    from ompl.util import OutputHandler, useOutputHandler
+    from ompl.util import OutputHandler, useOutputHandler, LogLevel
     from ompl import base as ob
     from ompl import geometric as og
     from ompl import control as oc
     from ompl import app as oa
 except:
     sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
-    from ompl.util import OutputHandler, useOutputHandler
+    from ompl.util import OutputHandler, useOutputHandler, LogLevel
     from ompl import base as ob
     from ompl import geometric as og
     from ompl import control as oc
@@ -53,6 +53,18 @@ class LogOutputHandler(OutputHandler):
         self.orangeColor = QtGui.QColor(255, 128, 0)
         self.greenColor = QtGui.QColor(0, 255, 64)
         self.blackColor = QtGui.QColor(0, 0, 0)
+
+    def log(self, text, level, filename, line):
+        if level == LogLevel.LOG_DEBUG:
+            self.debug(text)
+        elif level == LogLevel.LOG_INFO:
+            self.inform(text)
+        elif level == LogLevel.LOG_WARN:
+            self.warn(text)
+        elif level == LogLevel.LOG_ERROR:
+            self.error(text)
+        else:
+            print text
 
     def debug(self, text):
         self.textEdit.setTextColor(self.greenColor)
@@ -215,7 +227,7 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(goal, self.is3D)
             if self.is3D:
-                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and config.has_option("problem", "volume.min.z") and 
+                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and config.has_option("problem", "volume.min.z") and
                     config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y") and config.has_option("problem", "volume.max.z")):
                     bounds = ob.RealVectorBounds(3)
                     bounds.low[0] = config.getfloat("problem", "volume.min.x")
@@ -227,7 +239,7 @@ class MainWindow(QtGui.QMainWindow):
                     self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
                     self.mainWidget.glViewer.setBounds(bounds)
             else:
-                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and 
+                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and
                     config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y")):
                     bounds = ob.RealVectorBounds(2)
                     bounds.low[0] = config.getfloat("problem", "volume.min.x")
@@ -444,6 +456,10 @@ class MainWindow(QtGui.QMainWindow):
             elif self.planner==1:
                 planner = oc.RRT(si)
                 planner.setGoalBias(self.mainWidget.plannerWidget.controlPlanning.RRTGoalBias.value())
+            elif self.planner==2:
+                planner = oc.EST(si)
+                planner.setRange(self.mainWidget.plannerWidget.controlPlanning.ESTRange.value())
+                planner.setGoalBias(self.mainWidget.plannerWidget.controlPlanning.ESTGoalBias.value())
         return planner
 
     def setRobotType(self, value):
@@ -495,7 +511,9 @@ class MainWindow(QtGui.QMainWindow):
         solved = self.omplSetup.solve(self.timeLimit)
 
         # update the planner data to render, if needed
-        self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(self.omplSetup.getPlannerData())
+        pd = ob.PlannerData(self.omplSetup.getSpaceInformation())
+        self.omplSetup.getPlannerData(pd)
+        self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(pd)
 
         # update the displayed bounds, in case planning did so
         self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
@@ -1421,6 +1439,7 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         self.plannerSelect = QtGui.QComboBox()
         self.plannerSelect.addItem('KPIECE')
         self.plannerSelect.addItem('RRT')
+        self.plannerSelect.addItem('EST')
 
         # control KPIECE options
         self.KPIECEOptions = QtGui.QGroupBox('KPIECE options')
@@ -1453,9 +1472,29 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         layout.addWidget(self.RRTGoalBias, 0, 1)
         self.RRTOptions.setLayout(layout)
 
+        # EST options
+        self.ESTOptions = QtGui.QGroupBox('EST options')
+        ESTgoalBiasLabel = QtGui.QLabel('Goal bias')
+        ESTrangeLabel = QtGui.QLabel('Range')
+        self.ESTRange = QtGui.QDoubleSpinBox()
+        self.ESTRange.setRange(0, 10000)
+        self.ESTRange.setSingleStep(1)
+        self.ESTRange.setValue(0)
+        self.ESTGoalBias = QtGui.QDoubleSpinBox()
+        self.ESTGoalBias.setRange(0, 1)
+        self.ESTGoalBias.setSingleStep(.05)
+        self.ESTGoalBias.setValue(0.05)
+        layout = QtGui.QGridLayout()
+        layout.addWidget(ESTrangeLabel, 0, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.ESTRange, 0, 1)
+        layout.addWidget(ESTgoalBiasLabel, 1, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.ESTGoalBias, 1, 1)
+        self.ESTOptions.setLayout(layout)
+
         self.stackedWidget = QtGui.QStackedWidget()
         self.stackedWidget.addWidget(self.KPIECEOptions)
         self.stackedWidget.addWidget(self.RRTOptions)
+        self.stackedWidget.addWidget(self.ESTOptions)
         self.plannerSelect.activated.connect(self.stackedWidget.setCurrentIndex)
 
         timeLimitLabel = QtGui.QLabel('Time (sec.)')

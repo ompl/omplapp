@@ -1,7 +1,7 @@
 include(FindPackageHandleStandardArgs)
 
 find_library (FLANN_LIBRARY NAMES flann FLANN DOC "Location of the FLANN (fast library for approximate nearest neighbors)")
-find_path (FLANN_INCLUDE_DIR flann.h PATH_SUFFIXES flann)
+find_path (FLANN_INCLUDE_DIR flann/flann.h)
 
 if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
     find_package_handle_standard_args(flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
@@ -22,8 +22,8 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # download ccd
         ExternalProject_Add (ccd
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            URL "http://libccd.danfis.cz/files/libccd-1.1.tar.gz"
-            URL_MD5 "9c8d3606486188f6e09fe4836711537c"
+            URL "http://libccd.danfis.cz/files/libccd-1.3.tar.gz"
+            URL_MD5 "2c4fcb78174ebf9441a1706961a669cd"
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
                 "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
@@ -66,10 +66,8 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # download and build FCL
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            SVN_REPOSITORY "https://kforge.ros.org/fcl/fcl_ros/trunk/fcl"
-            SVN_REVISION "-r80"
-            SVN_TRUST_CERT 1
-            UPDATE_COMMAND ""
+            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r80.tgz"
+            URL_MD5 "43ed10c2e312de81621376fd1aef9b07"
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
                 "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
@@ -101,7 +99,7 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
     endif (FCL_LIBRARY AND FCL_INCLUDE_DIR)
 
     # Link order is very important here.  If FCL isn't linked first, over-zealous
-    # optimization may needed remove symbols from FLANN and/or CCD in subsequent links.
+    # optimization may remove needed symbols from FLANN and/or CCD in subsequent links.
     set(FCL_LIBRARIES ${FCL_LIBRARY} ${FLANN_LIBRARY} ${CCD_LIBRARY})
 else (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
     message (STATUS "FLANN not found.  Install FLANN for FCL collision checker support.")

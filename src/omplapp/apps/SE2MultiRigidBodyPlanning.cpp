@@ -19,7 +19,7 @@ ompl::app::SE2MultiRigidBodyPlanning::SE2MultiRigidBodyPlanning(unsigned int n) 
     name_ = "Multi rigid body planning (2D)";
     // Adding n SE(2) StateSpaces
     for (unsigned int i = 0; i < n_; ++i)
-        si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE2StateSpace()), 1.0);
+        si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE2StateSpace()), 1.0);
 }
 
 void ompl::app::SE2MultiRigidBodyPlanning::inferEnvironmentBounds(void)

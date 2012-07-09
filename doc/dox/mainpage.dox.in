@@ -16,11 +16,14 @@
 
 \b OMPL.app, the front-end for <a href="/core">OMPL</a>, contains a lightweight wrapper for the <a href="http://gamma.cs.unc.edu/SSV/">PQP</a> and <a href="https://kforge.ros.org/projects/fcl/">FCL</a> collision checkers and a simple GUI based on <a href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">PyQt</a> / <a href="http://www.pyside.org">PySide</a>. The graphical front-end can be used for planning motions for rigid bodies and a few vehicle types (first-order and second-order cars, a blimp, and a quadrotor). It relies on the <a href="http://assimp.sf.net">Assimp</a> library to import a large variety of mesh formats that can be used to represent the robot and its environment.
 
+\htmlonly
 <a href="download.html" class="btn btn-primary">Current version: @OMPLAPP_VERSION@
-\htmlonly<br>\endhtmlonly
+<br>
 <small>Released: @OMPL_RELEASE_DATE@</small></a>
 
-\htmlonly
+<a href="citations.html"" class="btn btn-primary">Click for citation,<br><small>if you use OMPL in your work</small></a>
+</p>
+
 <div class="fb-like" data-href="http://www.facebook.com/pages/OMPL/320018418039567" data-send="true" data-layout="button_count" data-width="450" data-show-faces="false"></div>
 
 </div><div class="span6">
@@ -31,15 +34,10 @@
       </div>
       <div class="item">
         <img src="../images/mp.jpg" class="hidden" style="margin-top: 1px">
-        <div class="carousel-caption carousel-caption-inset"><h4>New in 0.10!</h4>
+        <div class="carousel-caption carousel-caption-inset"><h4>New in 0.11!</h4>
         <ul>
-           <li>SyCLoP, a new multilayered meta-planner.
-           <li>EST for planning with controls.
-           <li>New generic interface for parameter settings.
-           <li>Added support for high-order numerical integration.
-           <li>Parallel path optimization and hybridization.
-           <li>State spaces for Dubins and Reeds-Shepp vehicles.
-           <li>MS Windows support.
+           <li>PlannerData now uses the Boost Graph Library; each planner can store arbitrary metadata in a graph.  All this PlannerData can easily be (de)serialized for messaging or storing/loading of planner data.
+           <li>Implementation of PRM is now threaded (one thread for growing the roadmap, one thread for monitoring whether the problem is solved).
         </ul>
         <p>See <a href="releaseNotes.html">release notes</a> for details</p>
         </div>
@@ -90,7 +88,16 @@
 
 \htmlonly
 </div></div>
-</div>
+<div class="row"><div class="span12">
+\endhtmlonly
+\section newsevents News & Events
+
+- An article about OMPL has been accepted for publication in IEEE's Robotics & Automation Magazine! We'll update as soon as we have complete citation information.
+- <a href="http://www.youtube.com/watch?v=r1zbuLc8RhI">At ROSCON, Sachin Chitta and Ioan Șucan gave a talk about MoveIt!</a>, the new motion planning stack in ROS. It provides a common interface to motion planning libraries in ROS (including OMPL). It will eventually replace the arm navigation stack.
+- <a href="http://kavrakilab.org/OMPLtutorial">IROS 2011 Tutorial on Motion Planning for Real Robots</a>. This hands-on tutorial describes how to use the ROS and OMPL, but it also gives some background on sampling-based motion planning.
+
+\htmlonly
+</div></div></div>
 \endhtmlonly
 
 */

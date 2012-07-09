@@ -119,7 +119,7 @@ namespace ompl
 
             PQPStateValidityChecker(const base::SpaceInformationPtr &si, const GeometrySpecification &geom,
                                     const GeometricStateExtractor &se, bool selfCollision) : base::StateValidityChecker(si), extractState_(se),
-                                                                                             selfCollision_(selfCollision), msg_("Collision Checker")
+                                                                                             selfCollision_(selfCollision)
             {
                 configure(geom);
             }
@@ -215,9 +215,9 @@ namespace ompl
                 distanceTol_ = avgEnvSide_ / 100.0;
 
                 if (!environment_)
-                    msg_.inform("Empty environment loaded");
+                    logInform("Empty environment loaded");
                 else
-                    msg_.inform("Loaded environment model with %d triangles. Average side length is %lf.", environment_->num_tris, avgEnvSide_);
+                    logInform("Loaded environment model with %d triangles. Average side length is %lf.", environment_->num_tris, avgEnvSide_);
 
                 for (unsigned int i = 0 ; i < geom.robot.size() ; ++i)
                 {
@@ -228,7 +228,7 @@ namespace ompl
                     if (!m)
                         throw Exception("Invalid robot mesh");
                     else
-                        msg_.inform("Loaded robot model with %d triangles", m->num_tris);
+                        logInform("Loaded robot model with %d triangles", m->num_tris);
                     robotParts_.push_back(m);
                 }
             }
@@ -271,7 +271,7 @@ namespace ompl
                 double other = (b[(d + 1) % 3] + b[(d + 2) % 3]) / 2.0;
                 if (b[d] * 1000.0 < other && b[d] < 0.1)
                 {
-                    msg_.debug("Adding padding for dimension %u so that collision checking is more accurate", d);
+                    logDebug("Adding padding for dimension %u so that collision checking is more accurate", d);
                     std::vector<aiVector3D> extraTri;
                     extraTri.reserve(triangles.size() * 8);
                     const int N = triangles.size() / 3;
@@ -352,9 +352,6 @@ namespace ompl
             double                      distanceTol_;
 
             mutable boost::mutex        mutex_;
-
-            /** \brief Interface used for reporting errors */
-            msg::Interface              msg_;
 
         };
 

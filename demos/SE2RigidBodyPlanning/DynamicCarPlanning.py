@@ -39,7 +39,7 @@ def dynamicCarDemo(setup):
     bounds = ob.RealVectorBounds(2)
     bounds.setLow(-10)
     bounds.setHigh(10)
-    stateSpace.getSubSpace(0).setBounds(bounds)
+    stateSpace.getSubspace(0).setBounds(bounds)
 
     # define start state
     start = ob.State(stateSpace)
@@ -77,7 +77,7 @@ def dynamicCarDemo(setup):
                     (s0.getX(), s0.getY(), s0.getYaw(), s1[0], s1[1], c[0], c[1], path.getControlDuration(i-1)))
         if not setup.haveExactSolutionPath():
             print("Solution is approximate. Distance to actual goal is %g" %
-                setup.getGoal().getDifference())
+                setup.getProblemDefinition().getSolutionDifference())
 
 if __name__ == '__main__':
     car = oa.DynamicCarPlanning()

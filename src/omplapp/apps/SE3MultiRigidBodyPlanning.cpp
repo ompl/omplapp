@@ -19,7 +19,7 @@ ompl::app::SE3MultiRigidBodyPlanning::SE3MultiRigidBodyPlanning(unsigned int n) 
     name_ = "Multi rigid body planning (3D)";
     // Adding n SE(3) StateSpaces
     for (unsigned int i = 0; i < n_; ++i)
-        si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubSpace(base::StateSpacePtr(new base::SE3StateSpace()), 1.0);
+        si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.0);
 }
 
 void ompl::app::SE3MultiRigidBodyPlanning::inferEnvironmentBounds(void)
