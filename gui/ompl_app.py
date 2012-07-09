@@ -329,7 +329,8 @@ class MainWindow(QtGui.QMainWindow):
                     s().setY(pos[1])
                     s().setZ(pos[2])
                     R = s().rotation()
-                    (R.x, R.y, R.z, R.w) = rot
+                    nrm = 1./sqrt(rot[0]*rot[0] + rot[1]*rot[1] + rot[2]*rot[2] + rot[3]*rot[3])
+                    (R.x, R.y, R.z, R.w) = (rot[0]*nrm, rot[1]*nrm, rot[2]*nrm, rot[3]*nrm)
                 elif len(pos)==2 and len(rot)==1:
                     # SE(2) state
                     s().setX(pos[0])
@@ -1065,7 +1066,7 @@ class Pose3DBox(QtGui.QGroupBox):
             q = state.rotation()
             rad2deg = 180/pi
             self.rotx.setValue(rad2deg * atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y)))
-            self.roty.setValue(rad2deg * asin(2.*(q.w*q.y-q.z*q.x)))
+            self.roty.setValue(rad2deg * asin(max(min(2.*(q.w*q.y-q.z*q.x),1.),-1.)))
             self.rotz.setValue(rad2deg * atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)))
         else:
             self.posx.setValue(state.getX())
