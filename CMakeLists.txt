@@ -7,7 +7,7 @@ if (NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# This shouldn't be necessary, but there has been trouble 
+# This shouldn't be necessary, but there has been trouble
 # with MSVC being set off, but MSVCXX ON.
 if(MSVC OR MSVC90 OR MSVC10)
     set(MSVC ON)
@@ -41,8 +41,12 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 endif(MSVC)
-# Ensure dynamic linking with boost unit_test_framework
-add_definitions(-DBOOST_TEST_DYN_LINK)
+if(IS_ICPC)
+    set(Boost_USE_STATIC_LIBS ON CACHE STRING "Use statically linked Boost libraries")
+else(IS_ICPC)
+    # Ensure dynamic linking with boost unit_test_framework
+    add_definitions(-DBOOST_TEST_DYN_LINK)
+endif(IS_ICPC)
 
 find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system unit_test_framework REQUIRED)
 find_package(Boost COMPONENTS python)
