@@ -122,6 +122,7 @@ namespace ompl
                                                                                              selfCollision_(selfCollision)
             {
                 configure(geom);
+                specs_.hasExactClearance = true;
             }
 
             virtual bool isValid(const base::State *state) const

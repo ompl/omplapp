@@ -78,6 +78,7 @@ namespace ompl
                                      const GeometricStateExtractor &se, bool selfCollision) : ob::StateValidityChecker(si),
                                                                                               fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision, boost::bind (&OMPL_FCL_StateType<T>::FCLPoseFromState, stateConvertor_, _1, _2, _3)))
             {
+                specs_.hasExactClearance = true;
             }
 
             virtual ~FCLStateValidityChecker (void)
