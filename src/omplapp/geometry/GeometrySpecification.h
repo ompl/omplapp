@@ -13,7 +13,12 @@
 #ifndef OMPLAPP_GEOMETRY_GEOMETRY_SPECIFICATION_
 #define OMPLAPP_GEOMETRY_GEOMETRY_SPECIFICATION_
 
-#include <aiScene.h>
+#include "omplapp/config.h"
+#if OMPL_HAS_ASSIMP3
+#include <assimp/scene.h>
+#else
+#include <assimp/aiScene.h>
+#endif
 #include <vector>
 #include <boost/function.hpp>
 #include <ompl/base/State.h>

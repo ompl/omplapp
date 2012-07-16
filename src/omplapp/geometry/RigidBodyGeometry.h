@@ -18,8 +18,13 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorBounds.h>
 #include <boost/shared_ptr.hpp>
-#include <aiScene.h>
-#include <assimp.hpp>
+#if OMPL_HAS_ASSIMP3
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#else
+#include <assimp/aiScene.h>
+#include <assimp/assimp.hpp>
+#endif
 #include <string>
 #include <vector>
 

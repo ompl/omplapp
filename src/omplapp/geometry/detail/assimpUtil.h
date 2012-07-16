@@ -17,10 +17,17 @@
 #include <windows.h>
 #endif
 
-#include <assimp.hpp>
-#include <assimp.h>
-#include <aiScene.h>
-#include <aiPostProcess.h>
+#include "omplapp/config.h"
+#if OMPL_HAS_ASSIMP3
+#include <assimp/scene.h>
+#include <assimp/cimport.h>
+#include <assimp/postprocess.h>
+#else
+#include <assimp/assimp.hpp>
+#include <assimp/assimp.h>
+#include <assimp/aiScene.h>
+#include <assimp/aiPostProcess.h>
+#endif
 #include <ompl/base/spaces/RealVectorBounds.h>
 #include <vector>
 

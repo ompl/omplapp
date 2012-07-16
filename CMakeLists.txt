@@ -96,7 +96,7 @@ include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
-    "${ASSIMP_INCLUDE_DIR}"
+    "${ASSIMP_INCLUDE_DIRS}"
     "${PQP_INCLUDE_DIR}")
 
 if (FCL_INCLUDE_DIR)
@@ -126,7 +126,7 @@ set(OMPLAPP_LIBRARIES
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
-    ${ASSIMP_LIBRARY}
+    ${ASSIMP_LIBRARIES}
     ${PQP_LIBRARY}
     ${FCL_LIBRARIES})
 

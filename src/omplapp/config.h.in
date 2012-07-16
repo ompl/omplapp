@@ -18,4 +18,8 @@
 /** \brief Specify whether the FCL bindings are built */
 #cmakedefine01 OMPL_HAS_FCL
 
+/** \brief Specify which version of Assimp is used */
+#cmakedefine01 OMPL_HAS_ASSIMP2
+#cmakedefine01 OMPL_HAS_ASSIMP3
+
 #endif
