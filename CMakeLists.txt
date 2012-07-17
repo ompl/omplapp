@@ -182,10 +182,10 @@ if (NOT MSVC)
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/dox/FindOMPL.cmake"
         DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
         RENAME ompl-config.cmake)
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file(
+    include(WriteBasicConfigVersionFile)
+    write_basic_config_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
-        VERSION ${OMPL_VERSION} COMPATIBILITY ExactVersion)
+        VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
         DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}")
 endif()

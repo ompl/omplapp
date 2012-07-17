@@ -49,7 +49,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(CPACK_PACKAGE_FILE_NAME "omplapp_${OMPL_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}-Ubuntu${UBUNTU_RELEASE}")
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev, libflann-dev")
   if(OMPL_VERSIONED_INSTALL)
-      set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/postinst;${CMAKE_CURRENT_SOURCE_DIR}/prerm;")
+      set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/CMakeModules/postinst;${CMAKE_SOURCE_DIR}/CMakeModules/prerm;")
   endif()
 endif()
 
