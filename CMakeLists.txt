@@ -204,7 +204,7 @@ if (OMPL_VERSIONED_INSTALL)
         "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh" @ONLY)
     execute_process(COMMAND
       "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh"
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+      "omplapp" WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.symlinks/ DESTINATION .)
     # script to uninstall sym links
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh.in"
