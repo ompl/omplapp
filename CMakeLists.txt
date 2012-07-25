@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+cmake_policy(SET CMP0017 NEW)
 project(omplapp CXX C)
 
 # set the default build type
@@ -182,12 +183,14 @@ if (NOT MSVC)
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/dox/FindOMPL.cmake"
         DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
         RENAME ompl-config.cmake)
-    include(WriteBasicConfigVersionFile)
-    write_basic_config_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
-        VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
-        DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}")
+    if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.5)
+        include(WriteBasicConfigVersionFile)
+        write_basic_config_version_file(
+            ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
+            VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
+            DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}")
+    endif()
 endif()
 
 # uninstall target
