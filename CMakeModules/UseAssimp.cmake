@@ -34,10 +34,8 @@ else(ASSIMP_FOUND)
     set(ASSIMP_VERSION "3.0.1270" CACHE STRING "Assimp found" FORCE)
     set(OMPL_HAS_ASSIMP3 1)
     set(ASSIMP_LIBRARIES "${CMAKE_BINARY_DIR}/assimp-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}assimp${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    if(EXISTS "${ASSIMP_LIBRARIES}")
-        # need to add zlib: static assimp lib doesn't pull in zlib dependency
-        set(ASSIMP_LIBRARIES "z;${ASSIMP_LIBRARIES}" CACHE FILEPATH "Location of 3D asset importer library" FORCE)
-    endif()
+    # need to add zlib: static assimp lib doesn't pull in zlib dependency
+    set(ASSIMP_LIBRARIES "z;${ASSIMP_LIBRARIES}" CACHE FILEPATH "Location of 3D asset importer library" FORCE)
     set(ASSIMP_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/assimp-prefix/include")
     if(IS_DIRECTORY "${ASSIMP_INCLUDE_DIRS}")
         set(ASSIMP_INCLUDE_DIRS "${ASSIMP_INCLUDE_DIRS}" CACHE PATH "Location of 3D asset importer header file directory" FORCE)
