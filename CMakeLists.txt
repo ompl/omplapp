@@ -218,3 +218,16 @@ if (OMPL_VERSIONED_INSTALL)
 endif()
 
 include(CPackSettings)
+
+option(OMPL_REGISTRATION "Enable one-time registration of OMPL" ON)
+if (OMPL_REGISTRATION)
+    find_file(OMPL_REGISTERED ".registered" PATHS "${CMAKE_CURRENT_SOURCE_DIR}" NO_DEFAULT_PATH)
+    if (NOT OMPL_REGISTERED)
+        file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/.registered" "")
+        find_package(Python QUIET)
+        if (PYTHON_FOUND)
+            execute_process(COMMAND "${PYTHON_EXEC}" "-m" "webbrowser" "http://ompl.kavrakilab.org/register.html"
+                OUTPUT_QUIET ERROR_QUIET)
+        endif()
+    endif()
+endif()
