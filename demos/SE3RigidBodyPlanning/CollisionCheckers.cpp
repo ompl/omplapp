@@ -148,9 +148,9 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
 
     while (problem != 3)
     {
-        if (problem == 0)       std::cout << "- Apartment problem" << std::endl;
-        else if (problem == 1) std::cout << "- Cubicles problem"  << std::endl;
-        else if (problem == 2) std::cout << "- \'Easy\' problem"  << std::endl;
+        if (problem == 0)       std::cout << "- Apartment problem " << std::flush;
+        else if (problem == 1) std::cout << "- Cubicles problem "  << std::flush;
+        else if (problem == 2) std::cout << "- \'Easy\' problem "  << std::flush;
 
         // plan in SE3
         app::SE3RigidBodyPlanning setup;
@@ -178,14 +178,17 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
         while (successful < tries)
         {
             setup.clear ();
-            setup.solve(15.0);
+            setup.solve(30.0);
 
             // Retry if the planner failed, except for the continuous collision checker case.
             if (setup.haveExactSolutionPath () || continuous)
             {
                 successful++;
                 time.push_back (setup.getLastPlanComputationTime ());
+                std::cout << '.' << std::flush;
             }
+            else
+                std::cout << 'x' << std::flush;
             nr_attempts++;
         }
 
@@ -194,6 +197,7 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
         successful = 0;
         problem++;
         attempts.push_back (nr_attempts);
+        std::cout << std::endl;
     }
 }
 
@@ -223,7 +227,7 @@ int main (int argc, char **argv)
     std::vector <int> cfcl_attempts;
 
     std::cout << "Comparing collision checkers:" << std::endl;
-    std::cout << "Each problem is executed until " << nr_tries << " attempts are successful (5 sec limit)" << std::endl;
+    std::cout << "Each problem is executed until " << nr_tries << " attempts are successful (30 sec limit)" << std::endl;
 
     // PQP Test (discrete)
     test (nr_tries, pqp_times, pqp_attempts);
@@ -239,25 +243,30 @@ int main (int argc, char **argv)
     // Assume size of all 3 time vectors are the same
     for (size_t i = 0; i < pqp_times.size (); ++i)
     {
-        double pqp_time = 0.0, dfcl_time = 0.0, cfcl_time = 0.0;
-        for (size_t j = 0; j < pqp_times[i].size (); j++)
-        {
-            pqp_time += pqp_times[i][j];
-            dfcl_time += dfcl_times[i][j];
-            cfcl_time += cfcl_times[i][j];
-        }
+        bool isOdd = pqp_times[i].size() % 2 == 1;
+        unsigned int n = pqp_times[i].size() / 2u;
+        std::vector<double>::iterator pqp_time = pqp_times[i].begin() + n;
+        std::vector<double>::iterator dfcl_time = dfcl_times[i].begin()+n;
+        std::vector<double>::iterator cfcl_time = cfcl_times[i].begin()+n;
+
+        std::nth_element(pqp_times[i].begin(), pqp_time, pqp_times[i].end());
+        std::nth_element(dfcl_times[i].begin(), dfcl_time, dfcl_times[i].end());
+        std::nth_element(cfcl_times[i].begin(), cfcl_time, cfcl_times[i].end());
 
         std::cout << std::endl;
         if (i == 0)
-            std::cout << " Apartment problem - Average Time (s)" << std::endl;
+            std::cout << " Apartment problem - Median Time (s)" << std::endl;
         else if (i == 1)
-            std::cout << " Cubicles problem - Average Time (s)" << std::endl;
+            std::cout << " Cubicles problem - Median Time (s)" << std::endl;
         else if (i == 2)
-            std::cout << " \'Easy\' problem - Average Time (s)" << std::endl;
+            std::cout << " \'Easy\' problem - Median Time (s)" << std::endl;
 
-        std::cout << "    Discrete PQP: " << pqp_time / (double) nr_tries << "  " << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
-        std::cout << "    Discrete FCL: " << dfcl_time / (double) nr_tries << "  " << nr_tries << "/" << dfcl_attempts[i] << " planning attempts successful" << std::endl;
-        std::cout << "  Continuous FCL: " << cfcl_time / (double) nr_tries << "  " << nr_tries << " total attempts" << std::endl;
+        std::cout << "    Discrete PQP: " << (isOdd ? *pqp_time : .5*(*pqp_time + *(pqp_time+1)))
+            << "  " << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
+        std::cout << "    Discrete FCL: " << (isOdd ? *dfcl_time : .5*(*dfcl_time + *(dfcl_time+1)))
+            << "  " << nr_tries << "/" << dfcl_attempts[i] << " planning attempts successful" << std::endl;
+        std::cout << "  Continuous FCL: " << (isOdd ? *cfcl_time : .5*(*cfcl_time + *(cfcl_time+1)))
+            << "  " << nr_tries << " total attempts" << std::endl;
     }
 
     return 0;
