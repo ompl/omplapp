@@ -162,8 +162,7 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
             case 2: configureEasyProblem (setup); break;
         }
 
-        if (fcl)
-            setup.setStateValidityCheckerType (app::FCL);
+        setup.setStateValidityCheckerType (fcl ? app::FCL : app::PQP);
 
         if (continuous)
         {
@@ -179,7 +178,7 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
         while (successful < tries)
         {
             setup.clear ();
-            setup.solve(5.0);
+            setup.solve(15.0);
 
             // Retry if the planner failed, except for the continuous collision checker case.
             if (setup.haveExactSolutionPath () || continuous)

@@ -41,7 +41,7 @@ namespace ompl
         {
             typedef ob::SE3StateSpace::StateType type;
 
-            void FCLPoseFromState(fcl::Vec3f &trans, fcl::SimpleQuaternion &quat, const ob::State *state) const
+            void FCLPoseFromState(fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
                 const type * derived = static_cast <const type*> (state);
 
@@ -58,7 +58,7 @@ namespace ompl
         {
             typedef ob::SE2StateSpace::StateType type;
 
-            void FCLPoseFromState (fcl::Vec3f &trans, fcl::SimpleQuaternion &quat, const ob::State *state) const
+            void FCLPoseFromState (fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
                 static const fcl::Vec3f zaxis(0., 0., 1.);
                 const type * derived = static_cast <const type*> (state);

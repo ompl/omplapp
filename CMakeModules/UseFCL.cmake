@@ -22,23 +22,20 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # download ccd
         ExternalProject_Add (ccd
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            URL "http://libccd.danfis.cz/files/libccd-1.3.tar.gz"
-            URL_MD5 "2c4fcb78174ebf9441a1706961a669cd"
+            URL "http://libccd.danfis.cz/files/libccd-1.4.tar.gz"
+            URL_MD5 "684a9f2f44567a12a30af383de992a89"
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
-                "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
-                "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build"
-                "-DCMAKE_VERBOSE_MAKEFILE=ON" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC"
-            INSTALL_COMMAND "")
+                "-DCMAKE_BUILD_TYPE=Release" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC")
 
         # Set the CCD_LIBRARY Variable
-        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd-build/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${CCD_LIBRARY}")
             set(CCD_LIBRARY "${CCD_LIBRARY}" CACHE FILEPATH "Location of convex collision detection library" FORCE)
         endif()
 
         # Set the CCD_INCLUDE_DIR Variable
-        set(CCD_INCLUDE_DIR "${CMAKE_BINARY_DIR}/ccd-prefix/src/ccd/src")
+        set(CCD_INCLUDE_DIR "${CMAKE_BINARY_DIR}/ccd-prefix/include")
         if(IS_DIRECTORY "${CCD_INCLUDE_DIR}")
             set(CCD_INCLUDE_DIR "${CCD_INCLUDE_DIR}" CACHE PATH "Location of convex collision detection header files" FORCE)
         endif()
@@ -66,29 +63,27 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # download and build FCL
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r80.tgz"
-            URL_MD5 "43ed10c2e312de81621376fd1aef9b07"
+            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r179.tgz"
+            URL_MD5 "76fa43acfcc7e7380f6625ff449f0db4"
+            CMAKE_COMMAND "env"
             CMAKE_ARGS
+                "PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/ccd-prefix/lib/pkgconfig"
+                "${CMAKE_COMMAND}"
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
-                "-DCMAKE_BUILD_TYPE=Release" "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON"
-                "-DCMAKE_INSTALL_NAME_DIR=${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl-build"
-                "-DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/ompl/CMakeModules"
-                "-DANN_INCLUDE_DIR=${FLANN_INCLUDE_DIR}"
-                "-DCCD_INCLUDE_DIR=${CCD_INCLUDE_DIR}"
-            INSTALL_COMMAND "")
+                "-DCMAKE_BUILD_TYPE=Release")
 
-        # use a CMakeLists.txt file to configure build of FCL
+        # make FCL a static library
         ExternalProject_Add_Step(fcl addCMakeList
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CMAKE_SOURCE_DIR}/src/external/CMakeLists-FCL.txt"
-                "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/CMakeLists.txt"
+                "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/src/CMakeLists.txt"
             DEPENDEES download
             DEPENDERS configure)
 
         # Make sure ccd exists before building fcl.
         add_dependencies(fcl ccd)
 
-        set(FCL_LIBRARY "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl-build/${CMAKE_SHARED_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(FCL_LIBRARY "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl-build/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${FCL_LIBRARY}")
             set(FCL_LIBRARY "${FCL_LIBRARY}" CACHE FILEPATH "Location of FCL collision checking library" FORCE)
         endif()

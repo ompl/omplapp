@@ -22,13 +22,13 @@
 #include "omplapp/geometry/detail/assimpUtil.h"
 
 // FCL Headers
-#include <fcl/BVH_model.h>
+#include <fcl/BVH/BVH_model.h>
 #include <fcl/collision.h>
 #include <fcl/collision_node.h>
-#include <fcl/transform.h>
-#include <fcl/traversal_node_bvhs.h>
-#include <fcl/simple_setup.h>
-#include <fcl/conservative_advancement.h>
+#include <fcl/math/transform.h>
+#include <fcl/traversal/traversal_node_bvhs.h>
+#include <fcl/traversal/traversal_node_setup.h>
+#include <fcl/ccd/conservative_advancement.h>
 
 // Boost and STL headers
 #include <boost/shared_ptr.hpp>
@@ -50,7 +50,7 @@ namespace ompl
         {
         public:
 
-            typedef boost::function<void(fcl::Vec3f&, fcl::SimpleQuaternion&, const base::State*)> FCLPoseFromStateCallback;
+            typedef boost::function<void(fcl::Vec3f&, fcl::Quaternion3f&, const base::State*)> FCLPoseFromStateCallback;
 
             FCLMethodWrapper (const GeometrySpecification &geom,
                               const GeometricStateExtractor &se,
@@ -70,21 +70,23 @@ namespace ompl
             virtual bool isValid (const base::State *state) const
             {
                 bool valid = true;
-                std::vector <fcl::Contact> contacts;
+                fcl::CollisionRequest collisionRequest;
+                fcl::CollisionResult collisionResult;
 
                 if (environment_.num_tris > 0)
                 {
                     // Performing collision checking with environment.
                     for (size_t i = 0; i < robotParts_.size () && valid; ++i)
                     {
-                        fcl::SimpleQuaternion quaternion;
+                        fcl::Quaternion3f quaternion;
                         fcl::Vec3f translation;
                         poseFromStateCallback_(translation, quaternion, extractState_(state, i));
 
-                        fcl::SimpleTransform transform;
+                        fcl::Transform3f transform;
                         transform.setTransform (quaternion, translation);
 
-                        valid &= fcl::collide (&robotParts_[i], transform, &environment_, fcl::SimpleTransform(), 1, false, false, contacts) == 0;
+                        valid &= fcl::collide (&robotParts_[i], transform, &environment_, fcl::Transform3f(),
+                            collisionRequest, collisionResult) == 0;
                     }
                 }
 
@@ -93,23 +95,24 @@ namespace ompl
                 {
                     for (std::size_t i = 0 ; i < robotParts_.size () && valid; ++i)
                     {
-                        fcl::SimpleQuaternion qi;
+                        fcl::Quaternion3f qi;
                         fcl::Vec3f ti;
                         poseFromStateCallback_(ti, qi, extractState_(state, i));
 
-                        fcl::SimpleTransform trans_i;
+                        fcl::Transform3f trans_i;
                         trans_i.setTransform (qi, ti);
 
                         for (std::size_t j  = i + 1 ; j < robotParts_.size () && valid; ++j)
                         {
-                            fcl::SimpleQuaternion qj;
+                            fcl::Quaternion3f qj;
                             fcl::Vec3f tj;
                             poseFromStateCallback_(tj, qj, extractState_(state, j));
 
-                            fcl::SimpleTransform trans_j;
+                            fcl::Transform3f trans_j;
                             trans_i.setTransform (qj, tj);
 
-                            valid &= fcl::collide (&robotParts_[i], trans_i, &robotParts_[j], trans_j, 1, false, false, contacts) == 0;
+                            valid &= fcl::collide (&robotParts_[i], trans_i, &robotParts_[j], trans_j,
+                                collisionRequest, collisionResult) == 0;
                         }
                     }
                 }
@@ -124,10 +127,11 @@ namespace ompl
                 bool valid (true);
                 collisionTime = 1.0;
 
-                fcl::SimpleQuaternion quat1, quat2;
+                fcl::Quaternion3f quat1, quat2;
                 fcl::Vec3f trans1, trans2;
                 fcl::Matrix3f rot1, rot2;
-                std::vector <fcl::Contact> contacts;
+                fcl::CollisionRequest collisionRequest;
+                fcl::CollisionResult collisionResult;
 
                 // Checking for collision with environment
                 if (environment_.num_tris > 0)
@@ -148,7 +152,7 @@ namespace ompl
 
                         // Checking for collision
                         valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &motion1, &environment_, &motion2,
-                                                                         1, false, false, contacts, collisionTime) == 0);
+                            collisionRequest, collisionResult, collisionTime) == 0);
                     }
                 }
 
@@ -179,7 +183,7 @@ namespace ompl
 
                             // Checking for collision
                             valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &motion_i, &robotParts_[j], &motion_j,
-                                                                             1, false, false, contacts, collisionTime) == 0);
+                                collisionRequest, collisionResult, collisionTime) == 0);
                         }
                     }
                 }
@@ -191,26 +195,24 @@ namespace ompl
             virtual double clearance (const base::State *state) const
             {
                 double dist = std::numeric_limits<double>::infinity ();
-
+                fcl::DistanceRequest distanceRequest;
+                fcl::DistanceResult distanceResult;
                 if (environment_.num_tris > 0)
                 {
                     for (size_t i = 0; i < robotParts_.size (); ++i)
                     {
-                        fcl::SimpleQuaternion q1;
+                        fcl::Quaternion3f q1;
                         fcl::Vec3f t1;
                         poseFromStateCallback_(t1, q1, extractState_(state, i));
 
-                        fcl::SimpleTransform tr1, tr2;
+                        fcl::Transform3f tr1, tr2;
                         tr1.setTransform (q1, t1);
 
                         fcl::MeshDistanceTraversalNodeRSS distanceNode;
-                        fcl::initialize (distanceNode, robotParts_[i], tr1, environment_, tr2);
+                        fcl::initialize (distanceNode, robotParts_[i], tr1, environment_, tr2, distanceRequest, distanceResult);
 
-                        // computing minimum distance
-                        fcl::distance (&distanceNode);
-
-                        if (distanceNode.min_distance < dist)
-                            dist = distanceNode.min_distance;
+                        if (distanceResult.min_distance < dist)
+                            dist = distanceResult.min_distance;
                     }
                 }
 
