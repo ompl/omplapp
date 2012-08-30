@@ -83,11 +83,11 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # Make sure ccd exists before building fcl.
         add_dependencies(fcl ccd)
 
-        set(FCL_LIBRARY "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl-build/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(FCL_LIBRARY "${CMAKE_BINARY_DIR}/fcl-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${FCL_LIBRARY}")
             set(FCL_LIBRARY "${FCL_LIBRARY}" CACHE FILEPATH "Location of FCL collision checking library" FORCE)
         endif()
-        set(FCL_INCLUDE_DIR "${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include")
+        set(FCL_INCLUDE_DIR "${CMAKE_BINARY_DIR}/fcl-prefix/include")
         if(IS_DIRECTORY "${FCL_INCLUDE_DIR}")
             set(FCL_INCLUDE_DIR "${FCL_INCLUDE_DIR}" CACHE PATH "Location of FCL collision checker header files" FORCE)
         endif()
