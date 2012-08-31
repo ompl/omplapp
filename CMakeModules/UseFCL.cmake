@@ -69,6 +69,7 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
                 "-DCMAKE_BUILD_TYPE=Release"
+                "-DCMAKE_CXX_FLAGS=-fPIC"
                 "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIR}"
                 "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIR}")
 
