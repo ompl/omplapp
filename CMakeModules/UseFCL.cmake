@@ -29,7 +29,7 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
                 "-DCMAKE_BUILD_TYPE=Release" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC")
 
         # Set the CCD_LIBRARY Variable
-        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(CCD_LIBRARY "${CMAKE_BINARY_DIR}/ccd-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${CCD_LIBRARY}")
             set(CCD_LIBRARY "${CCD_LIBRARY}" CACHE FILEPATH "Location of convex collision detection library" FORCE)
         endif()
@@ -59,18 +59,18 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
     else (FCL_LIBRARY AND FCL_INCLUDE_DIR)
         message (STATUS "FCL library not found.  Will download and compile.")
 
+        get_filename_component(CCD_LIBRARY_DIR "${CCD_LIBRARY}" PATH)
         include(ExternalProject)
         # download and build FCL
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r179.tgz"
-            URL_MD5 "76fa43acfcc7e7380f6625ff449f0db4"
-            CMAKE_COMMAND "env"
+            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r180.tgz"
+            URL_MD5 "3b9478a378da5497ec326d329222ea22"
             CMAKE_ARGS
-                "PKG_CONFIG_PATH=${CMAKE_BINARY_DIR}/ccd-prefix/lib/pkgconfig"
-                "${CMAKE_COMMAND}"
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
-                "-DCMAKE_BUILD_TYPE=Release")
+                "-DCMAKE_BUILD_TYPE=Release"
+                "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIR}"
+                "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIR}")
 
         # make FCL a static library
         ExternalProject_Add_Step(fcl addCMakeList
@@ -83,7 +83,7 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # Make sure ccd exists before building fcl.
         add_dependencies(fcl ccd)
 
-        set(FCL_LIBRARY "${CMAKE_BINARY_DIR}/fcl-prefix/lib/${CMAKE_SHARED_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(FCL_LIBRARY "${CMAKE_BINARY_DIR}/fcl-prefix/lib/${CMAKE_STATIC_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
         if(EXISTS "${FCL_LIBRARY}")
             set(FCL_LIBRARY "${FCL_LIBRARY}" CACHE FILEPATH "Location of FCL collision checking library" FORCE)
         endif()
