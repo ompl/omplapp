@@ -64,8 +64,8 @@ if (FLANN_LIBRARY AND FLANN_INCLUDE_DIR)
         # download and build FCL
         ExternalProject_Add(fcl
             DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r192.tgz"
-            URL_MD5 "603cd33f563acf905a4b259e80b1eaed"
+            URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-r193.tgz"
+            URL_MD5 "a6071e86ebaf4bf50616437f9a37bef3"
             CMAKE_ARGS
                 "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
                 "-DCMAKE_BUILD_TYPE=Release"
