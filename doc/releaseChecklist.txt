@@ -10,6 +10,9 @@ Steps to release a new version:
 * run ompl_app.py and solve a test problem
 * make install
 * make package_source
+* upload any dependency tar balls to sourceforge.net if they have been updated:
+  scp ~/omplapp/src/external/fcl-r* mamoll,ompl@frs.sourceforge.net:/home/frs/project/o/om/ompl/dependencies
+  (substitute your sourceforge userid for mamoll)
 * upload to bitbicket.org
 * make website for both omplapp and ompl (to update ompl-beta.kavrakilab.org)
 * change "BRANCH=trunk" below to "BRANCH=release-x.y" (no patch level) and do make website for both omplapp and ompl. Undo these changes afterwards (do not commit)
