@@ -1,0 +1,19 @@
+# Download
+
+# Releases
+
+- __OMPL.app__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):<br>
+
+  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="btn btn-primary btn-small">TGZ</a>
+  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.zip" class="btn btn-primary btn-small">ZIP</a><br><br>
+
+  Just the <a style="font-weight: bold" href="/core/download.html">core OMPL library</a> (no GUI, no bindings to [PQP](http://gamma.cs.unc.edu/SSV), [FCL](https://kforge.ros.org/projects/fcl) and [Assimp](http://assimp.sf.net)):
+
+  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@OMPL_VERSION@-Source.tar.gz" class="btn btn-primary btn-small">TGZ</a>
+  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@OMPL_VERSION@-Source.zip" class="btn btn-primary btn-small">ZIP</a><br><br>
+
+- <a href="https://bitbucket.org/ompl/ompl/downloads">Older releases</a>. See the [release notes](releaseNotes.html) for a brief a description of changes for each release.
+
+# Installing
+
+- <a style="font-weight: bold" href="installation.html">Installation instructions</a>.
