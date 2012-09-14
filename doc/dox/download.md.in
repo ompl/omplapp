@@ -2,7 +2,7 @@
 
 # Releases
 
-- __OMPL.app__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):<br>
+- __OMPL.app__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):
 
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="btn btn-primary btn-small">TGZ</a>
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.zip" class="btn btn-primary btn-small">ZIP</a><br><br>

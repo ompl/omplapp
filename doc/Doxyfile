@@ -703,12 +703,12 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../ompl/doc/dox/installation.dox \
-                         ../ompl/doc/dox/download.dox \
-                         ../ompl/doc/dox/license.dox \
-                         ../ompl/doc/dox/mainpage.dox \
-                         ../ompl/doc/dox/releaseNotes.dox \
-                         ../ompl/doc/dox/benchmark.dox
+EXCLUDE                = ../ompl/doc/dox/installation.md \
+                         ../ompl/doc/dox/download.md \
+                         ../ompl/doc/dox/license.md \
+                         ../ompl/doc/dox/mainpage.md \
+                         ../ompl/doc/dox/releaseNotes.md \
+                         ../ompl/doc/dox/benchmark.md
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

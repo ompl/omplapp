@@ -38,7 +38,7 @@ __OMPL.app__, the front-end for [OMPL](/core), contains a lightweight wrapper fo
            <li>PlannerData now uses the Boost Graph Library; each planner can store arbitrary metadata in a graph.  All this PlannerData can easily be (de)serialized for messaging or storing/loading of planner data.
            <li>Implementation of PRM is now threaded (one thread for growing the roadmap, one thread for monitoring whether the problem is solved).
         </ul>
-        <p>See <a href="md_releaseNotes.html">release notes</a> for details</p>
+        <p>See <a href="releaseNotes.html">release notes</a> for details</p>
         </div>
       </div>
       <div class="item">
@@ -62,18 +62,18 @@ __OMPL.app__, the front-end for [OMPL](/core), contains a lightweight wrapper fo
 - All these planners operate on very abstractly defined state spaces. Many commonly used [state spaces](availableStateSpaces.html) are already implemented (e.g., SE2, SE3, R<sup>n</sup>, etc.).
 - For any state space, different [state samplers](availableSamplers.html) can be used (e.g., uniform, Gaussian, obstacle based, etc.).
 - [API overview](api_overview.html)
-- Documentation for just the OMPL core library (i.e., without the “app” layer) is available <a href="/core"><strong>here</strong></a>.
+- Documentation for just the OMPL core library (i.e., without the “app” layer) is available [here](/core).
 
 \htmlonly</div><div class="span4">\endhtmlonly
 
 
 ## Getting Started
 
-- The <a class="el" href="http://ompl.kavrakilab.org/OMPL_Primer.pdf">OMPL primer</a> provides a brief background on sampling-based motion planning, and an overview of OMPL.
+- The [OMPL primer](http://ompl.kavrakilab.org/OMPL_Primer.pdf) provides a brief background on sampling-based motion planning, and an overview of OMPL.
 - [Download](download.html) and [install](installation.html) OMPL.
 - Learn how to use the [OMPL.app GUI](gui.html).
 - [Demos](group__demos.html) and [tutorials](tutorials.html)
-- [FAQ](FAQ.html)
+- [Frequently Asked Questions](FAQ.html)
 - Familiarize yourself with the [Boost structures](boost.html) used throughout OMPL.
 - Learn how to integrate your own code with [OMPL's build system](buildSystem.html).
 - If interested in using Python, make sure to read [the documentation for the Python bindings](python.html).

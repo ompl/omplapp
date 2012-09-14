@@ -220,7 +220,6 @@ The CMAKE_INSTALL_PREFIX variable is set to <tt>C:\\Program Files (x86)\\omplapp
 - You can install OMPL and OMPL.app by building the "INSTALL" project inside of the solution.  Note that this will attempt to copy files to <tt>C:\\Program Files (x86)\\omplapp</tt> (the default).  The installation will fail unless Visual Studio is opened with administrator privileges, or a non-system install prefix is specified when cmake is run.
 
 [boost]: http://www.boost.org
-[boostdownload]: http://www.boost.org/users/download
 [cmake]: http://www.cmake.org
 [python]: http://www.python.org
 [qt4]: http://qt.nokia.org

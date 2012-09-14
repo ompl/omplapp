@@ -219,15 +219,14 @@ If you would like to process the data in different ways, you can generate a dump
 
     ompl/scripts/benchmark_statistics.py -d mydatabase.db -m mydump.sql
 
-The database will contain 2+<em>k</em> tables:
-- \e planners is a table that contains planner configurations
-- \e experiments is a table that contains details about conducted experiments
-- <em>k</em> tables named \e planner_<name>, one for each planner, containing measurements
+The database will contain 2 + _k_ tables:
+- _planners_ is a table that contains planner configurations
+- _experiments_ is a table that contains details about conducted experiments
+- _k_ tables named \e planner_<name>, one for each planner, containing measurements
 
 For more details on how to use the benchmark script, see:
-\code
-scripts/benchmark_statistics.py --help
-\endcode
+
+    scripts/benchmark_statistics.py --help
 
 Collected benchmark data for each experiment:
 - __name:__ name of experiment (optional)
