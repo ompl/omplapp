@@ -1,5 +1,6 @@
 # Release Notes
 
+
 ## OMPL.app 0.11.1 (July 26, 2012)
 
 - Fixed bug in RRT* where nearest neighbor radius shrinks too fast.
@@ -7,7 +8,9 @@
 - Added support for Assimp 3 (Assimp 2 is still supported as well).
 - Bug and documentation fixes.
 
+
 ## OMPL.app 0.11.0 (June 30, 2012)
+
 - PlannerData now uses the Boost Graph Library (BGL). This offers much more flexibility and power in the inspection of planner data structures. Rather than storing only the data common to all planners, each planner can store its own (meta)data per vertex and edge in a graph. All graph algorithms that exists in BGL can be applied directly.
 - Added PlannerDataStorage object for serialization/deserialization of PlannerData
 - Logging mechanism is now using macros instead of the msg::Interface class. The file name and line number where a message originated is printed out for every message type.
@@ -22,20 +25,26 @@
 - Reduced dependencies: GTest has been replaced by Boost Test, subversion and CVS are no longer needed to get some optional dependencies.
 - Bug fixes.
 
+
 ## OMPL.app 0.10.2 (March 21, 2012)
+
 - Created a blog to highlight new features.
 - Added support for multi-robot rigid-body motion planning.
 - Updated FCL (which now uses FLANN instead of ANN for nearest neighbors)
 - Bug fixes.
 
+
 ## OMPL.app 0.10.1 (February 27, 2012)
+
 - Added representation of discrete control spaces.
 - Fixes for XCode 4.3 when compiling the Python bindings.
 - Updates to support Python 3.x in existing demo programs.
 - Removed mutex from FCL collision checking wrapper. The newer version of the FCL library is thread-safe.
 - Bug fixes.
 
+
 ## OMPL.app 0.10.0 (February 16, 2012)
+
 - Minimum Boost version is now 1.44.
 - Added a primer on sampling-based motion planning and OMPL.
 - Added an implementation of SyCLoP, a new multilayered meta-planner that combines discrete search with a sampling-based motion planner. Implementations of Syclop with RRT and EST as the low-level planners are provided.
@@ -60,12 +69,15 @@
 
 
 ## OMPL.app 0.9.5 (October 4, 2011)
+
 - Added control sampler functions that allow specifying an intended direction of propagation
 - Made python, Boost.Python, PyOpenGL, and PyQt optional; the omplapp library is useful even without the GUI or python bindings.
 - Removed pre-generated Python binding code. It turns out that they are dependent on the particular Boost version.
 - Bug fixes.
 
+
 ## OMPL.app 0.9.4 (August 16, 2011)
+
 - Renamed StateManifold to StateSpace and ControlManifold to ControlSpace
 - Added RRTstar contribution
 - Added GNAT nearest neighbors datastructure
@@ -84,7 +96,9 @@
 - Move code for extracting machine properties from util/ to benchmark/
 - Documentation fixes
 
+
 ## OMPL.app 0.9.3 (May 2, 2011)
+
 - Added support for visualizing internal planner data
 - Planning for 2D environments as well (SE2)
 - Significant reorganization of code in OMPL.app
@@ -94,15 +108,20 @@
 - Separate "magic constants" to a separate, visible, location
 - A number of bug fixes
 
+
 ## OMPL.app 0.9.2 (February 21, 2011)
+
 - Updates to operations on states: indexing in states can be done using state spaces or using integer values
 - Bug fixes for planning with controls
 - Minor doc improvements
 
+
 ## OMPL.app 0.9.1 (December 17, 2010)
+
 - Minor updates to build system
 
 ## OMPL.app 0.9.0 (December 15, 2010; initial release)
+
 - Implementations of many state-of-the-art sampling-based motion planning algorithms. For purely geometric planning, there are implementations of KPIECE, SBL, RRT, RRT Connect, EST, PRM, Lazy RRT, and others. For planning with differential constraints there are implementations of KPIECE and RRT. Addition of new planners poses very few constraints on the added code.
 - A flexible mechanism for constructing arbitrarily complex configuration spaces and control spaces from simpler ones.
 - A general method of defining goals: as states, as regions in configuration space, or implicitly.

@@ -16,6 +16,7 @@ OMPL.app contains a command line program called \c ompl_benchmark, that can read
 
 There are a number of required parameters necessary to define the problem.  These
 exist under the “[problem]” heading:
+
 - __name__: An identifying name for the problem to be solved
 - __robot__: The path to a mesh file describing the geometry of the robot
 - __start.[x|y|z|theta]__: Values describing the start state of the robot
@@ -27,20 +28,22 @@ in an empty workspace.
 
 Another optional parameter is the sampler to be used by the planner. The
 following samplers are available:
+
 - __sampler=uniform__ (this is the default if no sampler is specified)
 - __sampler=gaussian__
 - __sampler=obstacle_based__
 - __sampler=max_clearance__
-.
 
 Parameters relating to benchmarking must be declared under the “[benchmark]”
 heading:
+
 - __time_limit__: The amount of time (seconds) for each plan computation
 - __mem_limit__: The maximum amount of memory (MB) for each planner
 - __run_count__: The number of times to repeat the experiment for each planner
 - __save_paths__: This _optional_ parameter can be set to \c none, \c all, or \c shortest to save _no_ solution paths (the default value), _all_ solution paths (including approximate solutions), or the _shortest_ exact solution for each planner, respectively. These paths can then be “played back” in the [OMPL.app GUI](gui.html#gui_paths).
 
 The last required element to specify are the planners to benchmark.  These are specified under the “[planner]” heading.  The following planners are valid for geometric benchmarking:
+
 - __rrtconnect__
 - __lazyrrt__
 - __kpiece__
@@ -73,10 +76,12 @@ An example of a minimal SE(2) configuration comparing the rrt and est planners i
     rrt=
 
 Any parameter defined by these planners may also be configured for the benchmark. For example, the geometric::RRT planner defines two parameters, “range” and “goal_bias”, both real valued. The default values can be changed under the “planner” heading in the following manner:
+
 - __rrt.range__=50.0
 - __rrt.goal_bias__=0.10
 
 It is also convenient to specify the bounds of the workspace to plan in. Without any specification, OMPL.app assumes a tight bounding box around the start and goal states, but depending on the environment this may not be a good assumption. It is easy to redefine the bounding box under the problem heading using the “volume” configuration:
+
 - __volume.[min|max].[x|y|z]__
 
 There are many other optional parameters that can be specified or changed. The \c ompl_benchmark executable takes advantage of the ompl::base::ParamSet class, and uses this functionality to set any parameter defined in the file. If a class exposes a parameter, chances are that it is possible to tune it via the config file. OMPL.app provides two example configuration files inside of the benchmark directory, example.cfg and example_complex.cfg showing the configuration of many of these optional parameters.
@@ -113,6 +118,7 @@ Finally, to execute the benchmark configuration file, simply run the \c ompl_ben
 # Writing benchmarking code {#benchmark_code}
 
 Benchmarking a set of planners on a specified problem using the Benchmark class in your own code is a simple task in OMPL. The steps involved are as follows:
+
 - Configure the benchmark problem using ompl::geometric::SimpleSetup or ompl::control::SimpleSetup
 - Create a ompl::Benchmark object that takes the problem as input
 - Add one or more planners to the benchmark
@@ -120,6 +126,7 @@ Benchmarking a set of planners on a specified problem using the Benchmark class 
 - Run the benchmark problem a specified number of times, subject to specified time and memory limits
 
 The following code snippet shows you how to do this. We will start with some initial code that you have probably already used:
+
 ~~~{.cpp}
 #include "ompl/tools/benchmark/Benchmark.h"
 
@@ -140,7 +147,9 @@ ompl::geometric::SimpleSetup ss(space);
 // Everything must be set up to the point ss.solve()
 // can be called. Setting up a planner is not needed.
 ~~~
+
 Benchmarking code starts here:
+
 ~~~{.cpp}
 // First we create a benchmark class:
 ompl::tools::Benchmark b(ss, "my experiment");
@@ -171,7 +180,9 @@ b.benchmark(req);
 // This will generate a file of the form ompl_host_time.log
 b.saveResultsToFile();
 ~~~
+
 Adding callbacks for before and after the execution of a run is also possible:
+
 ~~~{.cpp}
 // Assume these functions are defined
 void optionalPreRunEvent(const base::PlannerPtr &planner)
@@ -201,11 +212,10 @@ b.setPreRunEvent(boost::bind(&optionalPreRunEvent, _1));
 b.setPostRunEvent(boost::bind(&optionalPostRunEvent, _1, _2));
 ~~~
 
+
 # Processing the benchmarking log file {#benchmark_log}
 
-Once the C++ code computing the results has been executed, a log file is generated. This contains information
-about the settings of the planners, the parameters of the problem tested on, etc. To visualize this
-information, we provide a script that parses the log files:
+Once the C++ code computing the results has been executed, a log file is generated. This contains information about the settings of the planners, the parameters of the problem tested on, etc. To visualize this information, we provide a script that parses the log files:
 
     ompl/scripts/benchmark_statistics.py logfile.log -d mydatabase.db
 
@@ -220,6 +230,7 @@ If you would like to process the data in different ways, you can generate a dump
     ompl/scripts/benchmark_statistics.py -d mydatabase.db -m mydump.sql
 
 The database will contain 2 + _k_ tables:
+
 - _planners_ is a table that contains planner configurations
 - _experiments_ is a table that contains details about conducted experiments
 - _k_ tables named \e planner_<name>, one for each planner, containing measurements
@@ -229,6 +240,7 @@ For more details on how to use the benchmark script, see:
     scripts/benchmark_statistics.py --help
 
 Collected benchmark data for each experiment:
+
 - __name:__ name of experiment (optional)
 - __totaltime:__ the total duration for conducting the experiment (seconds)
 - __timelimit:__ the maximum time allowed for every planner execution (seconds)
@@ -237,6 +249,7 @@ Collected benchmark data for each experiment:
 - __date:__ the date and time when the experiment was started
 
 Collected benchmark data for each planner execution:
+
 - __time:__ (real) the amount of time spent planning, in seconds
 - __memory:__ (real) the amount of memory spent planning, in MB. Note: this may be inaccurate since memory is often freed in a lazy fashion
 - __solved:__ (boolean) flag indicating whether the planner found a solution. Note: the solution can be approximate
@@ -265,9 +278,10 @@ Collected benchmark data for each planner execution:
 Below are sample results for running benchmarks for two example problems: the “cubicles” environment and the “Twistycool” environment. The complete benchmarking program (SE3RigidBodyPlanningBenchmark.cpp), the environment and robot files are included with OMPL.app, so you can rerun the exact same benchmarks on your own machine. See the [gallery](gallery.html#gallery_omplapp) for visualizations of sample solutions to both problems. The results below were run on a recent model Apple MacBook Pro (2.66 GHz Intel Core i7, 8GB of RAM). It is important to note that none of the planner parameters were tuned; all benchmarks were run with default settings. From these results one cannot draw any firm conclusions about which planner is “better” than some other planner.
 
 These are the PDF files with plots as generated by the benchmark_statistics.py script:
+
 - [The “cubicles” problem with default settings](../images/cubicles.pdf)
 - [The “Twistycool” problem with default settings](../images/Twistycool.pdf)
-.
+
 The plots show comparisons between ompl::geometric::RRTConnect, ompl::geometric::RRT, ompl::geometric::BKPIECE1, ompl::geometric::LBKPIECE1, ompl::geometric::KPIECE1, ompl::geometric::SBL, ompl::geometric::EST, and ompl::geometric::PRM. Each planner is run 500 times with a 10 second time limit for the cubicles problem for each sampling strategy, while for the Twistycool problem each planner is run 50 times with a 60 second time limit.
 
 For integer and real-valued measurements the script will compute [box plots](http://en.wikipedia.org/wiki/Box_plot). For example, here is the plot for the real-valued attribute __time__ for the cubicles environment:

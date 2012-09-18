@@ -1,6 +1,7 @@
 # Graphical User Interface to OMPL
 
 __Contents:__
+
 - \ref gui_define
 - \ref gui_planners
 - \ref gui_bounding_box
@@ -21,6 +22,7 @@ The GUI can also be used to simply “play back” a path consisting of either S
 <img src="../images/gui_planner.png" class="span8 nofloat">
 
 It is not strictly necessary to choose or configure a planner; if you don't, a planner will automatically be chosen and configured for you. The planner tab allows you to override the default settings, and experiment with different planners. Each planner has different parameters that control its behavior. When you select a different planner, the appropriate options are shown. Below is a list of all parameters:
+
 - __Range:__ This parameter represents the maximum length of a motion to be added in the tree of motions. It greatly influences the runtime of the algorithm.
 - __Goal bias:__ In the process of randomly selecting states in the state space to attempt to go towards, the algorithm may in fact choose the actual goal state with some probability. This probability is a real number between 0.0 and 1.0; its value should usually be around 0.05 and should not be too large. It is probably a good idea to use the default value.
 - __Border fraction:__ Planners such as KPIECE use a discretization of a projection of the state space to guide the exploration. This discretization consists of a set of cells. The border fraction is the fraction of time spent focusing the exploration on border cells (cells at the exploration “frontier”). This represents the minimum percentage used to select cells that are on the border (minimum because if 95% of cells are on the border, they will be selected with 95% chance, even if the border fraction is set to 0.9 (90%)).

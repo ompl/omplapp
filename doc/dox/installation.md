@@ -3,12 +3,14 @@
 If you use Linux or OS X, then all dependencies can be installed either through a package manager or by OMPL's build system. In other words, you probably don't have to compile dependencies from source.
 
 To compile OMPL and OMPL.app the following two packages are required:
+
 - [Boost], version 1.44 or higher, and
 - [CMake], version 2.8.2 or higher.
 
 To be able to generate python bindings you need to install the [Python] library and header files.
 
 Finally, to use the GUI the following dependencies are required (in addition to the ones above):
+
 - [PyQt4] or [PySide][] (which, in turn, require [Qt4]) and
 - [PyOpenGL].
 
