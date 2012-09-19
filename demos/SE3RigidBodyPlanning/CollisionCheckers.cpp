@@ -144,10 +144,11 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
     std::vector <double> time;
     unsigned int successful = 0;
     unsigned int problem = 0;
-    unsigned int nr_attempts = 0;
 
     while (problem != 3)
     {
+        unsigned int nr_attempts = 0;
+
         if (problem == 0)       std::cout << "- Apartment problem " << std::flush;
         else if (problem == 1) std::cout << "- Cubicles problem "  << std::flush;
         else if (problem == 2) std::cout << "- \'Easy\' problem "  << std::flush;

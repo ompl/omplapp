@@ -43,11 +43,11 @@ Below are installation instructions for Ubuntu Linux. Similar steps can be taken
       sudo apt-get install libboost-all-dev cmake curl python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
 
   Some versions of Linux offer multiple versions of Boost. It is strongly advised to install only one version.
-- If you are running Ubuntu 12.04, install the following packages as well:
+- If you are running Ubuntu 12.04, install the following package as well:
 
-      sudo apt-get install libflann-dev libassimp-dev
+      sudo apt-get install libassimp-dev
 
-  (On older versions of Ubuntu these packages will be automatically downloaded and built by the OMPL build system, unless you have already installed them yourself.)
+  (On older versions of Ubuntu Assimp will be automatically downloaded and built by the OMPL build system, unless you have already installed it yourself.)
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install [PyOpenGL-accelerate](http://pypi.python.org/pypi/PyOpenGL-accelerate) to enable OpenGL hardware acceleration.
 - To be able to generate documentation and build the OpenDE extension, the following packages are also needed:
 
@@ -185,6 +185,7 @@ It is possible to run OMPL and OMPL.app natively on Windows, although it must be
 - Ensure that Python is added to the system <tt>PATH</tt>.
 - Py++: To generate the Python bindings, Py++ and its dependencies must be installed. A batch file has been included to automate this process (analogous to the Linux/Mac installation) that can be executed via cmake. Instructions can be found [here](installPyPlusPlus).  Note that this process assumes the MinGW compiler, and installs gccxml to <tt>C:\\gccxml</tt>.  You will need to be in a shell with administrator privileges to execute this batch file.  Once installed, it is recommended that you open a new shell to realize the new environment settings.
 - [PyQt4] and [PyOpenGL] must be installed to run the OMPL.app gui.
+
 
 ## Build
 - Once the dependencies are installed, CMake can be used to generate MinGW makefiles or a Visual Studio solution by specifying a specific GENERATOR:

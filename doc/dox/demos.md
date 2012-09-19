@@ -13,6 +13,5 @@
 - [Benchmarking planners on rigid body motion planning problems in 3D.](SE3RigidBodyPlanningBenchmark_8cpp_source.html)
 - [Planning for multiple 2D rigid bodies.](demos_2SE2RigidBodyPlanning_2SE2MultiRigidBodyPlanning_8cpp_source.html)
 - [Planning for multiple 3D rigid bodies.](demos_2SE3RigidBodyPlanning_2SE3MultiRigidBodyPlanning_8cpp_source.html)
-.
 
 @}

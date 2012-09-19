@@ -101,7 +101,7 @@ include_directories(
     "${PQP_INCLUDE_DIR}")
 
 if (FCL_INCLUDE_DIR)
-    include_directories("${FCL_INCLUDE_DIR}" "${CCD_INCLUDE_DIR}" "${FLANN_INCLUDE_DIR}")
+    include_directories("${FCL_INCLUDE_DIR}" "${CCD_INCLUDE_DIR}")
     set(OMPL_HAS_FCL 1)
 endif ()
 
