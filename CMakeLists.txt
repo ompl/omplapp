@@ -163,10 +163,6 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     if(TARGET fcl)
         add_dependencies(update_app_bindings fcl)
     endif()
-    # need ODEInt to generate python bindings
-    if (TARGET Boost.ODEInt)
-        add_dependencies(update_control_bindings Boost.ODEInt)
-    endif()
 endif()
 
 
