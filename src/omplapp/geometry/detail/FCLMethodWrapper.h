@@ -15,8 +15,6 @@
 
 #include "omplapp/config.h"
 
-#if OMPL_HAS_FCL
-
 // OMPL and OMPL.app headers
 #include "omplapp/geometry/GeometrySpecification.h"
 #include "omplapp/geometry/detail/assimpUtil.h"
@@ -324,7 +322,5 @@ namespace ompl
         };
     }
 }
-
-#endif // OMPL_HAS_FCL
 
 #endif

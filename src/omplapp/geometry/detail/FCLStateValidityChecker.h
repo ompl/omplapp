@@ -15,8 +15,6 @@
 
 #include "omplapp/config.h"
 
-#if OMPL_HAS_FCL
-
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
@@ -114,7 +112,5 @@ namespace ompl
         };
     }
 }
-
-#endif // OMPL_HAS_FCL
 
 #endif

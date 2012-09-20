@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
-cmake_policy(SET CMP0017 NEW)
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.3)
+    cmake_policy(SET CMP0017 NEW)
+endif()
 project(omplapp CXX C)
 
 # set the default build type
@@ -98,12 +100,9 @@ include_directories(
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIRS}"
-    "${PQP_INCLUDE_DIR}")
-
-if (FCL_INCLUDE_DIR)
-    include_directories("${FCL_INCLUDE_DIR}" "${CCD_INCLUDE_DIR}")
-    set(OMPL_HAS_FCL 1)
-endif ()
+    "${PQP_INCLUDE_DIR}"
+    "${FCL_INCLUDE_DIR}"
+    "${CCD_INCLUDE_DIR}")
 
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")

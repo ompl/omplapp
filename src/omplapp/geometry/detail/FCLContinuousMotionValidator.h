@@ -13,8 +13,6 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_FCL_CONTINUOUS_MOTION_VALIDATOR_
 #define OMPLAPP_GEOMETRY_DETAIL_FCL_CONTINUOUS_MOTION_VALIDATOR_
 
-#ifdef OMPL_HAS_FCL
-
 #include <ompl/base/MotionValidator.h>
 #include <ompl/base/SpaceInformation.h>
 
@@ -177,7 +175,5 @@ namespace ompl
         };
     }
 }
-
-#endif // OMPL_HAS_FCL
 
 #endif

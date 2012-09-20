@@ -188,15 +188,10 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
             break;
 
         case FCL:
-            #if OMPL_HAS_FCL
             if (mtype_ == Motion_2D)
                 validitySvc_.reset (new FCLStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
             else
                 validitySvc_.reset (new FCLStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
-            break;
-            #else
-            logError ("FCL support is not compiled.  Install FCL library to use FCL collision checker");
-            #endif
             break;
 
         default:
