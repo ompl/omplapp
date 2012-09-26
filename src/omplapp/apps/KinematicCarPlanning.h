@@ -94,7 +94,7 @@ namespace ompl
 
             double timeStep_;
             double lengthInv_;
-            control::ODEBasicSolver <> odeSolver;
+            control::ODESolverPtr odeSolver;
         };
     }
 }

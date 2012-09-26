@@ -37,12 +37,12 @@ namespace ompl
         {
         public:
             BlimpPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), odeSolver (control::ODEBasicSolver<>(si_, boost::bind(&BlimpPlanning::ode, this, _1, _2, _3)))
+                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), odeSolver(new control::ODEBasicSolver<>(si_, boost::bind(&BlimpPlanning::ode, this, _1, _2, _3)))
             {
                 name_ = std::string("Blimp");
                 setDefaultBounds();
 
-                si_->setStatePropagator(odeSolver.getStatePropagator(boost::bind(&BlimpPlanning::postPropagate, this, _1, _2)));
+                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, boost::bind(&BlimpPlanning::postPropagate, this, _1, _2)));
             }
             ~BlimpPlanning()
             {
@@ -83,7 +83,7 @@ namespace ompl
             static base::StateSpacePtr constructStateSpace(void);
 
             double timeStep_;
-            control::ODEBasicSolver <> odeSolver;
+            control::ODESolverPtr odeSolver;
         };
 
     }
