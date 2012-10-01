@@ -42,7 +42,7 @@ namespace ompl
                 name_ = std::string("Blimp");
                 setDefaultBounds();
 
-                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, boost::bind(&BlimpPlanning::postPropagate, this, _1, _2)));
+                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, boost::bind(&BlimpPlanning::postPropagate, this, _1, _2, _3, _4)));
             }
             ~BlimpPlanning()
             {
@@ -72,7 +72,7 @@ namespace ompl
                 return state->as<base::CompoundState>()->components[0];
             }
 
-            void postPropagate(const control::Control *ctrl, base::State *result);
+            void postPropagate(const base::State* state, const control::Control* control, const double duration, base::State* result);
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
 

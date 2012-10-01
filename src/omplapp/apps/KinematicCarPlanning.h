@@ -81,7 +81,7 @@ namespace ompl
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
 
-            virtual void postPropagate(const control::Control* ctrl, base::State* state);
+            virtual void postPropagate(const base::State* state, const control::Control* control, const double duration, base::State* result);
 
             static control::ControlSpacePtr constructControlSpace(void)
             {
