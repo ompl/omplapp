@@ -641,7 +641,7 @@ class MainWidget(QtGui.QWidget):
         self.setLayout(layout)
         self.problemWidget.startChanged.connect(self.glViewer.setStartPose)
         self.problemWidget.goalChanged.connect(self.glViewer.setGoalPose)
-        self.solveWidget.showData.toggled.connect(self.glViewer.toggleShowData)
+        self.solveWidget.explorationVizSelect.currentIndexChanged[int].connect(self.glViewer.showPlannerData)
         self.solveWidget.animateCheck.toggled.connect(self.glViewer.toggleAnimation)
         self.solveWidget.speedSlider.valueChanged.connect(self.glViewer.setSpeed)
 
@@ -746,7 +746,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.goalPose = value
         self.updateBounds(value[3:])
         self.updateGL()
-    def toggleShowData(self, value):
+    def showPlannerData(self, value):
         self.drawPlannerData = value
         self.updateGL()
     def toggleAnimation(self, value):
@@ -885,7 +885,7 @@ class GLViewer(QtOpenGL.QGLWidget):
 
         # draw the planner data
         if self.drawPlannerData and self.plannerDataList:
-            GL.glCallList(self.plannerDataList)
+            GL.glCallList(self.drawPlannerData + self.plannerDataList - 1)
 
         GL.glPopMatrix()
 
@@ -1536,8 +1536,11 @@ class SolveWidget(QtGui.QWidget):
         super(SolveWidget, self).__init__()
         self.solveButton = QtGui.QPushButton('Solve')
         self.clearButton = QtGui.QPushButton('Clear')
-        self.showData = QtGui.QCheckBox('Show Exploration')
-        self.showData.setChecked(False)
+        explorationVizLabel = QtGui.QLabel('Show:')
+        self.explorationVizSelect = QtGui.QComboBox()
+        self.explorationVizSelect.addItem('none')
+        self.explorationVizSelect.addItem('states')
+        self.explorationVizSelect.addItem('states and edges')
         self.animateCheck = QtGui.QCheckBox('Animate')
         self.animateCheck.setChecked(True)
         speedlabel = QtGui.QLabel('Speed:')
@@ -1552,8 +1555,9 @@ class SolveWidget(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         layout.addWidget(self.solveButton, 0, 0)
         layout.addWidget(self.clearButton, 0, 1)
-        layout.addWidget(self.showData, 0, 2)
-        layout.addWidget(self.animateCheck, 0, 3)
+        layout.addWidget(explorationVizLabel, 0, 2, QtCore.Qt.AlignRight)
+        layout.addWidget(self.explorationVizSelect, 0, 3)
+        layout.addWidget(self.animateCheck, 0, 4)
         layout.addWidget(speedlabel, 0, 5)
         layout.addWidget(self.speedSlider, 0, 6)
         self.setLayout(layout)
