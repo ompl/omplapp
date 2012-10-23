@@ -56,8 +56,8 @@ else (FCL_LIBRARY AND FCL_INCLUDE_DIR)
     # download and build FCL
     ExternalProject_Add(fcl
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-ff1b38a.tgz"
-        URL_MD5 "e781ca6d093d833a6b05f82d39155ea9"
+        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.2.5.tgz"
+        URL_MD5 "bdf87f56b7fdc6fb911431c4c68f2b81"
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
             "-DCMAKE_BUILD_TYPE=Release"

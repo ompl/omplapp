@@ -11,7 +11,9 @@
 /* Author: Ioan Sucan */
 
 #include "omplapp/geometry/RigidBodyGeometry.h"
+#if OMPL_HAS_PQP
 #include "omplapp/geometry/detail/PQPStateValidityChecker.h"
+#endif
 #include "omplapp/geometry/detail/FCLStateValidityChecker.h"
 #include <boost/lexical_cast.hpp>
 
@@ -180,13 +182,14 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
 
     switch (ctype_)
     {
+#if OMPL_HAS_PQP
         case PQP:
             if (mtype_ == Motion_2D)
                 validitySvc_.reset (new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
             else
                 validitySvc_.reset (new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
             break;
-
+#endif
         case FCL:
             if (mtype_ == Motion_2D)
                 validitySvc_.reset (new FCLStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));

@@ -144,12 +144,13 @@ namespace ompl
                         quat2.toRotation (rot2);
 
                         // Interpolating part i from s1 to s2
-                        fcl::InterpMotion<BVType> motion1 (rot1, trans1, rot2, trans2);
+                        fcl::InterpMotion motion1 (rot1, trans1, rot2, trans2);
                         // The environment does not move
-                        fcl::InterpMotion<BVType> motion2;
+                        fcl::InterpMotion motion2;
 
                         // Checking for collision
-                        valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &motion1, &environment_, &motion2,
+                        valid &= (fcl::conservativeAdvancement <BVType, fcl::MeshConservativeAdvancementTraversalNodeOBBRSS, fcl::MeshCollisionTraversalNodeOBBRSS>
+                            (&robotParts_[i], &motion1, &environment_, &motion2,
                             collisionRequest, collisionResult, collisionTime) == 0);
                     }
                 }
@@ -166,7 +167,7 @@ namespace ompl
                         quat2.toRotation (rot2);
 
                         // Interpolating part i from s1 to s2
-                        fcl::InterpMotion<BVType> motion_i (rot1, trans1, rot2, trans2);
+                        fcl::InterpMotion motion_i (rot1, trans1, rot2, trans2);
 
                         for (std::size_t j = i+1; j < robotParts_.size () && valid; ++j)
                         {
@@ -177,10 +178,11 @@ namespace ompl
                             quat2.toRotation (rot2);
 
                             // Interpolating part j from s1 to s2
-                            fcl::InterpMotion<BVType> motion_j (rot1, trans1, rot2, trans2);
+                            fcl::InterpMotion motion_j (rot1, trans1, rot2, trans2);
 
                             // Checking for collision
-                            valid &= (fcl::conservativeAdvancement <BVType> (&robotParts_[i], &motion_i, &robotParts_[j], &motion_j,
+                            valid &= (fcl::conservativeAdvancement <BVType, fcl::MeshConservativeAdvancementTraversalNodeOBBRSS, fcl::MeshCollisionTraversalNodeOBBRSS>
+                                (&robotParts_[i], &motion_i, &robotParts_[j], &motion_j,
                                 collisionRequest, collisionResult, collisionTime) == 0);
                         }
                     }
@@ -206,7 +208,7 @@ namespace ompl
                         fcl::Transform3f tr1, tr2;
                         tr1.setTransform (q1, t1);
 
-                        fcl::MeshDistanceTraversalNodeRSS distanceNode;
+                        fcl::MeshDistanceTraversalNodeOBBRSS distanceNode;
                         fcl::initialize (distanceNode, robotParts_[i], tr1, environment_, tr2, distanceRequest, distanceResult);
 
                         if (distanceResult.min_distance < dist)
@@ -301,7 +303,7 @@ namespace ompl
             }
 
             /// \brief The type of geometric bounding done for the robot and environment
-            typedef fcl::RSS  BVType;
+            typedef fcl::OBBRSS  BVType;
             /// \brief The type geometric model used for the meshes
             typedef fcl::BVHModel <BVType> Model;
 
