@@ -22,6 +22,8 @@ except:
     # if PyQt4 wasn't found, try PySide
     from PySide import QtCore, QtGui, QtOpenGL
     from PySide.QtCore import Signal
+import OpenGL
+OpenGL.ERROR_CHECKING = False
 from OpenGL import GL, GLU
 import webbrowser, re
 from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
