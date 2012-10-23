@@ -94,7 +94,7 @@ __OMPL.app__, the front-end for [OMPL](/core), contains a lightweight wrapper fo
 
 ## News & Events
 
-- An article about OMPL has been accepted for publication in IEEE's Robotics & Automation Magazine! We'll update as soon as we have complete citation information.
+- [An article about OMPL](../ieee-ram-2012-ompl.pdf) has been accepted for publication in IEEE's Robotics & Automation Magazine! It will appear in the December 2012 issue.
 - [At ROSCON, Sachin Chitta and Ioan Șucan gave a talk about MoveIt!](http://www.youtube.com/watch?v=r1zbuLc8RhI), the new motion planning stack in ROS. It provides a common interface to motion planning libraries in ROS (including OMPL). It will eventually replace the arm navigation stack.
 - [IROS 2011 Tutorial on Motion Planning for Real Robots](http://kavrakilab.org/OMPLtutorial). This hands-on tutorial describes how to use the ROS and OMPL, but it also gives some background on sampling-based motion planning.
 
