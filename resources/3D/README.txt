@@ -36,3 +36,11 @@ specify a motion planning problem and can be loaded with the GUI. The
   http://parasol.tamu.edu/groups/amatogroup/benchmarks/mp/). The objective is
   to take the `bug' robot (a rod) outside of the trap obstacle through the
   narrow passage.
+
+* Home. A version of the piano mover's problem with several homotopy classes.
+  Most planners will find the "long" path, but not the one going through the
+  narrow passages. Contributed by Andrew Dobson at Rutgers University.
+
+* Abstract. Another example of an environment where there exist several
+  homotopy classes of solution paths. Contributed by Andrew Dobson at
+  Rutgers University.
