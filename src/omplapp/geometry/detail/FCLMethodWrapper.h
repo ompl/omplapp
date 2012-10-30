@@ -235,9 +235,9 @@ namespace ompl
                 environment_.computeLocalAABB ();
 
                 if (environment_.num_tris == 0)
-                    logInform("Empty environment loaded");
+                    OMPL_INFORM("Empty environment loaded");
                 else
-                    logInform("Loaded environment model with %d triangles.", environment_.num_tris);
+                    OMPL_INFORM("Loaded environment model with %d triangles.", environment_.num_tris);
 
                 // Configuring the model of the robot, composed of one or more pieces
                 for (size_t rbt = 0; rbt < geom.robot.size (); ++rbt)
@@ -254,7 +254,7 @@ namespace ompl
                     model.endModel ();
                     model.computeLocalAABB ();
 
-                    logInform("Robot piece with %d triangles loaded", model.num_tris);
+                    OMPL_INFORM("Robot piece with %d triangles loaded", model.num_tris);
                     robotParts_.push_back (model);
                 }
             }
