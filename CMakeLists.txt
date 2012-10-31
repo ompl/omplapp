@@ -135,8 +135,8 @@ if (PQP_FOUND)
 endif()
 
 
-add_subdirectory(ompl/src)
 add_subdirectory(ompl/py-bindings)
+add_subdirectory(ompl/src)
 add_subdirectory(ompl/tests)
 add_subdirectory(ompl/demos)
 add_subdirectory(ompl/scripts)

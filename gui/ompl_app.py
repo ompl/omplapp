@@ -42,8 +42,14 @@ from ompl import base as ob
 from ompl import geometric as og
 from ompl import control as oc
 from ompl import app as oa
+
 import ompl
 ompl.initializePlannerLists()
+
+# Add RRT* and BallTreeRRT*
+from ompl import rrtstar
+og.planners.addPlanner('ompl.rrtstar.RRTstar')
+og.planners.addPlanner('ompl.rrtstar.BallTreeRRTstar')
 
 class LogOutputHandler(OutputHandler):
     def __init__(self, textEdit):
@@ -414,7 +420,16 @@ class MainWindow(QtGui.QMainWindow):
         planner = eval('%s(si)' % plannerParams[0])
         params = planner.params()
         for (param,widget) in plannerParams[1].items():
-            params[param].setValue(str(widget.value()))
+            if isinstance(widget, QtGui.QCheckBox):
+                params[param].setValue('1' if widget.isChecked() else '0')
+            elif isinstance(widget, QtGui.QComboBox):
+                if self.isGeometric:
+                    val = og.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
+                else:
+                    val = oc.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
+                params[param].setValue(val)
+            else:
+                params[param].setValue(str(widget.value()))
         return planner
 
     def setRobotType(self, value):
@@ -572,7 +587,6 @@ class MainWindow(QtGui.QMainWindow):
         self.robotTypes = []
         for c in dir(oa):
             if eval('isclass(oa.%s) and issubclass(oa.%s, (oa.AppBaseGeometric,oa.AppBaseControl)) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
-            #if eval('isclass(oa.%s) and issubclass(oa.%s, oa.AppBaseGeometric) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
                 name = eval('oa.%s().getName()' % c)
                 apptype = eval('oa.%s().getAppType()' % c)
                 self.robotTypes.append((c, name, apptype))
@@ -1109,15 +1123,13 @@ class Pose2DBox(QtGui.QGroupBox):
     def poseChange(self, value):
         self.valueChanged.emit([0, 0, self.rot.value(), self.posx.value(), self.posy.value(), 0 ])
 
-class GeometricPlannerWidget(QtGui.QGroupBox):
-    def __init__(self):
-        super(GeometricPlannerWidget, self).__init__('Geometric planning')
+class PlannerHelperWidget(QtGui.QGroupBox):
+    def __init__(self, name, planners):
+        super(PlannerHelperWidget, self).__init__(name)
         self.setFlat(True)
-        plannerLabel = QtGui.QLabel('Planner')
         self.plannerSelect = QtGui.QComboBox()
         self.stackedWidget = QtGui.QStackedWidget()
 
-        planners = og.planners.getPlanners()
         self.plannerList = []
         for planner, params in sorted(planners.items()):
             displayName = planner.split('.')[-1]
@@ -1128,7 +1140,14 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
             paramDict = {}
             for (key,val) in sorted(params.items()):
                 label = QtGui.QLabel(val[0])
-                if val[1] == ompl.PlanningAlgorithms.INT:
+                if val[1] == ompl.PlanningAlgorithms.BOOL:
+                    widget = QtGui.QCheckBox()
+                    widget.setChecked(val[1])
+                elif val[1] == ompl.PlanningAlgorithms.ENUM:
+                    widget = QtGui.QComboBox()
+                    widget.addItems(val[2])
+                    widget.setCurrentIndex(val[3])
+                elif val[1] == ompl.PlanningAlgorithms.INT:
                     widget = QtGui.QSpinBox()
                     widget.setRange(val[2][0], val[2][2])
                     widget.setSingleStep(val[2][1])
@@ -1139,7 +1158,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
                     widget.setSingleStep(val[2][1])
                     widget.setValue(val[3])
                 else:
-                    print "Warning: parameters of type BOOL and ENUM are not handled yet!"
+                    print "Warning: parameter of unknown type ignored!"
                     continue
                 layout.addWidget(label, i, 0, QtCore.Qt.AlignRight)
                 layout.addWidget(widget, i, 1)
@@ -1151,6 +1170,11 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
 
         self.plannerSelect.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
         self.plannerSelect.currentIndexChanged[int].connect(self.stackedWidget.setCurrentIndex)
+
+class GeometricPlannerWidget(PlannerHelperWidget):
+    def __init__(self):
+        super(GeometricPlannerWidget, self).__init__('Geometric planning', og.planners.getPlanners())
+
         # make KPIECE1 the default planner
         self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index('ompl.geometric.KPIECE1'))
 
@@ -1169,7 +1193,7 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         self.resolution.setDecimals(3)
 
         layout = QtGui.QGridLayout()
-        layout.addWidget(plannerLabel, 0, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(QtGui.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.plannerSelect, 0, 1)
         layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.timeLimit, 1, 1)
@@ -1178,48 +1202,10 @@ class GeometricPlannerWidget(QtGui.QGroupBox):
         layout.addWidget(self.stackedWidget, 3, 0, 1, 2)
         self.setLayout(layout)
 
-class ControlPlannerWidget(QtGui.QGroupBox):
+class ControlPlannerWidget(PlannerHelperWidget):
     def __init__(self):
-        super(ControlPlannerWidget, self).__init__('Planning with controls')
-        self.setFlat(True)
-        plannerLabel = QtGui.QLabel('Planner')
-        self.plannerSelect = QtGui.QComboBox()
-        self.stackedWidget = QtGui.QStackedWidget()
+        super(ControlPlannerWidget, self).__init__('Planning with controls', oc.planners.getPlanners())
 
-        planners = oc.planners.getPlanners()
-        self.plannerList = []
-        for planner, params in sorted(planners.items()):
-            displayName = planner.split('.')[-1]
-            self.plannerSelect.addItem(displayName)
-            options = QtGui.QGroupBox('%s options' % displayName)
-            layout = QtGui.QGridLayout()
-            i = 0
-            paramDict = {}
-            for (key,val) in sorted(params.items()):
-                label = QtGui.QLabel(val[0])
-                if val[1] == ompl.PlanningAlgorithms.INT:
-                    widget = QtGui.QSpinBox()
-                    widget.setRange(val[2][0], val[2][2])
-                    widget.setSingleStep(val[2][1])
-                    widget.setValue(val[3])
-                elif val[1] == ompl.PlanningAlgorithms.DOUBLE:
-                    widget = QtGui.QDoubleSpinBox()
-                    widget.setRange(val[2][0], val[2][2])
-                    widget.setSingleStep(val[2][1])
-                    widget.setValue(val[3])
-                else:
-                    print "Warning: parameters of type BOOL and ENUM are not handled yet!"
-                    continue
-                layout.addWidget(label, i, 0, QtCore.Qt.AlignRight)
-                layout.addWidget(widget, i, 1)
-                i = i + 1
-                paramDict[key] = widget
-            options.setLayout(layout)
-            self.stackedWidget.addWidget(options)
-            self.plannerList.append((planner,paramDict))
-
-        self.plannerSelect.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
-        self.plannerSelect.currentIndexChanged[int].connect(self.stackedWidget.setCurrentIndex)
         # make KPIECE1 the default planner
         self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index('ompl.control.KPIECE1'))
 
@@ -1249,7 +1235,7 @@ class ControlPlannerWidget(QtGui.QGroupBox):
         self.maxControlDuration.setValue(20)
 
         layout = QtGui.QGridLayout()
-        layout.addWidget(plannerLabel, 0, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(QtGui.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.plannerSelect, 0, 1, 1, 2)
         layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.timeLimit, 1, 1, 1, 2)
