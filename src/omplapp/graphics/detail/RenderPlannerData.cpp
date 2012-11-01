@@ -35,6 +35,20 @@ namespace ompl
             glVertex3d(state.getX(), state.getY(), state.getZ());
         }
 
+        static void renderEdge(const base::SE2StateSpace::StateType &state1,
+            const base::SE2StateSpace::StateType &state2)
+        {
+            renderState(state1);
+            renderState(state2);
+        }
+
+        static void renderEdge(const base::SE3StateSpace::StateType &state1,
+            const base::SE3StateSpace::StateType &state2)
+        {
+            renderState(state1);
+            renderState(state2);
+        }
+
         static void setStateColor(int tag)
         {
             static const int NC = 7;
@@ -55,22 +69,24 @@ namespace ompl
 
         int RenderPlannerData(const base::PlannerData &pd, const aiVector3D &translate, MotionModel m, const GeometricStateExtractor &gse, unsigned int count)
         {
-            int result = glGenLists(1);
-            glNewList(result, GL_COMPILE);
+            static int result = -1;
+
+            if (result != -1)
+                glDeleteLists(result, 2);
+            result = glGenLists(2);
 
             aiMatrix4x4 t;
             aiMatrix4x4::Translation(-translate, t);
             aiTransposeMatrix4(&t);
+
+            // render vertices
+            glNewList(result, GL_COMPILE);
             glPushMatrix();
             glMultMatrixf((float*)&t);
-
             glDisable(GL_LIGHTING);
             glDisable(GL_COLOR_MATERIAL);
-
             glPointSize(2.0f);
-
             glBegin(GL_POINTS);
-
             if (m == Motion_2D)
                 for (std::size_t i = 0; i < pd.numVertices(); ++i)
                 {
@@ -95,12 +111,54 @@ namespace ompl
                         renderState (*se3st);
                     }
                 }
-
             glEnd();
-
             glPopMatrix();
-
             glEndList();
+
+            // render edges
+            glNewList(result+1, GL_COMPILE);
+            glPushMatrix();
+            glMultMatrixf((float*)&t);
+            glDisable(GL_LIGHTING);
+            glDisable(GL_COLOR_MATERIAL);
+            glPointSize(2.0f);
+            glBegin(GL_LINES);
+            std::vector<unsigned int> edgeList;
+            unsigned int numEdges;
+            if (m == Motion_2D)
+                for (std::size_t i = 0; i < pd.numVertices(); ++i)
+                {
+                    const base::PlannerDataVertex& vtx = pd.getVertex(i);
+                    const base::SE2StateSpace::StateType* vi =
+                        static_cast<const base::SE2StateSpace::StateType*>(gse(vtx.getState(), 0));
+                    setStateColor(vtx.getTag());
+                    numEdges = pd.getEdges(i, edgeList);
+                    for (unsigned int j = 0; j < numEdges; ++j)
+                    {
+                        const base::SE2StateSpace::StateType* vj =
+                            static_cast<const base::SE2StateSpace::StateType*>(gse(pd.getVertex(edgeList[j]).getState(), 0));
+                        renderEdge(*vi, *vj);
+                    }
+                }
+            else
+                for (std::size_t i = 0; i < pd.numVertices(); ++i)
+                {
+                    const base::PlannerDataVertex& vtx = pd.getVertex(i);
+                    const base::SE3StateSpace::StateType* vi =
+                        static_cast<const base::SE3StateSpace::StateType*>(gse(vtx.getState(), 0));
+                    setStateColor(vtx.getTag());
+                    numEdges = pd.getEdges(i, edgeList);
+                    for (unsigned int j = 0; j < numEdges; ++j)
+                    {
+                        const base::SE3StateSpace::StateType* vj =
+                            static_cast<const base::SE3StateSpace::StateType*>(gse(pd.getVertex(edgeList[j]).getState(), 0));
+                        renderEdge(*vi, *vj);
+                    }
+                }
+            glEnd();
+            glPopMatrix();
+            glEndList();
+
             return result;
         }
 

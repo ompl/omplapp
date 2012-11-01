@@ -18,8 +18,13 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorBounds.h>
 #include <boost/shared_ptr.hpp>
-#include <aiScene.h>
-#include <assimp.hpp>
+#if OMPL_HAS_ASSIMP3
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#else
+#include <assimp/aiScene.h>
+#include <assimp/assimp.hpp>
+#endif
 #include <string>
 #include <vector>
 
@@ -49,7 +54,7 @@ namespace ompl
             /// \param mtype The motion model (2D or 3D) for the rigid body.
             /// \remarks This constructor defaults to a PQP state validity checker
             explicit
-            RigidBodyGeometry(MotionModel mtype) : mtype_(mtype), factor_(1.0), add_(0.0), ctype_(PQP)
+            RigidBodyGeometry(MotionModel mtype) : mtype_(mtype), factor_(1.0), add_(0.0), ctype_(FCL)
             {
             }
 

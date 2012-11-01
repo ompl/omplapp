@@ -122,6 +122,7 @@ namespace ompl
                                                                                              selfCollision_(selfCollision)
             {
                 configure(geom);
+                specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
             virtual bool isValid(const base::State *state) const
@@ -215,9 +216,9 @@ namespace ompl
                 distanceTol_ = avgEnvSide_ / 100.0;
 
                 if (!environment_)
-                    logInform("Empty environment loaded");
+                    OMPL_INFORM("Empty environment loaded");
                 else
-                    logInform("Loaded environment model with %d triangles. Average side length is %lf.", environment_->num_tris, avgEnvSide_);
+                    OMPL_INFORM("Loaded environment model with %d triangles. Average side length is %lf.", environment_->num_tris, avgEnvSide_);
 
                 for (unsigned int i = 0 ; i < geom.robot.size() ; ++i)
                 {
@@ -228,7 +229,7 @@ namespace ompl
                     if (!m)
                         throw Exception("Invalid robot mesh");
                     else
-                        logInform("Loaded robot model with %d triangles", m->num_tris);
+                        OMPL_INFORM("Loaded robot model with %d triangles", m->num_tris);
                     robotParts_.push_back(m);
                 }
             }
@@ -271,7 +272,7 @@ namespace ompl
                 double other = (b[(d + 1) % 3] + b[(d + 2) % 3]) / 2.0;
                 if (b[d] * 1000.0 < other && b[d] < 0.1)
                 {
-                    logDebug("Adding padding for dimension %u so that collision checking is more accurate", d);
+                    OMPL_DEBUG("Adding padding for dimension %u so that collision checking is more accurate", d);
                     std::vector<aiVector3D> extraTri;
                     extraTri.reserve(triangles.size() * 8);
                     const int N = triangles.size() / 3;

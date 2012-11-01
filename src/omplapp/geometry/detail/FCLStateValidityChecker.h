@@ -15,8 +15,6 @@
 
 #include "omplapp/config.h"
 
-#if OMPL_HAS_FCL
-
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/StateValidityChecker.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
@@ -41,7 +39,7 @@ namespace ompl
         {
             typedef ob::SE3StateSpace::StateType type;
 
-            void FCLPoseFromState(fcl::Vec3f &trans, fcl::SimpleQuaternion &quat, const ob::State *state) const
+            void FCLPoseFromState(fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
                 const type * derived = static_cast <const type*> (state);
 
@@ -58,7 +56,7 @@ namespace ompl
         {
             typedef ob::SE2StateSpace::StateType type;
 
-            void FCLPoseFromState (fcl::Vec3f &trans, fcl::SimpleQuaternion &quat, const ob::State *state) const
+            void FCLPoseFromState (fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
                 static const fcl::Vec3f zaxis(0., 0., 1.);
                 const type * derived = static_cast <const type*> (state);
@@ -78,6 +76,7 @@ namespace ompl
                                      const GeometricStateExtractor &se, bool selfCollision) : ob::StateValidityChecker(si),
                                                                                               fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision, boost::bind (&OMPL_FCL_StateType<T>::FCLPoseFromState, stateConvertor_, _1, _2, _3)))
             {
+                specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
             virtual ~FCLStateValidityChecker (void)
@@ -113,7 +112,5 @@ namespace ompl
         };
     }
 }
-
-#endif // OMPL_HAS_FCL
 
 #endif

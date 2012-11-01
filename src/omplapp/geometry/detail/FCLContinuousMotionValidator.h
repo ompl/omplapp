@@ -13,8 +13,6 @@
 #ifndef OMPLAPP_GEOMETRY_DETAIL_FCL_CONTINUOUS_MOTION_VALIDATOR_
 #define OMPLAPP_GEOMETRY_DETAIL_FCL_CONTINUOUS_MOTION_VALIDATOR_
 
-#ifdef OMPL_HAS_FCL
-
 #include <ompl/base/MotionValidator.h>
 #include <ompl/base/SpaceInformation.h>
 
@@ -135,7 +133,7 @@ namespace ompl
                         if (!fcl_2d_state_checker)
                         {
                             // Be extra verbose in this fatal error
-                            logError ("Unable to cast state validity checker to FCLStateValidityChecker.");
+                            OMPL_ERROR("Unable to cast state validity checker to FCLStateValidityChecker.");
                             assert (fcl_2d_state_checker != 0);
                         }
 
@@ -149,7 +147,7 @@ namespace ompl
                         if (!fcl_3d_state_checker)
                         {
                             // Be extra verbose in this fatal error
-                            logError ("Unable to cast state validity checker to FCLStateValidityChecker.");
+                            OMPL_ERROR("Unable to cast state validity checker to FCLStateValidityChecker.");
                             assert (fcl_3d_state_checker != 0);
                         }
 
@@ -157,14 +155,14 @@ namespace ompl
                         break;
 
                     default:
-                        logWarn ("Unknown motion model specified: %u", mm);
+                        OMPL_WARN("Unknown motion model specified: %u", mm);
                         break;
                 }
 
                 if (!fclWrapper_)
                 {
                     // Be extra verbose in this fatal error
-                    logError ("FCLWrapper object is not valid.");
+                    OMPL_ERROR("FCLWrapper object is not valid.");
                     assert (fclWrapper_ != 0);
                 }
             }
@@ -177,7 +175,5 @@ namespace ompl
         };
     }
 }
-
-#endif // OMPL_HAS_FCL
 
 #endif

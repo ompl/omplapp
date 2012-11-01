@@ -50,7 +50,8 @@ int main()
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
 
     // make sure the planners run until the time limit, and get the best possible solution
-    setup.getGoal()->setMaximumPathLength(0.0);
+    setup.getProblemDefinition()->setOptimizationObjective(
+        base::OptimizationObjectivePtr(new base::PathLengthOptimizationObjective(setup.getSpaceInformation(),0.0)));
 
     setup.setup();
 

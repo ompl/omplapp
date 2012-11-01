@@ -10,11 +10,14 @@ Steps to release a new version:
 * run ompl_app.py and solve a test problem
 * make install
 * make package_source
+* upload any dependency tar balls to sourceforge.net if they have been updated:
+  scp ~/omplapp/src/external/fcl-r* mamoll,ompl@frs.sourceforge.net:/home/frs/project/o/om/ompl/dependencies
+  (substitute your sourceforge userid for mamoll)
 * upload to bitbicket.org
 * make website for both omplapp and ompl (to update ompl-beta.kavrakilab.org)
 * change "BRANCH=trunk" below to "BRANCH=release-x.y" (no patch level) and do make website for both omplapp and ompl. Undo these changes afterwards (do not commit)
 * make sure the symlink /mnt/data2/ompl/release on arache points to the latest release-x.y (no patch level)
-* tag omplapp and ompl with release-x.y.z (including patch level this time)
+* tag omplapp and ompl with version number x.y.z (including patch level this time)
 * update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org)
 * push changes to the version of ompl on sourceforge (omplapp repo is private)
     - in the folder that contains the private clone of ompl, execute this command:

@@ -30,15 +30,14 @@ set(CPACK_SOURCE_IGNORE_FILES
     "ompl.pc$"
     "installPyPlusPlus.bat$"
     "installPyPlusPlus.sh$"
+    "create_symlinks.sh$"
+    "uninstall_symlinks.sh$"
     "config.h$"
+    ".registered$"
     ".tgz$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 
-# Run "cmake -DOMPL_INSTALL_DEPENDENCIES=ON" before "make package" to include
-# PQP, FCL, and CCD. The resulting .deb file is intended for (recent) Ubuntu
-# releases. The dependencies likely have different names on other Linux
-# distributions
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(CPACK_GENERATOR "DEB;${CPACK_GENERATOR}")
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i686")
@@ -59,4 +58,3 @@ if(WIN32)
 endif()
 
 include(CPack)
-

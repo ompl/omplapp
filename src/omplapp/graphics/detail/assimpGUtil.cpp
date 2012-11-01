@@ -106,7 +106,7 @@ namespace ompl
             }
 
             // Can't send color down as a pointer to aiColor4D because AI colors are ABGR.
-            void Color4f(const struct aiColor4D *color)
+            void Color4f(const aiColor4D *color)
             {
                 glColor4f(color->r, color->g, color->b, color->a);
             }

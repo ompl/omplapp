@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
-
+if(${CMAKE_VERSION} VERSION_GREATER 2.8.3)
+    cmake_policy(SET CMP0017 NEW)
+endif()
 project(omplapp CXX C)
 
 # set the default build type
@@ -7,30 +9,32 @@ if (NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# This shouldn't be necessary, but there has been trouble 
+# This shouldn't be necessary, but there has been trouble
 # with MSVC being set off, but MSVCXX ON.
 if(MSVC OR MSVC90 OR MSVC10)
     set(MSVC ON)
 endif (MSVC OR MSVC90 OR MSVC10)
 
-set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
-set(OMPL_DEMO_INSTALL_DIR share/ompl/demos
-    CACHE STRING "Relative path to directory where demos will be installed")
-set(OMPL_DOC_INSTALL_DIR share/ompl/doc
-    CACHE STRING "Relative path to directory where documentation will be installed")
-set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
-    CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
-
 set(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
     "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
 include(CompilerSettings)
+include(OMPLVersion)
+include(OMPLUtils)
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
-include(OMPLVersion)
+set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+set(OMPL_DEMO_INSTALL_DIR "share/ompl${OMPL_INSTALL_SUFFIX}/demos"
+    CACHE STRING "Relative path to directory where demos will be installed")
+set(OMPL_DOC_INSTALL_DIR "share/ompl${OMPL_INSTALL_SUFFIX}/doc"
+    CACHE STRING "Relative path to directory where documentation will be installed")
+set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
+    CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
+
 set(OMPLAPP_MAJOR_VERSION ${OMPL_MAJOR_VERSION})
 set(OMPLAPP_MINOR_VERSION ${OMPL_MINOR_VERSION})
 set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
@@ -41,8 +45,12 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 endif(MSVC)
-# Ensure dynamic linking with boost unit_test_framework
-add_definitions(-DBOOST_TEST_DYN_LINK)
+if(IS_ICPC)
+    set(Boost_USE_STATIC_LIBS ON CACHE STRING "Use statically linked Boost libraries")
+else(IS_ICPC)
+    # Ensure dynamic linking with boost unit_test_framework
+    add_definitions(-DBOOST_TEST_DYN_LINK)
+endif(IS_ICPC)
 
 find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system unit_test_framework REQUIRED)
 find_package(Boost COMPONENTS python)
@@ -71,9 +79,10 @@ if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
 endif()
 find_package(OpenDE QUIET)
 find_package(Drawstuff QUIET)
+find_package(PQP QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
-# module to download and build PQP, FCL, and Assimp (if they aren't
+# module to download and build FCL and Assimp (if they aren't
 # already installed).
 if(${CMAKE_VERSION} VERSION_LESS 2.8.4 AND
     NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
@@ -81,7 +90,6 @@ if(${CMAKE_VERSION} VERSION_LESS 2.8.4 AND
             "http://cmake.org/gitweb?p=cmake.git;a=blob_plain;f=Modules/ExternalProject.cmake;hb=HEAD"
             "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
 endif()
-include(UsePQP)
 include(UseFCL)
 include(UseAssimp)
 
@@ -91,23 +99,9 @@ include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
-    "${ASSIMP_INCLUDE_DIR}"
-    "${PQP_INCLUDE_DIR}")
-
-if (FCL_INCLUDE_DIR)
-    include_directories("${FCL_INCLUDE_DIR}" "${CCD_INCLUDE_DIR}" "${FLANN_INCLUDE_DIR}")
-    set(OMPL_HAS_FCL 1)
-endif ()
-
-if(OPENGL_INCLUDE_DIR)
-    include_directories("${OPENGL_INCLUDE_DIR}")
-endif()
-
-set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
-if (OPENDE_FOUND)
-    add_definitions(${OPENDE_DEFINITIONS})
-    include_directories(${OPENDE_INCLUDE_DIR})
-endif()
+    "${ASSIMP_INCLUDE_DIRS}"
+    "${FCL_INCLUDE_DIR}"
+    "${CCD_INCLUDE_DIR}")
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
@@ -121,23 +115,38 @@ set(OMPLAPP_LIBRARIES
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
-    ${ASSIMP_LIBRARY}
-    ${PQP_LIBRARY}
+    ${ASSIMP_LIBRARIES}
     ${FCL_LIBRARIES})
 
-include(OMPLUtils)
+if(OPENGL_INCLUDE_DIR)
+    include_directories("${OPENGL_INCLUDE_DIR}")
+endif()
 
-add_subdirectory(ompl/src)
+set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
+if (OPENDE_FOUND)
+    add_definitions(${OPENDE_DEFINITIONS})
+    include_directories("${OPENDE_INCLUDE_DIR}")
+endif()
+
+if (PQP_FOUND)
+    include_directories("${PQP_INCLUDE_DIR}")
+    set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
+    set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
+endif()
+
+
 add_subdirectory(ompl/py-bindings)
+add_subdirectory(ompl/src)
 add_subdirectory(ompl/tests)
 add_subdirectory(ompl/demos)
+add_subdirectory(ompl/scripts)
 add_subdirectory(gui)
 add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(benchmark)
 add_subdirectory(py-bindings)
-install(DIRECTORY resources DESTINATION share/ompl
+install(DIRECTORY resources DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
     PATTERN ".svn" EXCLUDE
     PATTERN ".DS_Store" EXCLUDE)
 
@@ -159,10 +168,6 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     if(TARGET fcl)
         add_dependencies(update_app_bindings fcl)
     endif()
-    # need ODEInt to generate python bindings
-    if (TARGET Boost.ODEInt)
-        add_dependencies(update_control_bindings Boost.ODEInt)
-    endif()
 endif()
 
 
@@ -172,10 +177,20 @@ if (NOT MSVC)
     set(PKG_OMPL_LIBS "-lompl -lompl_app")
     set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
     configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
-    install(FILES ${pkg_conf_file} DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
+    install(FILES "${pkg_conf_file}" DESTINATION lib/pkgconfig/
+        COMPONENT pkgconfig RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
 
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/dox/FindOMPL.cmake"
-        DESTINATION "share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules/")
+        DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
+        RENAME ompl-config.cmake)
+    if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.5)
+        include(WriteBasicConfigVersionFile)
+        write_basic_config_version_file(
+            ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
+            VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
+            DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}")
+    endif()
 endif()
 
 # uninstall target
@@ -186,4 +201,33 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
+if (OMPL_VERSIONED_INSTALL)
+    # script to create sym links
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh" @ONLY)
+    execute_process(COMMAND
+      "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh"
+      "omplapp" WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.symlinks/ DESTINATION .)
+    # script to uninstall sym links
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh" @ONLY)
+    add_custom_target(uninstall_links COMMAND
+        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh")
+    add_dependencies(uninstall uninstall_links)
+endif()
+
 include(CPackSettings)
+
+option(OMPL_REGISTRATION "Enable one-time registration of OMPL" ON)
+if (OMPL_REGISTRATION)
+    find_file(OMPL_REGISTERED ".registered" PATHS "${CMAKE_CURRENT_SOURCE_DIR}" NO_DEFAULT_PATH)
+    if (NOT OMPL_REGISTERED)
+        file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/.registered" "")
+        find_package(Python QUIET)
+        if (PYTHON_FOUND)
+            execute_process(COMMAND "${PYTHON_EXEC}" "-m" "webbrowser" "http://ompl.kavrakilab.org/register.html"
+                OUTPUT_QUIET ERROR_QUIET)
+        endif()
+    endif()
+endif()
