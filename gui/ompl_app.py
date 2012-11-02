@@ -770,6 +770,8 @@ class GLViewer(QtOpenGL.QGLWidget):
         GL.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE)
         GL.glEnable(GL.GL_LINE_SMOOTH)
         GL.glShadeModel(GL.GL_FLAT)
+        GL.glEnable(GL.GL_BLEND)
+        GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
         #GL.glEnable(GL.GL_CULL_FACE)
 
     def transform(self, pose):
