@@ -1138,7 +1138,7 @@ class PlannerHelperWidget(QtGui.QGroupBox):
                 label = QtGui.QLabel(val[0])
                 if val[1] == ompl.PlanningAlgorithms.BOOL:
                     widget = QtGui.QCheckBox()
-                    widget.setChecked(val[1])
+                    widget.setChecked(val[3])
                 elif val[1] == ompl.PlanningAlgorithms.ENUM:
                     widget = QtGui.QComboBox()
                     widget.addItems(val[2])
