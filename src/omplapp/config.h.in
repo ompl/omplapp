@@ -19,4 +19,7 @@
 #cmakedefine01 OMPL_HAS_ASSIMP2
 #cmakedefine01 OMPL_HAS_ASSIMP3
 
+/** Whether PQP was found */
+#cmakedefine01 OMPL_HAS_PQP
+
 #endif

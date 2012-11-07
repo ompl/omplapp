@@ -79,9 +79,10 @@ if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
 endif()
 find_package(OpenDE QUIET)
 find_package(Drawstuff QUIET)
+find_package(PQP QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
-# module to download and build PQP, FCL, and Assimp (if they aren't
+# module to download and build FCL and Assimp (if they aren't
 # already installed).
 if(${CMAKE_VERSION} VERSION_LESS 2.8.4 AND
     NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
@@ -89,7 +90,6 @@ if(${CMAKE_VERSION} VERSION_LESS 2.8.4 AND
             "http://cmake.org/gitweb?p=cmake.git;a=blob_plain;f=Modules/ExternalProject.cmake;hb=HEAD"
             "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
 endif()
-include(UsePQP)
 include(UseFCL)
 include(UseAssimp)
 
@@ -100,19 +100,8 @@ include_directories(
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIRS}"
-    "${PQP_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIR}"
     "${CCD_INCLUDE_DIR}")
-
-if(OPENGL_INCLUDE_DIR)
-    include_directories("${OPENGL_INCLUDE_DIR}")
-endif()
-
-set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
-if (OPENDE_FOUND)
-    add_definitions(${OPENDE_DEFINITIONS})
-    include_directories(${OPENDE_INCLUDE_DIR})
-endif()
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
@@ -127,11 +116,27 @@ set(OMPLAPP_LIBRARIES
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARIES}
-    ${PQP_LIBRARY}
     ${FCL_LIBRARIES})
 
-add_subdirectory(ompl/src)
+if(OPENGL_INCLUDE_DIR)
+    include_directories("${OPENGL_INCLUDE_DIR}")
+endif()
+
+set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
+if (OPENDE_FOUND)
+    add_definitions(${OPENDE_DEFINITIONS})
+    include_directories("${OPENDE_INCLUDE_DIR}")
+endif()
+
+if (PQP_FOUND)
+    include_directories("${PQP_INCLUDE_DIR}")
+    set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
+    set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
+endif()
+
+
 add_subdirectory(ompl/py-bindings)
+add_subdirectory(ompl/src)
 add_subdirectory(ompl/tests)
 add_subdirectory(ompl/demos)
 add_subdirectory(ompl/scripts)

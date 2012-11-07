@@ -36,12 +36,12 @@ void ompl::app::scene::inferBounds(base::RealVectorBounds &bounds, const std::ve
     if (multiply < 0.0)
     {
         multiply = 0.0;
-        logWarn("The multiplicative factor in the bounds computation process should be larger than 1.0");
+        OMPL_WARN("The multiplicative factor in the bounds computation process should be larger than 1.0");
     }
     if (add < 0.0)
     {
         add = 0.0;
-        logWarn("The additive factor in the bounds computation process should be larger than 0.0");
+        OMPL_WARN("The additive factor in the bounds computation process should be larger than 0.0");
     }
 
     double dx = (maxX - minX) * multiply + add;
