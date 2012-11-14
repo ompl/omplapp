@@ -106,7 +106,6 @@ include_directories(
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
-    ${PQP_LIBRARY}
     ${FCL_LIBRARIES})
 set(OMPLAPP_LIBRARIES
     ${Boost_DATE_TIME_LIBRARY}
@@ -128,7 +127,8 @@ if (OPENDE_FOUND)
     include_directories("${OPENDE_INCLUDE_DIR}")
 endif()
 
-if (PQP_FOUND)
+option(OMPLAPP_PQP "Enable support for the PQP collision checking library" ON)
+if(OMPLAPP_PQP AND PQP_FOUND)
     include_directories("${PQP_INCLUDE_DIR}")
     set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
     set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
@@ -156,10 +156,6 @@ if(TARGET drawstuff)
 endif()
 
 if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
-    # need PQP header files to generate python bindings
-    if(TARGET pqp)
-        add_dependencies(update_app_bindings pqp)
-    endif()
     # need assimp header files to generate python bindings
     if(TARGET assimp)
         add_dependencies(update_app_bindings assimp)
