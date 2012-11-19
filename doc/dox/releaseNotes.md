@@ -1,6 +1,16 @@
 # Release Notes
 
 
+## OMPL.app 0.12.0 (November 20, 2012)
+
+- Added T-RRT, a planner for planning low-cost paths.
+- Replaced PQP with FCL as the default collision checker.
+- In the GUI the trees/roadmap produced by a planner can now be visualized.
+- The GUI widgets for planners and their parameters are automatically constructed, which should make it easier to add new planners to the GUI.
+- Documentation updates.
+- Bug fixes.
+
+
 ## OMPL.app 0.11.1 (July 26, 2012)
 
 - Fixed bug in RRT* where nearest neighbor radius shrinks too fast.
