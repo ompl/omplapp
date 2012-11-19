@@ -15,7 +15,7 @@ OMPL.app has the following required dependencies:
 * [FCL](http://gamma.cs.unc.edu/FCL)
 
 OMPL.app's build system will attempt to automatically download and build
-Assimp, PQP, and FCL if not already installed.
+Assimp and FCL if not already installed.
 
 The following dependencies are optional:
 
