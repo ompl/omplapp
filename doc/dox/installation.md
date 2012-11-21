@@ -225,7 +225,7 @@ The CMAKE_INSTALL_PREFIX variable is set to <tt>C:\\Program Files (x86)\\omplapp
 [boost]: http://www.boost.org
 [cmake]: http://www.cmake.org
 [python]: http://www.python.org
-[qt4]: http://qt.nokia.org
+[qt4]: http://qt-project.org
 [pyqt4]: http://www.riverbankcomputing.co.uk/software/pyqt/download
 [pyside]: http://www.pyside.org
 [pyopengl]: http://pyopengl.sourceforge.net

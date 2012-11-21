@@ -9,6 +9,7 @@
 - Planners now have the option to report the non-existence of a solution (ompl::base::SolutionNonExistenceProof).
 - Replaced PQP with FCL as the default collision checker.
 - In the GUI the trees/roadmap produced by a planner can now be visualized.
+- Improved infrastructure for creating python bindings for planners (see [tutorial](pybindingsPlanner.html) for details)
 - The GUI widgets for planners and their parameters are automatically constructed, which should make it easier to add new planners to the GUI.
 - Documentation updates.
 - Bug fixes.
