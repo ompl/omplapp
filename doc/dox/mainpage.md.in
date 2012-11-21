@@ -31,7 +31,7 @@ __OMPL.app__, the front-end for [OMPL](/core), contains a lightweight wrapper fo
       <div class="item active">
       <div class="pagination-centered"><img src="../images/mp.jpg"></div>
       </div>
-      <div class="item">
+      <!--<div class="item">
         <img src="../images/mp.jpg" class="hidden" style="margin-top: 1px">
         <div class="carousel-caption carousel-caption-inset"><h4>New in 0.11!</h4>
         <ul>
@@ -39,6 +39,11 @@ __OMPL.app__, the front-end for [OMPL](/core), contains a lightweight wrapper fo
            <li>Implementation of PRM is now threaded (one thread for growing the roadmap, one thread for monitoring whether the problem is solved).
         </ul>
         <p>See <a href="releaseNotes.html">release notes</a> for details</p>
+      </div>-->
+      <div class="item">
+        <div class="pagination-centered"><a href=""><img src="../images/T-RRT.jpg"></a></div>
+        <div class="carousel-caption"><h4>Planning with costs</h4>
+        <p>Visualization of the cost map explored by the T-RRT planner.</p>
         </div>
       </div>
       <div class="item">
