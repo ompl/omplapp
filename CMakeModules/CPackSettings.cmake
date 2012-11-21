@@ -34,7 +34,8 @@ set(CPACK_SOURCE_IGNORE_FILES
     "uninstall_symlinks.sh$"
     "config.h$"
     ".registered$"
-    ".tgz$")
+    ".tgz$"
+    ".zip$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 
