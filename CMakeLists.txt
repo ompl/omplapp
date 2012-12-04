@@ -98,10 +98,10 @@ enable_testing()
 include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
+    "${FCL_INCLUDE_DIRS}"
+    "${CCD_INCLUDE_DIRS}"
     "${Boost_INCLUDE_DIR}"
-    "${ASSIMP_INCLUDE_DIRS}"
-    "${FCL_INCLUDE_DIR}"
-    "${CCD_INCLUDE_DIR}")
+    "${ASSIMP_INCLUDE_DIRS}")
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
