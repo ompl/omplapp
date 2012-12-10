@@ -41,7 +41,7 @@ namespace ompl
 {
     namespace app
     {
-        ClassForward (FCLMethodWrapper);
+        OMPL_CLASS_FORWARD (FCLMethodWrapper);
 
         /// \brief Wrapper for FCL discrete and continuous collision checking and distance queries
         class FCLMethodWrapper
