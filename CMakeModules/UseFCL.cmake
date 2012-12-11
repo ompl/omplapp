@@ -39,6 +39,7 @@ endif(NOT CCD_FOUND)
 if(NOT FCL_FOUND)
     message (STATUS "FCL library not found.  Will download and compile.")
     include(ExternalProject)
+
     # download and build FCL
     ExternalProject_Add(fcl
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
@@ -50,7 +51,7 @@ if(NOT FCL_FOUND)
             "${CMAKE_COMMAND}"
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
             "-DCMAKE_BUILD_TYPE=Release"
-            "-DCMAKE_CXX_FLAGS=-fPIC"
+            "-DCMAKE_CXX_FLAGS='-fPIC -I${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include'"
             "-DFCL_STATIC_LIBRARY=ON"
             "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIRS}"
             "-DCCD_LIBRARY_DIRS=${CCD_LIBDIR}")
