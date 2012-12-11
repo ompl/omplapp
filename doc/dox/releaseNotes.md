@@ -1,7 +1,13 @@
 # Release Notes
 
 
-## OMPL.app 0.12.0 (November 20, 2012)
+# OMPL.app 0.12.1 (12/12/12)
+
+- Stricter checking for FCL and CCD versions, to avoid link problems with ROS Fuerte.
+- Bug fixes.
+
+
+# OMPL.app 0.12.0 (November 20, 2012)
 
 - Added representation of costs to ompl::base::StateValidityChecker.
 - Added the notion of objectives to be optimized: ompl::base::OptimizationObjective.
@@ -15,7 +21,7 @@
 - Bug fixes.
 
 
-## OMPL.app 0.11.1 (July 26, 2012)
+# OMPL.app 0.11.1 (July 26, 2012)
 
 - Fixed bug in RRT* where nearest neighbor radius shrinks too fast.
 - Added option for versioned installs: multiple versions of OMPL.app can be installed simultaneously (disabled by default). This is enabled by running <tt>cmake -DOMPL_VERSIONED_INSTALL=ON</tt>.
@@ -23,7 +29,7 @@
 - Bug and documentation fixes.
 
 
-## OMPL.app 0.11.0 (June 30, 2012)
+# OMPL.app 0.11.0 (June 30, 2012)
 
 - PlannerData now uses the Boost Graph Library (BGL). This offers much more flexibility and power in the inspection of planner data structures. Rather than storing only the data common to all planners, each planner can store its own (meta)data per vertex and edge in a graph. All graph algorithms that exists in BGL can be applied directly.
 - Added PlannerDataStorage object for serialization/deserialization of PlannerData
@@ -40,7 +46,7 @@
 - Bug fixes.
 
 
-## OMPL.app 0.10.2 (March 21, 2012)
+# OMPL.app 0.10.2 (March 21, 2012)
 
 - Created a blog to highlight new features.
 - Added support for multi-robot rigid-body motion planning.
@@ -48,7 +54,7 @@
 - Bug fixes.
 
 
-## OMPL.app 0.10.1 (February 27, 2012)
+# OMPL.app 0.10.1 (February 27, 2012)
 
 - Added representation of discrete control spaces.
 - Fixes for XCode 4.3 when compiling the Python bindings.
@@ -57,7 +63,7 @@
 - Bug fixes.
 
 
-## OMPL.app 0.10.0 (February 16, 2012)
+# OMPL.app 0.10.0 (February 16, 2012)
 
 - Minimum Boost version is now 1.44.
 - Added a primer on sampling-based motion planning and OMPL.
@@ -82,7 +88,7 @@
 - To make installing and patching Py++, pygccml, and gccxml easier there is now a script called installPyPlusPlus.sh that does this. One can call this script after running cmake by typing “make installpyplusplus”.
 
 
-## OMPL.app 0.9.5 (October 4, 2011)
+# OMPL.app 0.9.5 (October 4, 2011)
 
 - Added control sampler functions that allow specifying an intended direction of propagation
 - Made python, Boost.Python, PyOpenGL, and PyQt optional; the omplapp library is useful even without the GUI or python bindings.
@@ -90,7 +96,7 @@
 - Bug fixes.
 
 
-## OMPL.app 0.9.4 (August 16, 2011)
+# OMPL.app 0.9.4 (August 16, 2011)
 
 - Renamed StateManifold to StateSpace and ControlManifold to ControlSpace
 - Added RRTstar contribution
@@ -111,7 +117,7 @@
 - Documentation fixes
 
 
-## OMPL.app 0.9.3 (May 2, 2011)
+# OMPL.app 0.9.3 (May 2, 2011)
 
 - Added support for visualizing internal planner data
 - Planning for 2D environments as well (SE2)
@@ -123,18 +129,18 @@
 - A number of bug fixes
 
 
-## OMPL.app 0.9.2 (February 21, 2011)
+# OMPL.app 0.9.2 (February 21, 2011)
 
 - Updates to operations on states: indexing in states can be done using state spaces or using integer values
 - Bug fixes for planning with controls
 - Minor doc improvements
 
 
-## OMPL.app 0.9.1 (December 17, 2010)
+# OMPL.app 0.9.1 (December 17, 2010)
 
 - Minor updates to build system
 
-## OMPL.app 0.9.0 (December 15, 2010; initial release)
+# OMPL.app 0.9.0 (December 15, 2010; initial release)
 
 - Implementations of many state-of-the-art sampling-based motion planning algorithms. For purely geometric planning, there are implementations of KPIECE, SBL, RRT, RRT Connect, EST, PRM, Lazy RRT, and others. For planning with differential constraints there are implementations of KPIECE and RRT. Addition of new planners poses very few constraints on the added code.
 - A flexible mechanism for constructing arbitrarily complex configuration spaces and control spaces from simpler ones.
