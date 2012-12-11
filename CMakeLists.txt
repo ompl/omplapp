@@ -116,6 +116,7 @@ set(OMPLAPP_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARIES}
     ${FCL_LIBRARIES})
+link_directories(${CCD_LIBDIR} ${FCL_LIBDIR})
 
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")

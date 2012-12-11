@@ -22,8 +22,8 @@ if(NOT CCD_FOUND)
             "-DCMAKE_BUILD_TYPE=Release" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC")
 
     # Set the CCD_LIBRARIES Variable
-    set(CCD_LIBRARY_DIRS "${CMAKE_BINARY_DIR}/ccd-prefix/lib")
-    set(CCD_LIBRARIES "${CCD_LIBRARY_DIRS}/${CMAKE_STATIC_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(CCD_LIBDIR "${CMAKE_BINARY_DIR}/ccd-prefix/lib")
+    set(CCD_LIBRARIES "${CCD_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ccd${CMAKE_STATIC_LIBRARY_SUFFIX}")
     if(EXISTS "${CCD_LIBRARIES}")
         set(CCD_LIBRARIES "${CCD_LIBRARIES}" CACHE FILEPATH "Location of convex collision detection library" FORCE)
     endif()
@@ -53,13 +53,13 @@ if(NOT FCL_FOUND)
             "-DCMAKE_CXX_FLAGS=-fPIC"
             "-DFCL_STATIC_LIBRARY=ON"
             "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIRS}"
-            "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIRS}")
+            "-DCCD_LIBRARY_DIRS=${CCD_LIBDIR}")
 
     # Make sure ccd exists before building fcl.
     add_dependencies(fcl ccd)
 
-    set(FCL_LIBRARY_DIRS "${CMAKE_BINARY_DIR}/fcl-prefix/lib")
-    set(FCL_LIBRARIES "${FCL_LIBRARY_DIRS}/${CMAKE_STATIC_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(FCL_LIBDIR "${CMAKE_BINARY_DIR}/fcl-prefix/lib")
+    set(FCL_LIBRARIES "${FCL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}fcl${CMAKE_STATIC_LIBRARY_SUFFIX}")
     if(EXISTS "${FCL_LIBRARIES}")
         set(FCL_LIBRARIES "${FCL_LIBRARIES}" CACHE FILEPATH "Location of FCL collision checking library" FORCE)
     endif()
