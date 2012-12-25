@@ -47,7 +47,7 @@ if(NOT FCL_FOUND)
         URL_MD5 "d0164f6454cda76d50ff53052be2fd45"
         CMAKE_COMMAND env
         CMAKE_ARGS
-            "PKG_CONFIG_PATH=${CCD_LIBRARY_DIRS}/pkgconfig"
+            "PKG_CONFIG_PATH=${CCD_LIBDIR}/pkgconfig"
             "${CMAKE_COMMAND}"
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
             "-DCMAKE_BUILD_TYPE=Release"
