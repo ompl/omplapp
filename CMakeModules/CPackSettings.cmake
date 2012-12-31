@@ -34,8 +34,12 @@ set(CPACK_SOURCE_IGNORE_FILES
     "uninstall_symlinks.sh$"
     "config.h$"
     ".registered$"
+    ".tar.gz"
     ".tgz$"
-    ".zip$")
+    ".zip$"
+    "download.md$"
+    "mainpage.md$"
+    "binding_generator.py$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 
