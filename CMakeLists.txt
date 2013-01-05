@@ -77,8 +77,14 @@ find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
 endif()
+# If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
+find_package(flann 1.8.3 QUIET)
+# ODE is only needed for Open Dynamics Engine bindings
 find_package(OpenDE QUIET)
+# This library is included in the Open Dynamics source distribution and is used in one demo only
 find_package(Drawstuff QUIET)
+# If the PQP is installed, it is possible to use as the collision checker with OMPL.app.
+# (FCL is the default collision checker)
 find_package(PQP QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
@@ -120,6 +126,11 @@ link_directories(${CCD_LIBDIR} ${FCL_LIBDIR})
 
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
+endif()
+
+if (FLANN_FOUND)
+    set(OMPL_HAVE_FLANN 1)
+    include_directories("${FLANN_INCLUDE_DIRS}")
 endif()
 
 set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
