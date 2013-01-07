@@ -197,7 +197,7 @@ namespace ompl
             virtual double clearance (const base::State *state) const
             {
                 double dist = std::numeric_limits<double>::infinity ();
-                fcl::DistanceRequest distanceRequest;
+                fcl::DistanceRequest distanceRequest(true);
                 fcl::DistanceResult distanceResult;
                 if (environment_.num_tris > 0)
                 {
@@ -212,7 +212,7 @@ namespace ompl
 
                         fcl::MeshDistanceTraversalNodeOBBRSS distanceNode;
                         fcl::initialize (distanceNode, *robotParts_[i], tr1, environment_, tr2, distanceRequest, distanceResult);
-
+                        fcl::distance (&distanceNode);
                         if (distanceResult.min_distance < dist)
                             dist = distanceResult.min_distance;
                     }
