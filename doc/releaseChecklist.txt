@@ -18,7 +18,7 @@ Steps to release a new version:
 * change "BRANCH=trunk" below to "BRANCH=release-x.y" (no patch level) and do make website for both omplapp and ompl. Undo these changes afterwards (do not commit)
 * make sure the symlink /mnt/data2/ompl/release on arache points to the latest release-x.y (no patch level)
 * tag omplapp and ompl with version number x.y.z (including patch level this time)
-* update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org)
+* update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org) for ompl, fcl, libccd, flann, ode, and other possible dependencies. 
 * push changes to the version of ompl on sourceforge (omplapp repo is private)
     - in the folder that contains the private clone of ompl, execute this command:
       hg push /path/to/local/clone/of/sourceforge/ompl -b default
