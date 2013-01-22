@@ -1,6 +1,13 @@
 # Release Notes
 
 
+# OMPL.app 0.12.2 (1/22/13)
+
+- Initial support for FLANN, a library for approximate nearest neighbors.
+- Documentation updates.
+- Bug fixes.
+
+
 # OMPL.app 0.12.1 (12/12/12)
 
 - Stricter checking for FCL and CCD versions, to avoid link problems with ROS Fuerte.
@@ -15,7 +22,7 @@
 - Planners now have the option to report the non-existence of a solution (ompl::base::SolutionNonExistenceProof).
 - Replaced PQP with FCL as the default collision checker.
 - In the GUI the trees/roadmap produced by a planner can now be visualized.
-- Improved infrastructure for creating python bindings for planners (see [tutorial](pybindingsPlanner.html) for details)
+- Improved infrastructure for creating python bindings for planners (see [tutorial](pybindingsPlanner.html) for details).
 - The GUI widgets for planners and their parameters are automatically constructed, which should make it easier to add new planners to the GUI.
 - Documentation updates.
 - Bug fixes.
