@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BRANCH=release-0.12
+BRANCH=trunk
 
 # web server
 export SERVER=arachne.cs.rice.edu
