@@ -83,9 +83,6 @@ find_package(flann 1.8.3 QUIET)
 find_package(OpenDE QUIET)
 # This library is included in the Open Dynamics source distribution and is used in one demo only
 find_package(Drawstuff QUIET)
-# If the PQP is installed, it is possible to use as the collision checker with OMPL.app.
-# (FCL is the default collision checker)
-find_package(PQP QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
 # module to download and build FCL and Assimp (if they aren't
@@ -140,10 +137,15 @@ if (OPENDE_FOUND)
 endif()
 
 option(OMPLAPP_PQP "Enable support for the PQP collision checking library" ON)
-if(OMPLAPP_PQP AND PQP_FOUND)
-    include_directories("${PQP_INCLUDE_DIR}")
-    set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
-    set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
+if(OMPLAPP_PQP)
+    # If the PQP is installed, it is possible to use as the collision checker with OMPL.app.
+    # (FCL is the default collision checker)
+    find_package(PQP QUIET)
+    if(PQP_FOUND)
+        include_directories("${PQP_INCLUDE_DIR}")
+        set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
+        set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
+    endif()
 endif()
 
 
