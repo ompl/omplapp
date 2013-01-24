@@ -14,6 +14,9 @@ if(OMPLAPP_BUILD_DOC)
             "${CMAKE_CURRENT_SOURCE_DIR}/dox/download.md")
         configure_file("${CMAKE_CURRENT_SOURCE_DIR}/dox/mainpage.md.in"
             "${CMAKE_CURRENT_SOURCE_DIR}/dox/mainpage.md")
+        file(READ "${CMAKE_SOURCE_DIR}/ompl/doc/images/ompl.svg" OMPLSVG)
+        configure_file("${CMAKE_SOURCE_DIR}/ompl/doc/dox/api_overview.md.in"
+                "${CMAKE_SOURCE_DIR}/ompl/doc/dox/api_overview.md")
 
         # add "doc" target if Doxygen is detected
         add_custom_target(doc
