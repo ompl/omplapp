@@ -41,7 +41,7 @@ __OMPL.app__, the front-end for [OMPL](/core), contains a lightweight wrapper fo
         <p>See <a href="releaseNotes.html">release notes</a> for details</p>
       </div>-->
       <div class="item">
-        <div class="pagination-centered"><a href=""><img src="../images/T-RRT.jpg"></a></div>
+        <div class="pagination-centered"><img src="../images/T-RRT.jpg" style="padding-bottom: 2px"></div>
         <div class="carousel-caption"><h4>Planning with costs</h4>
         <p>Visualization of the cost map explored by the T-RRT planner.</p>
         </div>
