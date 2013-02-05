@@ -55,8 +55,7 @@ endif(IS_ICPC)
 find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system unit_test_framework REQUIRED)
 find_package(Boost COMPONENTS python)
 
-find_package(Boost COMPONENTS odeint QUIET)
-if(NOT Boost_ODEINT_FOUND)
+if(${Boost_VERSION} LESS 105300)
     # Include bundled version of boost::odeint if it isn't installed natively
     set(ODEINT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
     include_directories("${ODEINT_INCLUDE_DIR}")
