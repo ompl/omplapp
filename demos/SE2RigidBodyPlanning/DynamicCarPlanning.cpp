@@ -11,8 +11,10 @@
 /* Author: Mark Moll */
 
 #include <ompl/tools/benchmark/Benchmark.h>
+#include <ompl/control/planners/est/EST.h>
 #include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/kpiece/KPIECE1.h>
+#include <ompl/control/planners/pdst/PDST.h>
 #include <omplapp/apps/DynamicCarPlanning.h>
 #include <omplapp/config.h>
 
@@ -41,17 +43,21 @@ void dynamicCarSetup(app::DynamicCarPlanning& setup)
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal, .5);
+
+    // optionally, set a planner
+    //setup.setPlanner(base::PlannerPtr(new control::EST(setup.getSpaceInformation())));
+    //setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
+    //setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    //setup.setPlanner(base::PlannerPtr(new control::PDST(setup.getSpaceInformation())));
+    std::vector<double> cs(2);
+    cs[0] = cs[1] = 0.1;
+    setup.setup();
+    setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
 }
 
 void dynamicCarDemo(app::DynamicCarPlanning& setup)
 {
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
-    //setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
-    setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
-    std::vector<double> cs(2);
-    cs[0] = cs[1] = 0.1;
-    setup.setup();
-    setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
 
     // try to solve the problem
     if (setup.solve(40))
