@@ -38,9 +38,9 @@ Below are installation instructions for Ubuntu Linux. Similar steps can be taken
       sudo apt-get update
 
 - If you are using Ubuntu 10.04 or earlier, the supplied version of CMake is too old. You can download the latest version from [here](http://www.cmake.org/cmake/resources/software.html).
-- Install Boost, CMake, curl, Python, PyQt4, PyOpenGL, and pkg-config.
+- Install Boost, CMake, Python, PyQt4, PyOpenGL, and pkg-config.
 
-      sudo apt-get install libboost-all-dev cmake curl python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
+      sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
 
   Some versions of Linux offer multiple versions of Boost. It is strongly advised to install only one version.
 - If you are running Ubuntu 12.04, install the following package as well:
