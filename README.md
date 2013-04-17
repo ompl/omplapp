@@ -12,17 +12,16 @@ OMPL.app has the following required dependencies:
 * [Boost](http://www.boost.org) (version 1.44 or higher)
 * [CMake](http://www.cmake.org) (version 2.8.2 or higher)
 * [Assimp](http://assimp.sourceforge.net)
-* [PQP](http://gamma.cs.unc.edu/SSV/)
-* [FCL](https://kforge.ros.org/projects/fcl)
+* [FCL](http://gamma.cs.unc.edu/FCL)
 
 OMPL.app's build system will attempt to automatically download and build
-Assimp, PQP, and FCL if not already installed.
+Assimp and FCL if not already installed.
 
 The following dependencies are optional:
 
 * [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) (for GUI)
 * [PyOpenGL](http://pyopengl.sourceforge.net/) (for GUI)
-* [Py++](https://sourceforge.net/projects/pygccxml) (version from repository, needed to generate Python bindings)
+* [Py++](https://bitbucket.org/ompl/pyplusplus) (needed to generate Python bindings)
 * [ODE](http://ode.org) (needed to compile support for planning using the Open Dynamics Engine)
 * [Doxygen](http://www.doxygen.org) (needed to create a local copy of the documentation at
   http://ompl.kavrakilab.org)

@@ -38,9 +38,9 @@ Below are installation instructions for Ubuntu Linux. Similar steps can be taken
       sudo apt-get update
 
 - If you are using Ubuntu 10.04 or earlier, the supplied version of CMake is too old. You can download the latest version from [here](http://www.cmake.org/cmake/resources/software.html).
-- Install Boost, CMake, curl, Python, PyQt4, and PyOpenGL.
+- Install Boost, CMake, Python, PyQt4, PyOpenGL, and pkg-config.
 
-      sudo apt-get install libboost-all-dev cmake curl python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
+      sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
 
   Some versions of Linux offer multiple versions of Boost. It is strongly advised to install only one version.
 - If you are running Ubuntu 12.04, install the following package as well:
@@ -81,19 +81,19 @@ It is easiest to install the OMPL.app through [MacPorts], a package manager for 
 - Install [MacPorts].
 - If you do not need to modify or see the source code of OMPL.app, then the easiest way to install OMPL.app is with the MacPorts \c port command:
 
-      sudo port sync \; install boost +python27 \; install ompl +app +python27
+      sudo port sync \; install ompl +app
 
   This is it. You are done. It will take quite a while, though, to download, build, and install OMPL.app and all its dependencies. It is recommended to let this running overnight. The GUI is invoked from the command line by \c /opt/local/bin/ompl_app. Demo programs and input files for the GUI can be found in \c /opt/local/share/ompl.
 
-- If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, PQP, OpenDE, PyQt4, PyOpenGL, and Py++. If you have MacPorts installed, type the following:
+- If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, FCL, OpenDE, PyQt4, PyOpenGL, and Py++. If you have MacPorts installed, type the following:
 
       sudo port sync
-      sudo port install boost +python27 \; install cmake assimp pqp ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
+      sudo port install boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
 
-  If you omit the \c +python27 part, Boost.Python will not be installed, and the Python bindings for OMPL cannot be compiled. The commands above can take quite a while to complete. It is recommended to let this running overnight. If you do not care for the Python bindings or the GUI, you can reduce the total number of dependencies that need to be installed significantly by typing the following commands instead of the ones above:
+  The commands above can take quite a while to complete. It is recommended to let this running overnight. If you do not care for the Python bindings or the GUI, you can reduce the total number of dependencies that need to be installed significantly by typing the following commands instead of the ones above:
 
       sudo port sync
-      sudo port install boost cmake assimp pqp ode
+      sudo port install boost cmake assimp fcl ode
 
 - It is __very__ important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you __must__ use the MacPorts version of python 2.7 (most likely installed in <tt>/opt/local/bin</tt>). To make this version the default python version, make sure <tt>/opt/local/bin</tt> appears before <tt>/usr/bin</tt> in your PATH. You can add a line like this to your <tt>${HOME}/.bash_profile</tt>:
 
@@ -157,7 +157,7 @@ _Thanks to [Andrew Dobson](https://plus.google.com/104214233559576935970/about) 
       cmake .
       make update_bindings
 
-- Compile OMPL.app by typing \c make. If you do not already have the PQP packages installed, then the OMPL.app build system will download and compile it for you.
+- Compile OMPL.app by typing \c make. If you do not already have the FCL package installed, then the OMPL.app build system will download and compile it for you.
 - Optionally, run the test programs by typing <tt>make test</tt>.
 - Optionally, generate documentation by typing <tt>make doc</tt>.
 - If you need to install the library, you can type <tt>sudo make install</tt>. The install location is specified by <tt>CMAKE_INSTALL_PREFIX</tt>. If you install in a non-standard location, you have to set the environment variable PYTHONPATH to the directory where the OMPL python module is installed (e.g., $HOME/lib/python2.7/site-packages).
@@ -185,6 +185,7 @@ It is possible to run OMPL and OMPL.app natively on Windows, although it must be
 - Ensure that Python is added to the system <tt>PATH</tt>.
 - Py++: To generate the Python bindings, Py++ and its dependencies must be installed. A batch file has been included to automate this process (analogous to the Linux/Mac installation) that can be executed via cmake. Instructions can be found [here](installPyPlusPlus).  Note that this process assumes the MinGW compiler, and installs gccxml to <tt>C:\\gccxml</tt>.  You will need to be in a shell with administrator privileges to execute this batch file.  Once installed, it is recommended that you open a new shell to realize the new environment settings.
 - [PyQt4] and [PyOpenGL] must be installed to run the OMPL.app gui.
+- [pkg-config](http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/) must be installed for the collision checking library (FCL).
 
 
 ## Build
@@ -225,7 +226,7 @@ The CMAKE_INSTALL_PREFIX variable is set to <tt>C:\\Program Files (x86)\\omplapp
 [boost]: http://www.boost.org
 [cmake]: http://www.cmake.org
 [python]: http://www.python.org
-[qt4]: http://qt.nokia.org
+[qt4]: http://qt-project.org
 [pyqt4]: http://www.riverbankcomputing.co.uk/software/pyqt/download
 [pyside]: http://www.pyside.org
 [pyopengl]: http://pyopengl.sourceforge.net

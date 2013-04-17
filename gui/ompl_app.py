@@ -119,9 +119,6 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.plannerWidget.geometricPlanning.timeLimit.setValue)
         self.timeLimit = self.mainWidget.plannerWidget.geometricPlanning.timeLimit.value()
 
-        self.mainWidget.plannerWidget.geometricPlanning.plannerSelect.currentIndexChanged[int].connect(self.setPlanner)
-        self.mainWidget.plannerWidget.controlPlanning.plannerSelect.currentIndexChanged[int].connect(self.setPlanner)
-
         self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(self.mainWidget.glViewer.setLowerBound)
         self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(self.mainWidget.glViewer.setUpperBound)
         self.mainWidget.glViewer.boundLowChanged.connect(self.mainWidget.boundsWidget.bounds_low.setBounds)
@@ -130,7 +127,6 @@ class MainWindow(QtGui.QMainWindow):
         #self.commandWindow = CommandWindow(self) # not implemented yet
         robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
         self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
-        self.setPlanner(0)
 
         # connect to OMPL's console output (via OutputHandlers)
         self.logWindow = LogWindow(self)
@@ -189,11 +185,9 @@ class MainWindow(QtGui.QMainWindow):
             if config.has_option("problem", "start.z"):
                 robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
                 self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
-                self.setPlanner(0)
             else:
                 robotType = [t[0] for t in self.robotTypes].index('GSE2RigidBodyPlanning')
                 self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
-                self.setPlanner(0)
             cfg_dir = dirname(fname)
             self.environmentFile = join(cfg_dir, config.get("problem", "world"))
             self.robotFile = join(cfg_dir, config.get("problem", "robot"))
@@ -409,14 +403,14 @@ class MainWindow(QtGui.QMainWindow):
     def emailList(self):
         webbrowser.open('mailto:ompl-users@lists.sourceforge.net')
 
-    def setPlanner(self, value):
-        self.planner = value
     def createPlanner(self):
         si = self.omplSetup.getSpaceInformation()
         if self.isGeometric:
-            plannerParams = self.mainWidget.plannerWidget.geometricPlanning.plannerList[self.planner]
+            plannerid = self.mainWidget.plannerWidget.geometricPlanning.plannerSelect.currentIndex()
+            plannerParams = self.mainWidget.plannerWidget.geometricPlanning.plannerList[plannerid]
         else:
-            plannerParams = self.mainWidget.plannerWidget.controlPlanning.plannerList[self.planner]
+            plannerid = self.mainWidget.plannerWidget.controlPlanning.plannerSelect.currentIndex()
+            plannerParams = self.mainWidget.plannerWidget.controlPlanning.plannerList[plannerid]
         planner = eval('%s(si)' % plannerParams[0])
         params = planner.params()
         for (param,widget) in plannerParams[1].items():
@@ -1144,7 +1138,7 @@ class PlannerHelperWidget(QtGui.QGroupBox):
                 label = QtGui.QLabel(val[0])
                 if val[1] == ompl.PlanningAlgorithms.BOOL:
                     widget = QtGui.QCheckBox()
-                    widget.setChecked(val[1])
+                    widget.setChecked(val[3])
                 elif val[1] == ompl.PlanningAlgorithms.ENUM:
                     widget = QtGui.QComboBox()
                     widget.addItems(val[2])

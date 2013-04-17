@@ -128,9 +128,6 @@ void makeCar(dReal x, dReal y, int &bodyI, int &jointI, int &boxI, int &sphereI)
 
 void resetSimulation(void)
 {
-    int i;
-    i = 0;
-
     // destroy world if it exists
     if (bodies)
     {

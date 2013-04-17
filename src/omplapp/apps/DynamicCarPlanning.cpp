@@ -44,11 +44,13 @@ void ompl::app::DynamicCarPlanning::ode(const control::ODESolver::StateType& q, 
     qdot[4] = u[1];
 }
 
-void ompl::app::DynamicCarPlanning::postPropagate(const control::Control* /*ctrl*/, base::State* state)
+void ompl::app::DynamicCarPlanning::postPropagate(const base::State* /*state*/, const control::Control* /*control*/, const double /*duration*/, base::State* result)
 {
     // Normalize orientation value between 0 and 2*pi
     base::SO2StateSpace SO2;
-    base::SE2StateSpace::StateType* se2 = state->as<base::CompoundStateSpace::StateType>()->as<base::SE2StateSpace::StateType>(1);
+    base::CompoundStateSpace::StateType* cs = result->as<base::CompoundStateSpace::StateType>();
+    base::SE2StateSpace::StateType* se2 = cs->as<base::SE2StateSpace::StateType>(0);
+    base::SO2StateSpace::StateType* so2 = se2->as<base::SO2StateSpace::StateType>(1);
     SO2.enforceBounds(se2);
 }
 

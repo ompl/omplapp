@@ -34,7 +34,12 @@ set(CPACK_SOURCE_IGNORE_FILES
     "uninstall_symlinks.sh$"
     "config.h$"
     ".registered$"
-    ".tgz$")
+    ".tar.gz"
+    ".tgz$"
+    ".zip$"
+    "download.md$"
+    "mainpage.md$"
+    "binding_generator.py$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 
@@ -50,7 +55,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
       OUTPUT_VARIABLE UBUNTU_RELEASE
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   set(CPACK_PACKAGE_FILE_NAME "omplapp_${OMPL_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}-Ubuntu${UBUNTU_RELEASE}")
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev, libflann-dev")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev")
 endif()
 
 if(WIN32)

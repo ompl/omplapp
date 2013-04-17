@@ -41,7 +41,7 @@ namespace ompl
 {
     namespace app
     {
-        ClassForward (FCLMethodWrapper);
+        OMPL_CLASS_FORWARD (FCLMethodWrapper);
 
         /// \brief Wrapper for FCL discrete and continuous collision checking and distance queries
         class FCLMethodWrapper
@@ -61,6 +61,8 @@ namespace ompl
 
             virtual ~FCLMethodWrapper (void)
             {
+                for (unsigned int i=0; i<robotParts_.size(); ++i)
+                    delete robotParts_[i];
             }
 
             /// \brief Checks whether the given robot state collides with the
@@ -83,7 +85,7 @@ namespace ompl
                         fcl::Transform3f transform;
                         transform.setTransform (quaternion, translation);
 
-                        valid &= fcl::collide (&robotParts_[i], transform, &environment_, fcl::Transform3f(),
+                        valid &= fcl::collide (robotParts_[i], transform, &environment_, fcl::Transform3f(),
                             collisionRequest, collisionResult) == 0;
                     }
                 }
@@ -109,7 +111,7 @@ namespace ompl
                             fcl::Transform3f trans_j;
                             trans_i.setTransform (qj, tj);
 
-                            valid &= fcl::collide (&robotParts_[i], trans_i, &robotParts_[j], trans_j,
+                            valid &= fcl::collide (robotParts_[i], trans_i, robotParts_[j], trans_j,
                                 collisionRequest, collisionResult) == 0;
                         }
                     }
@@ -150,7 +152,7 @@ namespace ompl
 
                         // Checking for collision
                         valid &= (fcl::conservativeAdvancement <BVType, fcl::MeshConservativeAdvancementTraversalNodeOBBRSS, fcl::MeshCollisionTraversalNodeOBBRSS>
-                            (&robotParts_[i], &motion1, &environment_, &motion2,
+                            (robotParts_[i], &motion1, &environment_, &motion2,
                             collisionRequest, collisionResult, collisionTime) == 0);
                     }
                 }
@@ -182,7 +184,7 @@ namespace ompl
 
                             // Checking for collision
                             valid &= (fcl::conservativeAdvancement <BVType, fcl::MeshConservativeAdvancementTraversalNodeOBBRSS, fcl::MeshCollisionTraversalNodeOBBRSS>
-                                (&robotParts_[i], &motion_i, &robotParts_[j], &motion_j,
+                                (robotParts_[i], &motion_i, robotParts_[j], &motion_j,
                                 collisionRequest, collisionResult, collisionTime) == 0);
                         }
                     }
@@ -195,7 +197,7 @@ namespace ompl
             virtual double clearance (const base::State *state) const
             {
                 double dist = std::numeric_limits<double>::infinity ();
-                fcl::DistanceRequest distanceRequest;
+                fcl::DistanceRequest distanceRequest(true);
                 fcl::DistanceResult distanceResult;
                 if (environment_.num_tris > 0)
                 {
@@ -209,8 +211,8 @@ namespace ompl
                         tr1.setTransform (q1, t1);
 
                         fcl::MeshDistanceTraversalNodeOBBRSS distanceNode;
-                        fcl::initialize (distanceNode, robotParts_[i], tr1, environment_, tr2, distanceRequest, distanceResult);
-
+                        fcl::initialize (distanceNode, *robotParts_[i], tr1, environment_, tr2, distanceRequest, distanceResult);
+                        fcl::distance (&distanceNode);
                         if (distanceResult.min_distance < dist)
                             dist = distanceResult.min_distance;
                     }
@@ -242,19 +244,19 @@ namespace ompl
                 // Configuring the model of the robot, composed of one or more pieces
                 for (size_t rbt = 0; rbt < geom.robot.size (); ++rbt)
                 {
-                    Model model;
-                    model.beginModel ();
+                    Model* model = new Model();
+                    model->beginModel ();
                     aiVector3D shift(0.0, 0.0, 0.0);
                     if (geom.robotShift.size () > rbt)
                         shift = geom.robotShift[rbt];
 
                     tri_model = getFCLModelFromScene (geom.robot[rbt], shift);
-                    model.addSubModel (tri_model.first, tri_model.second);
+                    model->addSubModel (tri_model.first, tri_model.second);
 
-                    model.endModel ();
-                    model.computeLocalAABB ();
+                    model->endModel ();
+                    model->computeLocalAABB ();
 
-                    OMPL_INFORM("Robot piece with %d triangles loaded", model.num_tris);
+                    OMPL_INFORM("Robot piece with %d triangles loaded", model->num_tris);
                     robotParts_.push_back (model);
                 }
             }
@@ -311,7 +313,7 @@ namespace ompl
             Model environment_;
 
             /// \brief List of components for the geometric model of the robot
-            mutable std::vector <Model> robotParts_;
+            mutable std::vector <Model*> robotParts_;
 
             /// \brief Callback to get the geometric portion of a specific state
             GeometricStateExtractor     extractState_;

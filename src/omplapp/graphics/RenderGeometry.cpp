@@ -31,7 +31,7 @@ int ompl::app::RenderGeometry::renderRobotPart(unsigned int index) const
     const GeometrySpecification &gs = rbg_.getGeometrySpecification();
     if (index >= gs.robot.size())
         return 0;
-    return scene::assimpRender(gs.robot[index], gs.robotShift.size() < index ? gs.robotShift[index] : aiVector3D(0.0, 0.0, 0.0));
+    return scene::assimpRender(gs.robot[index], gs.robotShift.size() > index ? gs.robotShift[index] : aiVector3D(0.0, 0.0, 0.0));
 }
 
 int ompl::app::RenderGeometry::renderPlannerData(const base::PlannerData &pd) const

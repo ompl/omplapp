@@ -55,8 +55,7 @@ endif(IS_ICPC)
 find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system unit_test_framework REQUIRED)
 find_package(Boost COMPONENTS python)
 
-find_package(Boost COMPONENTS odeint QUIET)
-if(NOT Boost_ODEINT_FOUND)
+if(${Boost_VERSION} LESS 105300)
     # Include bundled version of boost::odeint if it isn't installed natively
     set(ODEINT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
     include_directories("${ODEINT_INCLUDE_DIR}")
@@ -77,9 +76,12 @@ find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
 endif()
+# If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
+find_package(flann 1.8.3 QUIET)
+# ODE is only needed for Open Dynamics Engine bindings
 find_package(OpenDE QUIET)
+# This library is included in the Open Dynamics source distribution and is used in one demo only
 find_package(Drawstuff QUIET)
-find_package(PQP QUIET)
 # The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
 # and may not even exist in earlier versions of CMake. We need this
 # module to download and build FCL and Assimp (if they aren't
@@ -98,28 +100,33 @@ enable_testing()
 include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
+    "${FCL_INCLUDE_DIRS}"
+    "${CCD_INCLUDE_DIRS}"
     "${Boost_INCLUDE_DIR}"
-    "${ASSIMP_INCLUDE_DIRS}"
-    "${FCL_INCLUDE_DIR}"
-    "${CCD_INCLUDE_DIR}")
+    "${ASSIMP_INCLUDE_DIRS}")
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
-    ${PQP_LIBRARY}
     ${FCL_LIBRARIES})
 set(OMPLAPP_LIBRARIES
     ${Boost_DATE_TIME_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_SERIALIZATION}
+    ${Boost_SERIALIZATION_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARIES}
     ${FCL_LIBRARIES})
+link_directories(${CCD_LIBDIR} ${FCL_LIBDIR})
 
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
+endif()
+
+if (FLANN_FOUND)
+    set(OMPL_HAVE_FLANN 1)
+    include_directories("${FLANN_INCLUDE_DIRS}")
 endif()
 
 set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
@@ -128,10 +135,16 @@ if (OPENDE_FOUND)
     include_directories("${OPENDE_INCLUDE_DIR}")
 endif()
 
-if (PQP_FOUND)
-    include_directories("${PQP_INCLUDE_DIR}")
-    set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
-    set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
+option(OMPLAPP_PQP "Enable support for the PQP collision checking library" ON)
+if(OMPLAPP_PQP)
+    # If the PQP is installed, it is possible to use as the collision checker with OMPL.app.
+    # (FCL is the default collision checker)
+    find_package(PQP QUIET)
+    if(PQP_FOUND)
+        include_directories("${PQP_INCLUDE_DIR}")
+        set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
+        set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
+    endif()
 endif()
 
 
@@ -156,10 +169,6 @@ if(TARGET drawstuff)
 endif()
 
 if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
-    # need PQP header files to generate python bindings
-    if(TARGET pqp)
-        add_dependencies(update_app_bindings pqp)
-    endif()
     # need assimp header files to generate python bindings
     if(TARGET assimp)
         add_dependencies(update_app_bindings assimp)
@@ -183,7 +192,7 @@ if (NOT MSVC)
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/dox/FindOMPL.cmake"
         DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
         RENAME ompl-config.cmake)
-    if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.5)
+    if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
         include(WriteBasicConfigVersionFile)
         write_basic_config_version_file(
             ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake

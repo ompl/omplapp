@@ -99,11 +99,11 @@ void ompl::app::QuadrotorPlanning::ode(const control::ODESolver::StateType& q, c
     qdot[12] = u[3];
 }
 
-void ompl::app::QuadrotorPlanning::postPropagate(const control::Control* /*ctrl*/, base::State* state)
+void ompl::app::QuadrotorPlanning::postPropagate(const base::State* /*state*/, const control::Control* /*control*/, const double /*duration*/, base::State* result)
 {
     // Normalize the quaternion representation for the quadrotor
     base::SO3StateSpace SO3;
-    base::CompoundStateSpace::StateType& cs = *state->as<base::CompoundStateSpace::StateType>();
+    base::CompoundStateSpace::StateType& cs = *result->as<base::CompoundStateSpace::StateType>();
     base::SE3StateSpace::StateType& se3 = *cs.as<base::SE3StateSpace::StateType>(0);
     base::SO3StateSpace::StateType& so3State = se3.rotation();
     SO3.enforceBounds(&so3State);
