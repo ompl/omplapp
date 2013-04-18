@@ -24,7 +24,8 @@
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
 #include <ompl/geometric/planners/prm/PRM.h>
-#include <ompl/geometric/planners/gnat/GNAT.h>
+#include <ompl/geometric/planners/stride/STRIDE.h>
+#include <ompl/geometric/planners/pdst/PDST.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
@@ -61,7 +62,7 @@ base::ValidStateSamplerPtr allocMaximizeClearanceStateSampler(const base::SpaceI
 
 // prints the individual path for robot #index
 void printMultiRobotPath (const geometric::PathGeometric& path, unsigned int index, std::ostream& o = std::cout)
-{   
+{
     base::SE3StateSpace se3;
     const base::SE3StateSpace::StateType *state;
 
@@ -154,7 +155,7 @@ int main(int argc, char **argv)
     base::PlannerPtr plnr(new geometric::RRTConnect(setup.getSpaceInformation()));
     //base::PlannerPtr plnr(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,3));
     //base::PlannerPtr plnr(new geometric::EST(setup.getSpaceInformation()));
-    setup.setPlanner(plnr); 
+    setup.setPlanner(plnr);
 
     // we call setup just so print() can show more information
     setup.setup();
@@ -219,38 +220,9 @@ int main(int argc, char **argv)
     if(plannerNumber & (1<<7))
         b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
     if(plannerNumber & (1<<8))
-    {
-        base::PlannerPtr p(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,3));
-        p->setName("GNAT-3");
-        b.addPlanner(p);
-    }
+        b.addPlanner(base::PlannerPtr(new geometric::STRIDE(setup.getSpaceInformation())));
     if(plannerNumber & (1<<9))
-    {
-        base::PlannerPtr p1(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,6));
-        p1->setName("GNAT-6");
-        b.addPlanner(p1);
-    }
-    if(plannerNumber & (1<<10))
-    {
-        base::PlannerPtr p2(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,6));
-        p2->params().setParam("propagate_while_valid","0");
-        p2->setName("GNAT-6-No-Prop");
-        b.addPlanner(p2);
-    }
-    if(plannerNumber & (1<<11))
-    {
-        base::PlannerPtr p3(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,6*ROBOT_COUNT));
-        p3->setName("GNAT-Native");
-        b.addPlanner(p3);
-    }
-    if(plannerNumber & (1<<12))
-    {
-        base::PlannerPtr p4(new geometric::GNAT(setup.getSpaceInformation(),false,16,12,18,6,6*ROBOT_COUNT));
-        p4->params().setParam("propagate_while_valid","0");
-        p4->setName("GNAT-Native-No-Prop");
-        b.addPlanner(p4);
-    }
-
+        b.addPlanner(base::PlannerPtr(new geometric::PDST(setup.getSpaceInformation())));
 
     // run all planners with a obstacle-based valid state sampler on the benchmark problem
     setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
