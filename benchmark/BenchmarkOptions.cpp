@@ -49,7 +49,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
     static const std::string KNOWN_PLANNERS[] = {
         "rrtconnect", "lazyrrt",
         "kpiece", "bkpiece", "lbkpiece",
-        "est", "sbl", "prm", "rrt"
+        "est", "sbl", "prm", "rrt",
+        "pdst"
     };
 
     std::ifstream cfg(filename);
