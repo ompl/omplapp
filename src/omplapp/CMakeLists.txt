@@ -35,7 +35,7 @@ if(NOT MSVC)
     add_custom_command(TARGET ompl_app POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH})
+        WORKING_DIRECTORY "${LIBRARY_OUTPUT_PATH}")
 endif(NOT MSVC)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"

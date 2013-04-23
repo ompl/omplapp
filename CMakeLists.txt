@@ -195,9 +195,9 @@ if (NOT MSVC)
     if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
         include(WriteBasicConfigVersionFile)
         write_basic_config_version_file(
-            ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
+            "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
             VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake
+        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
             DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}")
     endif()
 endif()
@@ -208,7 +208,7 @@ configure_file(
     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
     IMMEDIATE @ONLY)
 add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
 if (OMPL_VERSIONED_INSTALL)
     # script to create sym links
@@ -216,8 +216,8 @@ if (OMPL_VERSIONED_INSTALL)
         "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh" @ONLY)
     execute_process(COMMAND
       "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh"
-      "omplapp" WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/.symlinks/ DESTINATION .)
+      "omplapp" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/.symlinks/" DESTINATION .)
     # script to uninstall sym links
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh.in"
         "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh" @ONLY)
