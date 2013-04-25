@@ -43,7 +43,7 @@ Below are installation instructions for Ubuntu Linux. Similar steps can be taken
       sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
 
   Some versions of Linux offer multiple versions of Boost. It is strongly advised to install only one version.
-- If you are running Ubuntu 12.04, install the following package as well:
+- If you are running Ubuntu 12.04 or higher, install the following package as well:
 
       sudo apt-get install libassimp-dev
 
