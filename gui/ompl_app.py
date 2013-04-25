@@ -70,7 +70,7 @@ class LogOutputHandler(OutputHandler):
         elif level == LogLevel.LOG_ERROR:
             self.error(text)
         else:
-            print text
+            print(text)
 
     def debug(self, text):
         self.textEdit.setTextColor(self.greenColor)
@@ -1154,7 +1154,7 @@ class PlannerHelperWidget(QtGui.QGroupBox):
                     widget.setSingleStep(val[2][1])
                     widget.setValue(val[3])
                 else:
-                    print "Warning: parameter of unknown type ignored!"
+                    print("Warning: parameter of unknown type ignored!")
                     continue
                 layout.addWidget(label, i, 0, QtCore.Qt.AlignRight)
                 layout.addWidget(widget, i, 1)
