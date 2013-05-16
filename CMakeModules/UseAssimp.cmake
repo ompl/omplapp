@@ -27,7 +27,8 @@ else(ASSIMP_FOUND)
         URL_MD5 "52aa4cf4e34e6b2a9c5f6c0b3c319af1"
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/assimp-prefix"
-            "-DCMAKE_BUILD_TYPE=Release" "-DBUILD_ASSIMP_TOOLS=OFF" "-DBUILD_STATIC_LIB=ON")
+            "-DCMAKE_BUILD_TYPE=Release" "-DBUILD_ASSIMP_TOOLS=OFF" "-DBUILD_STATIC_LIB=ON"
+            "-DCMAKE_CXX_FLAGS=-fPIC" "-DCMAKE_C_FLAGS=-fPIC")
 
     set(__pkg_config_checked_ASSIMP 99999 CACHE INTERNAL "Assimp found" FORCE)
     set(ASSIMP_FOUND ON CACHE BOOL "Assimp found" FORCE)
