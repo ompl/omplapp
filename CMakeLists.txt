@@ -76,6 +76,8 @@ find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
 endif()
+# If Triangle is installed, enable code for triangular decompositions
+find_package(Triangle QUIET)
 # If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
 find_package(flann 1.8.3 QUIET)
 # ODE is only needed for Open Dynamics Engine bindings
@@ -122,6 +124,11 @@ link_directories(${CCD_LIBDIR} ${FCL_LIBDIR})
 
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
+endif()
+
+set(OMPL_EXTENSION_TRIANGLE ${TRIANGLE_FOUND})
+if (TRIANGLE_FOUND)
+  include_directories(${TRIANGLE_INCLUDE_DIR})
 endif()
 
 if (FLANN_FOUND)
