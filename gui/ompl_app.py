@@ -33,11 +33,8 @@ try:
 except:
     import configparser as ConfigParser
 
-try:
-    from ompl.util import OutputHandler, useOutputHandler, LogLevel
-except ImportError:
-    sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
-    from ompl.util import OutputHandler, useOutputHandler, LogLevel
+sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
+from ompl.util import OutputHandler, useOutputHandler, LogLevel
 from ompl import base as ob
 from ompl import geometric as og
 from ompl import control as oc
@@ -673,7 +670,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         if len(self.bounds_low)==2:
             self.bounds_low.append(0)
             self.bounds_high.append(0)
-        bbox = zip(self.bounds_low, self.bounds_high)
+        bbox = list(zip(self.bounds_low, self.bounds_high))
         self.center = [ .5*(p0+p1) for (p0,p1) in bbox ]
         m = max([p1-p0 for (p0,p1) in bbox ])
         self.scale = 1. if m==0 else 1. / m
