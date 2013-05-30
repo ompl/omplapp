@@ -63,16 +63,7 @@ def kinematicCarDemo(setup):
         # and controls required to get from one state to the next
         path = setup.getSolutionPath()
         #path.interpolate(); # uncomment if you want to plot the path
-        for i in range(path.getStateCount()):
-            s = path.getState(i)
-            if i==0:
-                # null controls applied for zero seconds to get to start state
-                print("%g %g %g 0 0 0" % (s.getX(), s.getY(), s.getYaw()))
-            else:
-                # print controls and control duration needed to get from state i-1 to state i
-                c = path.getControl(i-1)
-                print("%g %g %g %g %g %g" % 
-                    (s.getX(), s.getY(), s.getYaw(), c[0], c[1], path.getControlDuration(i-1)))
+        print(path.printAsMatrix())
         if not setup.haveExactSolutionPath():
             print("Solution is approximate. Distance to actual goal is %g" %
                 setup.getProblemDefinition().getSolutionDifference())

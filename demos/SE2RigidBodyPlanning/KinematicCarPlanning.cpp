@@ -61,21 +61,7 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
         // and controls required to get from one state to the next
         control::PathControl& path(setup.getSolutionPath());
         //path.interpolate(); // uncomment if you want to plot the path
-        for (unsigned int i=0; i<path.getStateCount(); ++i)
-        {
-            const base::SE2StateSpace::StateType& s = *path.getState(i)->as<base::SE2StateSpace::StateType>();
-            std::cout << s.getX() <<' '<< s.getY() << ' ' << s.getYaw() << ' ';
-            if (i==0)
-                // null controls applied for zero seconds to get to start state
-                std::cout << "0 0 0";
-            else
-            {
-                // print controls and control duration needed to get from state i-1 to state i
-                const double* c = path.getControl(i-1)->as<control::RealVectorControlSpace::ControlType>()->values;
-                std::cout << c[0] << ' ' << c[1] << ' ' << path.getControlDuration(i-1);
-            }
-            std::cout << std::endl;
-        }
+        path.printAsMatrix(std::cout);
         if (!setup.haveExactSolutionPath())
         {
             std::cout << "Solution is approximate. Distance to actual goal is " <<

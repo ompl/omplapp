@@ -43,11 +43,6 @@ from ompl import app as oa
 import ompl
 ompl.initializePlannerLists()
 
-# Add RRT* and BallTreeRRT*
-from ompl import rrtstar
-og.planners.addPlanner('ompl.rrtstar.RRTstar')
-og.planners.addPlanner('ompl.rrtstar.BallTreeRRTstar')
-
 class LogOutputHandler(OutputHandler):
     def __init__(self, textEdit):
         super(LogOutputHandler, self).__init__()
@@ -306,40 +301,35 @@ class MainWindow(QtGui.QMainWindow):
             config.write(open(fname, 'wb'))
             self.msgInform("Saved " + fname)
 
+    def _arrayToSE2State(self, a):
+        st = ob.State(self.omplSetup.getGeometricComponentStateSpace())
+        st().setXY(a[0],a[1])
+        st().setYaw(a[2])
+        return st
+    def _arrayToSE3State(self, a):
+        st = ob.State(self.omplSetup.getGeometricComponentStateSpace())
+        st().setXYZ(a[0], a[1], a[2])
+        R = st().rotation()
+        nrm = 1./sqrt(a[3]*a[3] + a[4]*a[4] + a[5]*a[5] + a[6]*a[6])
+        (R.x, R.y, R.z, R.w) = (a[3]*nrm, a[4]*nrm, a[5]*nrm, a[6]*nrm)
+        return st
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
         if len(fname)>0:
-            pathstr = open(fname,'r').read()
-            # Match whitespace-separated sequences of 2 to 4 numbers
-            regex = re.compile('\[([0-9\.e-]+\s){0,3}[0-9\.e-]+\]')
-            states = regex.finditer(pathstr)
-            self.path = []
+            path = [[float(x) for x in line.split(' ')] for line in open('path.txt','r').readlines()]
             self.mainWidget.glViewer.solutionPath = []
-            for state in states:
-                pos = [float(x) for x in state.group()[1:-1].split()]
-                state = next(states)
-                rot = [float(x) for x in state.group()[1:-1].split()]
-                s = ob.State(self.omplSetup.getGeometricComponentStateSpace())
-                if len(pos)==3 and len(rot)==4:
-                    # SE(3) state
-                    s().setX(pos[0])
-                    s().setY(pos[1])
-                    s().setZ(pos[2])
-                    R = s().rotation()
-                    nrm = 1./sqrt(rot[0]*rot[0] + rot[1]*rot[1] + rot[2]*rot[2] + rot[3]*rot[3])
-                    (R.x, R.y, R.z, R.w) = (rot[0]*nrm, rot[1]*nrm, rot[2]*nrm, rot[3]*nrm)
-                elif len(pos)==2 and len(rot)==1:
-                    # SE(2) state
-                    s().setX(pos[0])
-                    s().setY(pos[1])
-                    s().setYaw(rot[0])
-                else:
-                    # unknown state type
-                    self.msgError("Wrong state format %s, %s", (pos, rot))
-                    raise ValueError
-                self.path.append(s)
-                self.mainWidget.glViewer.solutionPath.append(
-                    self.mainWidget.glViewer.getTransform(s()))
+            # assume that first 3 components map to SE(2) if 3<len<7
+            if len(path[0]) > 2 and len(path[0]) < 7:
+                self.path = [self._arrayToSE2State(s) for s in path]
+            # assume that first 7 components map to SE(3) if len>=7
+            elif len(path[0]) >= 7:
+                self.path = [self._arrayToSE3State(s) for s in path]
+            else:
+                # unknown state type
+                self.msgError("Wrong state format")
+                raise ValueError
+            self.mainWidget.glViewer.setSolutionPath(self.path)
+            # setStart/GoalPose can change bounds, so save and restore them
             bounds = self.mainWidget.glViewer.getBounds()
             self.mainWidget.problemWidget.setStartPose(self.path[0], self.is3D)
             self.mainWidget.problemWidget.setGoalPose(self.path[-1], self.is3D)
@@ -349,10 +339,8 @@ class MainWindow(QtGui.QMainWindow):
         if self.path:
             fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt'))
             if len(fname)>0:
-                if isinstance(self.path, list):
-                    pathstr = ''.join([str(s) for s in self.path])
-                else:
-                    pathstr = str(self.path)
+                ind = range(7 if self.is3D else 3)
+                pathstr = '\n'.join([ ' '.join([str(s[i]) for i in ind]) for s in self.path])
                 open(fname,'w').write(pathstr)
 
     def setSolutionPath(self, path):

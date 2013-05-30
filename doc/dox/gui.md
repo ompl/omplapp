@@ -14,7 +14,7 @@ __Contents:__
 
 The OMPL.app GUI is launched from the command line with the \c omplapp/gui/ompl_app.py command. After the program launches, select _File>Open Environment_ to read a file that contains a mesh for an environment. After the environment is loaded, select _File>Open Robot_ to choose a robot mesh file. Example environment and robot files can be found in \c omplapp/resources. At this point the GUI can only be used to solve motion planning problems involving static environments and free-flying rigid bodies in 2D and 3D, but this is likely to change in a future version of OMPL. After the meshes are loaded, you can specify the start and goal poses of the robot with the controls on the righthand side of the window. The image above shows an example query for the cubicles environment. You can switch between planning in 2D and 3D using the drop-down box in the top-right of the window. When you switch, the environment and robot are cleared.
 
-The GUI can also be used to simply “play back” a path consisting of either SE(3) or SE(2) states. This is useful if you want to visualize paths produced by a non-graphical program. When planning with dynamics, remember to save paths as geometric paths, not control paths.
+The GUI can also be used to simply “play back” a path consisting of either SE(3) or SE(2) states. This is useful if you want to visualize paths produced by a non-graphical program. When planning with dynamics, remember to save paths as geometric paths, not control paths. Also, the path needs to be printed in matrix form using the ompl::geometric::PathGeometric::printAsMatrix() method. See also the [Path Visualization page](pathVisualization.html) for alternative ways to visualize a path.
 
 
 # Setting up the planner {#gui_planners}
