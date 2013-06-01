@@ -33,8 +33,8 @@ int main()
 
     // define goal state
     base::ScopedState<base::SE2StateSpace> goal(start);
-    start->setX(26.0);
-    start->setY(0.0);
+    goal->setX(26.0);
+    goal->setY(0.0);
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
