@@ -19,7 +19,7 @@ using namespace ompl;
 
 // prints the path for robot #index
 void printMultiRobotPath (const geometric::PathGeometric& path, unsigned int index, std::ostream& o = std::cout)
-{   
+{
     base::SE3StateSpace se3;
     const base::SE3StateSpace::StateType *state;
 

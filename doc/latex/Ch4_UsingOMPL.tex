@@ -35,8 +35,8 @@ compact and portable.
 
 A conscious effort is also made to limit the number of external dependencies
 necessary to compile and execute the code in OMPL.  The majority of the third
-party code utilized in the library used comes from Boost \cite{Boost}, which 
-allows OMPL to function in most major operating systems.  Currently, OMPL is 
+party code utilized in the library used comes from Boost \cite{Boost}, which
+allows OMPL to function in most major operating systems.  Currently, OMPL is
 supported on Linux and Mac OS X.  Windows installation of the core OMPL
 library is also possible by compiling from source.  Installation of OMPL.app on
 Windows can also be done, but this is recommended only for experienced Windows
@@ -61,9 +61,9 @@ of the StateValidityChecker to find valid state space configurations.
 \paragraph {StateValidityChecker} The StateValidityChecker is tasked with
 evaluating a single state to determine if the configuration collides with an
 environment obstacle and respects the constraints of the robot.  A default
-checker is \emph{not} provided by OMPL for reasons stated in Section 
-\ref{chp:design}.  Since this component is an integral part of sampling-based 
-motion planning it is necessary for the user to provide the planner a callback 
+checker is \emph{not} provided by OMPL for reasons stated in Section
+\ref{chp:design}.  Since this component is an integral part of sampling-based
+motion planning it is necessary for the user to provide the planner a callback
 to such a method to ensure that all configurations are feasible for the robot.
 
 \paragraph {NearestNeighbors} This is an abstract class that is utilized

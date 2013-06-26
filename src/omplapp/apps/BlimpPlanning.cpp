@@ -70,7 +70,7 @@ void ompl::app::BlimpPlanning::ode(const control::ODESolver::StateType& q, const
 
     qdot[7] = u[0] * cos(q[3]);
     qdot[8] = u[0] * sin(q[3]);
-    qdot[9] = u[1]; 
+    qdot[9] = u[1];
     qdot[10] = u[2];
 }
 

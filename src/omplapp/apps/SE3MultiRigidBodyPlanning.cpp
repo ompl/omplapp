@@ -12,7 +12,7 @@
 
 #include "omplapp/apps/SE3MultiRigidBodyPlanning.h"
 
-ompl::app::SE3MultiRigidBodyPlanning::SE3MultiRigidBodyPlanning(unsigned int n) : 
+ompl::app::SE3MultiRigidBodyPlanning::SE3MultiRigidBodyPlanning(unsigned int n) :
     AppBase<GEOMETRIC>(base::StateSpacePtr(new base::CompoundStateSpace()), Motion_3D), n_(n)
 {
     assert (n > 0);
@@ -33,7 +33,7 @@ void ompl::app::SE3MultiRigidBodyPlanning::inferProblemDefinitionBounds(void)
 {
     // Make sure that all n SE(3) spaces get the same bounds, if they are adjusted
     for (unsigned int i = 0; i < n_; ++i)
-        InferProblemDefinitionBounds(AppTypeSelector<GEOMETRIC>::SimpleSetup::getProblemDefinition(), 
+        InferProblemDefinitionBounds(AppTypeSelector<GEOMETRIC>::SimpleSetup::getProblemDefinition(),
                                     getGeometricStateExtractor(), factor_, add_,
                                     n_, getGeometricComponentStateSpace(i), mtype_);
 }

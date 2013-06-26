@@ -29,7 +29,7 @@ except:
     from ompl import geometric as og
     from ompl import control as oc
     from ompl import app as oa
-    
+
 def printMultiRobotPath (path, index):
     se3 = ob.SE3StateSpace
     for i in range(path.getStateCount()):

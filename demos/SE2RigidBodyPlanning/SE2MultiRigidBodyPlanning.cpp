@@ -18,7 +18,7 @@ using namespace ompl;
 
 // prints the path for robot #index
 void printMultiRobotPath (const geometric::PathGeometric& path, unsigned int index, std::ostream& o = std::cout)
-{   
+{
     base::SE2StateSpace se2;
     const base::SE2StateSpace::StateType *state;
 
@@ -40,7 +40,7 @@ int main()
     setup.setRobotMesh(robot_fname.c_str());    // The first mesh should use setRobotMesh.
     setup.addRobotMesh(robot_fname.c_str());    // Subsequent robot meshes MUST use addRobotMesh!
     setup.setEnvironmentMesh(env_fname.c_str());
-    
+
     // constructing start and goal states
     base::ScopedState<base::CompoundStateSpace> start(setup.getSpaceInformation());
     base::ScopedState<base::CompoundStateSpace> goal(setup.getSpaceInformation());
@@ -54,7 +54,7 @@ int main()
     base::SE2StateSpace::StateType* goal1 = goal.get()->as<base::SE2StateSpace::StateType>(0);
     goal1->setX(26.0);
     goal1->setY(0.0);
-    
+
     // define starting state for robot 2
     base::SE2StateSpace::StateType* start2 = start.get()->as<base::SE2StateSpace::StateType>(1);
     start2->setX(26.0);
@@ -67,7 +67,7 @@ int main()
 
     // set the start & goal states
     setup.setStartAndGoalStates(start, goal);
-    
+
     // use RRTConnect for planning
     setup.setPlanner (base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
 

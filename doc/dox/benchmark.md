@@ -65,12 +65,12 @@ An example of a minimal SE(2) configuration comparing the rrt and est planners i
     goal.x=1.0
     goal.y=1.0
     goal.theta=0.0
-    
+
     [benchmark]
     time_limit=10.0
     mem_limit=1000.0
     run_count = 3
-    
+
     [planner]
     est=
     rrt=
@@ -195,10 +195,10 @@ void optionalPreRunEvent(const base::PlannerPtr &planner)
 void optionalPostRunEvent(const base::PlannerPtr &planner, tools::Benchmark::RunProperties &run)
 {
     // do any cleanup, or set values for upcoming run (or upcoming call to the pre-run event).
-    
+
     // adding elements to the set of collected run properties is also possible;
     // (the added data will be recorded in the log file)
-    
+
     run["some extra property name INTEGER"] = "some value";
     // The format of added data is string key, string value pairs,
     // with the convention that the last word in string key is one of

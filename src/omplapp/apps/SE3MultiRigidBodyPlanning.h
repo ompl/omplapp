@@ -36,10 +36,10 @@ namespace ompl
 
             virtual void inferProblemDefinitionBounds(void);
 
-            bool isSelfCollisionEnabled(void) const 
+            bool isSelfCollisionEnabled(void) const
             {
                 // Make sure that self collision is enabled to avoid inter-rigid body collision
-                return true; 
+                return true;
             }
 
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
@@ -59,9 +59,9 @@ namespace ompl
                 return getGeometricComponentStateSpace(0);
             }
 
-            virtual unsigned int getRobotCount(void) const 
+            virtual unsigned int getRobotCount(void) const
             {
-                return n_; 
+                return n_;
             }
 
         protected:
