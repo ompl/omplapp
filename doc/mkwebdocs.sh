@@ -15,7 +15,7 @@ rm -rf ${ASSET_DIR}
 # copy all assets to the ASSET_DIR directory
 mkdir -p ${ASSET_DIR}
 for f in html/*.html; do
-    sed 's/="..\//=".\//g;s/href="md_/href="/g' $f > ${ASSET_DIR}/`basename $f`
+    sed 's/="..\//=".\//g;s/href="md_ompl_doc_dox_/href="/g;s/href="md_doc_dox_/href="/g' $f > ${ASSET_DIR}/`basename $f`
 done
 cd latex && make primer clean && cp OMPL_Primer.pdf ../${ASSET_DIR}
 cd ..
