@@ -127,9 +127,13 @@ It is easiest to install the OMPL.app through [MacPorts], a package manager for 
 
       ls -l `which python`
 
-- To be able to generate documentation, Doxygen is also needed:
+  This should output something like this:
 
-      sudo port install doxygen
+      lrwxr-xr-x  1 root  admin  24 May 22 10:45 /opt/local/bin/python -> /opt/local/bin/python2.7
+
+- To be able to generate documentation, Graphviz and Doxygen also needed:
+
+      sudo port install graphviz doxygen
 
 - Create a build directory and run cmake:
 
@@ -150,7 +154,7 @@ It is easiest to install the OMPL.app through [MacPorts], a package manager for 
 
 ## Homebrew {#install_homebrew}
 
-_Thanks to [Andrew Dobson](https://plus.google.com/104214233559576935970/about) for these instructions!_ __These instructions are somewhat experimental, however, and we haven't tested them ourselves.__ Email us if you have suggestions to improve these instructions.
+_Thanks to [Andrew Dobson](https://plus.google.com/104214233559576935970/about) for these instructions!_ __These instructions are somewhat experimental, however, and we have not tested them ourselves.__ Email us if you have suggestions to improve these instructions.
 
 - Install [Homebrew].
 - Run <tt>brew doctor</tt> to make sure that everything is ready to go.  If not, follow its instructions until it is ready.
