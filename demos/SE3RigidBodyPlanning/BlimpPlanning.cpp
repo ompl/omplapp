@@ -50,7 +50,6 @@ void blimpSetup(app::BlimpPlanning& setup)
 
 void blimpDemo(app::BlimpPlanning& setup)
 {
-    unsigned int i, j;
     std::vector<double> coords;
 
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;

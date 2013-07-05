@@ -50,7 +50,6 @@ void ompl::app::DynamicCarPlanning::postPropagate(const base::State* /*state*/, 
     base::SO2StateSpace SO2;
     base::CompoundStateSpace::StateType* cs = result->as<base::CompoundStateSpace::StateType>();
     base::SE2StateSpace::StateType* se2 = cs->as<base::SE2StateSpace::StateType>(0);
-    base::SO2StateSpace::StateType* so2 = se2->as<base::SO2StateSpace::StateType>(1);
     SO2.enforceBounds(se2);
 }
 

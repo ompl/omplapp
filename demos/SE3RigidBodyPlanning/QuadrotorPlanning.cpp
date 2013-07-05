@@ -50,7 +50,6 @@ void quadrotorSetup(app::QuadrotorPlanning& setup)
 
 void quadrotorDemo(app::QuadrotorPlanning& setup)
 {
-    unsigned int i, j;
     std::vector<double> coords;
 
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
