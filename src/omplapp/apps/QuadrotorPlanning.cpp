@@ -101,15 +101,15 @@ void ompl::app::QuadrotorPlanning::ode(const control::ODESolver::StateType& q, c
 
 void ompl::app::QuadrotorPlanning::postPropagate(const base::State* /*state*/, const control::Control* /*control*/, const double /*duration*/, base::State* result)
 {
-    // Normalize the quaternion representation for the quadrotor
-    base::SO3StateSpace SO3;
-    base::CompoundStateSpace::StateType& cs = *result->as<base::CompoundStateSpace::StateType>();
-    base::SE3StateSpace::StateType& se3 = *cs.as<base::SE3StateSpace::StateType>(0);
-    base::SO3StateSpace::StateType& so3State = se3.rotation();
-    SO3.enforceBounds(&so3State);
+    const base::CompoundStateSpace* cs = getStateSpace()->as<base::CompoundStateSpace>();
+    const base::SO3StateSpace* SO3 = cs->as<base::SE3StateSpace>(0)->as<base::SO3StateSpace>(1);
+    base::CompoundStateSpace::StateType& csState = *result->as<base::CompoundStateSpace::StateType>();
+    base::SO3StateSpace::StateType& so3State = csState.as<base::SE3StateSpace::StateType>(0)->rotation();
 
+    // Normalize the quaternion representation for the quadrotor
+    SO3->enforceBounds(&so3State);
     // Enforce velocity bounds
-    getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(1)->enforceBounds(cs[1]);
+    cs->getSubspace(1)->enforceBounds(csState[1]);
 }
 
 ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace(void)

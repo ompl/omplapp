@@ -66,8 +66,9 @@ void ompl::app::KinematicCarPlanning::ode(const control::ODESolver::StateType& q
 void ompl::app::KinematicCarPlanning::postPropagate(const base::State* /*state*/, const control::Control* /*control*/, const double /*duration*/, base::State* result)
 {
     // Normalize orientation value between 0 and 2*pi
-    base::SO2StateSpace SO2;
-    base::SE2StateSpace::StateType* se2 = result->as<base::SE2StateSpace::StateType>();
-    base::SO2StateSpace::StateType* so2 = se2->as<base::SO2StateSpace::StateType>(1);
-    SO2.enforceBounds(so2);
+    const base::SO2StateSpace* SO2 = getStateSpace()->as<base::SE2StateSpace>()
+        ->as<base::SO2StateSpace>(1);
+    base::SO2StateSpace::StateType* so2 = result->as<base::SE2StateSpace::StateType>()
+        ->as<base::SO2StateSpace::StateType>(1);
+    SO2->enforceBounds(so2);
 }

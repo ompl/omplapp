@@ -40,7 +40,7 @@ ompl::base::ScopedState<> ompl::app::BlimpPlanning::getFullStateFromGeometricCom
     return s;
 }
 
-void ompl::app::BlimpPlanning::postPropagate(const base::State */*state*/, const control::Control* /*control*/, const double /*duration*/, base::State *result)
+void ompl::app::BlimpPlanning::postPropagate(const base::State* /*state*/, const control::Control* /*control*/, const double /*duration*/, base::State *result)
 {
     // Constrain orientation of the blimp about the z axis.
     base::CompoundStateSpace::StateType& s = *result->as<base::CompoundStateSpace::StateType>();

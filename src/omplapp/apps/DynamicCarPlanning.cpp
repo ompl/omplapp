@@ -47,10 +47,11 @@ void ompl::app::DynamicCarPlanning::ode(const control::ODESolver::StateType& q, 
 void ompl::app::DynamicCarPlanning::postPropagate(const base::State* /*state*/, const control::Control* /*control*/, const double /*duration*/, base::State* result)
 {
     // Normalize orientation value between 0 and 2*pi
-    base::SO2StateSpace SO2;
-    base::CompoundStateSpace::StateType* cs = result->as<base::CompoundStateSpace::StateType>();
-    base::SE2StateSpace::StateType* se2 = cs->as<base::SE2StateSpace::StateType>(0);
-    SO2.enforceBounds(se2);
+    const base::SO2StateSpace* SO2 = getStateSpace()->as<base::CompoundStateSpace>()
+        ->as<base::SE2StateSpace>(0)->as<base::SO2StateSpace>(1);
+    base::SO2StateSpace::StateType* so2 = result->as<base::CompoundStateSpace::StateType>()
+        ->as<base::SE2StateSpace::StateType>(0)->as<base::SO2StateSpace::StateType>(1);
+    SO2->enforceBounds(so2);
 }
 
 void ompl::app::DynamicCarPlanning::setDefaultBounds()
