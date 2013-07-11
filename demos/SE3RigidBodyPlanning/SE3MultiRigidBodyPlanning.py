@@ -30,13 +30,6 @@ except:
     from ompl import control as oc
     from ompl import app as oa
 
-def printMultiRobotPath (path, index):
-    se3 = ob.SE3StateSpace
-    for i in range(path.getStateCount()):
-        s = path.getState(i)[index]
-        rot = s.rotation()
-        print("%g %g %g %g %g %g %g" % (s.getX(), s.getY(), s.getZ(), rot.x, rot.y, rot.z, rot.w))
-
 # plan in SE(3) for two robots
 setup = oa.SE3MultiRigidBodyPlanning(2)
 
@@ -92,13 +85,4 @@ print(setup)
 if setup.solve(60):
     # simplify & print the solution
     setup.simplifySolution()
-    path = setup.getSolutionPath()
-    path.interpolate(10)
-    print 'Robot 1:'
-    printMultiRobotPath(path, 0)
-    print
-    print 'Robot 2:'
-    printMultiRobotPath(path, 1)
-    print
-    print 'Path valid: ' + str(path.check())
-
+    print(setup.getSolutionPath().printAsMatrix())

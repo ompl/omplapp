@@ -14,6 +14,7 @@
 
 import sys
 from os.path import abspath, dirname, join
+from decimal import Decimal
 try:
     # try PyQt4 first
     from PyQt4 import QtCore, QtGui, QtOpenGL
@@ -1135,6 +1136,12 @@ class PlannerHelperWidget(QtGui.QGroupBox):
                     widget.setValue(val[3])
                 elif val[1] == ompl.PlanningAlgorithms.DOUBLE:
                     widget = QtGui.QDoubleSpinBox()
+                    numDecimals = max([-Decimal(str(v)).as_tuple().exponent for v in val[2]])
+                    if numDecimals < 2:
+                        numDecimals = 2
+                    elif numDecimals > 5:
+                        numDecimals = 5
+                    widget.setDecimals(numDecimals)
                     widget.setRange(val[2][0], val[2][2])
                     widget.setSingleStep(val[2][1])
                     widget.setValue(val[3])

@@ -55,7 +55,7 @@ int main()
     {
         // simplify & print the solution
         setup.simplifySolution();
-        setup.getSolutionPath().print(std::cout);
+        setup.getSolutionPath().printAsMatrix(std::cout);
     }
 
     return 0;

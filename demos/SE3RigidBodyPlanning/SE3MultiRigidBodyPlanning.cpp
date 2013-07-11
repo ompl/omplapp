@@ -17,19 +17,6 @@
 
 using namespace ompl;
 
-// prints the path for robot #index
-void printMultiRobotPath (const geometric::PathGeometric& path, unsigned int index, std::ostream& o = std::cout)
-{
-    base::SE3StateSpace se3;
-    const base::SE3StateSpace::StateType *state;
-
-    for (unsigned int i = 0; i < path.getStateCount(); ++i)
-    {
-        state = path.getState(i)->as<base::CompoundStateSpace::StateType>()->as<base::SE3StateSpace::StateType>(index);
-        se3.printState(state, o);
-    }
-}
-
 int main()
 {
     // plan for 2 rigid bodies in SE3
@@ -94,10 +81,7 @@ int main()
         {
             // simplify & print the solution
             setup.simplifySolution();
-            std::cout << "Robot 1:" << std::endl;
-            printMultiRobotPath (setup.getSolutionPath(), 0);  // Robot #0's path
-            std::cout << std::endl << "Robot 2:" << std::endl;
-            printMultiRobotPath (setup.getSolutionPath(), 1);  // Robot #1's path
+            setup.getSolutionPath().printAsMatrix(std::cout);
         }
         else
         {
