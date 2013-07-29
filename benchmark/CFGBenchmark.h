@@ -51,7 +51,7 @@ public:
 
     bool isValid(void) const
     {
-        return benchmark_;
+        return benchmark_.get();
     }
 
     void runBenchmark(void);
