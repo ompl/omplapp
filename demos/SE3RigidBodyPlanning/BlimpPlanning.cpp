@@ -85,7 +85,7 @@ void blimpBenchmark(app::BlimpPlanning& setup)
     b.saveResultsToFile();
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char**)
 {
     app::BlimpPlanning blimp;
     blimpSetup(blimp);

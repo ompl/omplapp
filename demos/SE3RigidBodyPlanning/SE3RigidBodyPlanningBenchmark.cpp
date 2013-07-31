@@ -123,11 +123,11 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     run_count     = 50;
 }
 
-void preRunEvent(const base::PlannerPtr &planner)
+void preRunEvent(const base::PlannerPtr& /*planner*/)
 {
 }
 
-void postRunEvent(const base::PlannerPtr &planner, tools::Benchmark::RunProperties &run)
+void postRunEvent(const base::PlannerPtr& /*planner*/, tools::Benchmark::RunProperties& /*run*/)
 {
 }
 

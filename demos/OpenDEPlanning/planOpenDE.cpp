@@ -47,7 +47,7 @@ static void command (int cmd)
         drawTree = !drawTree;
 }
 
-static void simLoop (int pause)
+static void simLoop (int /*pause*/)
 {
     DISP.displaySpaces();
 

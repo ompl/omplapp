@@ -67,7 +67,7 @@ namespace ompl
 
         protected:
 
-            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const
+            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const
             {
                 return state->as<base::CompoundState>()->components[0];
             }

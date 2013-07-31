@@ -151,7 +151,7 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
 }
 
-void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
+void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
 {
     ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
     if (pdef->hasSolution())
@@ -164,7 +164,7 @@ void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::too
         pdef->getSolutionPath()->print(pathfile);
     }
 }
-void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
+void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
 {
     static ompl::base::PathPtr path;
     static std::string fname;

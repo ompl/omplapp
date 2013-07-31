@@ -81,7 +81,7 @@ void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
     b.saveResultsToFile();
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char**)
 {
     app::KinematicCarPlanning regularCar;
 

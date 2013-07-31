@@ -12,24 +12,6 @@
 
 #include "omplapp/apps/QuadrotorPlanning.h"
 
-namespace
-{
-    // quaternion dot product
-    inline double quatdot(const ompl::base::SO3StateSpace::StateType& q0, const ompl::base::SO3StateSpace::StateType& q1)
-    {
-        return q0.w*q1.w + q0.x*q1.x + q0.y*q1.y + q0.z*q1.z;
-    }
-    // quaternion multiplication
-    inline void qmultiply(ompl::base::SO3StateSpace::StateType& q0, const ompl::base::SO3StateSpace::StateType& q1)
-    {
-        q0.w = q0.w * q1.w - q0.x * q1.x - q0.y * q1.y - q0.z * q1.z;
-        q0.x = q0.w * q1.x + q0.x * q1.w + q0.y * q1.z - q0.z * q1.y;
-        q0.y = q0.w * q1.y + q0.y * q1.w + q0.z * q1.x - q0.x * q1.z;
-        q0.z = q0.w * q1.z + q0.z * q1.w + q0.x * q1.y - q0.y * q1.x;
-    }
-}
-
-
 ompl::base::ScopedState<> ompl::app::QuadrotorPlanning::getDefaultStartState(void) const
 {
     base::ScopedState<base::SE3StateSpace> s(getGeometricComponentStateSpace());
@@ -75,23 +57,21 @@ void ompl::app::QuadrotorPlanning::ode(const control::ODESolver::StateType& q, c
 
     // 2. We include a numerical correction so that dot(q,qdot) = 0. This constraint is
     // obtained by differentiating q * q_conj = 1
-    base::SO3StateSpace::StateType rot;
-    rot.x = q[3]; rot.y = q[4]; rot.z = q[5]; rot.w = q[6];
-    double delta = quatdot(rot, qomega);
+    double delta = q[3] * qomega.x + q[4] * qomega.y + q[5] * qomega.z;
 
     // 3. Finally, set the derivative of orientation
-    qdot[3] = qomega.x - delta * rot.x;
-    qdot[4] = qomega.y - delta * rot.y;
-    qdot[5] = qomega.z - delta * rot.z;
-    qdot[6] = qomega.w - delta * rot.w;
+    qdot[3] = qomega.x - delta * q[3];
+    qdot[4] = qomega.y - delta * q[4];
+    qdot[5] = qomega.z - delta * q[5];
+    qdot[6] = qomega.w - delta * q[6];
 
     // derivative of velocity
     // the z-axis of the body frame in world coordinates is equal to
     // (2(wy+xz), 2(yz-wx), w^2-x^2-y^2+z^2).
     // This can be easily verified by working out q * (0,0,1).
-    qdot[7] = massInv_ * (-2*u[0]*(rot.w*rot.y + rot.x*rot.z) - beta_ * q[7]);
-    qdot[8] = massInv_ * (-2*u[0]*(rot.y*rot.z - rot.w*rot.x) - beta_ * q[8]);
-    qdot[9] = massInv_ * (  -u[0]*(rot.w*rot.w-rot.x*rot.x-rot.y*rot.y+rot.z*rot.z) - beta_ * q[9]) - 9.81;
+    qdot[7] = massInv_ * (-2*u[0]*(q[6]*q[4] + q[3]*q[5]) - beta_ * q[7]);
+    qdot[8] = massInv_ * (-2*u[0]*(q[4]*q[5] - q[6]*q[3]) - beta_ * q[8]);
+    qdot[9] = massInv_ * (  -u[0]*(q[6]*q[6]-q[3]*q[3]-q[4]*q[4]+q[5]*q[5]) - beta_ * q[9]) - 9.81;
 
     // derivative of rotational velocity
     qdot[10] = u[1];

@@ -61,7 +61,7 @@ public:
     }
     }
 
-    virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const
+    virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& /*contact*/) const
     {
     if (geom1 == box[0] || geom2 == box[0])
         if (geom1 == avoid_box_geom || geom2 == avoid_box_geom)
