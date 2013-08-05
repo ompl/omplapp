@@ -1,7 +1,7 @@
 # Release Notes
 
 
-# OMPL.app 0.13.0 (??/??/13)
+# OMPL.app 0.13.0 (8/5/13)
 
 - Added several new planners:
     - [SPARS](\ref gSPARS) and [SPARS2](\ref gSPARStwo) are roadmap-based planners that operate similarly to Visbility-based PRM, but provide asymptotic near-optimality guarantees.
