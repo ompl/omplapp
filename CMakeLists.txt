@@ -18,6 +18,8 @@ if (NOT CMAKE_BUILD_TYPE)
     endif()
 endif()
 
+message(STATUS "Building ${CMAKE_BUILD_TYPE}")
+
 # This shouldn't be necessary, but there has been trouble
 # with MSVC being set off, but MSVCXX ON.
 if(MSVC OR MSVC90 OR MSVC10)
@@ -61,7 +63,19 @@ else(IS_ICPC)
     add_definitions(-DBOOST_TEST_DYN_LINK)
 endif(IS_ICPC)
 
-find_package(Boost COMPONENTS date_time thread program_options serialization filesystem system unit_test_framework REQUIRED)
+# Do one quiet find_package on Boost to see if it is recent enough to
+# have the try_join_for call
+find_package(Boost QUIET 1.50)
+
+# try_join_for requires the chrono library, so if we will use
+# try_join_for, we need to include the chrono component
+if (${Boost_FOUND})
+  # we're using chrono
+  find_package(Boost COMPONENTS date_time thread serialization filesystem system program_options unit_test_framework chrono REQUIRED)
+else()
+  # don't use chrono
+  find_package(Boost COMPONENTS date_time thread serialization filesystem system program_options unit_test_framework REQUIRED)
+endif()
 find_package(Boost COMPONENTS python)
 
 if(${Boost_VERSION} LESS 105300)

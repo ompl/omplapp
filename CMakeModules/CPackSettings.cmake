@@ -16,6 +16,7 @@ set(CPACK_SOURCE_IGNORE_FILES
     ".so$"
     ".dylib$"
     ".orig$"
+    ".log$"
     ".DS_Store"
     ".tmproj$"
     ".tm_properties"
