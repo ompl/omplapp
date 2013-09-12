@@ -14,6 +14,7 @@
 #include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/tools/multiplan/OptimizePlan.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
@@ -51,7 +52,7 @@ int main()
 
     // make sure the planners run until the time limit, and get the best possible solution
     setup.getProblemDefinition()->setOptimizationObjective(
-        base::OptimizationObjectivePtr(new base::PathLengthOptimizationObjective(setup.getSpaceInformation(),0.0)));
+        base::OptimizationObjectivePtr(new base::PathLengthOptimizationObjective(setup.getSpaceInformation())));
 
     setup.setup();
 
