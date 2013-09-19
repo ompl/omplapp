@@ -7,13 +7,13 @@ project(omplapp CXX C)
 # set the default build type
 if (NOT CMAKE_BUILD_TYPE)
     # By default, use Release mode
-    set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 
     # On 32bit architectures with gcc < 4.7, use RelWithDebInfo
     if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
         execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
         if (GCC_VERSION VERSION_LESS 4.7)
-            set(CMAKE_BUILD_TYPE RelWithDebInfo)
+            set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Type of build" FORCE)
         endif()
     endif()
 endif()
