@@ -317,7 +317,7 @@ class MainWindow(QtGui.QMainWindow):
     def openPath(self):
         fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
         if len(fname)>0:
-            path = [[float(x) for x in line.split(' ')] for line in open('path.txt','r').readlines()]
+            path = [[float(x) for x in line.split(' ')] for line in open(fname,'r').readlines()]
             self.mainWidget.glViewer.solutionPath = []
             # assume that first 3 components map to SE(2) if 3<len<7
             if len(path[0]) > 2 and len(path[0]) < 7:
