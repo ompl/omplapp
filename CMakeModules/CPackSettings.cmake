@@ -56,7 +56,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
       OUTPUT_VARIABLE UBUNTU_RELEASE
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   set(CPACK_PACKAGE_FILE_NAME "omplapp_${OMPL_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}-Ubuntu${UBUNTU_RELEASE}")
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-opengl, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev, libtriangle-dev")
 endif()
 
 if(WIN32)
