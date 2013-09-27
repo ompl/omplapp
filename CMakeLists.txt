@@ -105,6 +105,8 @@ endif()
 find_package(Triangle QUIET)
 # If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
 find_package(flann 1.8.3 QUIET)
+# MORSE is only needed for Modular OpenRobots Simulation Engine bindings
+find_package(MORSE QUIET)
 # ODE is only needed for Open Dynamics Engine bindings
 find_package(OpenDE QUIET)
 # This library is included in the Open Dynamics source distribution and is used in one demo only
@@ -160,6 +162,8 @@ if (FLANN_FOUND)
     set(OMPL_HAVE_FLANN 1)
     include_directories("${FLANN_INCLUDE_DIRS}")
 endif()
+
+set(OMPL_EXTENSION_MORSE ${MORSE_FOUND})
 
 set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
 if (OPENDE_FOUND)
