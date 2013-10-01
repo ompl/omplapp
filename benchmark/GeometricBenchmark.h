@@ -38,10 +38,20 @@
 #include "omplapp/apps/SE2RigidBodyPlanning.h"
 #include "omplapp/apps/SE3RigidBodyPlanning.h"
 
-class SE2Benchmark : public CFGBenchmark
+class GeometricBenchmark : public CFGBenchmark
 {
 public:
-    SE2Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
+    GeometricBenchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo) {}
+
+protected:
+    virtual void saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
+    virtual void saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
+};
+
+class SE2Benchmark : public GeometricBenchmark
+{
+public:
+    SE2Benchmark(const BenchmarkOptions &bo) : GeometricBenchmark(bo)
     {
     }
 
@@ -52,10 +62,10 @@ protected:
     boost::shared_ptr<ompl::app::SE2RigidBodyPlanning> setup_se2_;
 };
 
-class SE3Benchmark : public CFGBenchmark
+class SE3Benchmark : public GeometricBenchmark
 {
 public:
-    SE3Benchmark(const BenchmarkOptions &bo) : CFGBenchmark(bo)
+    SE3Benchmark(const BenchmarkOptions &bo) : GeometricBenchmark(bo)
     {
     }
 

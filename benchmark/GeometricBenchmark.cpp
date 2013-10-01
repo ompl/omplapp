@@ -35,10 +35,51 @@
 /* Author: Ioan Sucan */
 
 #include "GeometricBenchmark.h"
+#include <fstream>
 
 boost::filesystem::path getAbsolutePath(const boost::filesystem::path& path, const boost::filesystem::path& prefix)
 {
     return (path.is_absolute()) ? path : (prefix / path);
+}
+
+void GeometricBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
+{
+    ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
+    if (pdef->hasSolution())
+    {
+        const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
+        std::string fname = benchmark_->getExperimentName() + std::string("_")
+            + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
+            + std::string(".path");
+        std::ofstream pathfile(fname.c_str());
+
+        ompl::base::PathPtr path = pdef->getSolutionPath();
+        ompl::geometric::PathGeometric* geoPath = static_cast<ompl::geometric::PathGeometric*>(path.get());
+        geoPath->printAsMatrix(pathfile);
+    }
+}
+
+void GeometricBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run)
+{
+    ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
+    const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
+    if (pdef->hasSolution() && !pdef->hasApproximateSolution())
+    {
+        if (!shortestPath_ || pdef->getSolutionPath()->length() < shortestPath_->length())
+        {
+            shortestPath_ = pdef->getSolutionPath();
+            shortestPathIndex_ = status.activeRun;
+        }
+    }
+    if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && shortestPath_)
+    {
+        std::string fname = benchmark_->getExperimentName() + std::string("_")
+                          + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(shortestPathIndex_)
+                          + std::string(".path");
+        std::ofstream pathfile(fname.c_str());
+        ompl::geometric::PathGeometric* geoPath = static_cast<ompl::geometric::PathGeometric*>(shortestPath_.get());
+        geoPath->printAsMatrix(pathfile);
+    }
 }
 
 void SE2Benchmark::configure(void)

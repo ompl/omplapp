@@ -149,6 +149,9 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
     else
         planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
+
+    shortestPath_.reset();
+    shortestPathIndex_ = 0;
 }
 
 void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
@@ -166,24 +169,23 @@ void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::too
 }
 void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
 {
-    static ompl::base::PathPtr path;
-    static std::string fname;
     ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
     const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
     if (pdef->hasSolution() && !pdef->hasApproximateSolution())
     {
-        if (!path || pdef->getSolutionPath()->length() < path->length())
+        if (!shortestPath_ || pdef->getSolutionPath()->length() < shortestPath_->length())
         {
-            path = pdef->getSolutionPath();
-            fname = benchmark_->getExperimentName() + std::string("_")
-                + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
-                + std::string(".path");
+            shortestPath_ = pdef->getSolutionPath();
+            shortestPathIndex_ = status.activeRun;
         }
     }
-    if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && path)
+    if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && shortestPath_)
     {
+        std::string fname = benchmark_->getExperimentName() + std::string("_")
+                          + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(shortestPathIndex_)
+                          + std::string(".path");
         std::ofstream pathfile(fname.c_str());
-        path->print(pathfile);
+        shortestPath_->print(pathfile);
     }
 }
 

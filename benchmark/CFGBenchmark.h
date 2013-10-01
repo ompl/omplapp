@@ -61,11 +61,18 @@ public:
 protected:
 
     virtual void configure(void) = 0;
+    // optional post-run events
+    virtual void saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
+    virtual void saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
 
     BenchmarkOptions                                             bo_;
     std::map<ompl::base::Planner*, BenchmarkOptions::ContextOpt> pcontext_;
     BenchmarkOptions::ContextOpt                                 activeParams_;
     boost::shared_ptr<ompl::tools::Benchmark>                    benchmark_;
+
+    // When the shortest path is saved, we keep it here
+    ompl::base::PathPtr                                          shortestPath_;
+    unsigned int                                                 shortestPathIndex_;
 
 private:
 
@@ -73,8 +80,4 @@ private:
     ompl::base::ValidStateSamplerPtr allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type);
     void setupBenchmark(void);
     void preSwitchEvent(const ompl::base::PlannerPtr &planner);
-
-    // optional post-run events
-    void saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
-    void saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &run);
 };
