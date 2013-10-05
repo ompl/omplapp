@@ -183,6 +183,15 @@ if(OMPLAPP_PQP)
     endif()
 endif()
 
+option(OMPL_LOCAL_PYPLUSPLUS_INSTALL "Whether Py++ and dependencies should be installed in the build directory" OFF)
+set(SUDO "sudo")
+set(CMAKE_GCCXML_ARGS "")
+if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
+    set(SUDO "")
+    set(CMAKE_GCCXML_ARGS "-DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}/pyplusplus")
+    set(DISTUTILS_ARGS "--prefix=${PROJECT_BINARY_DIR}/pyplusplus")
+endif()
+
 
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/src)
