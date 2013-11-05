@@ -7,6 +7,23 @@ set(CPACK_PACKAGE_VERSION_MAJOR "${OMPLAPP_MAJOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_MINOR "${OMPLAPP_MINOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_PATCH "${OMPLAPP_PATCH_VERSION}")
 
+# component list
+set(CPACK_COMPONENTS_ALL ompl python morse omplapp)
+# display names for components
+set(CPACK_COMPONENT_OMPL_DISPLAY_NAME "OMPL library, headers, and demos")
+set(CPACK_COMPONENT_PYTHON_DISPLAY_NAME "Python bindings")
+set(CPACK_COMPONENT_MORSE_DISPLAY_NAME "Blender/MORSE plugin")
+set(CPACK_COMPONENT_OMPLAPP_DISPLAY_NAME "OMPL.app library and GUI")
+# descriptions of components
+set(CPACK_COMPONENT_MORSE_DESCRIPTION "The Blender/MORSE plugin allows one to plan paths using the MORSE robot simulator. MORSE is built on top of Blender and uses its built-in physics engine to compute physically realistic motions.")
+set(CPACK_COMPONENT_OMPLAPP_DESCRIPTION "The OMPL.app library makes it easy to read meshes (using the Assimp library) and perform collision checking (using the FCL library). The GUI is built on top of this and makes it easy to perform geometric and control-based planning for rigid bodies.")
+# intercomponent dependencies
+set(CPACK_COMPONENT_PYTHON_DEPENDS ompl)
+set(CPACK_COMPONENT_MORSE_DEPENDS python)
+set(CPACK_COMPONENT_OMPLAPP_DEPENDS python)
+# core library is required
+set(CPACK_COMPONENT_OMPL_REQUIRED TRUE)
+
 set(CPACK_SOURCE_IGNORE_FILES
     "/.hg"
     "/build/"
@@ -59,8 +76,12 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-opengl, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev, libtriangle-dev")
 endif()
 
+if(APPLE)
+    set(CPACK_GENERATOR "PackageMaker;${CPACK_GENERATOR}")
+endif()
+
 if(WIN32)
-  set(CPACK_GENERATOR "ZIP;${CPACK_GENERATOR}")
+    set(CPACK_GENERATOR "ZIP;${CPACK_GENERATOR}")
 endif()
 
 include(CPack)

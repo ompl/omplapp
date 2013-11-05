@@ -204,8 +204,9 @@ add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(benchmark)
 add_subdirectory(py-bindings)
-install(DIRECTORY resources DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
-    PATTERN ".svn" EXCLUDE
+install(DIRECTORY resources
+    DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
+    COMPONENT omplapp
     PATTERN ".DS_Store" EXCLUDE)
 
 # HACK ALERT: just in case the version of OpenDE used for libdrawstuff is used for libompl
@@ -231,11 +232,14 @@ if (NOT MSVC)
     set(PKG_OMPL_LIBS "-lompl -lompl_app")
     set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
     configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
-    install(FILES "${pkg_conf_file}" DESTINATION lib/pkgconfig/
-        COMPONENT pkgconfig RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
+    install(FILES "${pkg_conf_file}"
+        DESTINATION lib/pkgconfig/
+        COMPONENT ompl
+        RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
 
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/dox/FindOMPL.cmake"
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/markdown/FindOMPL.cmake"
         DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
+        COMPONENT ompl
         RENAME ompl-config.cmake)
     if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
         include(WriteBasicConfigVersionFile)
@@ -243,7 +247,8 @@ if (NOT MSVC)
             "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
             VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
         install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
-            DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}")
+            DESTINATION "share/ompl${OMPL_INSTALL_SUFFIX}"
+            COMPONENT ompl)
     endif()
 endif()
 

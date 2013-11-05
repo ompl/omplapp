@@ -1,1 +1,4 @@
-install(PROGRAMS ompl_app.py DESTINATION bin RENAME ompl_app)
+install(PROGRAMS ompl_app.py
+    DESTINATION bin
+    COMPONENT omplapp
+    RENAME ompl_app)
