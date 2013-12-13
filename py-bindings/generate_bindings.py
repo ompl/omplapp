@@ -37,8 +37,10 @@ class ompl_app_generator_t(code_generator_t):
         # in these derived classes, and for some reason Py++ doesn't export them
         # (even though it does generate some wrapper code for them)
         for cls in ['SE2RigidBodyPlanning', 'SE3RigidBodyPlanning', 'SE2MultiRigidBodyPlanning', 'SE3MultiRigidBodyPlanning', 'GSE2RigidBodyPlanning', 'GSE3RigidBodyPlanning']:
-            self.ompl_ns.class_(cls).add_registration_code(
-            'def("solve", &%s_wrapper::solve, (bp::arg("time")=1.0e+0))' % cls)
+            self.ompl_ns.class_(cls).add_registration_code("""
+            def("solve", (::ompl::base::PlannerStatus(::ompl::app::%s::*)( double ))(&::ompl::app::%s::solve), (bp::arg("solveTime")) )""" % (cls, cls))
+            self.ompl_ns.class_(cls).add_registration_code("""
+            def("solve", (::ompl::base::PlannerStatus(::ompl::app::%s::*)( const ompl::base::PlannerTerminationCondition& ))(&::ompl::app::%s::solve), (bp::arg("ptc")) )""" % (cls,cls))
             self.ompl_ns.class_(cls).add_registration_code(
             'def("clear", &%s_wrapper::clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
@@ -48,8 +50,10 @@ class ompl_app_generator_t(code_generator_t):
             'DynamicCarPlanning', 'GDynamicCarPlanning',
             'BlimpPlanning', 'GBlimpPlanning',
             'QuadrotorPlanning', 'GQuadrotorPlanning']:
-            self.ompl_ns.class_(cls).add_registration_code(
-            'def("solve", &%s_wrapper::solve, (bp::arg("time")=1.0e+0))' % cls)
+            self.ompl_ns.class_(cls).add_registration_code("""
+            def("solve", (::ompl::base::PlannerStatus(::ompl::app::%s::*)( double ))(&::ompl::app::%s::solve), (bp::arg("solveTime")) )""" % (cls, cls))
+            self.ompl_ns.class_(cls).add_registration_code("""
+            def("solve", (::ompl::base::PlannerStatus(::ompl::app::%s::*)( const ompl::base::PlannerTerminationCondition& ))(&::ompl::app::%s::solve), (bp::arg("ptc")) )""" % (cls,cls))
             self.ompl_ns.class_(cls).add_registration_code(
             'def("clear", &%s_wrapper::clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(

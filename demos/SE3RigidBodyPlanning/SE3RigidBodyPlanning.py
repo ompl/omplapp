@@ -42,13 +42,13 @@ start = ob.State(setup.getSpaceInformation())
 start().setX(-4.96)
 start().setY(-40.62)
 start().setZ(70.57)
-rot = start().rotation().setIdentity()
+start().rotation().setIdentity()
 
 goal = ob.State(setup.getSpaceInformation())
 goal().setX(200.49)
 goal().setY(-40.62)
 goal().setZ(70.57)
-rot = goal().rotation().setIdentity()
+goal().rotation().setIdentity()
 
 # set the start & goal states
 setup.setStartAndGoalStates(start, goal);
