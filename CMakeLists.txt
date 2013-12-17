@@ -88,6 +88,23 @@ endif()
 # needed to compile ODESolver demo. ODEsolver is *required* to compile ompl_app.
 set(OMPL_ODESOLVER ON)
 
+# on OS X we need to check whether to use libc++ or libstdc++ with clang++
+if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    include(GetPrerequisites)
+    get_prerequisites("${Boost_SYSTEM_LIBRARY}" _libs 0 0 "/" "")
+    set(CXXSTDLIB "")
+    foreach(_lib ${_libs})
+        if(_lib MATCHES "libc\\+\\+")
+            set(CXXSTDLIB "libc++")
+        elseif(_lib MATCHES "libstdc\\+\\+")
+            set(CXXSTDLIB "libstdc++")
+        endif()
+    endforeach()
+    if(CXXSTDLIB)
+        add_definitions(-stdlib=${CXXSTDLIB})
+    endif()
+endif()
+
 find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
