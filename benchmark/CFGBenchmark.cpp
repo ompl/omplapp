@@ -46,6 +46,7 @@
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
 #include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>
@@ -76,6 +77,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
         p = new ompl::geometric::LBKPIECE1(si);
     else if (name == "prm")
         p = new ompl::geometric::PRM(si);
+    else if (name == "stride")
+        p = new ompl::geometric::STRIDE(si);
     else if (name == "pdst")
         p = new ompl::geometric::PDST(si);
     else

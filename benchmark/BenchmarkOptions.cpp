@@ -50,7 +50,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
         "rrtconnect", "lazyrrt",
         "kpiece", "bkpiece", "lbkpiece",
         "est", "sbl", "prm", "rrt",
-        "pdst"
+        "stride", "pdst"
     };
 
     std::ifstream cfg(filename);
