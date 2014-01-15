@@ -47,10 +47,11 @@
 bool BenchmarkOptions::readOptions(const char *filename)
 {
     static const std::string KNOWN_PLANNERS[] = {
-        "rrtconnect", "lazyrrt",
+        "rrtconnect", "lazyrrt", "lazyprm",
         "kpiece", "bkpiece", "lbkpiece",
         "est", "sbl", "prm", "rrt",
-        "stride", "pdst"
+        "stride", "pdst",
+        "rrtstar", "prmstar", "spars", "spars2", "lbtrrt", "trrt"
     };
 
     std::ifstream cfg(filename);
@@ -168,8 +169,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
                             temp_context.clear();
                         }
                     }
-                break;
-                }
+            }
 
         // now we merge the global (problem context) in all the planner specific contexts
         if (!problem_context.empty())

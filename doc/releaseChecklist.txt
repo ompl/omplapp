@@ -20,4 +20,5 @@ Steps to release a new version:
     - in the folders that contains the private clone of ompl, execute this command:
       hg push -b default ssh://hg@bitbucket.org/ompl/ompl
     - do the same for the omplapp repo
+* update version on https://en.wikipedia.org/wiki/OMPL
 * announce to ompl-users@lists.sourceforge.net

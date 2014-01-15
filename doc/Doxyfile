@@ -533,7 +533,7 @@ GENERATE_DEPRECATEDLIST= YES
 # documentation sections, marked by \if section-label ... \endif
 # and \cond section-label ... \endcond blocks.
 
-ENABLED_SECTIONS       =
+ENABLED_SECTIONS       = OMPLAPP
 
 # The MAX_INITIALIZER_LINES tag determines the maximum number of lines
 # the initial value of a variable or macro consists of for it to appear in
@@ -700,8 +700,7 @@ EXCLUDE                = ../ompl/doc/markdown/installation.md \
                          ../ompl/doc/markdown/download.md \
                          ../ompl/doc/markdown/license.md \
                          ../ompl/doc/markdown/mainpage.md \
-                         ../ompl/doc/markdown/releaseNotes.md \
-                         ../ompl/doc/markdown/benchmark.md
+                         ../ompl/doc/markdown/releaseNotes.md
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

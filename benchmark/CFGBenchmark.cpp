@@ -40,12 +40,19 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/LazyRRT.h>
+#include <ompl/geometric/planners/rrt/RRTstar.h>
+#include <ompl/geometric/planners/rrt/LBTRRT.h>
+#include <ompl/geometric/planners/rrt/TRRT.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/BKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
 #include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/prm/LazyPRM.h>
+#include <ompl/geometric/planners/prm/PRMstar.h>
+#include <ompl/geometric/planners/prm/SPARS.h>
+#include <ompl/geometric/planners/prm/SPARStwo.h>
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
 
@@ -65,6 +72,12 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
         p = new ompl::geometric::RRTConnect(si);
     else if (name == "lazyrrt")
         p = new ompl::geometric::LazyRRT(si);
+    else if (name == "rrtstar")
+        p = new ompl::geometric::RRTstar(si);
+    else if (name == "lbtrrt")
+        p = new ompl::geometric::LBTRRT(si);
+    else if (name == "trrt")
+        p = new ompl::geometric::TRRT(si);
     else if (name == "est")
         p = new ompl::geometric::EST(si);
     else if (name == "sbl")
@@ -77,6 +90,14 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
         p = new ompl::geometric::LBKPIECE1(si);
     else if (name == "prm")
         p = new ompl::geometric::PRM(si);
+    else if (name == "lazyprm")
+        p = new ompl::geometric::LazyPRM(si);
+    else if (name == "prmstar")
+        p = new ompl::geometric::PRMstar(si);
+    else if (name == "spars")
+        p = new ompl::geometric::SPARS(si);
+    else if (name == "spars2")
+        p = new ompl::geometric::SPARStwo(si);
     else if (name == "stride")
         p = new ompl::geometric::STRIDE(si);
     else if (name == "pdst")
@@ -224,6 +245,7 @@ void CFGBenchmark::runBenchmark(void)
     req.maxTime = tl;
     req.maxMem = ml;
     req.runCount = rc;
+    req.timeBetweenUpdates = .5;
     req.displayProgress = true;
     req.saveConsoleOutput = false;
     req.useThreads = true;
