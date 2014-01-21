@@ -43,8 +43,8 @@ if(NOT FCL_FOUND)
     # download and build FCL
     ExternalProject_Add(fcl
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.2.7.zip"
-        URL_MD5 "c9427516b5fb08afa82bc69d15f57787"
+        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.2.9.zip"
+        URL_MD5 "faf54a95812e254d3e863c56b7995a84"
         CMAKE_COMMAND env
         CMAKE_ARGS
             "PKG_CONFIG_PATH=${CCD_LIBDIR}/pkgconfig"
