@@ -351,6 +351,17 @@ class MainWindow(QtGui.QMainWindow):
                 pathstr = '\n'.join([ ' '.join([str(s[i]) for i in ind]) for s in self.path])
                 open(fname,'w').write(pathstr)
 
+    def savePlannerData(self):
+        fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Roadmap/Tree',
+            'plannerData.graphml'))
+        if len(fname)>0:
+            pd = ob.PlannerData(self.omplSetup.getSpaceInformation())
+            self.omplSetup.getPlannerData(pd)
+            pd.computeEdgeWeights()
+            with open(fname, 'w') as outfile:
+                outfile.write(pd.printGraphML())
+                outfile.close()
+
     def setSolutionPath(self, path):
             ns = len(path.getStates())
             self.path = [ self.omplSetup.getGeometricComponentState(
@@ -532,6 +543,9 @@ class MainWindow(QtGui.QMainWindow):
         self.savePathAct = QtGui.QAction('Save &Path', self,
             shortcut='Ctrl+Alt+S', statusTip='Save a path',
             triggered=self.savePath)
+        self.savePlannerDataAct = QtGui.QAction('Save Roadmap/Tree', self,
+            statusTip='Save the roadmap/tree that was created by "Solve"',
+            triggered=self.savePlannerData)
         self.exitAct = QtGui.QAction('E&xit', self, shortcut='Ctrl+Q',
             statusTip='Exit the application', triggered=self.close)
 
@@ -556,6 +570,7 @@ class MainWindow(QtGui.QMainWindow):
         self.fileMenu.addAction(self.saveConfigAct)
         self.fileMenu.addAction(self.openPathAct)
         self.fileMenu.addAction(self.savePathAct)
+        self.fileMenu.addAction(self.savePlannerDataAct)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAct)
 
