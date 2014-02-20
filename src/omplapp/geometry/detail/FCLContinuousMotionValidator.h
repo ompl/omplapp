@@ -87,6 +87,7 @@ namespace ompl
                     else
                         lastValidState = si_->allocState ();
 
+                    collisionTime -= 0.01;
                     stateSpace_->interpolate (s1, s2, collisionTime, lastValidState);
 
                     while (!si_->isValid (lastValidState) && collisionTime > 0)

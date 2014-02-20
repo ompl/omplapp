@@ -20,13 +20,10 @@
 #include "omplapp/geometry/detail/assimpUtil.h"
 
 // FCL Headers
-#include <fcl/BVH/BVH_model.h>
 #include <fcl/collision.h>
 #include <fcl/collision_node.h>
-#include <fcl/math/transform.h>
-#include <fcl/traversal/traversal_node_bvhs.h>
 #include <fcl/traversal/traversal_node_setup.h>
-#include <fcl/ccd/conservative_advancement.h>
+#include <fcl/continuous_collision.h>
 
 // Boost and STL headers
 #include <boost/shared_ptr.hpp>
@@ -69,156 +66,139 @@ namespace ompl
             /// environment or itself.
             virtual bool isValid (const base::State *state) const
             {
-                bool valid = true;
                 fcl::CollisionRequest collisionRequest;
                 fcl::CollisionResult collisionResult;
+                fcl::Quaternion3f rot;
+                fcl::Vec3f pos;
+                fcl::Transform3f transform;
 
                 if (environment_.num_tris > 0)
                 {
                     // Performing collision checking with environment.
-                    for (size_t i = 0; i < robotParts_.size () && valid; ++i)
+                    for (std::size_t i = 0; i < robotParts_.size(); ++i)
                     {
-                        fcl::Quaternion3f quaternion;
-                        fcl::Vec3f translation;
-                        poseFromStateCallback_(translation, quaternion, extractState_(state, i));
-
-                        fcl::Transform3f transform;
-                        transform.setTransform (quaternion, translation);
-
-                        valid &= fcl::collide (robotParts_[i], transform, &environment_, fcl::Transform3f(),
-                            collisionRequest, collisionResult) == 0;
+                        poseFromStateCallback_(pos, rot, extractState_(state, i));
+                        transform.setTransform(rot, pos);
+                        if (fcl::collide(robotParts_[i], transform, &environment_,
+                            fcl::Transform3f(), collisionRequest, collisionResult) > 0)
+                            return false;
                     }
                 }
 
                 // Checking for self collision
-                if (selfCollision_ && valid)
+                if (selfCollision_)
                 {
-                    for (std::size_t i = 0 ; i < robotParts_.size () && valid; ++i)
+                    fcl::Transform3f trans_i, trans_j;
+                    for (std::size_t i = 0 ; i < robotParts_.size(); ++i)
                     {
-                        fcl::Quaternion3f qi;
-                        fcl::Vec3f ti;
-                        poseFromStateCallback_(ti, qi, extractState_(state, i));
+                        poseFromStateCallback_(pos, rot, extractState_(state, i));
+                        trans_i.setTransform(rot, pos);
 
-                        fcl::Transform3f trans_i;
-                        trans_i.setTransform (qi, ti);
-
-                        for (std::size_t j  = i + 1 ; j < robotParts_.size () && valid; ++j)
+                        for (std::size_t j  = i + 1 ; j < robotParts_.size (); ++j)
                         {
-                            fcl::Quaternion3f qj;
-                            fcl::Vec3f tj;
-                            poseFromStateCallback_(tj, qj, extractState_(state, j));
-
-                            fcl::Transform3f trans_j;
-                            trans_i.setTransform (qj, tj);
-
-                            valid &= fcl::collide (robotParts_[i], trans_i, robotParts_[j], trans_j,
-                                collisionRequest, collisionResult) == 0;
+                            poseFromStateCallback_(pos, rot, extractState_(state, j));
+                            trans_j.setTransform(rot, pos);
+                            if (fcl::collide(robotParts_[i], trans_i, robotParts_[j], trans_j,
+                                collisionRequest, collisionResult) > 0)
+                                return false;
                         }
                     }
                 }
 
-                return valid;
+                return true;
             }
 
             /// \brief Check the continuous motion between s1 and s2.  If there is a collision
             /// collisionTime will contain the parameterized time to collision in the range [0,1).
             virtual bool isValid (const base::State *s1, const base::State *s2, double &collisionTime) const
             {
-                bool valid (true);
-                collisionTime = 1.0;
-
-                fcl::Quaternion3f quat1, quat2;
-                fcl::Vec3f trans1, trans2;
-                fcl::Matrix3f rot1, rot2;
-                fcl::CollisionRequest collisionRequest;
-                fcl::CollisionResult collisionResult;
+                fcl::Transform3f transi_beg, transi_end, trans;
+                fcl::Quaternion3f rot;
+                fcl::Vec3f pos;
+                fcl::ContinuousCollisionRequest collisionRequest(10, 0.0001, fcl::CCDM_SCREW,
+                    fcl::GST_LIBCCD, fcl::CCDC_CONSERVATIVE_ADVANCEMENT);
+                fcl::ContinuousCollisionResult collisionResult;
 
                 // Checking for collision with environment
                 if (environment_.num_tris > 0)
                 {
-                    for (size_t i = 0; i < robotParts_.size () && valid; ++i)
+                    for (size_t i = 0; i < robotParts_.size(); ++i)
                     {
                         // Getting the translation and rotation from s1 and s2
-                        poseFromStateCallback_(trans1, quat1, extractState_(s1, i));
-                        poseFromStateCallback_(trans2, quat2, extractState_(s2, i));
-
-                        quat1.toRotation (rot1);
-                        quat2.toRotation (rot2);
-
-                        // Interpolating part i from s1 to s2
-                        fcl::InterpMotion motion1 (rot1, trans1, rot2, trans2);
-                        // The environment does not move
-                        fcl::InterpMotion motion2;
+                        poseFromStateCallback_(pos, rot, extractState_(s1, i));
+                        transi_beg.setTransform(rot, pos);
+                        poseFromStateCallback_(pos, rot, extractState_(s2, i));
+                        transi_end.setTransform(rot, pos);
 
                         // Checking for collision
-                        valid &= (fcl::conservativeAdvancement <BVType, fcl::MeshConservativeAdvancementTraversalNodeOBBRSS, fcl::MeshCollisionTraversalNodeOBBRSS>
-                            (robotParts_[i], &motion1, &environment_, &motion2,
-                            collisionRequest, collisionResult, collisionTime) == 0);
-                    }
-                }
-
-                // Checking for self collision
-                if (selfCollision_ && valid)
-                {
-                    for (std::size_t i = 0 ; i < robotParts_.size () && valid; ++i)
-                    {
-                        poseFromStateCallback_(trans1, quat1, extractState_(s1, i));
-                        poseFromStateCallback_(trans2, quat2, extractState_(s2, i));
-
-                        quat1.toRotation (rot1);
-                        quat2.toRotation (rot2);
-
-                        // Interpolating part i from s1 to s2
-                        fcl::InterpMotion motion_i (rot1, trans1, rot2, trans2);
-
-                        for (std::size_t j = i+1; j < robotParts_.size () && valid; ++j)
+                        fcl::continuousCollide(robotParts_[i], transi_beg, transi_end,
+                            &environment_, trans, trans,
+                            collisionRequest, collisionResult);
+                        if (collisionResult.is_collide)
                         {
-                            poseFromStateCallback_(trans1, quat1, extractState_(s1, j));
-                            poseFromStateCallback_(trans2, quat2, extractState_(s2, j));
-
-                            quat1.toRotation (rot1);
-                            quat2.toRotation (rot2);
-
-                            // Interpolating part j from s1 to s2
-                            fcl::InterpMotion motion_j (rot1, trans1, rot2, trans2);
-
-                            // Checking for collision
-                            valid &= (fcl::conservativeAdvancement <BVType, fcl::MeshConservativeAdvancementTraversalNodeOBBRSS, fcl::MeshCollisionTraversalNodeOBBRSS>
-                                (robotParts_[i], &motion_i, robotParts_[j], &motion_j,
-                                collisionRequest, collisionResult, collisionTime) == 0);
+                            collisionTime = collisionResult.time_of_contact;
+                            return false;
                         }
                     }
                 }
 
-                return valid;
+                // Checking for self collision
+                if (selfCollision_)
+                {
+                    fcl::Transform3f transj_beg, transj_end;
+                    for (std::size_t i = 0 ; i < robotParts_.size(); ++i)
+                    {
+                        poseFromStateCallback_(pos, rot, extractState_(s1, i));
+                        transi_beg.setTransform(rot, pos);
+                        poseFromStateCallback_(pos, rot, extractState_(s2, i));
+                        transi_end.setTransform(rot, pos);
+
+                        for (std::size_t j = i+1; j < robotParts_.size(); ++j)
+                        {
+                            poseFromStateCallback_(pos, rot, extractState_(s1, j));
+                            transj_beg.setTransform(rot, pos);
+                            poseFromStateCallback_(pos, rot, extractState_(s2, j));
+                            transj_end.setTransform(rot, pos);
+
+                            // Checking for collision
+                            fcl::continuousCollide(robotParts_[i], transi_beg, transi_end,
+                                 robotParts_[j], transj_beg, transj_end,
+                                 collisionRequest, collisionResult);
+                            if (collisionResult.is_collide)
+                            {
+                                collisionTime = collisionResult.time_of_contact;
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
             }
 
             /// \brief Returns the minimum distance from the given robot state and the environment
             virtual double clearance (const base::State *state) const
             {
-                double dist = std::numeric_limits<double>::infinity ();
-                fcl::DistanceRequest distanceRequest(true);
-                fcl::DistanceResult distanceResult;
+                double minDist = std::numeric_limits<double>::infinity ();
                 if (environment_.num_tris > 0)
                 {
+                    fcl::DistanceRequest distanceRequest(true);
+                    fcl::DistanceResult distanceResult;
+                    fcl::Transform3f trans, trans_env;
+                    fcl::Quaternion3f rot;
+                    fcl::Vec3f pos;
+                    fcl::MeshDistanceTraversalNodeOBBRSS distanceNode;
                     for (size_t i = 0; i < robotParts_.size (); ++i)
                     {
-                        fcl::Quaternion3f q1;
-                        fcl::Vec3f t1;
-                        poseFromStateCallback_(t1, q1, extractState_(state, i));
-
-                        fcl::Transform3f tr1, tr2;
-                        tr1.setTransform (q1, t1);
-
-                        fcl::MeshDistanceTraversalNodeOBBRSS distanceNode;
-                        fcl::initialize (distanceNode, *robotParts_[i], tr1, environment_, tr2, distanceRequest, distanceResult);
+                        poseFromStateCallback_(pos, rot, extractState_(state, i));
+                        trans.setTransform(rot, pos);
+                        fcl::initialize(distanceNode, *robotParts_[i], trans, environment_, trans_env, distanceRequest, distanceResult);
                         fcl::distance (&distanceNode);
-                        if (distanceResult.min_distance < dist)
-                            dist = distanceResult.min_distance;
+                        if (distanceResult.min_distance < minDist)
+                            minDist = distanceResult.min_distance;
                     }
                 }
 
-                return dist;
+                return minDist;
             }
 
          protected:
