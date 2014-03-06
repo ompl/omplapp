@@ -9,7 +9,7 @@ endif()
 # Check for FCL and CCD installation, otherwise download them.
 
 ### CCD LIBRARY ###
-if(NOT CCD_FOUND)
+if(NOT (CCD_FOUND AND CCD_LIBRARIES AND CCD_INCLUDE_DIRS))
     message (STATUS "CCD library not found.  Will download and compile.")
     include(ExternalProject)
     # download and build ccd
@@ -33,10 +33,10 @@ if(NOT CCD_FOUND)
     if(IS_DIRECTORY "${CCD_INCLUDE_DIRS}")
         set(CCD_INCLUDE_DIRS "${CCD_INCLUDE_DIRS}" CACHE PATH "Location of convex collision detection header files" FORCE)
     endif()
-endif(NOT CCD_FOUND)
+endif(NOT (CCD_FOUND AND CCD_LIBRARIES AND CCD_INCLUDE_DIRS))
 
 ### FCL LIBRARY ###
-if(NOT FCL_FOUND)
+if(NOT (FCL_FOUND AND FCL_LIBRARIES AND FCL_INCLUDE_DIRS))
     message (STATUS "FCL library not found.  Will download and compile.")
     include(ExternalProject)
 
@@ -68,7 +68,7 @@ if(NOT FCL_FOUND)
     if(IS_DIRECTORY "${FCL_INCLUDE_DIRS}")
         set(FCL_INCLUDE_DIRS "${FCL_INCLUDE_DIRS}" CACHE PATH "Location of FCL collision checker header files" FORCE)
     endif()
-endif(NOT FCL_FOUND)
+endif(NOT (FCL_FOUND AND FCL_LIBRARIES AND FCL_INCLUDE_DIRS))
 
 # Link order is very important here.  If FCL isn't linked first, over-zealous
 # optimization may remove needed symbols from CCD in subsequent links.
