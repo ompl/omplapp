@@ -44,6 +44,16 @@ from ompl import app as oa
 import ompl
 ompl.initializePlannerLists()
 
+# wrapper for API change in PyQt
+def getOpenFileNameAsAstring(qtwindow, title="", directory="", ffilter=""):
+    fname = QtGui.QFileDialog.getOpenFileName(qtwindow, title, directory, ffilter)
+    return str(fname[0]) if isinstance(fname, tuple) else str(fname)
+
+# wrapper for API change in PyQt
+def getSaveFileNameAsAstring(qtwindow, title="", directory=""):
+    fname = QtGui.QFileDialog.getSaveFileName(qtwindow, title, directory)
+    return str(fname[0]) if isinstance(fname, tuple) else str(fname)
+
 class LogOutputHandler(OutputHandler):
     def __init__(self, textEdit):
         super(LogOutputHandler, self).__init__()
@@ -137,8 +147,7 @@ class MainWindow(QtGui.QMainWindow):
         self.oh.error(text)
 
     def openEnvironment(self):
-        fname = QtGui.QFileDialog.getOpenFileName(self, "Open Environment")
-        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
+        fname = getOpenFileNameAsAstring(self, "Open Environment")
         if len(fname)>0 and fname!=self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
@@ -150,8 +159,7 @@ class MainWindow(QtGui.QMainWindow):
                         self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
 
     def openRobot(self):
-        fname = QtGui.QFileDialog.getOpenFileName(self, "Open Robot")
-        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
+        fname = getOpenFileNameAsAstring(self, "Open Robot")
         if len(fname)>0 and fname!=self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
@@ -169,8 +177,7 @@ class MainWindow(QtGui.QMainWindow):
             self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
 
     def openConfig(self):
-        fname = QtGui.QFileDialog.getOpenFileName(self, "Open Problem Configuration", "", "*.cfg")
-        fname = str(fname[0]) if isinstance(fname, tuple) else str(fname)
+        fname = getOpenFileNameAsAstring(self, "Open Problem Configuration", "", "*.cfg")
         if len(fname)>0:
             self.msgInform("Loading " + fname)
             config = ConfigParser.ConfigParser()
@@ -242,7 +249,7 @@ class MainWindow(QtGui.QMainWindow):
                     self.mainWidget.glViewer.setBounds(bounds)
 
     def saveConfig(self):
-        fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Problem Configuration', 'config.cfg'))
+        fname = getSaveFileNameAsAstring(self, 'Save Problem Configuration', 'config.cfg')
         if len(fname)>0:
             config = ConfigParser.ConfigParser()
             config.add_section("problem")
@@ -316,7 +323,7 @@ class MainWindow(QtGui.QMainWindow):
         (R.x, R.y, R.z, R.w) = (a[3]*nrm, a[4]*nrm, a[5]*nrm, a[6]*nrm)
         return st
     def openPath(self):
-        fname = str(QtGui.QFileDialog.getOpenFileName(self, "Open Path"))
+        fname = getOpenFileNameAsAstring(self, "Open Path")
         if len(fname)>0:
             path = []
             for line in open(fname,'r').readlines():
@@ -345,15 +352,14 @@ class MainWindow(QtGui.QMainWindow):
 
     def savePath(self):
         if self.path:
-            fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Path', 'path.txt'))
+            fname = getSaveFileNameAsAstring(self, 'Save Path', 'path.txt')
             if len(fname)>0:
                 ind = range(7 if self.is3D else 3)
                 pathstr = '\n'.join([ ' '.join([str(s[i]) for i in ind]) for s in self.path])
                 open(fname,'w').write(pathstr)
 
     def savePlannerData(self):
-        fname = str(QtGui.QFileDialog.getSaveFileName(self, 'Save Roadmap/Tree',
-            'plannerData.graphml'))
+        fname = getSaveFileNameAsAstring(self, 'Save Roadmap/Tree', 'plannerData.graphml')
         if len(fname)>0:
             pd = ob.PlannerData(self.omplSetup.getSpaceInformation())
             self.omplSetup.getPlannerData(pd)
