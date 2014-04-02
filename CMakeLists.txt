@@ -145,6 +145,9 @@ endif()
 include(UseFCL)
 include(UseAssimp)
 
+# pthread is sometimes needed, depending on OS / compiler
+find_package(Threads QUIET)
+
 enable_testing()
 
 include_directories(
