@@ -6,8 +6,8 @@
 
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="btn btn-primary btn-small">TGZ</a>
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.zip" class="btn btn-primary btn-small">ZIP</a><br><br>
-  [Older releases](https://bitbucket.org/ompl/ompl/downloads). See the [release notes](releaseNotes.html) for a brief a description of changes for each release.
 
+  OMPL.app is also available through the OS X MacPorts package manager (type “sudo port install ompl +app”).
 
 - __OMPL__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
 
@@ -15,7 +15,17 @@
 
   <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@OMPL_VERSION@-Source.tar.gz" class="btn btn-primary btn-small">TGZ</a>
   <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@OMPL_VERSION@-Source.zip" class="btn btn-primary btn-small">ZIP</a><br><br>
-  [Older releases](https://bitbucket.org/ompl/ompl/downloads). See the [release notes](core/releaseNotes.html) for a brief a description of changes for each release.
+
+  OMPL is also available through through several package managers:
+  - [Debian](https://packages.debian.org/sid/libompl-dev), 
+  - [Ubuntu (14.04 and higher)](http://packages.ubuntu.com/trusty/libompl-dev),
+  - [Fedora](https://apps.fedoraproject.org/packages/ompl),
+  - [MacPorts](https://www.macports.org), and
+  - [Homebrew](http://brew.sh).
+  .
+  Note that these package managers may not always have the latest release.
+
+- [Older releases](https://bitbucket.org/ompl/ompl/downloads). See the [release notes](core/releaseNotes.html) for a brief a description of changes for each release.
 
 
 # Installing
