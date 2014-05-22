@@ -25,3 +25,6 @@ if(DOXYGEN)
         DEPENDS doc
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endif(DOXYGEN)
+
+install(FILES man/ompl_benchmark.1 man/ompl_app.1
+    DESTINATION man/man1 COMPONENT omplapp)

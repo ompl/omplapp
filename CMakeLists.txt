@@ -217,6 +217,7 @@ if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
 endif()
 
 
+add_subdirectory(ompl/doc)
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/src)
 add_subdirectory(ompl/tests)

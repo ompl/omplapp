@@ -2,8 +2,8 @@ include(FindPackageHandleStandardArgs)
 
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
-    pkg_check_modules(CCD ccd>=1.4)
-    pkg_check_modules(FCL fcl>=0.3.0)
+    pkg_check_modules(CCD ccd>=2.0)
+    pkg_check_modules(FCL fcl>=0.3.1)
 endif()
 
 # Check for FCL and CCD installation, otherwise download them.
@@ -15,8 +15,8 @@ if(NOT (CCD_FOUND AND CCD_LIBRARIES AND CCD_INCLUDE_DIRS))
     # download and build ccd
     ExternalProject_Add (ccd
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://libccd.danfis.cz/files/libccd-1.5.tar.gz"
-        URL_MD5 "461a8d57a7899074e197a8f0c05ed38e"
+        URL "http://libccd.danfis.cz/files/libccd-2.0.tar.gz"
+        URL_MD5 "919415277e3baa1d157e713c0b597ab0"
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC")
@@ -43,8 +43,8 @@ if(NOT (FCL_FOUND AND FCL_LIBRARIES AND FCL_INCLUDE_DIRS))
     # download and build FCL
     ExternalProject_Add(fcl
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.3.0.zip"
-        URL_MD5 "98594f625eeebf3739aaa65c12e795c0"
+        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.3.1.zip"
+        URL_MD5 "3b36420e54998c674b8dba3a5bbaf3f6"
         CMAKE_COMMAND env
         CMAKE_ARGS
             "PKG_CONFIG_PATH=${CCD_LIBDIR}/pkgconfig"

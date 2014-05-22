@@ -1,0 +1,21 @@
+.TH OMPL_BENCHMARK 1
+.SH NAME
+ompl_benchmark \- benchmark a motion planning problem with ompl planners
+.SH SYNOPSIS
+.B ompl_benchmark problem.cfg
+.SH DESCRIPTION
+.BR ompl_benchmark
+is a program that parses a YAML configuration file that
+specifies a motion planning problem, a list of planner configurations, and
+some general benchmark
+parameters. The program repeatedly tries to solve the motion planning problem
+with each of the planners. It collects various performance metrics which are
+saved in a log file. The resulting log file can be processed by
+.BR ompl_benchmark_statistics(1)
+to create an SQL database and a PDF containing a series of plots that
+aggregate the measurements. The YAML configuration files can also be read by
+the
+.BR ompl_app
+GUI, but the GUI only reads the definition of the motion planning problem.
+.SH SEE ALSO
+.B ompl_benchmark_statistics(1), ompl_app(1)

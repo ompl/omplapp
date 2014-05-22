@@ -1,5 +1,5 @@
 Steps to release a new version:
-* update release notes (releaseNotes.dox for both ompl and omplapp; put date, features)
+* update release notes (releaseNotes.md for both ompl and omplapp; put date, features)
 * update version in ompl/CMakeModules/OMPLVersion.cmake
     - also increment ABI version if needed (if previously existing API has changed)
 * hg pull -u in omplapp and ompl
@@ -10,6 +10,8 @@ Steps to release a new version:
 * run ompl_app.py and solve a test problem
 * make install
 * make package_source
+* on OS X type this command to create new tar ball without annoying resource forks:
+  tar czf omplapp-x.y.z-Source.tar.gz -C _CPack_Packages/Darwin-Source/TGZ omplapp-x.y.z-Source
 * upload to bitbucket.org
 * make website for both omplapp and ompl (to update ompl-beta.kavrakilab.org)
 * change "BRANCH=trunk" below to "BRANCH=release-x.y" (no patch level) and do make website for both omplapp and ompl. Undo these changes afterwards (do not commit)

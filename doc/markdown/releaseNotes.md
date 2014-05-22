@@ -1,6 +1,16 @@
 # Release Notes
 
 
+# OMPL.app 0.14.2 (May ??, 2014)
+
+- Changed the [benchmark database schema](\ref benchmark_database) to make it easier to create your own plots.
+- Real-valued state components are now also stored when exporting PlannerData objects in [GraphML](http://graphml.graphdrawing.org) format.
+- Bug fixes.
+- Documentation fixes.
+- New menu option in the OMPL.app GUI to save the roadmap/tree created by a planner in GraphML format.
+- Update FCL bindings to be compatible with FCL 0.3.0.
+
+
 # OMPL.app 0.14.1 (January 23, 2014)
 
 - Update PlannerData to use new cost infrastructure.

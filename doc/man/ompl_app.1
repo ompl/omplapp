@@ -1,0 +1,16 @@
+.TH OMPL_APP 1
+.SH NAME
+ompl_app \- GUI for solving simple motion planning problems
+.SH SYNOPSIS
+.B ompl_app
+.SH DESCRIPTION
+.BR ompl_app
+is a GUI that allows a user to (1) define a motion planning
+problem, (2) specify a planning algorithm and its parameters to solve the
+problem, and (3) visualize the solution. A motion planning problem is defined
+by specifying a robot type (free-flying rigid body in 2D or 3D, a car-like
+robot, etc.), a mesh representing the environment, another mesh representing
+the robot, and start/goal states for the robot. Almost all planners in ompl
+and all their corresponding parameters are accessible through the GUI.
+.SH SEE ALSO
+.BR ompl_benchmark(1)
