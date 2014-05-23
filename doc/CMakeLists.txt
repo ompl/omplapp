@@ -27,4 +27,4 @@ if(DOXYGEN)
 endif(DOXYGEN)
 
 install(FILES man/ompl_benchmark.1 man/ompl_app.1
-    DESTINATION man/man1 COMPONENT omplapp)
+    DESTINATION share/man/man1 COMPONENT omplapp)
