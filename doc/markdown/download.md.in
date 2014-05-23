@@ -25,9 +25,24 @@
   .
   Note that these package managers may not always have the latest release.
 
+- [Installation instructions.](installation.html)
 - [Older releases](https://bitbucket.org/ompl/ompl/downloads). See the [release notes](core/releaseNotes.html) for a brief a description of changes for each release.
 
 
-# Installing
+# Repositories
 
-- [Installation instructions](installation.html).
+- The [latest source](https://bitbucket.org/ompl/omplapp/src) is available via Mercurial or Git. The OMPL.app repository contains a *private* OMPL repository as a subrepository. Since you do not have access to this private clone, you need to use these slightly convoluted steps to get a clone of the OMPL.app repository:
+
+      hg clone https://bitbucket.org/ompl/omplapp
+      cd omplapp
+      rm -r ompl
+      hg clone https://bitbucket.org/ompl/ompl
+      hg up
+
+  or
+
+      git clone https://github.com/ompl/omplapp.git
+      cd omplapp
+      git clone https://github.com/ompl/ompl.git
+
+- [Installation instructions](installation.html) are the same as for a release.
