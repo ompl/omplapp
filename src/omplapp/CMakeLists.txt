@@ -30,7 +30,7 @@ else(WIN32)
 endif(WIN32)
 
 install(TARGETS ompl_app
-    DESTINATION lib
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT omplapp)
 if(NOT MSVC)
     get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
