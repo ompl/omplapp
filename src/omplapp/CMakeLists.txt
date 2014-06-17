@@ -33,9 +33,8 @@ install(TARGETS ompl_app
     DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT omplapp)
 if(NOT MSVC)
-    get_target_property(OMPLAPP_LIBRARY_LOC ompl_app LOCATION)
     add_custom_command(TARGET ompl_app POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy "${OMPLAPP_LIBRARY_LOC}"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:ompl_app>"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../ompl/py-bindings/ompl/app/libompl_app${CMAKE_SHARED_LIBRARY_SUFFIX}"
         WORKING_DIRECTORY "${LIBRARY_OUTPUT_PATH}")
 endif(NOT MSVC)
