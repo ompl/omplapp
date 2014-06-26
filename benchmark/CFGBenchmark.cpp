@@ -55,6 +55,7 @@
 #include <ompl/geometric/planners/prm/SPARStwo.h>
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
+#include <ompl/geometric/planners/cforest/CForest.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
@@ -102,6 +103,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
         p = new ompl::geometric::STRIDE(si);
     else if (name == "pdst")
         p = new ompl::geometric::PDST(si);
+    else if (name == "cforest")
+        p = new ompl::geometric::CForest(si);
     else
         std::cerr << "Unknown planner: " << name << std::endl;
 

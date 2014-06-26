@@ -51,7 +51,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
         "kpiece", "bkpiece", "lbkpiece",
         "est", "sbl", "prm", "rrt",
         "stride", "pdst",
-        "rrtstar", "prmstar", "spars", "spars2", "lbtrrt", "trrt"
+        "rrtstar", "prmstar", "spars", "spars2", "lbtrrt", "trrt",
+        "cforest"
     };
 
     std::ifstream cfg(filename);
