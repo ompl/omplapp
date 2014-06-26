@@ -1,4 +1,4 @@
-if (OMPL_BUILD_DEMOS)
+if (OMPLAPP_BUILD_DEMOS)
     set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app)
 
     macro(add_omplapp_demo demo_name)
@@ -6,6 +6,7 @@ if (OMPL_BUILD_DEMOS)
       target_link_libraries(${demo_name} ${OMPLAPP_DEMO_LIBRARIES})
     endmacro(add_omplapp_demo)
 
+    add_omplapp_demo(demo_AlphaCForest SE3RigidBodyPlanning/alpha15_CForest.cpp)
     add_omplapp_demo(demo_SE3RigidBodyPlanningBenchmark SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
     add_omplapp_demo(demo_SE3RigidBodyPlanning SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
     add_omplapp_demo(demo_SE3RigidBodyPlanningWithOptimization SE3RigidBodyPlanning/SE3RigidBodyPlanningWithOptimization.cpp)
@@ -30,7 +31,7 @@ if (OMPL_BUILD_DEMOS)
         add_executable(demo_OpenDEPlanning ${OpenDEPlanning_SRC})
         target_link_libraries(demo_OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${OPENDE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
     endif()
-endif(OMPL_BUILD_DEMOS)
+endif(OMPLAPP_BUILD_DEMOS)
 
 file(GLOB_RECURSE OMPLAPP_DEMO_FILES "*/*")
 install(FILES ${OMPLAPP_DEMO_FILES}
