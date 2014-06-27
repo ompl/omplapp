@@ -12,5 +12,6 @@
 
 from os.path import abspath, dirname
 from ompl import dll_loader, geometric, control
+dll_loader('ompl_app_base', dirname(abspath(__file__)))
 dll_loader('ompl_app', dirname(abspath(__file__)))
 from ompl.app._app import *
