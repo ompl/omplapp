@@ -230,7 +230,9 @@ add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(benchmark)
+add_subdirectory(regression_tests)
 add_subdirectory(py-bindings)
+
 install(DIRECTORY resources
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
     COMPONENT omplapp
