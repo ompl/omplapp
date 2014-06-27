@@ -1,5 +1,5 @@
 if (OMPL_BUILD_DEMOS)
-    set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app)
+    set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app_base)
 
     macro(add_omplapp_demo demo_name)
       add_executable(${ARGV})
