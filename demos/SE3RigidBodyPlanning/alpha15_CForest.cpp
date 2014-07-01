@@ -8,7 +8,7 @@
 *
 *********************************************************************/
 
-/* Author: Javier V. Gomez, Ioan Sucan */
+/* Author: Javier V. Gomez */
 
 #include <omplapp/apps/SE3RigidBodyPlanning.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
@@ -50,10 +50,19 @@ int main()
     // setting collision checking resolution to 1% of the space extent
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
 
+    // setting bounds so it is the same as for alpha 1.5 cfg problem.
+    base::RealVectorBounds bounds(3);
+    bounds.setLow(0, -281.64);
+    bounds.setLow(1, -119.64);
+    bounds.setLow(2, -176.86);
+    bounds.setHigh(0, 189.05);
+    bounds.setHigh(1, 189.18);
+    bounds.setHigh(2, 174.86);
+    setup.getStateSpace()->as<ompl::base::SE3StateSpace>()->setBounds(bounds);
+
     // make sure the planners run until the time limit, and get the best possible solution
     setup.getProblemDefinition()->setOptimizationObjective(
         base::OptimizationObjectivePtr(new base::PathLengthOptimizationObjective(setup.getSpaceInformation())));
-
 
     // run with RRT*
     std::cout << "RRT*" << std::endl;
@@ -62,7 +71,7 @@ int main()
     double length = -1.0;
     for (double time = 1.0 ; time > 0.0 ; time = time + 10.0)
     {
-        std::cout << "Computing up to " << time << std::endl;
+        std::cout << "Computing up to " << time << " seconds" << std::endl;
         setup.clear();
         length = -1.0;
         // try to solve the problem
@@ -81,7 +90,7 @@ int main()
     setup.setup();
     for (double time = 1.0 ; time > 0.0 ; time = time + 10.0)
     {
-        std::cout << "Computing up to " << time << std::endl;
+        std::cout << "Computing up to " << time << " seconds" << std::endl;
         setup.clear();
         length = -1.0;
         // try to solve the problem
