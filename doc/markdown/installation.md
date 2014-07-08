@@ -19,9 +19,9 @@ Below are more detailed installation instructions for [Linux](#install_linux), [
 \note If you are using [ROS], please see [MoveIt!][moveit].
 
 <div class="btn-group">
-  <a class="btn" href="#install_linux">Linux</a>
-  <a class="btn" href="#install_osx">OS X</a>
-  <a class="btn" href="#install_windows">Windows</a>
+  <a class="btn btn-default" href="#install_linux">Linux</a>
+  <a class="btn btn-default" href="#install_osx">OS X</a>
+  <a class="btn btn-default" href="#install_windows">Windows</a>
 </div>
 
 
