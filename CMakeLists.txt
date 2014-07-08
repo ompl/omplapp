@@ -219,7 +219,7 @@ if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
 endif()
 
 # extra menu option for OMPLapp documentation:
-set(OMPL_GUI "<li><a href=\"gui.html\">OMPL.app GUI</a></li>")
+set(OMPLAPP_GUI "<li><a href=\"gui.html\">OMPL.app GUI</a></li>")
 add_subdirectory(ompl/doc)
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/src)
