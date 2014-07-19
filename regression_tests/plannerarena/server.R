@@ -184,6 +184,8 @@ shinyServer(function(input, output, session) {
         if (input$plotType == 3) {
             if (is.null(input$version) | is.null(input$problem) | is.null(input$progress))
                 return(NULL)
+            if (input$progress == 0) # no progress data available in database
+                return(NULL)
             attr <- gsub(" ", "_", input$progress)
             query <- sprintf("SELECT plannerConfigs.name, progress.time, progress.%s FROM progress INNER JOIN runs ON progress.runid = runs.id INNER JOIN plannerConfigs ON plannerConfigs.id = runs.plannerid INNER JOIN experiments ON experiments.id = runs.experimentid WHERE experiments.name=\"%s\" AND experiments.version=\"%s\" AND (%s);",
                 attr,
