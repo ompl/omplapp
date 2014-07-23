@@ -1,3 +1,4 @@
+.registered
 doc/css
 doc/fonts
 doc/html
@@ -22,4 +23,6 @@ doc/images/path-length.gif
 doc/images/pr2.jpg
 doc/images/pr2.png
 doc/js
+doc/markdown/download.md$
 src/omplapp/config.h$
+py-bindings/bindings
