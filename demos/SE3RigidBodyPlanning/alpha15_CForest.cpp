@@ -12,9 +12,8 @@
 
 #include <omplapp/apps/SE3RigidBodyPlanning.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <ompl/geometric/planners/cforest/CForest.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
@@ -86,6 +85,7 @@ int main()
      // run with CForest, 2 threads of RRTstar.
     std::cout << "CForest" << std::endl;
     setup.clear();
+    base::PlannerPtr plan (new geometric::CForest(setup.getSpaceInformation()));
     setup.setPlanner(base::PlannerPtr(new geometric::CForest(setup.getSpaceInformation())));
     setup.setup();
     for (double time = 1.0 ; time > 0.0 ; time = time + 10.0)
