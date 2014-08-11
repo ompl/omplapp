@@ -31,7 +31,7 @@ shinyServer(function(input, output, session) {
         )
     })
     output$versionSelect <- renderUI({
-        versions <- dbGetQuery(con(), "SELECT version FROM experiments")
+        versions <- dbGetQuery(con(), "SELECT DISTINCT version FROM experiments")
         if (input$plotType == 1)
             checkboxGroupInput("versions", label = h4("Selected versions"),
                 choices = paste(versions$version),
@@ -89,9 +89,15 @@ shinyServer(function(input, output, session) {
                     choices = c("Not available" = 0)
                 )
             else
-                selectInput("progress", label = h4("Progress attribute"),
-                    choices = progressAttrNames
+            {
+                list(
+                    selectInput("progress", label = h4("Progress attribute"),
+                        choices = progressAttrNames
+                    ),
+                    checkboxInput("progressShowMeasurements", label = h6("Show individual measurements")),
+                    sliderInput("progressOpacity", label = h6("Measurement opacity"), 0, 100, 50)
                 )
+            }
         }
     })
 
@@ -198,8 +204,11 @@ shinyServer(function(input, output, session) {
                 # labels
                 xlab('time (s)') +
                 ylab(input$progress) +
-                # semi-transparent points and a smooth interpolating curve
-                geom_point(alpha=I(1/2)) + geom_smooth()
+                # smooth interpolating curve
+                geom_smooth()
+            # optionally, add individual measurements as semi-transparent points
+            if (input$progressShowMeasurements)
+                p <- p + geom_point(alpha=I(input$progressOpacity / 100))
         }
         p
     })
