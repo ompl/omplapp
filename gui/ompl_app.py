@@ -15,14 +15,22 @@
 import sys
 from os.path import abspath, dirname, join
 from decimal import Decimal
+qt5 = False
 try:
     # try PyQt4 first
-    from PyQt4 import QtCore, QtGui, QtOpenGL
+    from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
     from PyQt4.QtCore import pyqtSignal as Signal
+    QtWidgets = QtGui
 except:
-    # if PyQt4 wasn't found, try PySide
-    from PySide import QtCore, QtGui, QtOpenGL
-    from PySide.QtCore import Signal
+    try:
+        from PyQt5 import QtWidgets, QtCore, QtGui, QtOpenGL
+        from PyQt5.QtCore import pyqtSignal as Signal
+        qt5 = True
+    except:
+        # if PyQt* wasn't found, try PySide
+        from PySide import QtCore, QtGui, QtOpenGL
+        from PySide.QtCore import Signal
+        QtWidgets = QtGui
 import OpenGL
 OpenGL.ERROR_CHECKING = False
 from OpenGL import GL, GLU
@@ -46,12 +54,12 @@ ompl.initializePlannerLists()
 
 # wrapper for API change in PyQt
 def getOpenFileNameAsAstring(qtwindow, title="", directory="", ffilter=""):
-    fname = QtGui.QFileDialog.getOpenFileName(qtwindow, title, directory, ffilter)
+    fname = QtWidgets.QFileDialog.getOpenFileName(qtwindow, title, directory, ffilter)
     return str(fname[0]) if isinstance(fname, tuple) else str(fname)
 
 # wrapper for API change in PyQt
 def getSaveFileNameAsAstring(qtwindow, title="", directory=""):
-    fname = QtGui.QFileDialog.getSaveFileName(qtwindow, title, directory)
+    fname = QtWidgets.QFileDialog.getSaveFileName(qtwindow, title, directory)
     return str(fname[0]) if isinstance(fname, tuple) else str(fname)
 
 class LogOutputHandler(OutputHandler):
@@ -95,9 +103,9 @@ class LogOutputHandler(OutputHandler):
         self.textEdit.append(text)
         self.textEdit.repaint()
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         self.createActions()
         self.createMenus()
         self.createRobotTypeList()
@@ -424,9 +432,9 @@ class MainWindow(QtGui.QMainWindow):
         planner = eval('%s(si)' % plannerParams[0])
         params = planner.params()
         for (param,widget) in plannerParams[1].items():
-            if isinstance(widget, QtGui.QCheckBox):
+            if isinstance(widget, QtWidgets.QCheckBox):
                 params[param].setValue('1' if widget.isChecked() else '0')
-            elif isinstance(widget, QtGui.QComboBox):
+            elif isinstance(widget, QtWidgets.QComboBox):
                 if self.isGeometric:
                     val = og.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
                 else:
@@ -531,41 +539,41 @@ class MainWindow(QtGui.QMainWindow):
         self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
 
     def createActions(self):
-        self.openEnvironmentAct = QtGui.QAction('Open &Environment', self,
+        self.openEnvironmentAct = QtWidgets.QAction('Open &Environment', self,
             shortcut='Ctrl+E', statusTip='Open an environment model',
             triggered=self.openEnvironment)
-        self.openRobotAct = QtGui.QAction('Open &Robot', self,
+        self.openRobotAct = QtWidgets.QAction('Open &Robot', self,
             shortcut='Ctrl+R', statusTip='Open a robot model',
             triggered=self.openRobot)
-        self.openConfigAct = QtGui.QAction('Open Problem &Configuration', self,
+        self.openConfigAct = QtWidgets.QAction('Open Problem &Configuration', self,
             shortcut='Ctrl+O', statusTip='Open a problem configuration (.cfg file)',
             triggered=self.openConfig)
-        self.saveConfigAct = QtGui.QAction('Save Problem Con&figuration', self,
+        self.saveConfigAct = QtWidgets.QAction('Save Problem Con&figuration', self,
             shortcut='Ctrl+S', statusTip='Save a problem configuration (.cfg file)',
             triggered=self.saveConfig)
-        self.openPathAct = QtGui.QAction('&Open Path', self,
+        self.openPathAct = QtWidgets.QAction('&Open Path', self,
             shortcut='Ctrl+Alt+O', statusTip='Open a path',
             triggered=self.openPath)
-        self.savePathAct = QtGui.QAction('Save &Path', self,
+        self.savePathAct = QtWidgets.QAction('Save &Path', self,
             shortcut='Ctrl+Alt+S', statusTip='Save a path',
             triggered=self.savePath)
-        self.savePlannerDataAct = QtGui.QAction('Save Roadmap/Tree', self,
+        self.savePlannerDataAct = QtWidgets.QAction('Save Roadmap/Tree', self,
             statusTip='Save the roadmap/tree that was created by "Solve"',
             triggered=self.savePlannerData)
-        self.exitAct = QtGui.QAction('E&xit', self, shortcut='Ctrl+Q',
+        self.exitAct = QtWidgets.QAction('E&xit', self, shortcut='Ctrl+Q',
             statusTip='Exit the application', triggered=self.close)
 
-        self.logWindowAct = QtGui.QAction('Log Window', self,
+        self.logWindowAct = QtWidgets.QAction('Log Window', self,
             shortcut='Ctrl+1', triggered=self.showLogWindow)
-        self.randMotionAct = QtGui.QAction('Random &Motion', self, shortcut='Ctrl+M', triggered=self.randMotion)
-        self.commandWindowAct = QtGui.QAction('Command Window', self,
+        self.randMotionAct = QtWidgets.QAction('Random &Motion', self, shortcut='Ctrl+M', triggered=self.randMotion)
+        self.commandWindowAct = QtWidgets.QAction('Command Window', self,
             shortcut='Ctrl+2', triggered=self.showCommandWindow)
 
-        self.omplWebAct = QtGui.QAction('OMPL Web Site', self,
+        self.omplWebAct = QtWidgets.QAction('OMPL Web Site', self,
             triggered=self.omplWebSite)
-        self.contactDevsAct = QtGui.QAction('Contact Developers', self,
+        self.contactDevsAct = QtWidgets.QAction('Contact Developers', self,
             triggered=self.contactDevs)
-        self.emailListAct = QtGui.QAction('Email OMPL Mailing List', self,
+        self.emailListAct = QtWidgets.QAction('Email OMPL Mailing List', self,
             triggered=self.emailList)
 
     def createMenus(self):
@@ -600,7 +608,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.robotTypes.append((c, name, apptype))
 
 
-class MainWidget(QtGui.QWidget):
+class MainWidget(QtWidgets.QWidget):
     def __init__(self, robotTypes, parent=None, flags=QtCore.Qt.WindowFlags(0)):
         super(MainWidget, self).__init__(parent, flags)
         self.glViewer = GLViewer()
@@ -608,13 +616,13 @@ class MainWidget(QtGui.QWidget):
         self.plannerWidget = PlannerWidget()
         self.boundsWidget = BoundsWidget()
         self.solveWidget = SolveWidget()
-        self.solveWidget.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed))
-        tabWidget = QtGui.QTabWidget()
+        self.solveWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed))
+        tabWidget = QtWidgets.QTabWidget()
         tabWidget.addTab(self.problemWidget, "Problem")
         tabWidget.addTab(self.plannerWidget, "Planner")
         tabWidget.addTab(self.boundsWidget, "Bounding box")
-        tabWidget.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed))
-        layout = QtGui.QGridLayout()
+        tabWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(self.glViewer, 0, 0, 2, 1)
         layout.addWidget(tabWidget, 0, 1)
         layout.addWidget(self.solveWidget, 2, 0, 1, 2)
@@ -625,18 +633,18 @@ class MainWidget(QtGui.QWidget):
         self.solveWidget.animateCheck.toggled.connect(self.glViewer.toggleAnimation)
         self.solveWidget.speedSlider.valueChanged.connect(self.glViewer.setSpeed)
 
-class LogWindow(QtGui.QWidget):
+class LogWindow(QtWidgets.QWidget):
     def __init__(self, parent=None, flags=QtCore.Qt.Tool):
         super(LogWindow, self).__init__(parent, flags)
         self.setWindowTitle('OMPL Log')
         self.resize(640, 320)
-        self.logView = QtGui.QTextEdit(self)
+        self.logView = QtWidgets.QTextEdit(self)
         self.logView.setReadOnly(True)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(self.logView, 0, 0)
         self.setLayout(layout)
 
-class CommandWindow(QtGui.QWidget):
+class CommandWindow(QtWidgets.QWidget):
     def __init__(self, parent=None, flags=QtCore.Qt.Tool):
         super(CommandWindow, self).__init__(parent, flags)
 
@@ -908,18 +916,21 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.lastPos = event.pos()
 
     def wheelEvent(self, event):
-        self.scale = self.scale * pow(2.0, -event.delta() / 240.0)
+        if qt5:
+            self.scale = self.scale * pow(2.0, -event.angleDelta().y() / 240.0)
+        else:
+            self.scale = self.scale * pow(2.0, -event.delta() / 240.0)
         self.lastPos = event.pos()
         self.updateGL()
 
-class ProblemWidget(QtGui.QWidget):
+class ProblemWidget(QtWidgets.QWidget):
     startChanged = Signal(list)
     goalChanged = Signal(list)
 
     def __init__(self, robotTypes):
         super(ProblemWidget, self).__init__()
-        robotTypeLabel =  QtGui.QLabel('Robot type')
-        self.robotTypeSelect = QtGui.QComboBox()
+        robotTypeLabel =  QtWidgets.QLabel('Robot type')
+        self.robotTypeSelect = QtWidgets.QComboBox()
         for robotType in robotTypes:
             self.robotTypeSelect.addItem(robotType[1])
         self.robotTypeSelect.setMaximumSize(200, 2000)
@@ -929,30 +940,30 @@ class ProblemWidget(QtGui.QWidget):
         self.startPose2D = Pose2DBox('Start pose')
         self.goalPose2D = Pose2DBox('Goal pose')
 
-        elevation2Dlabel = QtGui.QLabel('Elevation')
-        self.elevation2D = QtGui.QDoubleSpinBox()
+        elevation2Dlabel = QtWidgets.QLabel('Elevation')
+        self.elevation2D = QtWidgets.QDoubleSpinBox()
         self.elevation2D.setRange(-1000, 1000)
         self.elevation2D.setSingleStep(1)
 
-        startGoal3D = QtGui.QWidget()
-        layout = QtGui.QVBoxLayout()
+        startGoal3D = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.startPose3D)
         layout.addWidget(self.goalPose3D)
         startGoal3D.setLayout(layout)
 
-        startGoal2D = QtGui.QWidget()
-        layout = QtGui.QGridLayout()
+        startGoal2D = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(self.startPose2D, 0, 0, 1, 2)
         layout.addWidget(self.goalPose2D, 1, 0, 1 ,2)
         #layout.addWidget(elevation2Dlabel, 2, 0, QtCore.Qt.AlignRight)
         #layout.addWidget(self.elevation2D, 2, 1)
         startGoal2D.setLayout(layout)
 
-        self.poses = QtGui.QStackedWidget()
+        self.poses = QtWidgets.QStackedWidget()
         self.poses.addWidget(startGoal3D)
         self.poses.addWidget(startGoal2D)
 
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(robotTypeLabel, 0, 0)
         layout.addWidget(self.robotTypeSelect, 0, 1)
         layout.addWidget(self.poses, 1, 0, 1, 2)
@@ -990,37 +1001,37 @@ class ProblemWidget(QtGui.QWidget):
         state = [ 0, 0, self.goalPose2D.rot.value(), self.goalPose2D.posx.value(), self.goalPose2D.posy.value(), value ]
         self.goalChanged.emit(state)
 
-class Pose3DBox(QtGui.QGroupBox):
+class Pose3DBox(QtWidgets.QGroupBox):
     valueChanged = Signal(list)
 
     def __init__(self, title):
         super(Pose3DBox, self).__init__(title)
-        xlabel = QtGui.QLabel('X')
-        ylabel = QtGui.QLabel('Y')
-        zlabel = QtGui.QLabel('Z')
-        poslabel = QtGui.QLabel('Position')
-        rotlabel = QtGui.QLabel('Rotation')
+        xlabel = QtWidgets.QLabel('X')
+        ylabel = QtWidgets.QLabel('Y')
+        zlabel = QtWidgets.QLabel('Z')
+        poslabel = QtWidgets.QLabel('Position')
+        rotlabel = QtWidgets.QLabel('Rotation')
 
-        self.posx = QtGui.QDoubleSpinBox()
+        self.posx = QtWidgets.QDoubleSpinBox()
         self.posx.setRange(-1000, 1000)
         self.posx.setSingleStep(1)
-        self.posy = QtGui.QDoubleSpinBox()
+        self.posy = QtWidgets.QDoubleSpinBox()
         self.posy.setRange(-1000, 1000)
         self.posy.setSingleStep(1)
-        self.posz = QtGui.QDoubleSpinBox()
+        self.posz = QtWidgets.QDoubleSpinBox()
         self.posz.setRange(-1000, 1000)
         self.posz.setSingleStep(1)
-        self.rotx = QtGui.QDoubleSpinBox()
+        self.rotx = QtWidgets.QDoubleSpinBox()
         self.rotx.setRange(-360,360)
         self.rotx.setSingleStep(1)
-        self.roty = QtGui.QDoubleSpinBox()
+        self.roty = QtWidgets.QDoubleSpinBox()
         self.roty.setRange(-360,360)
         self.roty.setSingleStep(1)
-        self.rotz = QtGui.QDoubleSpinBox()
+        self.rotz = QtWidgets.QDoubleSpinBox()
         self.rotz.setRange(-360,360)
         self.rotz.setSingleStep(1)
 
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(poslabel, 0, 1, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
         layout.addWidget(rotlabel, 0, 2, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
         layout.addWidget(xlabel, 1, 0, QtCore.Qt.AlignRight)
@@ -1079,26 +1090,26 @@ class Pose3DBox(QtGui.QGroupBox):
         self.valueChanged.emit([self.rotx.value(), self.roty.value(), self.rotz.value(),
             self.posx.value(), self.posy.value(), self.posz.value() ])
 
-class Pose2DBox(QtGui.QGroupBox):
+class Pose2DBox(QtWidgets.QGroupBox):
     valueChanged = Signal(list)
 
     def __init__(self, title):
         super(Pose2DBox, self).__init__(title)
-        xlabel = QtGui.QLabel('X')
-        ylabel = QtGui.QLabel('Y')
-        rotlabel = QtGui.QLabel('Rotation')
+        xlabel = QtWidgets.QLabel('X')
+        ylabel = QtWidgets.QLabel('Y')
+        rotlabel = QtWidgets.QLabel('Rotation')
 
-        self.posx = QtGui.QDoubleSpinBox()
+        self.posx = QtWidgets.QDoubleSpinBox()
         self.posx.setRange(-1000, 1000)
         self.posx.setSingleStep(1)
-        self.posy = QtGui.QDoubleSpinBox()
+        self.posy = QtWidgets.QDoubleSpinBox()
         self.posy.setRange(-1000, 1000)
         self.posy.setSingleStep(1)
-        self.rot = QtGui.QDoubleSpinBox()
+        self.rot = QtWidgets.QDoubleSpinBox()
         self.rot.setRange(-360,360)
         self.rot.setSingleStep(1)
 
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(xlabel, 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(ylabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(rotlabel, 2, 0, QtCore.Qt.AlignRight)
@@ -1133,37 +1144,37 @@ class Pose2DBox(QtGui.QGroupBox):
     def poseChange(self, value):
         self.valueChanged.emit([0, 0, self.rot.value(), self.posx.value(), self.posy.value(), 0 ])
 
-class PlannerHelperWidget(QtGui.QGroupBox):
+class PlannerHelperWidget(QtWidgets.QGroupBox):
     def __init__(self, name, planners):
         super(PlannerHelperWidget, self).__init__(name)
         self.setFlat(True)
-        self.plannerSelect = QtGui.QComboBox()
-        self.stackedWidget = QtGui.QStackedWidget()
+        self.plannerSelect = QtWidgets.QComboBox()
+        self.stackedWidget = QtWidgets.QStackedWidget()
 
         self.plannerList = []
         for planner, params in sorted(planners.items()):
             displayName = planner.split('.')[-1]
             self.plannerSelect.addItem(displayName)
-            options = QtGui.QGroupBox('%s options' % displayName)
-            layout = QtGui.QGridLayout()
+            options = QtWidgets.QGroupBox('%s options' % displayName)
+            layout = QtWidgets.QGridLayout()
             i = 0
             paramDict = {}
             for (key,val) in sorted(params.items()):
-                label = QtGui.QLabel(val[0])
+                label = QtWidgets.QLabel(val[0])
                 if val[1] == ompl.PlanningAlgorithms.BOOL:
-                    widget = QtGui.QCheckBox()
+                    widget = QtWidgets.QCheckBox()
                     widget.setChecked(val[3])
                 elif val[1] == ompl.PlanningAlgorithms.ENUM:
-                    widget = QtGui.QComboBox()
+                    widget = QtWidgets.QComboBox()
                     widget.addItems(val[2])
                     widget.setCurrentIndex(val[3])
                 elif val[1] == ompl.PlanningAlgorithms.INT:
-                    widget = QtGui.QSpinBox()
+                    widget = QtWidgets.QSpinBox()
                     widget.setRange(val[2][0], val[2][2])
                     widget.setSingleStep(val[2][1])
                     widget.setValue(val[3])
                 elif val[1] == ompl.PlanningAlgorithms.DOUBLE:
-                    widget = QtGui.QDoubleSpinBox()
+                    widget = QtWidgets.QDoubleSpinBox()
                     numDecimals = max([-Decimal(str(v)).as_tuple().exponent for v in val[2]])
                     if numDecimals < 2:
                         numDecimals = 2
@@ -1184,7 +1195,7 @@ class PlannerHelperWidget(QtGui.QGroupBox):
             self.stackedWidget.addWidget(options)
             self.plannerList.append((planner,paramDict))
 
-        self.plannerSelect.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
+        self.plannerSelect.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
         self.plannerSelect.currentIndexChanged[int].connect(self.stackedWidget.setCurrentIndex)
 
 class GeometricPlannerWidget(PlannerHelperWidget):
@@ -1194,22 +1205,22 @@ class GeometricPlannerWidget(PlannerHelperWidget):
         # make KPIECE1 the default planner
         self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index('ompl.geometric.KPIECE1'))
 
-        timeLimitLabel = QtGui.QLabel('Time (sec.)')
-        self.timeLimit = QtGui.QDoubleSpinBox()
+        timeLimitLabel = QtWidgets.QLabel('Time (sec.)')
+        self.timeLimit = QtWidgets.QDoubleSpinBox()
         self.timeLimit.setRange(0, 10000)
         self.timeLimit.setSingleStep(1)
         self.timeLimit.setValue(10.0)
 
-        resolutionLabel = QtGui.QLabel('Collision checking\nresolution')
+        resolutionLabel = QtWidgets.QLabel('Collision checking\nresolution')
         resolutionLabel.setAlignment(QtCore.Qt.AlignRight)
-        self.resolution = QtGui.QDoubleSpinBox()
+        self.resolution = QtWidgets.QDoubleSpinBox()
         self.resolution.setRange(0.001, 1.0)
         self.resolution.setSingleStep(.002)
         self.resolution.setValue(0.010)
         self.resolution.setDecimals(3)
 
-        layout = QtGui.QGridLayout()
-        layout.addWidget(QtGui.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
+        layout = QtWidgets.QGridLayout()
+        layout.addWidget(QtWidgets.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.plannerSelect, 0, 1)
         layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.timeLimit, 1, 1)
@@ -1225,33 +1236,33 @@ class ControlPlannerWidget(PlannerHelperWidget):
         # make KPIECE1 the default planner
         self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index('ompl.control.KPIECE1'))
 
-        timeLimitLabel = QtGui.QLabel('Time (sec.)')
-        self.timeLimit = QtGui.QDoubleSpinBox()
+        timeLimitLabel = QtWidgets.QLabel('Time (sec.)')
+        self.timeLimit = QtWidgets.QDoubleSpinBox()
         self.timeLimit.setRange(0, 1000)
         self.timeLimit.setSingleStep(1)
         self.timeLimit.setValue(10.0)
 
-        propagationLabel = QtGui.QLabel('Propagation\nstep size')
+        propagationLabel = QtWidgets.QLabel('Propagation\nstep size')
         propagationLabel.setAlignment(QtCore.Qt.AlignRight)
-        self.propagation = QtGui.QDoubleSpinBox()
+        self.propagation = QtWidgets.QDoubleSpinBox()
         self.propagation.setRange(0.01, 1000.00)
         self.propagation.setSingleStep(.01)
         self.propagation.setValue(0.2)
         self.propagation.setDecimals(2)
 
-        durationLabel = QtGui.QLabel('Control duration\n(min/max #steps)')
+        durationLabel = QtWidgets.QLabel('Control duration\n(min/max #steps)')
         durationLabel.setAlignment(QtCore.Qt.AlignRight)
-        self.minControlDuration = QtGui.QSpinBox()
+        self.minControlDuration = QtWidgets.QSpinBox()
         self.minControlDuration.setRange(1, 1000)
         self.minControlDuration.setSingleStep(1)
         self.minControlDuration.setValue(1)
-        self.maxControlDuration = QtGui.QSpinBox()
+        self.maxControlDuration = QtWidgets.QSpinBox()
         self.maxControlDuration.setRange(1, 1000)
         self.maxControlDuration.setSingleStep(1)
         self.maxControlDuration.setValue(20)
 
-        layout = QtGui.QGridLayout()
-        layout.addWidget(QtGui.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
+        layout = QtWidgets.QGridLayout()
+        layout.addWidget(QtWidgets.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.plannerSelect, 0, 1, 1, 2)
         layout.addWidget(timeLimitLabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.timeLimit, 1, 1, 1, 2)
@@ -1263,7 +1274,7 @@ class ControlPlannerWidget(PlannerHelperWidget):
         layout.addWidget(self.stackedWidget, 4, 0, 1, 3)
         self.setLayout(layout)
 
-class PlannerWidget(QtGui.QStackedWidget):
+class PlannerWidget(QtWidgets.QStackedWidget):
     def __init__(self):
         super(PlannerWidget, self).__init__()
         self.geometricPlanning = GeometricPlannerWidget()
@@ -1272,38 +1283,38 @@ class PlannerWidget(QtGui.QStackedWidget):
         self.addWidget(self.controlPlanning)
 
 
-class BoundsWidget(QtGui.QWidget):
+class BoundsWidget(QtWidgets.QWidget):
     def __init__(self):
         super(BoundsWidget, self).__init__()
         self.bounds_high = BoundsBox('Upper bounds')
         self.bounds_low = BoundsBox('Lower bounds')
-        self.resetButton = QtGui.QPushButton('Reset')
-        layout = QtGui.QGridLayout()
+        self.resetButton = QtWidgets.QPushButton('Reset')
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(self.bounds_high, 0,0)
         layout.addWidget(self.bounds_low, 1,0)
         layout.addWidget(self.resetButton, 2,0, QtCore.Qt.AlignRight)
         self.setLayout(layout)
 
-class BoundsBox(QtGui.QGroupBox):
+class BoundsBox(QtWidgets.QGroupBox):
     valueChanged = Signal(list)
 
     def __init__(self, title):
         super(BoundsBox, self).__init__(title)
-        xlabel = QtGui.QLabel('X')
-        ylabel = QtGui.QLabel('Y')
-        zlabel = QtGui.QLabel('Z')
+        xlabel = QtWidgets.QLabel('X')
+        ylabel = QtWidgets.QLabel('Y')
+        zlabel = QtWidgets.QLabel('Z')
 
-        self.posx = QtGui.QDoubleSpinBox()
+        self.posx = QtWidgets.QDoubleSpinBox()
         self.posx.setRange(-1000, 1000)
         self.posx.setSingleStep(1)
-        self.posy = QtGui.QDoubleSpinBox()
+        self.posy = QtWidgets.QDoubleSpinBox()
         self.posy.setRange(-1000, 1000)
         self.posy.setSingleStep(1)
-        self.posz = QtGui.QDoubleSpinBox()
+        self.posz = QtWidgets.QDoubleSpinBox()
         self.posz.setRange(-1000, 1000)
         self.posz.setSingleStep(1)
 
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(xlabel, 1, 0, QtCore.Qt.AlignRight)
         layout.addWidget(ylabel, 2, 0, QtCore.Qt.AlignRight)
         layout.addWidget(zlabel, 3, 0, QtCore.Qt.AlignRight)
@@ -1324,28 +1335,28 @@ class BoundsBox(QtGui.QGroupBox):
     def boundsChange(self, value):
         self.valueChanged.emit([ self.posx.value(), self.posy.value(), self.posz.value() ])
 
-class SolveWidget(QtGui.QWidget):
+class SolveWidget(QtWidgets.QWidget):
     def __init__(self):
         super(SolveWidget, self).__init__()
-        self.solveButton = QtGui.QPushButton('Solve')
-        self.clearButton = QtGui.QPushButton('Clear')
-        explorationVizLabel = QtGui.QLabel('Show:')
-        self.explorationVizSelect = QtGui.QComboBox()
+        self.solveButton = QtWidgets.QPushButton('Solve')
+        self.clearButton = QtWidgets.QPushButton('Clear')
+        explorationVizLabel = QtWidgets.QLabel('Show:')
+        self.explorationVizSelect = QtWidgets.QComboBox()
         self.explorationVizSelect.addItem('none')
         self.explorationVizSelect.addItem('states')
         self.explorationVizSelect.addItem('states and edges')
-        self.animateCheck = QtGui.QCheckBox('Animate')
+        self.animateCheck = QtWidgets.QCheckBox('Animate')
         self.animateCheck.setChecked(True)
-        speedlabel = QtGui.QLabel('Speed:')
-        self.speedSlider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        self.speedSlider.setTickPosition(QtGui.QSlider.TicksBothSides)
+        speedlabel = QtWidgets.QLabel('Speed:')
+        self.speedSlider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.speedSlider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
         self.speedSlider.setTickInterval(1)
         self.speedSlider.setSingleStep(1)
         self.speedSlider.setValue(1)
         self.speedSlider.setMaximum(11)
         self.speedSlider.setMaximumSize(200, 30)
 
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(self.solveButton, 0, 0)
         layout.addWidget(self.clearButton, 0, 1)
         layout.addWidget(explorationVizLabel, 0, 2, QtCore.Qt.AlignRight)
@@ -1356,7 +1367,7 @@ class SolveWidget(QtGui.QWidget):
         self.setLayout(layout)
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
     window = MainWindow()
     window.show()

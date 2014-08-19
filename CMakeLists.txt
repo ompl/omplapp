@@ -84,7 +84,6 @@ else()
   # don't use chrono
   find_package(Boost COMPONENTS date_time thread serialization filesystem system program_options unit_test_framework REQUIRED)
 endif()
-find_package(Boost COMPONENTS python)
 
 if(${Boost_VERSION} LESS 105300)
     # Include bundled version of boost::odeint if it isn't installed natively
