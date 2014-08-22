@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Ioan Sucan, Mark Moll */
 
 #include "BenchmarkOptions.h"
 
@@ -51,7 +51,10 @@ bool BenchmarkOptions::readOptions(const char *filename)
         "kpiece", "bkpiece", "lbkpiece",
         "est", "sbl", "prm", "rrt",
         "stride", "pdst",
-        "rrtstar", "prmstar", "spars", "spars2", "lbtrrt", "trrt"
+        "rrtstar", "prmstar", "lazyprmstar",
+        "spars", "spars2", "lbtrrt", "trrt",
+        "fmt",
+        "syclopest", "sycloprrt"
     };
 
     std::ifstream cfg(filename);
@@ -66,6 +69,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
     ("problem.name", boost::program_options::value<std::string>(), "Experiment name")
     ("problem.world", boost::program_options::value<std::string>(), "CAD file describing the environment")
     ("problem.robot", boost::program_options::value<std::string>(), "CAD file describing the robot")
+    ("problem.objective", boost::program_options::value<std::string>()->default_value("length"), "Optimization objective")
+    ("problem.control", boost::program_options::value<std::string>(), "Type of control-based system")
     ("problem.start.x", boost::program_options::value<std::string>(), "Start position: x value")
     ("problem.start.y", boost::program_options::value<std::string>(), "Start position: y value")
     ("problem.start.z", boost::program_options::value<std::string>(), "Start position: z value")
@@ -80,7 +85,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
     ("problem.goal.axis.y", boost::program_options::value<std::string>(), "Goal position: rotation axis y value")
     ("problem.goal.axis.z", boost::program_options::value<std::string>(), "Goal position: rotation axis z value")
     ("problem.goal.theta", boost::program_options::value<std::string>(), "Goal position: theta value")
-    ("problem.threshold", boost::program_options::value<std::string>(), "Threshold to reach goal position")
+    ("problem.threshold", boost::program_options::value<std::string>()->default_value("1e-6"), "Threshold to reach goal position")
     ("problem.solution_length", boost::program_options::value<std::string>(), "Maximum desired solution length")
     ("problem.volume.min.x", boost::program_options::value<std::string>(), "Min X for bounding volume")
     ("problem.volume.min.y", boost::program_options::value<std::string>(), "Min Y for bounding volume")

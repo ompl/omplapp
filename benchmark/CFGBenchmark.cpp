@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Ioan Sucan, Mark Moll */
 
 #include "CFGBenchmark.h"
 
@@ -50,11 +50,24 @@
 #include <ompl/geometric/planners/est/EST.h>
 #include <ompl/geometric/planners/prm/PRM.h>
 #include <ompl/geometric/planners/prm/LazyPRM.h>
+#include <ompl/geometric/planners/prm/LazyPRMstar.h>
 #include <ompl/geometric/planners/prm/PRMstar.h>
 #include <ompl/geometric/planners/prm/SPARS.h>
 #include <ompl/geometric/planners/prm/SPARStwo.h>
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
+#include <ompl/geometric/planners/fmt/FMT.h>
+
+#include <ompl/control/planners/rrt/RRT.h>
+#include <ompl/control/planners/est/EST.h>
+#include <ompl/control/planners/kpiece/KPIECE1.h>
+#include <ompl/control/planners/pdst/PDST.h>
+#include <ompl/control/planners/syclop/SyclopRRT.h>
+#include <ompl/control/planners/syclop/SyclopEST.h>
+
+#include <ompl/base/objectives/MaximizeMinClearanceObjective.h>
+#include <ompl/base/objectives/MechanicalWorkoptimizationObjective.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
@@ -63,47 +76,91 @@
 
 #include <fstream>
 
+namespace {
+    boost::filesystem::path getAbsolutePath(const boost::filesystem::path& path, const boost::filesystem::path& prefix)
+    {
+        return (path.is_absolute()) ? path : (prefix / path);
+    }
+}
+
+std::string CFGBenchmark::getRobotMesh()
+{
+    return getAbsolutePath(
+        boost::filesystem::path(bo_.declared_options_["problem.robot"]), bo_.path_).string();
+}
+std::string CFGBenchmark::getEnvironmentMesh()
+{
+    return getAbsolutePath(
+        boost::filesystem::path(bo_.declared_options_["problem.world"]), bo_.path_).string();
+}
+
 ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt)
 {
+    const ompl::control::SpaceInformationPtr siC = boost::dynamic_pointer_cast<ompl::control::SpaceInformation>(si);
     ompl::base::Planner *p = NULL;
-    if (name == "rrt")
-        p = new ompl::geometric::RRT(si);
-    else if (name == "rrtconnect")
-        p = new ompl::geometric::RRTConnect(si);
-    else if (name == "lazyrrt")
-        p = new ompl::geometric::LazyRRT(si);
-    else if (name == "rrtstar")
-        p = new ompl::geometric::RRTstar(si);
-    else if (name == "lbtrrt")
-        p = new ompl::geometric::LBTRRT(si);
-    else if (name == "trrt")
-        p = new ompl::geometric::TRRT(si);
-    else if (name == "est")
-        p = new ompl::geometric::EST(si);
-    else if (name == "sbl")
-        p = new ompl::geometric::SBL(si);
-    else if (name == "kpiece")
-        p = new ompl::geometric::KPIECE1(si);
-    else if (name == "bkpiece")
-        p = new ompl::geometric::BKPIECE1(si);
-    else if (name == "lbkpiece")
-        p = new ompl::geometric::LBKPIECE1(si);
-    else if (name == "prm")
-        p = new ompl::geometric::PRM(si);
-    else if (name == "lazyprm")
-        p = new ompl::geometric::LazyPRM(si);
-    else if (name == "prmstar")
-        p = new ompl::geometric::PRMstar(si);
-    else if (name == "spars")
-        p = new ompl::geometric::SPARS(si);
-    else if (name == "spars2")
-        p = new ompl::geometric::SPARStwo(si);
-    else if (name == "stride")
-        p = new ompl::geometric::STRIDE(si);
-    else if (name == "pdst")
-        p = new ompl::geometric::PDST(si);
+
+    if (siC)
+    {
+        if (name == "rrt")
+            p = new ompl::control::RRT(siC);
+        else if (name == "est")
+            p = new ompl::control::EST(siC);
+        else if (name == "kpiece")
+            p = new ompl::control::KPIECE1(siC);
+        else if (name == "pdst")
+            p = new ompl::control::PDST(siC);
+        else if (name == "sycloprrt")
+            p = new ompl::control::SyclopRRT(siC, allocDecomposition());
+        else if (name == "syclopest")
+            p = new ompl::control::SyclopEST(siC, allocDecomposition());
+        else
+            std::cerr << "Unknown planner: " << name << std::endl;
+    }
     else
-        std::cerr << "Unknown planner: " << name << std::endl;
+    {
+        if (name == "rrt")
+            p = new ompl::geometric::RRT(si);
+        else if (name == "rrtconnect")
+            p = new ompl::geometric::RRTConnect(si);
+        else if (name == "lazyrrt")
+            p = new ompl::geometric::LazyRRT(si);
+        else if (name == "rrtstar")
+            p = new ompl::geometric::RRTstar(si);
+        else if (name == "lbtrrt")
+            p = new ompl::geometric::LBTRRT(si);
+        else if (name == "trrt")
+            p = new ompl::geometric::TRRT(si);
+        else if (name == "est")
+            p = new ompl::geometric::EST(si);
+        else if (name == "sbl")
+            p = new ompl::geometric::SBL(si);
+        else if (name == "kpiece")
+            p = new ompl::geometric::KPIECE1(si);
+        else if (name == "bkpiece")
+            p = new ompl::geometric::BKPIECE1(si);
+        else if (name == "lbkpiece")
+            p = new ompl::geometric::LBKPIECE1(si);
+        else if (name == "prm")
+            p = new ompl::geometric::PRM(si);
+        else if (name == "lazyprm")
+            p = new ompl::geometric::LazyPRM(si);
+        else if (name == "prmstar")
+            p = new ompl::geometric::LazyPRMstar(si);
+        else if (name == "lazyprmstar")
+            p = new ompl::geometric::PRMstar(si);
+        else if (name == "spars")
+            p = new ompl::geometric::SPARS(si);
+        else if (name == "spars2")
+            p = new ompl::geometric::SPARStwo(si);
+        else if (name == "stride")
+            p = new ompl::geometric::STRIDE(si);
+        else if (name == "pdst")
+            p = new ompl::geometric::PDST(si);
+        else if (name == "fmt")
+            p = new ompl::geometric::FMT(si);
+        else
+            std::cerr << "Unknown planner: " << name << std::endl;
+    }
 
     if (p)
     {
@@ -145,6 +202,19 @@ ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl
         return ompl::base::ValidStateSamplerPtr();
 }
 
+ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(const ompl::base::SpaceInformationPtr &si)
+{
+    std::string objective = bo_.declared_options_["problem.objective"];
+    if (objective.substr(0,6) == std::string("length"))
+        return ompl::base::OptimizationObjectivePtr(new ompl::base::PathLengthOptimizationObjective(si));
+    else if (objective.substr(0,17) == std::string("max_min_clearance"))
+        return ompl::base::OptimizationObjectivePtr(new ompl::base::MaximizeMinClearanceObjective(si));
+    else if (objective.substr(0,15) == std::string("mechanical_work"))
+        return ompl::base::OptimizationObjectivePtr(new ompl::base::MechanicalWorkOptimizationObjective(si));
+
+    return ompl::base::OptimizationObjectivePtr();
+}
+
 void CFGBenchmark::setupBenchmark(void)
 {
     std::map<std::string, std::vector<BenchmarkOptions::AllOptions> >::iterator it;
@@ -160,7 +230,7 @@ void CFGBenchmark::setupBenchmark(void)
             benchmark_->setPostRunEvent(boost::bind(&CFGBenchmark::saveAllPaths, this, _1, _2));
         else if (savePathArg.substr(0,8) == std::string("shortest")
             || savePathArg.substr(0,4) == std::string("best")) // starts with "shortest" or "best"
-            benchmark_->setPostRunEvent(boost::bind(&CFGBenchmark::saveShortestPath, this, _1, _2));
+            benchmark_->setPostRunEvent(boost::bind(&CFGBenchmark::saveBestPath, this, _1, _2));
     }
 }
 
@@ -174,8 +244,8 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
         planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
 
-    shortestPath_.reset();
-    shortestPathIndex_ = 0;
+    bestPath_.reset();
+    bestPathIndex_ = 0;
 }
 
 void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
@@ -188,28 +258,65 @@ void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::too
             + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
             + std::string(".path");
         std::ofstream pathfile(fname.c_str());
-        pdef->getSolutionPath()->print(pathfile);
+        ompl::base::PathPtr path = pdef->getSolutionPath();
+        ompl::geometric::PathGeometric* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(path.get());
+        if (geoPath)
+        {
+            geoPath->interpolate();
+            geoPath->printAsMatrix(pathfile);
+        }
+        else {
+            ompl::control::PathControl* controlPath = dynamic_cast<ompl::control::PathControl*>(path.get());
+            if (controlPath)
+            {
+                controlPath->interpolate();
+                controlPath->printAsMatrix(pathfile);
+            }
+            else
+                pdef->getSolutionPath()->print(pathfile);
+        }
     }
 }
-void CFGBenchmark::saveShortestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
+void CFGBenchmark::saveBestPath(const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties& /*run*/)
 {
     ompl::base::ProblemDefinitionPtr pdef = planner->getProblemDefinition();
     const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
     if (pdef->hasSolution() && !pdef->hasApproximateSolution())
     {
-        if (!shortestPath_ || pdef->getSolutionPath()->length() < shortestPath_->length())
+        const ompl::base::PathPtr &path = pdef->getSolutionPath();
+        const ompl::base::OptimizationObjectivePtr &opt = pdef->getOptimizationObjective();
+        ompl::base::Cost cost = path->cost(opt);
+        if (!bestPath_ || opt->isCostBetterThan(cost, bestPath_->cost(opt)))
         {
-            shortestPath_ = pdef->getSolutionPath();
-            shortestPathIndex_ = status.activeRun;
+            bestPath_ = path;
+            bestPathIndex_ = status.activeRun;
         }
     }
-    if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && shortestPath_)
+    if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && bestPath_)
     {
         std::string fname = benchmark_->getExperimentName() + std::string("_")
-                          + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(shortestPathIndex_)
+                          + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(bestPathIndex_)
                           + std::string(".path");
         std::ofstream pathfile(fname.c_str());
-        shortestPath_->print(pathfile);
+
+        ompl::geometric::PathGeometric* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(bestPath_.get());
+        if (geoPath)
+        {
+            geoPath->interpolate();
+            geoPath->printAsMatrix(pathfile);
+        }
+        else {
+            ompl::control::PathControl* controlPath = dynamic_cast<ompl::control::PathControl*>(bestPath_.get());
+            if (controlPath)
+            {
+                controlPath->interpolate();
+                controlPath->printAsMatrix(pathfile);
+            }
+            else
+                pdef->getSolutionPath()->print(pathfile);
+        }
+
+        bestPath_->print(pathfile);
     }
 }
 
