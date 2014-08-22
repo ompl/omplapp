@@ -122,6 +122,12 @@ namespace ompl
                 AppTypeSelector<T>::SimpleSetup::setup();
             }
 
+            control::DecompositionPtr allocDecomposition()
+            {
+                return ompl::app::allocDecomposition(AppTypeSelector<T>::SimpleSetup::getStateSpace(),
+                    mtype_, getGeometricComponentStateSpace());
+            }
+
         protected:
 
             virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const = 0;

@@ -11,6 +11,7 @@
 /* Author: Ioan Sucan */
 
 #include <ompl/base/ProblemDefinition.h>
+#include <ompl/control/planners/syclop/Decomposition.h>
 #include "omplapp/geometry/RigidBodyGeometry.h"
 
 namespace ompl
@@ -25,6 +26,10 @@ namespace ompl
 
         base::ProjectionEvaluatorPtr allocGeometricStateProjector(const base::StateSpacePtr &space, MotionModel mtype,
                                                                   const base::StateSpacePtr &gspace, const GeometricStateExtractor &se);
+
+        control::DecompositionPtr allocDecomposition(const base::StateSpacePtr &space, MotionModel mtype,
+            const base::StateSpacePtr &gspace);
+
     }
 
 }

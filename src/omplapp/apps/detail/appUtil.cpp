@@ -13,6 +13,7 @@
 #include "omplapp/apps/detail/appUtil.h"
 #include <ompl/base/spaces/SE2StateSpace.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
+#include <ompl/control/planners/Syclop/GridDecomposition.h>
 #include <limits>
 
 void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, double factor, double add,
@@ -161,6 +162,70 @@ namespace ompl
                 const base::SE3StateSpace *gm_;
                 GeometricStateExtractor    se_;
             };
+
+
+            // a decomposition is only needed for SyclopRRT and SyclopEST
+            class Decomposition2D : public ompl::control::GridDecomposition
+            {
+            public:
+                // 32 x 32 grid
+                Decomposition2D(const ompl::base::RealVectorBounds &bounds, const base::StateSpacePtr &space)
+                    : GridDecomposition(32, 2, bounds), space_(space), position_(space->getValueLocations()[0])
+                {
+                }
+                virtual void project(const ompl::base::State *s, std::vector<double> &coord) const
+                {
+                    const double* pos = space_->getValueAddressAtLocation(s, position_);
+                    coord.resize(2);
+                    coord[0] = pos[0];
+                    coord[1] = pos[1];
+                }
+
+                virtual void sampleFullState(const ompl::base::StateSamplerPtr &sampler,
+                const std::vector<double>& coord, ompl::base::State *s) const
+                {
+                    double* pos = space_->getValueAddressAtLocation(s, position_);
+                    sampler->sampleUniform(s);
+                    pos[0] = coord[0];
+                    pos[1] = coord[1];
+                }
+
+            protected:
+                const base::StateSpacePtr space_;
+                const ompl::base::StateSpace::ValueLocation& position_;
+            };
+
+            class Decomposition3D : public ompl::control::GridDecomposition
+            {
+            public:
+                // 16 x 16 x 16 grid
+                Decomposition3D(const ompl::base::RealVectorBounds &bounds, const base::StateSpacePtr &space)
+                    : GridDecomposition(16, 3, bounds), space_(space), position_(space->getValueLocations()[0])
+                {
+                }
+                virtual void project(const ompl::base::State *s, std::vector<double> &coord) const
+                {
+                    const double* pos = space_->getValueAddressAtLocation(s, position_);
+                    coord.resize(3);
+                    coord[0] = pos[0];
+                    coord[1] = pos[1];
+                    coord[2] = pos[2];
+                }
+
+                virtual void sampleFullState(const ompl::base::StateSamplerPtr &sampler,
+                const std::vector<double>& coord, ompl::base::State *s) const
+                {
+                    double* pos = space_->getValueAddressAtLocation(s, position_);
+                    sampler->sampleUniform(s);
+                    pos[0] = coord[0];
+                    pos[1] = coord[1];
+                    pos[2] = coord[2];
+                }
+
+            protected:
+                const base::StateSpacePtr space_;
+                const ompl::base::StateSpace::ValueLocation& position_;
+            };
         }
     }
 }
@@ -171,4 +236,15 @@ ompl::base::ProjectionEvaluatorPtr ompl::app::allocGeometricStateProjector(const
     if (mtype == Motion_2D)
         return base::ProjectionEvaluatorPtr(new detail::GeometricStateProjector2D(space, gspace, se));
     return base::ProjectionEvaluatorPtr(new detail::GeometricStateProjector3D(space, gspace, se));
+}
+
+ompl::control::DecompositionPtr ompl::app::allocDecomposition(const base::StateSpacePtr &space, MotionModel mtype,
+    const base::StateSpacePtr &gspace)
+{
+    // \TODO shouldn't this be done automatically?
+    const_cast<ompl::base::StateSpace*>(space.get())->computeLocations();
+
+    if (mtype == Motion_2D)
+        return control::DecompositionPtr(new detail::Decomposition2D(gspace->as<ompl::base::SE2StateSpace>()->getBounds(), space));
+    return control::DecompositionPtr(new detail::Decomposition3D(gspace->as<ompl::base::SE3StateSpace>()->getBounds(), space));
 }

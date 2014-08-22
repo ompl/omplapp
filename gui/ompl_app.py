@@ -429,7 +429,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             plannerid = self.mainWidget.plannerWidget.controlPlanning.plannerSelect.currentIndex()
             plannerParams = self.mainWidget.plannerWidget.controlPlanning.plannerList[plannerid]
-        planner = eval('%s(si)' % plannerParams[0])
+        if plannerParams[0].startswith('ompl.control.Syclop'):
+            decomposition = self.omplSetup.allocDecomposition()
+            planner = eval('%s(si,decomposition)' % plannerParams[0])
+        else:
+            planner = eval('%s(si)' % plannerParams[0])
         params = planner.params()
         for (param,widget) in plannerParams[1].items():
             if isinstance(widget, QtWidgets.QCheckBox):
