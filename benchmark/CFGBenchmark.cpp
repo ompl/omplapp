@@ -313,10 +313,8 @@ void CFGBenchmark::saveBestPath(const ompl::base::PlannerPtr &planner, ompl::too
                 controlPath->printAsMatrix(pathfile);
             }
             else
-                pdef->getSolutionPath()->print(pathfile);
+                bestPath_->print(pathfile);
         }
-
-        bestPath_->print(pathfile);
     }
 }
 
