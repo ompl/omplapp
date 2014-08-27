@@ -34,7 +34,7 @@
 
 /* Author: Ioan Sucan, Mark Moll */
 
-#include <ompl/control/planners/Syclop/GridDecomposition.h>
+#include <ompl/control/planners/syclop/GridDecomposition.h>
 #include "BenchmarkTypes.h"
 
 

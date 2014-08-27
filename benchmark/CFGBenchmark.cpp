@@ -66,7 +66,7 @@
 #include <ompl/control/planners/syclop/SyclopEST.h>
 
 #include <ompl/base/objectives/MaximizeMinClearanceObjective.h>
-#include <ompl/base/objectives/MechanicalWorkoptimizationObjective.h>
+#include <ompl/base/objectives/MechanicalWorkOptimizationObjective.h>
 #include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>

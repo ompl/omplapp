@@ -13,7 +13,7 @@
 #include "omplapp/apps/detail/appUtil.h"
 #include <ompl/base/spaces/SE2StateSpace.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
-#include <ompl/control/planners/Syclop/GridDecomposition.h>
+#include <ompl/control/planners/syclop/GridDecomposition.h>
 #include <limits>
 
 void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, double factor, double add,
