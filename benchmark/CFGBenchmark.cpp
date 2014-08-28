@@ -145,9 +145,9 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
         else if (name == "lazyprm")
             p = new ompl::geometric::LazyPRM(si);
         else if (name == "prmstar")
-            p = new ompl::geometric::LazyPRMstar(si);
-        else if (name == "lazyprmstar")
             p = new ompl::geometric::PRMstar(si);
+        else if (name == "lazyprmstar")
+            p = new ompl::geometric::LazyPRMstar(si);
         else if (name == "spars")
             p = new ompl::geometric::SPARS(si);
         else if (name == "spars2")
