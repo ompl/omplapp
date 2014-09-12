@@ -191,10 +191,28 @@ class MainWindow(QtWidgets.QMainWindow):
             config = ConfigParser.ConfigParser()
             config.readfp(open(fname, 'r'))
             if config.has_option("problem", "start.z"):
-                robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
+                if config.has_option("problem", "control"):
+                    ctype = config.get("problem", "control")
+                    if ctype == "blimp":
+                        robotType = [t[0] for t in self.robotTypes].index('GBlimpPlanning')
+                    elif ctype == "quadrotor":
+                        robotType = [t[0] for t in self.robotTypes].index('GQuadrotorPlanning')
+                    else:
+                        robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
+                else:
+                    robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
                 self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
             else:
-                robotType = [t[0] for t in self.robotTypes].index('GSE2RigidBodyPlanning')
+                if config.has_option("problem", "control"):
+                    ctype = config.get("problem", "control")
+                    if ctype == "kinematic_car":
+                        robotType = [t[0] for t in self.robotTypes].index('GKinematicCarPlanning')
+                    elif ctype == "dynamic_car":
+                        robotType = [t[0] for t in self.robotTypes].index('GDynamicCarPlanning')
+                    else:
+                        robotType = [t[0] for t in self.robotTypes].index('GSE2RigidBodyPlanning')
+                else:
+                    robotType = [t[0] for t in self.robotTypes].index('GSE2RigidBodyPlanning')
                 self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
             cfg_dir = dirname(fname)
             self.environmentFile = join(cfg_dir, config.get("problem", "world"))
@@ -255,6 +273,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     bounds.high[1] = config.getfloat("problem", "volume.max.y")
                     self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
                     self.mainWidget.glViewer.setBounds(bounds)
+            if config.has_option("problem", "objective"):
+                ind = self.mainWidget.problemWidget.objectiveSelect.findText(
+                    config.get("problem", "objective").replace("_", " "))
+                if ind != -1:
+                    self.mainWidget.problemWidget.objectiveSelect.setCurrentIndex(ind)
+                    if config.has_option("problem", "objective.threshold"):
+                        self.mainWidget.problemWidget.objectiveThreshold.setValue(
+                            config.getfloat("problem", "objective.threshold"))
 
     def saveConfig(self):
         fname = getSaveFileNameAsAstring(self, 'Save Problem Configuration', 'config.cfg')
@@ -265,6 +291,19 @@ class MainWindow(QtWidgets.QMainWindow):
             config.set("problem", "world", self.environmentFile)
             startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
             goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
+            config.set("problem", "objective",
+                self.mainWidget.problemWidget.objectiveSelect.currentText().replace(" ", "_"))
+            config.set("problem", "objective.threshold", str(self.mainWidget.problemWidget.objectiveThreshold.value()))
+            ctype = self.mainWidget.problemWidget.robotTypeSelect.currentText()
+            if not ctype.startswith('Rigid body planning'):
+                if ctype == "Blimp":
+                    config.set("problem", "control", "blimp")
+                elif ctype == "Quadrotor":
+                    config.set("problem", "control", "quadrotor")
+                elif ctype == "Dynamic car":
+                    config.set("problem", "control", "dynamic_car")
+                elif ctype == "Kinematic car":
+                    config.set("problem", "control", "kinematic_car")
             b = self.omplSetup.getGeometricComponentStateSpace().getBounds()
             if self.is3D:
                 config.set("problem", "start.x", str(startPose().getX()))
@@ -488,6 +527,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.omplSetup.getSpaceInformation().setMinMaxControlDuration(
                 self.mainWidget.plannerWidget.controlPlanning.minControlDuration.value(),
                 self.mainWidget.plannerWidget.controlPlanning.maxControlDuration.value())
+        self.omplSetup.setOptimizationObjective(
+            self.mainWidget.problemWidget.getObjective(
+                self.omplSetup.getSpaceInformation()))
         self.omplSetup.setup()
 
     def solve(self):
@@ -967,10 +1009,25 @@ class ProblemWidget(QtWidgets.QWidget):
         self.poses.addWidget(startGoal3D)
         self.poses.addWidget(startGoal2D)
 
+        self.objectives = {'length': 'PathLengthOptimizationObjective',
+            'max min clearance': 'MaximizeMinClearanceObjective',
+            'mechanical work': 'MechanicalWorkOptimizationObjective'
+        }
+        self.objectiveSelect = QtWidgets.QComboBox()
+        self.objectiveSelect.addItems(sorted(self.objectives.keys()))
+        self.objectiveThreshold = QtWidgets.QDoubleSpinBox()
+        self.objectiveThreshold.setRange(0, 10000)
+        self.objectiveThreshold.setSingleStep(1)
+        self.objectiveThreshold.setValue(10000)
+
         layout = QtWidgets.QGridLayout()
         layout.addWidget(robotTypeLabel, 0, 0)
         layout.addWidget(self.robotTypeSelect, 0, 1)
         layout.addWidget(self.poses, 1, 0, 1, 2)
+        layout.addWidget(QtWidgets.QLabel('Opt. objective'), 2, 0)
+        layout.addWidget(self.objectiveSelect, 2, 1)
+        layout.addWidget(QtWidgets.QLabel('Cost threshold'), 3, 0)
+        layout.addWidget(self.objectiveThreshold, 3, 1)
         self.setLayout(layout)
 
         self.startPose3D.valueChanged.connect(self.startPoseChange)
@@ -1004,6 +1061,10 @@ class ProblemWidget(QtWidgets.QWidget):
         self.startChanged.emit(state)
         state = [ 0, 0, self.goalPose2D.rot.value(), self.goalPose2D.posx.value(), self.goalPose2D.posy.value(), value ]
         self.goalChanged.emit(state)
+    def getObjective(self, si):
+        obj = eval('ob.%s(si)' % self.objectives[self.objectiveSelect.currentText()])
+        obj.setCostThreshold(self.objectiveThreshold.value())
+        return obj
 
 class Pose3DBox(QtWidgets.QGroupBox):
     valueChanged = Signal(list)

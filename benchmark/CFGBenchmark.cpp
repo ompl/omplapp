@@ -205,14 +205,19 @@ ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl
 ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(const ompl::base::SpaceInformationPtr &si)
 {
     std::string objective = bo_.declared_options_["problem.objective"];
-    if (objective.substr(0,6) == std::string("length"))
-        return ompl::base::OptimizationObjectivePtr(new ompl::base::PathLengthOptimizationObjective(si));
-    else if (objective.substr(0,17) == std::string("max_min_clearance"))
-        return ompl::base::OptimizationObjectivePtr(new ompl::base::MaximizeMinClearanceObjective(si));
-    else if (objective.substr(0,15) == std::string("mechanical_work"))
-        return ompl::base::OptimizationObjectivePtr(new ompl::base::MechanicalWorkOptimizationObjective(si));
+    std::string threshold = bo_.declared_options_["problem.objective.threshold"];
+    ompl::base::OptimizationObjectivePtr opt;
 
-    return ompl::base::OptimizationObjectivePtr();
+    if (objective.substr(0,6) == std::string("length"))
+        opt.reset(new ompl::base::PathLengthOptimizationObjective(si));
+    else if (objective.substr(0,17) == std::string("max_min_clearance"))
+        opt.reset(new ompl::base::MaximizeMinClearanceObjective(si));
+    else if (objective.substr(0,15) == std::string("mechanical_work"))
+        opt.reset(new ompl::base::MechanicalWorkOptimizationObjective(si));
+
+    if (threshold.length() > 0)
+        opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+    return opt;
 }
 
 void CFGBenchmark::setupBenchmark(void)

@@ -58,6 +58,8 @@ int main(int argc, char **argv)
                 b = new KinematicCarBenchmark(bo);
             else if (controlType->second == "dynamic_car")
                 b = new DynamicCarBenchmark(bo);
+            else
+                b = new SE2Benchmark(bo);
         }
         else if (bo.isSE3Problem())
         {
@@ -67,6 +69,8 @@ int main(int argc, char **argv)
                 b = new BlimpBenchmark(bo);
             else if (controlType->second == "quadrotor")
                 b = new QuadrotorBenchmark(bo);
+            else
+                b = new SE3Benchmark(bo);
         }
 
         if (b)
