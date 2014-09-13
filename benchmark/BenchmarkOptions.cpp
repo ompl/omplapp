@@ -54,7 +54,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
         "rrtstar", "prmstar", "lazyprmstar",
         "spars", "spars2", "lbtrrt", "trrt",
         "fmt",
-        "syclopest", "sycloprrt"
+        "syclopest", "sycloprrt",
+        "aps"
     };
 
     std::ifstream cfg(filename);

@@ -57,6 +57,7 @@
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
 #include <ompl/geometric/planners/fmt/FMT.h>
+#include <ompl/geometric/planners/AnytimePathShortening.h>
 
 #include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/est/EST.h>
@@ -158,6 +159,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = new ompl::geometric::PDST(si);
         else if (name == "fmt")
             p = new ompl::geometric::FMT(si);
+        else if (name == "aps")
+            p = new ompl::geometric::AnytimePathShortening(si);
         else
             std::cerr << "Unknown planner: " << name << std::endl;
     }
