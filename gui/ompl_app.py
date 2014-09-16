@@ -527,9 +527,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.omplSetup.getSpaceInformation().setMinMaxControlDuration(
                 self.mainWidget.plannerWidget.controlPlanning.minControlDuration.value(),
                 self.mainWidget.plannerWidget.controlPlanning.maxControlDuration.value())
-        self.omplSetup.setOptimizationObjective(
-            self.mainWidget.problemWidget.getObjective(
-                self.omplSetup.getSpaceInformation()))
+        self.omplSetup.setOptimizationObjectiveAndThreshold(
+            self.mainWidget.problemWidget.objectiveSelect.currentText(),
+            self.mainWidget.problemWidget.objectiveThreshold.value())
         self.omplSetup.setup()
 
     def solve(self):

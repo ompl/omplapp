@@ -27,8 +27,14 @@ namespace ompl
         base::ProjectionEvaluatorPtr allocGeometricStateProjector(const base::StateSpacePtr &space, MotionModel mtype,
                                                                   const base::StateSpacePtr &gspace, const GeometricStateExtractor &se);
 
+        /** \brief Allocate a default 2D/3D grid decomposition (depending on the MotionModel)
+            for use with the SyclopEST and SyclopRRT planners. */
         control::DecompositionPtr allocDecomposition(const base::StateSpacePtr &space, MotionModel mtype,
             const base::StateSpacePtr &gspace);
+
+        /** \brief Create an optimization objective. The objective name can be:
+            "length", "max min clearance", or "mechanical work" */
+        ompl::base::OptimizationObjectivePtr getOptimizationObjective(const base::SpaceInformationPtr &si, const std::string &objective, double threshold);
 
     }
 

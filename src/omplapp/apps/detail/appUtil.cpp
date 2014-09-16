@@ -14,6 +14,9 @@
 #include <ompl/base/spaces/SE2StateSpace.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/control/planners/syclop/GridDecomposition.h>
+#include <ompl/base/objectives/MaximizeMinClearanceObjective.h>
+#include <ompl/base/objectives/MechanicalWorkOptimizationObjective.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <limits>
 
 void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, double factor, double add,
@@ -247,4 +250,23 @@ ompl::control::DecompositionPtr ompl::app::allocDecomposition(const base::StateS
     if (mtype == Motion_2D)
         return control::DecompositionPtr(new detail::Decomposition2D(gspace->as<ompl::base::SE2StateSpace>()->getBounds(), space));
     return control::DecompositionPtr(new detail::Decomposition3D(gspace->as<ompl::base::SE3StateSpace>()->getBounds(), space));
+}
+
+ompl::base::OptimizationObjectivePtr ompl::app::getOptimizationObjective(
+    const base::SpaceInformationPtr &si, const std::string &objective, double threshold)
+{
+    base::OptimizationObjectivePtr obj;
+    if (objective == std::string("length"))
+        obj.reset(new base::PathLengthOptimizationObjective(si));
+    else if (objective == std::string("max min clearance"))
+        obj.reset(new base::MaximizeMinClearanceObjective(si));
+    else if (objective == std::string("mechanical work"))
+        obj.reset(new base::MechanicalWorkOptimizationObjective(si));
+    else
+    {
+        OMPL_WARN("ompl::app::getOptimizationObjective: unknown optimization objective called \"%s\"; using \"length\" instead", objective.c_str());
+        obj.reset(new base::PathLengthOptimizationObjective(si));
+    }
+    obj->setCostThreshold(base::Cost(threshold));
+    return obj;
 }
