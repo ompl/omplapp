@@ -227,16 +227,18 @@ void DynamicCarBenchmark::configure(void)
     setup_dynamicCar_->setRobotMesh(getRobotMesh());
     setup_dynamicCar_->setEnvironmentMesh(getEnvironmentMesh());
 
-    ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_dynamicCar_->getStateSpace());
-    ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_dynamicCar_->getStateSpace());
+    ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_dynamicCar_->getGeometricComponentStateSpace());
+    ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_dynamicCar_->getGeometricComponentStateSpace());
     if (!getStartState(start))
         return;
     if (!getGoalState(goal))
         return;
 
     double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
-    setup_dynamicCar_->setStartAndGoalStates(start, goal, t);
-    setBounds(setup_dynamicCar_->getStateSpace());
+    setup_dynamicCar_->setStartAndGoalStates(
+        setup_dynamicCar_->getFullStateFromGeometricComponent(start),
+        setup_dynamicCar_->getFullStateFromGeometricComponent(goal), t);
+    setBounds(setup_dynamicCar_->getGeometricComponentStateSpace());
     setup_dynamicCar_->setOptimizationObjective(getOptimizationObjective(setup_dynamicCar_->getSpaceInformation()));
     setup_dynamicCar_->setup();
     setup_dynamicCar_->print();
@@ -248,16 +250,18 @@ void BlimpBenchmark::configure(void)
     setup_blimp_.reset(new ompl::app::BlimpPlanning());
     setup_blimp_->setRobotMesh(getRobotMesh());
     setup_blimp_->setEnvironmentMesh(getEnvironmentMesh());
-    ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_blimp_->getStateSpace());
-    ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_blimp_->getStateSpace());
+    ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_blimp_->getGeometricComponentStateSpace());
+    ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_blimp_->getGeometricComponentStateSpace());
     if (!getStartState(start))
         return;
     if (!getGoalState(goal))
         return;
 
     double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
-    setup_blimp_->setStartAndGoalStates(start, goal, t);
-    setBounds(setup_blimp_->getStateSpace());
+    setup_blimp_->setStartAndGoalStates(
+        setup_blimp_->getFullStateFromGeometricComponent(start),
+        setup_blimp_->getFullStateFromGeometricComponent(goal), t);
+    setBounds(setup_blimp_->getGeometricComponentStateSpace());
     setup_blimp_->setOptimizationObjective(getOptimizationObjective(setup_blimp_->getSpaceInformation()));
     setup_blimp_->setup();
     setup_blimp_->print();
@@ -268,16 +272,18 @@ void QuadrotorBenchmark::configure(void)
     setup_quadrotor_.reset(new ompl::app::QuadrotorPlanning());
     setup_quadrotor_->setRobotMesh(getRobotMesh());
     setup_quadrotor_->setEnvironmentMesh(getEnvironmentMesh());
-    ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_quadrotor_->getStateSpace());
-    ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_quadrotor_->getStateSpace());
+    ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_quadrotor_->getGeometricComponentStateSpace());
+    ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_quadrotor_->getGeometricComponentStateSpace());
     if (!getStartState(start))
         return;
     if (!getGoalState(goal))
         return;
 
     double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
-    setup_quadrotor_->setStartAndGoalStates(start, goal, t);
-    setBounds(setup_quadrotor_->getStateSpace());
+    setup_quadrotor_->setStartAndGoalStates(
+        setup_quadrotor_->getFullStateFromGeometricComponent(start),
+        setup_quadrotor_->getFullStateFromGeometricComponent(goal), t);
+    setBounds(setup_quadrotor_->getGeometricComponentStateSpace());
     setup_quadrotor_->setOptimizationObjective(getOptimizationObjective(setup_quadrotor_->getSpaceInformation()));
     setup_quadrotor_->setup();
     setup_quadrotor_->print();

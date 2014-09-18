@@ -289,8 +289,8 @@ class MainWindow(QtWidgets.QMainWindow):
             config.add_section("problem")
             config.set("problem", "robot", self.robotFile)
             config.set("problem", "world", self.environmentFile)
-            startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
-            goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
+            startPose = self.mainWidget.problemWidget.getStartPose()
+            goalPose = self.mainWidget.problemWidget.getGoalPose()
             config.set("problem", "objective",
                 self.mainWidget.problemWidget.objectiveSelect.currentText().replace(" ", "_"))
             config.set("problem", "objective.threshold", str(self.mainWidget.problemWidget.objectiveThreshold.value()))
