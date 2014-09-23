@@ -58,6 +58,7 @@
 #include <ompl/geometric/planners/pdst/PDST.h>
 #include <ompl/geometric/planners/fmt/FMT.h>
 #include <ompl/geometric/planners/AnytimePathShortening.h>
+#include <ompl/geometric/planners/cforest/CForest.h>
 
 #include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/est/EST.h>
@@ -161,6 +162,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = new ompl::geometric::FMT(si);
         else if (name == "aps")
             p = new ompl::geometric::AnytimePathShortening(si);
+        else if (name == "cforest")
+            p = new ompl::geometric::CForest(si);
         else
             std::cerr << "Unknown planner: " << name << std::endl;
     }
@@ -218,7 +221,7 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
     else if (objective.substr(0,15) == std::string("mechanical_work"))
         opt.reset(new ompl::base::MechanicalWorkOptimizationObjective(si));
 
-    if (threshold.length() > 0)
+    if (opt && threshold.length() > 0)
         opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
     return opt;
 }

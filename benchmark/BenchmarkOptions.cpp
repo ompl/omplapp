@@ -55,7 +55,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
         "spars", "spars2", "lbtrrt", "trrt",
         "fmt",
         "syclopest", "sycloprrt",
-        "aps"
+        "aps", "cforest"
     };
 
     std::ifstream cfg(filename);
@@ -70,7 +70,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
     ("problem.name", boost::program_options::value<std::string>(), "Experiment name")
     ("problem.world", boost::program_options::value<std::string>(), "CAD file describing the environment")
     ("problem.robot", boost::program_options::value<std::string>(), "CAD file describing the robot")
-    ("problem.objective", boost::program_options::value<std::string>()->default_value("length"), "Optimization objective")
+    ("problem.objective", boost::program_options::value<std::string>(), "Optimization objective")
     ("problem.objective.threshold", boost::program_options::value<std::string>(), "Threshold to achieve optimization objective")
     ("problem.control", boost::program_options::value<std::string>(), "Type of control-based system")
     ("problem.start.x", boost::program_options::value<std::string>(), "Start position: x value")
