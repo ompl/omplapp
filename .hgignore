@@ -22,6 +22,10 @@ doc/images/ompl.svg
 doc/images/path-length.gif
 doc/images/pr2.jpg
 doc/images/pr2.png
+doc/images/cforest.png
+doc/images/prunevsnoprune.png
+doc/images/sharedpaths.png
+doc/images/threadscforest.png
 doc/js
 doc/markdown/download.md$
 src/omplapp/config.h$
