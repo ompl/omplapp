@@ -84,7 +84,6 @@ else()
   # don't use chrono
   find_package(Boost COMPONENTS date_time thread serialization filesystem system program_options unit_test_framework REQUIRED)
 endif()
-find_package(Boost COMPONENTS python)
 
 if(${Boost_VERSION} LESS 105300)
     # Include bundled version of boost::odeint if it isn't installed natively
@@ -115,10 +114,12 @@ find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
 find_package(Python)
+find_package(Boost COMPONENTS python QUIET)
 find_python_module(PyQt4 QUIET)
+find_python_module(PyQt5 QUIET)
 find_python_module(PySide QUIET)
-if(NOT PY_PYQT4 AND NOT PY_PYSIDE)
-    message(WARNING "Either PyQt4 or PySide needs to be installed to use the GUI.")
+if(NOT (PY_PYQT4 OR PY_PYQT5 OR PY_PYSIDE))
+    message(WARNING "Either PyQt4, PyQt5 or PySide needs to be installed to use the GUI.")
 endif()
 find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
@@ -218,7 +219,8 @@ if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
     set(DISTUTILS_ARGS "--prefix=${PROJECT_BINARY_DIR}/pyplusplus")
 endif()
 
-
+# extra menu option for OMPLapp documentation:
+set(OMPLAPP_GUI "<li><a href=\"gui.html\">OMPL.app GUI</a></li>")
 add_subdirectory(ompl/doc)
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/src)
@@ -231,6 +233,7 @@ add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(benchmark)
 add_subdirectory(py-bindings)
+
 install(DIRECTORY resources
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
     COMPONENT omplapp

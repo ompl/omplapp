@@ -19,9 +19,9 @@ Below are more detailed installation instructions for [Linux](#install_linux), [
 \note If you are using [ROS], please see [MoveIt!][moveit].
 
 <div class="btn-group">
-  <a class="btn" href="#install_linux">Linux</a>
-  <a class="btn" href="#install_osx">OS X</a>
-  <a class="btn" href="#install_windows">Windows</a>
+  <a class="btn btn-default" href="#install_linux">Linux</a>
+  <a class="btn btn-default" href="#install_osx">OS X</a>
+  <a class="btn btn-default" href="#install_windows">Windows</a>
 </div>
 
 
@@ -32,22 +32,11 @@ Below are installation instructions for Ubuntu Linux. Similar steps can be taken
 
 ## Ubuntu Linux
 
-- If you are using Ubuntu 11.04 or earlier, the supplied Boost version is too old. You need Boost 1.44+ for full functionality. You can install Boost from [source](http://www.boost.org/users/download), but it is simpler to add another repository:
-
-      sudo add-apt-repository ppa:boost-latest/ppa
-      sudo apt-get update
-
-- If you are using Ubuntu 10.04 or earlier, the supplied version of CMake is too old. You can download the latest version from [here](http://www.cmake.org/cmake/resources/software.html).
 - Install Boost, CMake, Python, PyQt4, PyOpenGL, and pkg-config.
 
-      sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev
+      sudo apt-get install libboost-all-dev cmake python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev libassimp-dev
 
   Some versions of Linux offer multiple versions of Boost. It is strongly advised to install only one version.
-- If you are running Ubuntu 12.04 or higher, install the following package as well:
-
-      sudo apt-get install libassimp-dev
-
-  (On older versions of Ubuntu Assimp will be automatically downloaded and built by the OMPL build system, unless you have already installed it yourself.)
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install [PyOpenGL-accelerate](http://pypi.python.org/pypi/PyOpenGL-accelerate) to enable OpenGL hardware acceleration.
 - To be able to generate documentation and build the OpenDE extension, the following packages are also needed:
 
@@ -72,9 +61,9 @@ Below are installation instructions for Ubuntu Linux. Similar steps can be taken
 
 ## Fedora Linux
 
-The installation instructions for Fedora Linux are mostly the same as for Ubuntu Linux, although the packages have slightly different names. On Fedora 18, you can the dependencies like so:
+The installation instructions for Fedora Linux are mostly the same as for Ubuntu Linux, although the packages have slightly different names. On Fedora, you can install the dependencies like so:
 
-      sudo yum install boost-devel cmake python-devel PyQt4 PyOpenGL assimp-devel mesa-libGL-devel libccd-devel
+      sudo yum install boost-devel cmake python-devel PyQt4 PyOpenGL assimp-devel mesa-libGL-devel libccd-devel assimp-devel
 
 The optional dependencies can be installed like so:
 
@@ -110,7 +99,7 @@ It is easiest to install the OMPL.app through [MacPorts], a package manager for 
       sudo port sync
       sudo port install boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
 
-  The commands above can take quite a while to complete. It is recommended to let this running overnight. If you do not care for the Python bindings or the GUI, you can reduce the total number of dependencies that need to be installed significantly by typing the following commands instead of the ones above:
+  The commands above can take quite a while to complete. It is recommended to let this run overnight. If you do not care for the Python bindings or the GUI, you can reduce the total number of dependencies that need to be installed significantly by typing the following commands instead of the ones above:
 
       sudo port sync
       sudo port install boost cmake assimp fcl ode

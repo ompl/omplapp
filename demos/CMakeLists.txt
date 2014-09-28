@@ -1,12 +1,11 @@
 if (OMPL_BUILD_DEMOS)
-    set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app)
+    set(OMPLAPP_DEMO_LIBRARIES ${OMPLAPP_LIBRARIES} ompl ompl_app_base)
 
     macro(add_omplapp_demo demo_name)
       add_executable(${ARGV})
       target_link_libraries(${demo_name} ${OMPLAPP_DEMO_LIBRARIES})
     endmacro(add_omplapp_demo)
 
-    add_omplapp_demo(demo_AlphaCForest SE3RigidBodyPlanning/alpha15_CForest.cpp)
     add_omplapp_demo(demo_SE3RigidBodyPlanningBenchmark SE3RigidBodyPlanning/SE3RigidBodyPlanningBenchmark.cpp)
     add_omplapp_demo(demo_SE3RigidBodyPlanning SE3RigidBodyPlanning/SE3RigidBodyPlanning.cpp)
     add_omplapp_demo(demo_SE3RigidBodyPlanningWithOptimization SE3RigidBodyPlanning/SE3RigidBodyPlanningWithOptimization.cpp)

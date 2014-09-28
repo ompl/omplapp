@@ -122,6 +122,20 @@ namespace ompl
                 AppTypeSelector<T>::SimpleSetup::setup();
             }
 
+            /** \brief Convenience function for the omplapp GUI. The objective can be one of:
+                "length", "max min clearance", or "mechanical work" */
+            void setOptimizationObjectiveAndThreshold(const std::string &objective, double threshold)
+            {
+                AppTypeSelector<T>::SimpleSetup::setOptimizationObjective(
+                    getOptimizationObjective(this->si_, objective, threshold));
+            }
+
+            control::DecompositionPtr allocDecomposition()
+            {
+                return ompl::app::allocDecomposition(AppTypeSelector<T>::SimpleSetup::getStateSpace(),
+                    mtype_, getGeometricComponentStateSpace());
+            }
+
         protected:
 
             virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const = 0;

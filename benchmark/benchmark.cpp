@@ -32,9 +32,9 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Ioan Sucan, Mark Moll */
 
-#include "GeometricBenchmark.h"
+#include "BenchmarkTypes.h"
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -49,11 +49,29 @@ int main(int argc, char **argv)
     if (bo.readOptions(argv[1]))
     {
         CFGBenchmark *b = NULL;
+        std::map<std::string, std::string>::iterator controlType = bo.declared_options_.find("problem.control");
         if (bo.isSE2Problem())
-            b = new SE2Benchmark(bo);
-        else
-            if (bo.isSE3Problem())
+        {
+            if (controlType == bo.declared_options_.end())
+                b = new SE2Benchmark(bo);
+            else if (controlType->second == "kinematic_car")
+                b = new KinematicCarBenchmark(bo);
+            else if (controlType->second == "dynamic_car")
+                b = new DynamicCarBenchmark(bo);
+            else
+                b = new SE2Benchmark(bo);
+        }
+        else if (bo.isSE3Problem())
+        {
+            if (controlType == bo.declared_options_.end())
                 b = new SE3Benchmark(bo);
+            else if (controlType->second == "blimp")
+                b = new BlimpBenchmark(bo);
+            else if (controlType->second == "quadrotor")
+                b = new QuadrotorBenchmark(bo);
+            else
+                b = new SE3Benchmark(bo);
+        }
 
         if (b)
         {

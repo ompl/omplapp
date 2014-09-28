@@ -2,8 +2,8 @@ Steps to release a new version:
 * update release notes (releaseNotes.md for both ompl and omplapp; put date, features)
 * update version in ompl/CMakeModules/OMPLVersion.cmake
     - also increment ABI version if needed (if previously existing API has changed)
-* hg pull -u in omplapp and ompl
-* hg purge in omplapp and ompl
+* "hg pull -u" in omplapp and ompl
+* "hg purge --all" in omplapp and ompl
 * build omplapp with bindings
 * build ompl without bindings
 * make test for both

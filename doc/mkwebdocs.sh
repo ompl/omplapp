@@ -19,7 +19,7 @@ for f in html/*.html; do
 done
 cd latex && make primer clean && cp OMPL_Primer.pdf ../${ASSET_DIR}
 cd ..
-cp -r css js php images html/*.png html/*.map html/search ieee-ram-2012-ompl.pdf ${ASSET_DIR}
+cp -r css fonts js ../ompl/doc/php images html/*.png html/*.map html/search ../ompl/doc/ieee-ram-2012-ompl.pdf ${ASSET_DIR}
 
 # add symlink to OMPL
 cd $ASSET_DIR && ln -s ../ompl core && cd ..

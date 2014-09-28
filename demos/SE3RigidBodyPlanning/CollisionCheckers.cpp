@@ -205,6 +205,7 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
 // Compares discrete and continuous collision checkers in OMPL.app
 int main (int argc, char **argv)
 {
+#if OMPL_HAS_PQP
     // User can supply number of tries as 2nd command line argument.  Otherwise, use default NR_TRIES.
     unsigned int nr_tries;
     if (argc == 2)
@@ -269,6 +270,10 @@ int main (int argc, char **argv)
         std::cout << "  Continuous FCL: " << (isOdd ? *cfcl_time : .5*(*cfcl_time + *(cfcl_time+1)))
             << "  " << nr_tries << " total attempts" << std::endl;
     }
+
+#else
+    std::cerr << "ERROR: PQP collision checker is not installed" << std::endl;
+#endif
 
     return 0;
 }
