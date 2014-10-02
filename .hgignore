@@ -27,6 +27,7 @@ doc/images/prunevsnoprune.png
 doc/images/sharedpaths.png
 doc/images/threadscforest.png
 doc/js
+doc/latex/OMPL_Primer.pdf
 doc/markdown/download.md$
 src/omplapp/config.h$
 py-bindings/bindings

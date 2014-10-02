@@ -4,7 +4,7 @@
 # OMPL.app 0.15.0 (??)
 
 - Added many new planners:
-  - [Linear Temporal Logical Planner (LTLPlanner)](\ref cLTLPlanner): a planner that find solutions for motion planning problems where the goal is specified by a Linear Temporal Logic (LTL) specification.
+  - [Linear Temporal Logical Planner (LTLPlanner)](\ref cLTLPlanner): a planner that finds solutions for kinodynamic motion planning problems where the goal is specified by a Linear Temporal Logic (LTL) specification.
   - [Fast Marching Tree algorithm (FMT∗)](\ref gFMT): a new asymptotically optimal algorithm contributed by Marco Pavone's Autonomous Systems Laboratory at Stanford.
   - [Coupled Forest of Random Engrafting Search Trees (CForest)](\ref gCForest): a meta-planner that runs several instances of asymptotically optimal planners in different threads. When one thread finds a better solution path, the states along the path are passed on to the other threads.
   - [Anytime Path Shortening](\ref gAPS): a generic wrapper around one or more geometric motion planners that repeatedly applies [shortcutting](\ref ompl::geometric::PathSimplifier) and [hybridization](\ref ompl::geometric::PathHybridization) to a set of solution paths. Any number and combination of planners can be specified, each is run in a separate thread.
