@@ -90,8 +90,6 @@ if(${Boost_VERSION} LESS 105300)
     set(ODEINT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
     include_directories("${ODEINT_INCLUDE_DIR}")
 endif()
-# needed to compile ODESolver demo. ODEsolver is *required* to compile ompl_app.
-set(OMPL_ODESOLVER ON)
 
 # on OS X we need to check whether to use libc++ or libstdc++ with clang++
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -135,16 +133,6 @@ find_package(MORSE QUIET)
 find_package(OpenDE QUIET)
 # This library is included in the Open Dynamics source distribution and is used in one demo only
 find_package(Drawstuff QUIET)
-# The ExternalProject.cmake that comes with CMake 2.8.[01] is broken
-# and may not even exist in earlier versions of CMake. We need this
-# module to download and build FCL and Assimp (if they aren't
-# already installed).
-if(${CMAKE_VERSION} VERSION_LESS 2.8.4 AND
-    NOT EXISTS "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
-    file(DOWNLOAD
-            "http://cmake.org/gitweb?p=cmake.git;a=blob_plain;f=Modules/ExternalProject.cmake;hb=HEAD"
-            "${CMAKE_SOURCE_DIR}/CMakeModules/ExternalProject.cmake")
-endif()
 include(UseFCL)
 include(UseAssimp)
 

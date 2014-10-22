@@ -4,8 +4,8 @@ If you use Linux or OS X, then all dependencies can be installed either through 
 
 To compile OMPL and OMPL.app the following two packages are required:
 
-- [Boost], version 1.44 or higher, and
-- [CMake], version 2.8.2 or higher.
+- [Boost], version 1.48 or higher, and
+- [CMake], version 2.8.7 or higher.
 
 The build system includes a [number of options](buildOptions.html) that you can enable or disable. To be able to generate python bindings you need to install the [Python] library and header files.
 

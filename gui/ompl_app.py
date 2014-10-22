@@ -188,7 +188,10 @@ class MainWindow(QtWidgets.QMainWindow):
         fname = getOpenFileNameAsAstring(self, "Open Problem Configuration", "", "*.cfg")
         if len(fname)>0:
             self.msgInform("Loading " + fname)
-            config = ConfigParser.ConfigParser()
+            if (sys.version_info > (3, 0)):
+                config = ConfigParser.ConfigParser(strict = False)
+            else:
+                config = ConfigParser.ConfigParser()
             config.readfp(open(fname, 'r'))
             if config.has_option("problem", "start.z"):
                 if config.has_option("problem", "control"):
@@ -528,7 +531,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.mainWidget.plannerWidget.controlPlanning.minControlDuration.value(),
                 self.mainWidget.plannerWidget.controlPlanning.maxControlDuration.value())
         self.omplSetup.setOptimizationObjectiveAndThreshold(
-            self.mainWidget.problemWidget.objectiveSelect.currentText(),
+            str(self.mainWidget.problemWidget.objectiveSelect.currentText()),
             self.mainWidget.problemWidget.objectiveThreshold.value())
         self.omplSetup.setup()
 
