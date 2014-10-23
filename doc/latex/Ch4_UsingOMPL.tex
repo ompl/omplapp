@@ -58,14 +58,6 @@ in Euclidean spaces, the space of 2D and 3D rotations, and any combination
 thereof with the CompoundStateSampler.  The ValidStateSampler takes advantage
 of the StateValidityChecker to find valid state space configurations.
 
-\paragraph {StateValidityChecker} The StateValidityChecker is tasked with
-evaluating a single state to determine if the configuration collides with an
-environment obstacle and respects the constraints of the robot.  A default
-checker is \emph{not} provided by OMPL for reasons stated in Section
-\ref{chp:design}.  Since this component is an integral part of sampling-based
-motion planning it is necessary for the user to provide the planner a callback
-to such a method to ensure that all configurations are feasible for the robot.
-
 \paragraph {NearestNeighbors} This is an abstract class that is utilized
 to provide a common interface to the planners for the purpose of performing a
 nearest neighbor search among samples in the state space.  The core library
@@ -75,6 +67,14 @@ and linear searches.
 It is also possible to use an external data structure and supply the core library
 with this implementation.
 
+\paragraph {StateValidityChecker} The StateValidityChecker is tasked with
+evaluating a single state to determine if the configuration collides with an
+environment obstacle and respects the constraints of the robot.  A default
+checker is \emph{not} provided by OMPL for reasons stated in Section
+\ref{chp:design}.  Since this component is an integral part of sampling-based
+motion planning it is necessary for the user to provide the planner a callback
+to such a method to ensure that all configurations are feasible for the robot.
+
 \paragraph {MotionValidator} The MotionValidator class (analogous to the local
 planner) checks to see if the motion of the robot between two states is valid.
 At a high level, the MotionValidator must be able to evaluate whether the motion
@@ -83,10 +83,17 @@ the robot.  OMPL contains the DiscreteMotionValidator, which uses the
 interpolated movements between two states (computed by the StateSpace) to
 determine if a particular motion is valid. This is an approximate computation as only a finite number of states along the motion are checked for validity (using the StateValidityChecker).
 
+\paragraph {OptimizationObjective} Certain motion planners can meet optimization 
+objectives as well. These objectives can implement different cost functions.
+The OptimizationObjective class provides an abstract interface to the relevant operations with costs that the planners need.
+There are multiple default optimization objectives already implemented. For example, to minimize path length, a
+PathLengthOptimizationObjective (derived from OptimizationObjective) can be used.
+
 \paragraph {ProblemDefinition} A motion planning query is specified by the
 ProblemDefinition object.  Instances of this class define a start state and goal
-configuration for the robot.  The goal can be a single configuration or a region
-surrounding a particular state.
+configuration for the robot, and the optimization objective to meet, if any. 
+The goal can be a single configuration or a region surrounding a particular state.
+Solutions to motion planning queries are also retrieved using this class.
 
 \section {Solving a Query}
 The previous set of objects are just a subset of the classes used in OMPL.
@@ -115,6 +122,8 @@ For geometric motion planning, the user must define and instantiate the state
 space object for the robot, and provide a start and goal configuration in that
 space to define the motion planning query.  Any planner defined in the
 geometric namespace can then be employed to solve the motion planning query.
+Some of these planners (as indicated by the planner specification) also follow 
+optimization objectives.
 
 \paragraph {Planning with Controls}
 Like geometric planning, when planning with controls the user must define and
@@ -161,6 +170,9 @@ OMPL.  OMPL provides a Benchmark class that attempts a specific query a given
 number of times, and allows the user to try any number of planners.
 Additionally, the Benchmark instance can be configured to fail an attempt after
 a specific amount of time or when the planner exhausts a given amount of memory.
+If multiple instances of the same type of planner are to be benchmarked (e.g., with 
+different sets of settings), changing the planner name is a good idea 
+(Planner::setName() function), so that the results can be distinguished.
 
 When the benchmarking has finished, the Benchmark instance will write a log
 file to the current working directory containing information regarding every
