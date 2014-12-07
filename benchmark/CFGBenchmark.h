@@ -77,6 +77,7 @@ protected:
     BenchmarkOptions                                             bo_;
     std::map<ompl::base::Planner*, BenchmarkOptions::ContextOpt> pcontext_;
     BenchmarkOptions::ContextOpt                                 activeParams_;
+    ompl::base::Cost                                             defaultCostThreshold_;
     boost::shared_ptr<ompl::tools::Benchmark>                    benchmark_;
 
     // When the best path is saved, we keep it here

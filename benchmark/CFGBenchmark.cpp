@@ -210,9 +210,12 @@ ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl
 
 ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(const ompl::base::SpaceInformationPtr &si)
 {
-    std::string objective = bo_.declared_options_["problem.objective"];
-    std::string threshold = bo_.declared_options_["problem.objective.threshold"];
     ompl::base::OptimizationObjectivePtr opt;
+    if (bo_.declared_options_.find("problem.objective") == bo_.declared_options_.end())
+    {
+        return opt;
+    }
+    std::string objective = bo_.declared_options_["problem.objective"];
 
     if (objective.substr(0,6) == std::string("length"))
         opt.reset(new ompl::base::PathLengthOptimizationObjective(si));
@@ -221,8 +224,21 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
     else if (objective.substr(0,15) == std::string("mechanical_work"))
         opt.reset(new ompl::base::MechanicalWorkOptimizationObjective(si));
 
-    if (opt && threshold.length() > 0)
-        opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+    if (opt && bo_.declared_options_.find("problem.objective.threshold") != bo_.declared_options_.end())
+    {
+        std::string threshold = bo_.declared_options_["problem.objective.threshold"];
+        try
+        {
+            opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+        }
+        catch(boost::bad_lexical_cast &)
+        {
+            OMPL_WARN("Unable to parse optimization threshold: %s", threshold.c_str());
+        }
+    }
+    if (opt)
+        defaultCostThreshold_ = opt->getCostThreshold();
+
     return opt;
 }
 
@@ -254,6 +270,22 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
     else
         planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
+
+    ompl::base::OptimizationObjectivePtr opt = planner->getProblemDefinition()->getOptimizationObjective();
+    if (opt)
+        opt->setCostThreshold(defaultCostThreshold_);
+    if (opt && activeParams_.find("objective.threshold") != activeParams_.end())
+    {
+        std::string threshold = activeParams_["objective.threshold"];
+        try
+        {
+            opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+        }
+        catch(boost::bad_lexical_cast &)
+        {
+            OMPL_WARN("Unable to parse optimization threshold: %s", threshold.c_str());
+        }
+    }
 
     bestPath_.reset();
     bestPathIndex_ = 0;

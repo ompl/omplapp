@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan, Mark Moll */
 
 #include "BenchmarkOptions.h"
+#include "ompl/util/Console.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options/parsers.hpp>
@@ -144,6 +145,21 @@ bool BenchmarkOptions::readOptions(const char *filename)
         if (op.substr(0, 8) == "problem.")
         {
             std::string p = op.substr(8);
+            if (p == "objective")
+            {
+                // If an optimization objective was not yet defined, define it now for all planners.
+                if (declared_options_.find("problem.objective") == declared_options_.end())
+                {
+                    declared_options_["problem.objective"] = val;
+                    continue;
+                }
+                // Warn the user if they are trying to use a different optimization objective.
+                if (declared_options_["problem.objective"] != val)
+                {
+                    OMPL_WARN("Cannot use different objectives for different planners in the same benchmark configuration.");
+                }
+                continue;
+            }
             if (last_planner.empty())
                 temp_context[p] = val;
             else
