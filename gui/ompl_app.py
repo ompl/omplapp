@@ -295,9 +295,9 @@ class MainWindow(QtWidgets.QMainWindow):
             startPose = self.mainWidget.problemWidget.getStartPose()
             goalPose = self.mainWidget.problemWidget.getGoalPose()
             config.set("problem", "objective",
-                self.mainWidget.problemWidget.objectiveSelect.currentText().replace(" ", "_"))
+                str(self.mainWidget.problemWidget.objectiveSelect.currentText()).replace(" ", "_"))
             config.set("problem", "objective.threshold", str(self.mainWidget.problemWidget.objectiveThreshold.value()))
-            ctype = self.mainWidget.problemWidget.robotTypeSelect.currentText()
+            ctype = str(self.mainWidget.problemWidget.robotTypeSelect.currentText())
             if not ctype.startswith('Rigid body planning'):
                 if ctype == "Blimp":
                     config.set("problem", "control", "blimp")
