@@ -97,7 +97,7 @@ It is easiest to install the OMPL.app through [MacPorts], a package manager for 
 - If you downloaded the source distribution of OMPL.app, then you need to install the dependencies Boost, CMake, assimp, FCL, OpenDE, PyQt4, PyOpenGL, and Py++. If you have MacPorts installed, type the following:
 
       sudo port sync
-      sudo port install boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
+      sudo port install boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus
 
   The commands above can take quite a while to complete. It is recommended to let this run overnight. If you do not care for the Python bindings or the GUI, you can reduce the total number of dependencies that need to be installed significantly by typing the following commands instead of the ones above:
 
