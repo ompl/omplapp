@@ -10,7 +10,7 @@ __Contents:__
 
 # Defining a motion planning problem {#gui_define}
 
-<img src="../images/gui_define.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
+<img src="images/gui_define.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
 The OMPL.app GUI is launched from the command line with the \c omplapp/gui/ompl_app.py command. After the program launches, select _File>Open Environment_ to read a file that contains a mesh for an environment. After the environment is loaded, select _File>Open Robot_ to choose a robot mesh file. Example environment and robot files can be found in \c omplapp/resources. At this point the GUI can only be used to solve motion planning problems involving static environments and free-flying rigid bodies in 2D and 3D, but this is likely to change in a future version of OMPL. After the meshes are loaded, you can specify the start and goal poses of the robot with the controls on the righthand side of the window. The image above shows an example query for the cubicles environment. You can switch between planning in 2D and 3D using the drop-down box in the top-right of the window. When you switch, the environment and robot are cleared.
 
@@ -19,7 +19,7 @@ The GUI can also be used to simply “play back” a path consisting of either S
 
 # Setting up the planner {#gui_planners}
 
-<img src="../images/gui_planner.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
+<img src="images/gui_planner.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
 It is not strictly necessary to choose or configure a planner; if you don't, a planner will automatically be chosen and configured for you. The planner tab allows you to override the default settings, and experiment with different planners. Each planner has different parameters that control its behavior. When you select a different planner, the appropriate options are shown. Below is a list of all parameters:
 
@@ -35,14 +35,14 @@ In addition to these planning parameters, you can set a time limit for the plann
 
 By default, the robot is constrained to move inside a tight bounding box around the environment, the start pose, and the goal pose. This bounding box applies to a __reference point__ for the robot; the origin of the coordinate frame that defines its pose. This means that parts of the robot can stick outside the bounding box. It also means that if the reference point for your robot is far away from the robot itself, you can get rather unintuitive results. The reference point is whatever the origin is in the mesh; OMPL.app is _not_ using the geometric center of the mesh as the reference point.
 
-<img src="../images/gui_bbox.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
+<img src="images/gui_bbox.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
 If you move the start or goal pose outside the bounding box, the bounding box will automatically grow. You can adjust the automatic settings in the “Bounding box” tab, as shown above.
 
 
 # Visualizing solution paths {#gui_paths}
 
-<img src="../images/gui_path.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
+<img src="images/gui_path.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
 After you have specified a motion planning, you can click on the __Solve__ button to run the motion planner. Some diagnostic information is printed in the terminal window, which can be helpful in identifying problems. If all goes well, the planner finds a path. By default, OMPL.app will loop over an animation of the robot's pose along the path. The slider at the bottom of the window controls the speed of the animation. By unchecking the __Animate__ checkbox, the entire path is shown at once (see figure above).
 

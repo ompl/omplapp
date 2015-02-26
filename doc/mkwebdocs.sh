@@ -11,24 +11,13 @@ export ASSET_DIR=omplapp
 
 echo "Exporting OMPL.app documentation for $BRANCH"
 
-rm -rf ${ASSET_DIR}
-# copy all assets to the ASSET_DIR directory
-mkdir -p ${ASSET_DIR}
-for f in html/*.html; do
-    sed 's/="..\//=".\//g;s/href="md_ompl_doc_markdown_/href="/g;s/href="md_doc_markdown_/href="/g' $f > ${ASSET_DIR}/`basename $f`
-done
-cd latex && make primer clean && cp OMPL_Primer.pdf ../${ASSET_DIR}
-cd ..
-cp -r css fonts js ../ompl/doc/php images html/*.png html/*.map html/search ../ompl/doc/ieee-ram-2012-ompl.pdf ${ASSET_DIR}
+cd latex && make primer clean && cp OMPL_Primer.pdf ../html
 
 # add symlink to OMPL
-cd $ASSET_DIR && ln -s ../ompl core && cd ..
+cd ../html && ln -s ../ompl core && cd ..
 
 # copy everything to web server and fix permissions
-tar cf - ${ASSET_DIR} | ssh ${SERVER} 'mkdir -p '${ASSETS_ROOT}'; cd '${ASSETS_ROOT}'; tar xf -; ln -s /mnt/data2/ompl/wordpress '${ASSET_DIR}'/blog; chmod -R a+rX '${ASSET_DIR}'; chgrp -R ompl '${ASSET_DIR}'; chmod -R g+w '${ASSET_DIR}
-
-# clean up
-rm -rf ${ASSET_DIR}
+tar cf - -s/html/${ASSET_DIR}/ html | ssh ${SERVER} 'mkdir -p '${ASSETS_ROOT}'; cd '${ASSETS_ROOT}'; tar xf -; ln -s /mnt/data2/ompl/wordpress '${ASSET_DIR}'/blog; chmod -R a+rX '${ASSET_DIR}'; chgrp -R ompl '${ASSET_DIR}'; chmod -R g+w '${ASSET_DIR}
 
 # beta site should not be indexed
 if [ $BRANCH == "trunk" ]
