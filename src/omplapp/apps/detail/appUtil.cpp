@@ -244,7 +244,7 @@ ompl::base::ProjectionEvaluatorPtr ompl::app::allocGeometricStateProjector(const
 ompl::control::DecompositionPtr ompl::app::allocDecomposition(const base::StateSpacePtr &space, MotionModel mtype,
     const base::StateSpacePtr &gspace)
 {
-    // \TODO shouldn't this be done automatically?
+    // \todo shouldn't this be done automatically?
     const_cast<ompl::base::StateSpace*>(space.get())->computeLocations();
 
     if (mtype == Motion_2D)
