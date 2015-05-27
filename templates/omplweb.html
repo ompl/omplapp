@@ -1,0 +1,165 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+		<script src="{{ url_for('static', filename='omplweb.js') }}"></script>
+		<script src="{{ url_for('static', filename="jquery-2.1.4.min.js")
+}}"></script>
+	<head>
+		
+	<style>
+		td {
+			font-family: Courier, sans-serif;
+		}
+		button {
+		  	background-color: #fff;
+			border: 1px solid #000;
+			border-radius: 2px;
+			color: #000;
+		    	cursor: pointer;
+			font-size: 18px;
+		}
+		button:hover {
+			border-color: #64b566;
+		}
+
+		button:active {
+			background-color: #A8D8AA;
+		}
+	</style>
+
+	<body>
+		<center><h2>Configure Problem</h2></center>
+		<br>
+		<br>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-4 col-md-offset-1">
+					<table class="table">
+						<tr>
+							<td>Name</td>
+							<td><input type="text" id="name"></td>
+						</tr>
+						<tr>
+							<td>Load Robot</td>
+							<td><input type="file" id="robot_path"></td>
+						</tr>
+						<tr>
+							<td>Load Environment</td>
+							<td><input type="file" id="env_path"></td>
+						</tr>
+						<tr>
+							<td>Start X</td>
+							<td><input type="number" value="241.81" id="start_x"></td>
+						</tr>
+						<tr>
+							<td>Start Y</td>
+							<td><input type="number" value="106.15" id="start_y"></td>
+						</tr>
+						<tr>
+							<td>Start Z</td>
+							<td><input type="number" value="36.46" id="start_z"></td>
+						</tr>
+						<tr>
+							<td>Start Theta</td>
+							<td><input type="number" value="3.12413936107" id="start_theta"></td>
+						</tr>
+						<tr>
+							<td>Start Axis X</td>
+							<td><input type="number" value="0.0" id="start_axis_x"></td>
+						</tr>
+						<tr>
+							<td>Start Axis Y</td>
+							<td><input type="number" value="0.0" id="start_axis_y"></td>
+						</tr>
+						<tr>
+							<td>Start Axis Z</td>
+							<td><input type="number" value="-1.0" id="start_axis_z"></td>
+						</tr>
+						<tr>
+							<td>Goal X</td>
+							<td><input type="number" value="-31.19" id="goal_x"></td>
+						</tr>
+						<tr>
+							<td>Goal Y</td>
+							<td><input type="number" value="-99.85" id="goal_y"></td>
+						</tr>
+						<tr>
+							<td>Goal Z</td>
+							<td><input type="number" value="36.46" id="goal_z"></td>
+						</tr>
+						
+					</table>
+				</div>
+				<div class="col-md-4  col-md-offset-1">
+					<table class="table">
+						<tr>
+							<td>Goal Theta</td>
+							<td><input type="number" value="3.12413936107" id="goal_theta"></td>
+						</tr>
+						<tr>
+							<td>Goal Axis X</td>
+							<td><input type="number" value="0.0" id="goal_axis_x"></td>
+						</tr>
+						<tr>
+							<td>Goal Axis Y</td>
+							<td><input type="number" value="0.0" id="goal_axis_y"></td>
+						</tr>
+						<tr>
+							<td>Goal Axis Z</td>
+							<td><input type="number" value="-1.0" id="goal_axis_z"></td>
+						</tr>
+						<tr>
+							<td>Bound Min X</td>
+							<td><input type="number" value="-73.76" id="bounds_min_x"></td>
+						</tr>
+						<tr>
+							<td>Bounds Min Y</td>
+							<td><input type="number" value="-179.59" id="bounds_min_y"></td>
+						</tr>
+						<tr>
+							<td>Bounds Min Z</td>
+							<td><input type="number" value="-0.03" id="bounds_min_z"></td>
+						</tr>
+						<tr>
+							<td>Bounds Max X</td>
+							<td><input type="number" value="295.77" id="bounds_max_x"></td>
+						</tr>
+						<tr>
+							<td>Bounds Max Y</td>
+							<td><input type="number" value="168.26" id="bounds_max_y"></td>
+						</tr>
+						<tr>
+							<td>Bounds Max Z</td>
+							<td><input type="number" value="90.39" id="bounds_max_z"></td>
+						</tr>
+						<tr>
+							<td>Time Limit</td>
+							<td><input type="number" value="5.0" id="time_limit"></td>
+						</tr>
+						<tr>
+							<td>Memory Limit</td>
+							<td><input type="number" value="10000.0" id="mem_limit"></td>
+						</tr>
+						<tr>
+							<td>Run Count</td>
+							<td><input type="number" value="1" id="run_count"></td>
+						</tr>
+						<tr>
+							<td>Planners</td>
+							<td><input type="text" value="rrt" id="planners"></td>
+						</tr>
+						
+					</table>
+				</div>
+			</div>
+		</div>
+			
+			
+		<center><button onclick="solve()">Solve</button></center>
+
+		<br>
+		
+		<div id="results"></div>
+	</body>
+
+</html>

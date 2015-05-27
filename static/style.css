@@ -1,0 +1,14 @@
+body {
+	text-align: center;
+}
+.header {
+	text-align: center;
+	font-size: 2em;
+	font-family: sans-serif;
+}
+
+#config {
+	font-family: Courier;
+	text-align: center;
+}
+
