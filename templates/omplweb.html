@@ -21,9 +21,14 @@
 		button:hover {
 			border-color: #64b566;
 		}
-
 		button:active {
 			background-color: #A8D8AA;
+		}
+		.subtitle {
+			font-family: Courier, sans-serif;
+			font-size: 16px;
+			font-weight: 600;
+			
 		}
 	</style>
 
@@ -32,65 +37,69 @@
 		<br>
 		<br>
 		<div class="container-fluid">
-			<form enctype="multipart/form-data">
-			Robot: <input type="file" name="robot" id="robot_path">
-			Environment: <input type="file" name="env" id="env_path">
-			</form>
-			
+			<div class="row" align="center">
+				<form enctype="multipart/form-data">
+				<div class="subtitle">Robot</div>
+				<input type="file" name="robot" id="robot_path">
+				<br>
+				<div class="subtitle">Environment</div>
+				<input type="file" name="env" id="env_path">
+			</div>
+			</br>
 			<div class="row">
-				<div class="col-md-4 col-md-offset-1">
+				<div class="col-md-4 col-md-offset-1">		
 					<table class="table">
 						<tr>
 							<td>Name</td>
-							<td><input type="text" value="Test Name" id="name"></td>
+							<td><input type="text" value="Test Name" name="name"></td>
 						</tr>
 						<tr>
 							<td>Planners</td>
-							<td><input type="text" value="rrt" id="planners"></td>
+							<td><input type="text" value="rrt" name="planners"></td>
 						</tr>
 						<tr>
 							<td>Start X</td>
-							<td><input type="number" value="241.81" id="start_x"></td>
+							<td><input type="number" value="241.81" name="start_x"></td>
 						</tr>
 						<tr>
 							<td>Start Y</td>
-							<td><input type="number" value="106.15" id="start_y"></td>
+							<td><input type="number" value="106.15" name="start_y"></td>
 						</tr>
 						<tr>
 							<td>Start Z</td>
-							<td><input type="number" value="36.46" id="start_z"></td>
+							<td><input type="number" value="36.46" name="start_z"></td>
 						</tr>
 						<tr>
 							<td>Start Theta</td>
-							<td><input type="number" value="3.12413936107" id="start_theta"></td>
+							<td><input type="number" value="3.12413936107" name="start_theta"></td>
 						</tr>
 						<tr>
 							<td>Start Axis X</td>
-							<td><input type="number" value="0.0" id="start_axis_x"></td>
+							<td><input type="number" value="0.0" name="start_axis_x"></td>
 						</tr>
 						<tr>
 							<td>Start Axis Y</td>
-							<td><input type="number" value="0.0" id="start_axis_y"></td>
+							<td><input type="number" value="0.0" name="start_axis_y"></td>
 						</tr>
 						<tr>
 							<td>Start Axis Z</td>
-							<td><input type="number" value="-1.0" id="start_axis_z"></td>
+							<td><input type="number" value="-1.0" name="start_axis_z"></td>
 						</tr>
 						<tr>
 							<td>Goal X</td>
-							<td><input type="number" value="-31.19" id="goal_x"></td>
+							<td><input type="number" value="-31.19" name="goal_x"></td>
 						</tr>
 						<tr>
 							<td>Goal Y</td>
-							<td><input type="number" value="-99.85" id="goal_y"></td>
+							<td><input type="number" value="-99.85" name="goal_y"></td>
 						</tr>
 						<tr>
 							<td>Goal Z</td>
-							<td><input type="number" value="36.46" id="goal_z"></td>
+							<td><input type="number" value="36.46" name="goal_z"></td>
 						</tr>
 						<tr>
 							<td>Goal Theta</td>
-							<td><input type="number" value="3.12413936107" id="goal_theta"></td>
+							<td><input type="number" value="3.12413936107" name="goal_theta"></td>
 						</tr>
 						
 					</table>
@@ -99,55 +108,56 @@
 					<table class="table">
 						<tr>
 							<td>Goal Axis X</td>
-							<td><input type="number" value="0.0" id="goal_axis_x"></td>
+							<td><input type="number" value="0.0" name="goal_axis_x"></td>
 						</tr>
 						<tr>
 							<td>Goal Axis Y</td>
-							<td><input type="number" value="0.0" id="goal_axis_y"></td>
+							<td><input type="number" value="0.0" name="goal_axis_y"></td>
 						</tr>
 						<tr>
 							<td>Goal Axis Z</td>
-							<td><input type="number" value="-1.0" id="goal_axis_z"></td>
+							<td><input type="number" value="-1.0" name="goal_axis_z"></td>
 						</tr>
 						<tr>
 							<td>Bound Min X</td>
-							<td><input type="number" value="-73.76" id="bounds_min_x"></td>
+							<td><input type="number" value="-73.76" name="bounds_min_x"></td>
 						</tr>
 						<tr>
 							<td>Bounds Min Y</td>
-							<td><input type="number" value="-179.59" id="bounds_min_y"></td>
+							<td><input type="number" value="-179.59" name="bounds_min_y"></td>
 						</tr>
 						<tr>
 							<td>Bounds Min Z</td>
-							<td><input type="number" value="-0.03" id="bounds_min_z"></td>
+							<td><input type="number" value="-0.03" name="bounds_min_z"></td>
 						</tr>
 						<tr>
 							<td>Bounds Max X</td>
-							<td><input type="number" value="295.77" id="bounds_max_x"></td>
+							<td><input type="number" value="295.77" name="bounds_max_x"></td>
 						</tr>
 						<tr>
 							<td>Bounds Max Y</td>
-							<td><input type="number" value="168.26" id="bounds_max_y"></td>
+							<td><input type="number" value="168.26" name="bounds_max_y"></td>
 						</tr>
 						<tr>
 							<td>Bounds Max Z</td>
-							<td><input type="number" value="90.39" id="bounds_max_z"></td>
+							<td><input type="number" value="90.39" name="bounds_max_z"></td>
 						</tr>
 						<tr>
 							<td>Time Limit</td>
-							<td><input type="number" value="5.0" id="time_limit"></td>
+							<td><input type="number" value="5.0" name="time_limit"></td>
 						</tr>
 						<tr>
 							<td>Memory Limit</td>
-							<td><input type="number" value="10000.0" id="mem_limit"></td>
+							<td><input type="number" value="10000.0" name="mem_limit"></td>
 						</tr>
 						<tr>
 							<td>Run Count</td>
-							<td><input type="number" value="1" id="run_count"></td>
+							<td><input type="number" value="1" name="run_count"></td>
 						</tr>
 						
 					</table>
 				</div>
+				</form>
 			</div>
 		</div>
 			

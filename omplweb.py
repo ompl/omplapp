@@ -13,8 +13,6 @@ UPLOAD_FOLDER = '/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/om
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
 
-robot_path = "test"
-env_path = "testtest"
 
 ########## OMPL Code ##########
 
@@ -66,18 +64,17 @@ class Problem(object):
 
 
 
-def parse(data):
-    settings = json.loads(data)
+def parse(settings, env_path, robot_path):
     
     problem = Problem()
     problem.name = settings['name']
-    problem.location = settings['location']
-    problem.date_modified = settings['date_modified']
+    problem.location = "default_location"
+    problem.date_modified = "2/15/2015"
     
+
     # start filename stuff #
     problem.env_path = env_path
     problem.robot_path = robot_path
-    
     # start problem specific stuff #
     problem.start_x = settings['start_x']
     problem.start_y = settings['start_y']
@@ -107,10 +104,8 @@ def parse(data):
     
     # planners for benchmarks #
     problem.planners = settings['planners']
- 
+
     return problem
-
-
 
 
 
@@ -167,7 +162,7 @@ def solve(problem):
 
     # initialize ompl problem with the values in problem
     # NOTE: just do super easy rigid body in 3D, SE(3) for now
-    print 'ompl: setting up problem'
+    print 'OMPL:    setting up problem'
 
     #space = ob.SE3StateSpace()
     #omplSetup = og.SimpleSetup(space)
@@ -179,7 +174,7 @@ def solve(problem):
     print problem.env_path#,problem
     
     # load and set meshes
-    print "Setting environment mesh with: %s" % str(problem.env_path)
+    print "OMPL:    Setting environment mesh with: %s" % str(problem.env_path)
     omplSetup.setEnvironmentMesh( str(problem.env_path) )
     omplSetup.setRobotMesh( str(problem.robot_path) )
     
@@ -229,7 +224,7 @@ def solve(problem):
         if didSolve == False:
             print("Path reported by planner seems to be invalid!")
         else:
-            print "in ompl: solve seems successful"
+            print "OMPL:    Solve seems successful"
 
             #path_string = str(path)
 
@@ -249,7 +244,7 @@ def solve(problem):
                              str(state[6])]
                 statesList.append(stateList)
 
-            print 'successful state to path (despite segfault risk here)'
+            print 'OMPL:    Successful state to path (despite segfault risk here)'
 
     path_string = convert_path_to_json(statesList,didSolve)
     # return "Test"
@@ -269,11 +264,6 @@ def solve(problem):
 def omplapp():
 	return flask.render_template("omplweb.html")    
     
-@app.route("/omplapp/solve", methods=['POST'])
-def solveProblem():
-	# jsondata = request.get_json(False, False, True)
-	return solve(parse(request.form.get('settings', str)))
-    # return "Received data."
 
 def allowed_file(filename):
     if '.' in filename and filename.rsplit('.', 1)[1] == 'dae': 
@@ -281,7 +271,7 @@ def allowed_file(filename):
     return False
            
 
-@app.route('/omplapp/upload_robot', methods=['POST'])
+@app.route('/omplapp/upload', methods=['POST'])
 def upload():
     robotFile = request.files['robot']
     envFile = request.files['env']
@@ -296,10 +286,18 @@ def upload():
             env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
             
             print "Files saved as: " + robot_path + " and " + env_path
+            
+            print "Will now parse configuration..."
+            # Put some try/catches here
+            problem = parse(request.form, env_path, robot_path)
+            
+            print "Configuration has been parsed. Solving problem..."
+            return solve(problem)
+            
         else:
-            return "Wrong file format. Must be .dae"
+            return "Error: Wrong file format. Must be .dae"
     else:
-        return "Didn't upload any files!"
+        return "Error: Didn't upload any files! Please choose both a robot and an environment file in the .dae format."
 
     # if allowed_file(file.filename):
     #     print "Received file."
