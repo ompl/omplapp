@@ -32,20 +32,21 @@
 		<br>
 		<br>
 		<div class="container-fluid">
+			<form enctype="multipart/form-data">
+			Robot: <input type="file" name="robot" id="robot_path">
+			Environment: <input type="file" name="env" id="env_path">
+			</form>
+			
 			<div class="row">
 				<div class="col-md-4 col-md-offset-1">
 					<table class="table">
 						<tr>
 							<td>Name</td>
-							<td><input type="text" id="name"></td>
+							<td><input type="text" value="Test Name" id="name"></td>
 						</tr>
 						<tr>
-							<td>Load Robot</td>
-							<td><input type="file" id="robot_path"></td>
-						</tr>
-						<tr>
-							<td>Load Environment</td>
-							<td><input type="file" id="env_path"></td>
+							<td>Planners</td>
+							<td><input type="text" value="rrt" id="planners"></td>
 						</tr>
 						<tr>
 							<td>Start X</td>
@@ -87,15 +88,15 @@
 							<td>Goal Z</td>
 							<td><input type="number" value="36.46" id="goal_z"></td>
 						</tr>
+						<tr>
+							<td>Goal Theta</td>
+							<td><input type="number" value="3.12413936107" id="goal_theta"></td>
+						</tr>
 						
 					</table>
 				</div>
 				<div class="col-md-4  col-md-offset-1">
 					<table class="table">
-						<tr>
-							<td>Goal Theta</td>
-							<td><input type="number" value="3.12413936107" id="goal_theta"></td>
-						</tr>
 						<tr>
 							<td>Goal Axis X</td>
 							<td><input type="number" value="0.0" id="goal_axis_x"></td>
@@ -143,10 +144,6 @@
 						<tr>
 							<td>Run Count</td>
 							<td><input type="number" value="1" id="run_count"></td>
-						</tr>
-						<tr>
-							<td>Planners</td>
-							<td><input type="text" value="rrt" id="planners"></td>
 						</tr>
 						
 					</table>

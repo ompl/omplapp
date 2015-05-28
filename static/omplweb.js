@@ -9,8 +9,24 @@ function solve(){
 	
 	// sendData = '{"name" : "apartment_piano","location" : "default_location","date_modified" : "2/15/2015","env_path" : "../../../robots/3D/Apartment_env.dae","robot_path" : "../../../robots/3D/Apartment_robot.dae","start_x" : 241.81,"start_y" : 106.15,"start_z" : 36.46,"start_theta" : 3.12413936107,"start_axis_x" : 0.0,"start_axis_y" : 0.0,"start_axis_z" : -1.0,"goal_x" : -31.19,"goal_y" : -99.85,"goal_z" : 36.46,"goal_theta" : 3.12413936107,"goal_axis_x" : 0.0,"goal_axis_y" : 0.0,"goal_axis_z" : -1.0,"bounds_min_x" : -73.76,"bounds_min_y" : -179.59,"bounds_min_z" : -0.03,"bounds_max_x" : 295.77,"bounds_max_y" : 168.26,"bounds_max_z" : 90.39,"time_limit" : 5.0,"mem_limit" : 10000.0,"run_count" : 1,"planners" : "rrt"}';
 	
+	
+	var formData = new FormData($('form')[0]);
+	
+	$.ajax({
+		url: "omplapp/upload_robot",
+		type: "POST",
+		data: formData,
+		success: function(data){
+			console.log("Upload returned: ", data);
+		},
+		cache: false,
+		contentType: false,
+		processData: false
+	});
+	
+	
 	inputData = {}
-	inputData.name = "Test Name"
+	inputData.name = $("#name").val();
         inputData.start_x = $("#start_x").val();
         inputData.start_y = $("#start_y").val();
         inputData.start_z = $("#start_z").val();
@@ -41,10 +57,10 @@ function solve(){
         inputData.env_path = "../../../robots/3D/Apartment_env.dae";
         inputData.robot_path = "../../../robots/3D/Apartment_robot.dae";
 	
-	console.log(inputData);
+	// console.log(inputData);
 	
 	var promise = postData(JSON.stringify(inputData));
-	
+
 	promise.success(function (data){
 		console.log(data);
 		$('#results').html(

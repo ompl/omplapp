@@ -1,4 +1,5 @@
 import json
+import os
 
 from ompl import base as ob
 from ompl import geometric as og
@@ -7,9 +8,13 @@ from ompl import app as oa
 
 import flask
 from flask import request
+from werkzeug import secure_filename
+UPLOAD_FOLDER = '/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/uploads'
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
 
+robot_path = "test"
+env_path = "testtest"
 
 ########## OMPL Code ##########
 
@@ -70,8 +75,8 @@ def parse(data):
     problem.date_modified = settings['date_modified']
     
     # start filename stuff #
-    problem.env_path = settings['env_path']
-    problem.robot_path = settings['robot_path']
+    problem.env_path = env_path
+    problem.robot_path = robot_path
     
     # start problem specific stuff #
     problem.start_x = settings['start_x']
@@ -169,13 +174,12 @@ def solve(problem):
     omplSetup = oa.SE3RigidBodyPlanning()
 
     #TODO: set validity checker? how did OMPLApp handle this?
-    print 'Is self collision enabled? %s' % omplSetup.isSelfCollisionEnabled()
-
 
     #TODO: some debug prints to check that the paths are getting set, remove later 
-    print problem.env_path,problem
+    print problem.env_path#,problem
     
     # load and set meshes
+    print "Setting environment mesh with: %s" % str(problem.env_path)
     omplSetup.setEnvironmentMesh( str(problem.env_path) )
     omplSetup.setRobotMesh( str(problem.robot_path) )
     
@@ -260,6 +264,60 @@ def solve(problem):
 
 ########## Flask Code ##########
 
+
+@app.route("/omplapp", methods=['GET'])
+def omplapp():
+	return flask.render_template("omplweb.html")    
+    
+@app.route("/omplapp/solve", methods=['POST'])
+def solveProblem():
+	# jsondata = request.get_json(False, False, True)
+	return solve(parse(request.form.get('settings', str)))
+    # return "Received data."
+
+def allowed_file(filename):
+    if '.' in filename and filename.rsplit('.', 1)[1] == 'dae': 
+        return True
+    return False
+           
+
+@app.route('/omplapp/upload_robot', methods=['POST'])
+def upload():
+    robotFile = request.files['robot']
+    envFile = request.files['env']
+    if robotFile and envFile:
+        if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
+            robot_filename = secure_filename(robotFile.filename)
+            robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
+            robot_path = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
+            
+            env_filename = secure_filename(envFile.filename)
+            envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
+            env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
+            
+            print "Files saved as: " + robot_path + " and " + env_path
+        else:
+            return "Wrong file format. Must be .dae"
+    else:
+        return "Didn't upload any files!"
+
+    # if allowed_file(file.filename):
+    #     print "Received file."
+    # else:
+    #     return "Failed to upload."
+    return "Upload Successful."
+
+
+
+
+
+
+
+
+
+
+
+
 @app.route("/")
 def index():
 	return flask.render_template("index.html")
@@ -279,16 +337,6 @@ def simpleGL():
 @app.route("/<usrname>/<int:uid>")
 def printName(usrname, uid):
 	return "Name: %s, ID: %d" % (usrname, uid)
-
-@app.route("/omplapp", methods=['GET'])
-def omplapp():
-	return flask.render_template("omplweb.html")    
-    
-@app.route("/omplapp/solve", methods=['POST'])
-def solveProblem():
-	# jsondata = request.get_json(False, False, True)
-	return solve(parse(request.form.get('settings', str)))
-    # return "Received data."
 
 if __name__ == "__main__":
 	app.debug = True
