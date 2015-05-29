@@ -213,14 +213,6 @@ def solve(problem):
 
     start().rotation().setAxisAngle( float(problem.start_axis_x), float(problem.start_axis_y), float(problem.start_axis_z), float(problem.start_theta) )
 
-    print "DEBUG:   start_x: %f" % start().getX()
-    print "DEBUG:   start_y: %f" % start().getY()
-    print "DEBUG:   start_z: %f" % start().getZ()
-    print "Rotation: %f" % float(problem.start_axis_x)
-    print "Rotation: %f" % float(problem.start_axis_y)
-    print "Rotation: %f" % float(problem.start_axis_z)
-    print "Rotation: %f" % float(problem.start_theta)
-
     goal = ob.State(omplSetup.getGeometricComponentStateSpace())
     goal().setX( float(problem.goal_x) )
     goal().setY( float(problem.goal_y) )

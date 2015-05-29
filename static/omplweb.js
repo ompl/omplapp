@@ -42,6 +42,48 @@ function solve(){
 		processData: false
 	});	
 }
+
+function loadConfig() {
+	var cfgFile = $("#config")[0].files[0];
+	if (cfgFile != null) {
+		var reader = new FileReader();
+		
+		reader.readAsText(cfgFile);
+		
+		reader.onload = function () {
+			var cfgData = parseConfig(reader.result);
+			for (var key in cfgData) {
+				if (cfgData.hasOwnProperty(key)) {
+					document.getElementsByName(key)[0].value = cfgData.value; 
+				} else {
+					alert("Invalid config file.")
+				}
+			}
+		}
+	} else {
+		alert("Please select a configuration file.")
+	}
+}
+
+function parseConfig(cfgText) {
+	var cfgData = {};
+	var cfgLines = cfgText.split("\n");
+	
+	for (var i=0; i < cfgLines.length; i++) {
+		if(cfgLines[i][0] != "[") {
+			var line = cfgLines[i].replace(/\s+/g, ''); //Remove extra space
+
+			var items = line.split("="); //split key/value
+			cfgData[items[0]]= items[1];
+		} else {
+			console.log("Disregarded: ", cfgLines[i]);
+		}
+	}	
+	return cfgData;
+	
+	
+}
+
 	
 	// inputData = {}
 	// inputData.name = $("#name").val();
