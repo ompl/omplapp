@@ -22,55 +22,82 @@ class Problem(object):
     def __init__(self):
         # planning problem #
 
-        # start problem info stuff #    
-        self.name = "apartment_piano"
-        self.location = "default_location" #TODO: not accurate, needs to be problem location
+        self.name = ''
+        self.location = ''
+        self.date_modified = ''
+        self.env_path = ''
+        self.robot_path = ''
+        self.start_x = 0
+        self.start_y = 0
+        self.start_z = 0
+        self.start_theta = 0
+        self.start_axis_x = 0
+        self.start_axis_y = 0
+        self.start_axis_z = 0
+        self.goal_x = 0
+        self.goal_y = 0
+        self.goal_z = 0
+        self.goal_theta = 0
+        self.goal_axis_x = 0
+        self.goal_axis_y = 0
+        self.goal_axis_z = 0
+        self.bounds_min_x = 0
+        self.bounds_min_y = 0
+        self.bounds_min_z = 0
+        self.bounds_max_x = 0
+        self.bounds_max_y = 0
+        self.bounds_max_z = 0
+        self.time_limit = 0
+        self.mem_limit = 0
+        self.run_count = 0
+        self.planners = ''
 
-        self.date_modified = "2/15/2015"
+		###########################
 
-        # start filename stuff #
-        self.env_path = "../../../robots/3D/Apartment_env.dae"
-        self.robot_path = "../../../robots/3D/Apartment_robot.dae"
+        # self.name = "apartment_piano"
+        # self.location = "default_location" #TODO: not accurate, needs to be problem location
 
-        # start problem specific stuff #
-        self.start_x = 241.81
-        self.start_y = 106.15
-        self.start_z = 36.46
-        self.start_theta = 3.12413936107
-        self.start_axis_x = 0.0
-        self.start_axis_y = 0.0
-        self.start_axis_z = -1.0
-        self.goal_x = -31.19
-        self.goal_y = -99.85
-        self.goal_z = 36.46
-        self.goal_theta = 3.12413936107
-        self.goal_axis_x = 0.0
-        self.goal_axis_y = 0.0
-        self.goal_axis_z = -1.0
-        self.bounds_min_x = -73.76
-        self.bounds_min_y = -179.59
-        self.bounds_min_z = -0.03
-        self.bounds_max_x = 295.77
-        self.bounds_max_y = 168.26
-        self.bounds_max_z = 90.39
-        
-        # benchmark specific stuff #
-        self.time_limit = 5.0
-        self.mem_limit = 10000.0
-        self.run_count = 1
-        
-        # planners for benchmarks #
-        self.planners = 'rrt'
+        # self.date_modified = "2/15/2015"
+
+        # self.env_path = "../../../robots/3D/Apartment_env.dae"
+        # self.robot_path = "../../../robots/3D/Apartment_robot.dae"
+
+        # self.start_x = 241.81
+        # self.start_y = 106.15
+        # self.start_z = 36.46
+        # self.start_theta = 3.12413936107
+        # self.start_axis_x = 0.0
+        # self.start_axis_y = 0.0
+        # self.start_axis_z = -1.0
+        # self.goal_x = -31.19
+        # self.goal_y = -99.85
+        # self.goal_z = 36.46
+        # self.goal_theta = 3.12413936107
+        # self.goal_axis_x = 0.0
+        # self.goal_axis_y = 0.0
+        # self.goal_axis_z = -1.0
+        # self.bounds_min_x = -73.76
+        # self.bounds_min_y = -179.59
+        # self.bounds_min_z = -0.03
+        # self.bounds_max_x = 295.77
+        # self.bounds_max_y = 168.26
+        # self.bounds_max_z = 90.39
+
+        # self.time_limit = 5.0
+        # self.mem_limit = 10000.0
+        # self.run_count = 1
+
+        # self.planners = 'rrt'
 
 
 
 def parse(settings, env_path, robot_path):
-    
+
     problem = Problem()
     problem.name = settings['name']
     problem.location = "default_location"
     problem.date_modified = "2/15/2015"
-    
+
 
     # start filename stuff #
     problem.env_path = env_path
@@ -96,12 +123,12 @@ def parse(settings, env_path, robot_path):
     problem.bounds_max_x = settings['bounds_max_x']
     problem.bounds_max_y = settings['bounds_max_y']
     problem.bounds_max_z = settings['bounds_max_z']
-    
+
     # benchmark specific stuff #
     problem.time_limit = settings['time_limit']
     problem.mem_limit = settings['mem_limit']
     problem.run_count = settings['run_count']
-    
+
     # planners for benchmarks #
     problem.planners = settings['planners']
 
@@ -148,7 +175,7 @@ def convert_path_to_json(path, solved=True):
 def solve(problem):
     """
     Given a Django ProblemModel,loads the problem into OMPL, solves it, unloads.
-    
+
     Returns a tuple (bool didSolve, string path).
 
     NOTE: not very efficient, but I do not want any statefulness on server side
@@ -170,14 +197,14 @@ def solve(problem):
 
     #TODO: set validity checker? how did OMPLApp handle this?
 
-    #TODO: some debug prints to check that the paths are getting set, remove later 
+    #TODO: some debug prints to check that the paths are getting set, remove later
     print problem.env_path#,problem
-    
+
     # load and set meshes
     print "OMPL:    Setting environment mesh with: %s" % str(problem.env_path)
     omplSetup.setEnvironmentMesh( str(problem.env_path) )
     omplSetup.setRobotMesh( str(problem.robot_path) )
-    
+
     # set start and goal
     start = ob.State(omplSetup.getGeometricComponentStateSpace())
     start().setX( float(problem.start_x) )
@@ -186,13 +213,21 @@ def solve(problem):
 
     start().rotation().setAxisAngle( float(problem.start_axis_x), float(problem.start_axis_y), float(problem.start_axis_z), float(problem.start_theta) )
 
+    print "DEBUG:   start_x: %f" % start().getX()
+    print "DEBUG:   start_y: %f" % start().getY()
+    print "DEBUG:   start_z: %f" % start().getZ()
+    print "Rotation: %f" % float(problem.start_axis_x)
+    print "Rotation: %f" % float(problem.start_axis_y)
+    print "Rotation: %f" % float(problem.start_axis_z)
+    print "Rotation: %f" % float(problem.start_theta)
+
     goal = ob.State(omplSetup.getGeometricComponentStateSpace())
     goal().setX( float(problem.goal_x) )
     goal().setY( float(problem.goal_y) )
-    goal().setZ( float(problem.goal_z) )  
+    goal().setZ( float(problem.goal_z) )
 
     # use Axis-Angle description to set axis and angle
-    goal().rotation().setAxisAngle( float(problem.goal_axis_x), float(problem.goal_axis_y), float(problem.goal_axis_z), float(problem.goal_theta) )    
+    goal().rotation().setAxisAngle( float(problem.goal_axis_x), float(problem.goal_axis_y), float(problem.goal_axis_z), float(problem.goal_theta) )
 
     omplSetup.setStartAndGoalStates(start,goal)
 
@@ -231,8 +266,8 @@ def solve(problem):
             # convert to json string
             ns = path.getStateCount()
             pathlist = [ omplSetup.getGeometricComponentState( ob.State(omplSetup.getGeometricComponentStateSpace(),path.getState(i)), 0) for i in range(ns) ]
-                
-            #BIG TODO: PROPERLY access states from ompl. 
+
+            #BIG TODO: PROPERLY access states from ompl.
             # For states that don't let us access them like this WILL segfault
             for state in pathlist:
                 stateList = [str(state[0]),
@@ -262,14 +297,14 @@ def solve(problem):
 
 @app.route("/omplapp", methods=['GET'])
 def omplapp():
-	return flask.render_template("omplweb.html")    
-    
+	return flask.render_template("omplweb.html")
+
 
 def allowed_file(filename):
-    if '.' in filename and filename.rsplit('.', 1)[1] == 'dae': 
+    if '.' in filename and filename.rsplit('.', 1)[1] == 'dae':
         return True
     return False
-           
+
 
 @app.route('/omplapp/upload', methods=['POST'])
 def upload():
@@ -280,20 +315,21 @@ def upload():
             robot_filename = secure_filename(robotFile.filename)
             robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
             robot_path = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
-            
+
             env_filename = secure_filename(envFile.filename)
             envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
             env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
-            
+
             print "Files saved as: " + robot_path + " and " + env_path
-            
+
             print "Will now parse configuration..."
             # Put some try/catches here
             problem = parse(request.form, env_path, robot_path)
-            
+            # problem = parse(request.form, "", "")
+
             print "Configuration has been parsed. Solving problem..."
             return solve(problem)
-            
+
         else:
             return "Error: Wrong file format. Must be .dae"
     else:

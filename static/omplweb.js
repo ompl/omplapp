@@ -17,17 +17,23 @@ function solve(){
 		type: "POST",
 		data: formData,
 		success: function(data){
-			console.log("Server returned: ", data);
 			if(data.indexOf("Error") > -1){
 				// There was an error, alert the user
 				alert(data);
 			} else {
 				// Otherwise, push the results to the page
-				$('#results').html(
-					'<pre>' +
-					JSON.stringify(data, ['solved', 'path'], ' ') +
-					'</pre>'
-				);
+				data = JSON.parse(data);
+				console.log("Results: ", data);
+				var htmlString = "<pre>";
+				if (data.solved == "false") {
+					htmlString += "<font color='red'>No solution found.</font>"
+				} else {
+					htmlString += "<font color='green'>Found solution.</font>"
+				}
+				htmlString += "<br><br>"
+				htmlString += JSON.stringify(data, ['solved', 'path'], ' ');
+				htmlString += "</pre>";
+				$('#results').html(htmlString);
 			}
 			
 		},
