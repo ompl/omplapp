@@ -52,13 +52,32 @@ function loadConfig() {
 		
 		reader.onload = function () {
 			var cfgData = parseConfig(reader.result);
-			for (var key in cfgData) {
-				if (cfgData.hasOwnProperty(key)) {
-					document.getElementsByName(key)[0].value = cfgData.value; 
-				} else {
-					alert("Invalid config file.")
-				}
-			}
+			document.getElementsByName("name")[0].value = cfgData['name'];
+			document.getElementsByName("planners")[0].value = "rrt";
+			document.getElementsByName("start_x")[0].value = cfgData['start.x'];
+			document.getElementsByName("start_y")[0].value = cfgData['start.y'];
+			document.getElementsByName("start_z")[0].value = cfgData['start.z'];
+			document.getElementsByName("start_theta")[0].value = cfgData['start.theta'];
+			document.getElementsByName("start_axis_x")[0].value = cfgData['start.axis.x'];
+			document.getElementsByName("start_axis_y")[0].value = cfgData['start.axis.y'];
+			document.getElementsByName("start_axis_z")[0].value = cfgData['start.axis.z'];
+			document.getElementsByName("goal_x")[0].value = cfgData['goal.x'];
+			document.getElementsByName("goal_y")[0].value = cfgData['goal.y'];
+			document.getElementsByName("goal_z")[0].value = cfgData['goal.z'];
+			document.getElementsByName("goal_theta")[0].value = cfgData['goal.theta'];
+			document.getElementsByName("goal_axis_x")[0].value = cfgData['goal.axis.x'];
+			document.getElementsByName("goal_axis_y")[0].value = cfgData['goal.axis.y'];
+			document.getElementsByName("goal_axis_z")[0].value = cfgData['goal.axis.z'];
+			document.getElementsByName("bounds_min_x")[0].value = cfgData['volume.min.x'];
+			document.getElementsByName("bounds_min_y")[0].value = cfgData['volume.min.y'];
+			document.getElementsByName("bounds_min_z")[0].value = cfgData['volume.min.z'];
+			document.getElementsByName("bounds_max_x")[0].value = cfgData['volume.max.x'];
+			document.getElementsByName("bounds_max_y")[0].value = cfgData['volume.max.y'];
+			document.getElementsByName("bounds_max_z")[0].value = cfgData['volume.max.z'];
+			document.getElementsByName("time_limit")[0].value = cfgData['time_limit'];
+			document.getElementsByName("mem_limit")[0].value = cfgData['mem_limit'];
+			document.getElementsByName("run_count")[0].value = cfgData['run_count'];
+
 		}
 	} else {
 		alert("Please select a configuration file.")

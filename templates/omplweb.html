@@ -18,7 +18,13 @@
 			font-size: 18px;
 		}
 		.smallbutton {
+		  	background-color: #fff;
+			border: 1px solid #000;
+			border-radius: 2px;
+			color: #000;
+		    	cursor: pointer;
 			font-size: 12px;
+			padding: 5px;
 			width: 175px;
 		}
 		button:hover {
@@ -75,7 +81,7 @@
 						<div class="subtitle">Configuration</div>
 						<input type="file" name="config" id="config">
 						</br>
-						<button class="smallbutton" onclick="loadConfig()">Load .cfg file</button>
+						<a class="smallbutton" onclick="loadConfig()">Load .cfg file</a>
 					</div>
 				</div>
 				</br>
@@ -85,7 +91,7 @@
 						<table class="table">
 							<tr>
 								<td>Name</td>
-								<td><input type="text" value="Abstract" name="name"></td>
+								<td><input type="text" value="Abst" name="name"></td>
 							</tr>
 							<tr>
 								<td>Planners</td>
