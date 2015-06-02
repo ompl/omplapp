@@ -1,50 +1,72 @@
-
+$(document).ready(function() {
+	// Load config data when .cfg file is selected
+	$("#config").change(function (){
+		loadConfig();
+	});	
+})
 
 function solve(){
+	// Check that all fields are filled in
+	var validConfig = validateFields();
 	
-	//TODO: Get user"s config / data and then post to the server for solving
-	//
-	//
-	//TODO: Wait for server"s response and display back to user.
-	
-	// sendData = '{"name" : "apartment_piano","location" : "default_location","date_modified" : "2/15/2015","env_path" : "../../../robots/3D/Apartment_env.dae","robot_path" : "../../../robots/3D/Apartment_robot.dae","start_x" : 241.81,"start_y" : 106.15,"start_z" : 36.46,"start_theta" : 3.12413936107,"start_axis_x" : 0.0,"start_axis_y" : 0.0,"start_axis_z" : -1.0,"goal_x" : -31.19,"goal_y" : -99.85,"goal_z" : 36.46,"goal_theta" : 3.12413936107,"goal_axis_x" : 0.0,"goal_axis_y" : 0.0,"goal_axis_z" : -1.0,"bounds_min_x" : -73.76,"bounds_min_y" : -179.59,"bounds_min_z" : -0.03,"bounds_max_x" : 295.77,"bounds_max_y" : 168.26,"bounds_max_z" : 90.39,"time_limit" : 5.0,"mem_limit" : 10000.0,"run_count" : 1,"planners" : "rrt"}';
-	
-	
-	var formData = new FormData($('form')[0]);
-	
-	$.ajax({
-		url: "omplapp/upload",
-		type: "POST",
-		data: formData,
-		success: function(data){
-			if(data.indexOf("Error") > -1){
-				// There was an error, alert the user
-				alert(data);
-			} else {
-				// Otherwise, push the results to the page
-				data = JSON.parse(data);
-				console.log("Results: ", data);
-				var htmlString = "<pre>";
-				if (data.solved == "false") {
-					htmlString += "<font color='red'>No solution found.</font>"
-				} else {
-					htmlString += "<font color='green'>Found solution.</font>"
-				}
-				htmlString += "<br><br>"
-				htmlString += JSON.stringify(data, ['solved', 'path'], ' ');
-				htmlString += "</pre>";
-				$('#results').html(htmlString);
+	if (validConfig == true) {
+		// Bring up the loading screen
+		$.blockUI({
+			css: {
+				border: 'none',
+				padding: '30px',
+				backgroundColor: '#000',
+				opacity: '0.7',
+				color: '#fff',
 			}
-			
-		},
-		cache: false,
-		contentType: false,
-		processData: false
-	});	
+		});
+		
+		// Read the input fields
+		var formData = new FormData($('form')[0]);
+		
+		// Send the request
+		$.ajax({
+			url: "omplapp/upload",
+			type: "POST",
+			data: formData,
+			success: function(data){
+				if(data.indexOf("{") < 0){
+					// There was an error, alert the user
+					var htmlString = "<pre><font color='red'>";
+					htmlString += data;
+					htmlString += "</font></pre>";
+					$("#results").html(htmlString);
+					$.unblockUI()
+				} else {
+					// Otherwise, push the results to the page
+					data = JSON.parse(data);
+					console.log("Results: ", data);
+					var htmlString = "<pre>";
+					if (data.solved == "false") {
+						htmlString += "<font color='red'>No solution found.</font>"
+					} else {
+						htmlString += "<font color='green'>Found solution.</font>"
+					}
+					htmlString += "<br><br>"
+					htmlString += JSON.stringify(data, ['solved', 'path'], ' ');
+					htmlString += "</pre>";
+					$('#results').html(htmlString);
+					$.unblockUI()
+				}
+			},
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+	} else {
+		// Invalid fields have been highlighted by 'validateField()'.
+	}	
 }
 
 function loadConfig() {
+	
 	var cfgFile = $("#config")[0].files[0];
+	
 	if (cfgFile != null) {
 		var reader = new FileReader();
 		
@@ -52,6 +74,8 @@ function loadConfig() {
 		
 		reader.onload = function () {
 			var cfgData = parseConfig(reader.result);
+		
+			//TODO: Make this neater
 			document.getElementsByName("name")[0].value = cfgData['name'];
 			document.getElementsByName("planners")[0].value = "rrt";
 			document.getElementsByName("start_x")[0].value = cfgData['start.x'];
@@ -80,81 +104,113 @@ function loadConfig() {
 
 		}
 	} else {
-		alert("Please select a configuration file.")
+		alert("Please select a valid configuration file.")
 	}
 }
 
 function parseConfig(cfgText) {
 	var cfgData = {};
+	
+	// Separate into lines
 	var cfgLines = cfgText.split("\n");
 	
 	for (var i=0; i < cfgLines.length; i++) {
 		if(cfgLines[i][0] != "[") {
-			var line = cfgLines[i].replace(/\s+/g, ''); //Remove extra space
-
-			var items = line.split("="); //split key/value
+			// Remove all extra spacing
+			var line = cfgLines[i].replace(/\s+/g, ''); 
+			
+			// Split into (key, value) pairs
+			var items = line.split("=");
 			cfgData[items[0]]= items[1];
 		} else {
-			console.log("Disregarded: ", cfgLines[i]);
+			// This config line isn't used
+			// console.log("Ignored: ", cfgLines[i]);
 		}
 	}	
+	
 	return cfgData;
-	
-	
 }
+
+function clearAllFields() {
+	$('.form-field').each(function () {
+		$(this).val('');
+		$(this).css("background-color", "white");
+	});
+	$('#config').val('');
+}
+
+function validateFields() {
+	var valid = true;
+	
+	// Check that all the fields have values
+	$('.form-field').each(function () {
+		if ($(this).val() === '') {
+			valid = false;
+			
+			// Highlight the incorrect field
+			$(this).css("background-color", "#fda9a0");
+		} else {
+			$(this).css("background-color", "white");
+		}
+	});
+	return valid
+}
+
+
+
 
 	
 	// inputData = {}
 	// inputData.name = $("#name").val();
-	//         inputData.start_x = $("#start_x").val();
-	//         inputData.start_y = $("#start_y").val();
-	//         inputData.start_z = $("#start_z").val();
-	//         inputData.start_theta = $("#start_theta").val();
-	//         inputData.start_axis_x = $("#start_axis_x").val();
-	//         inputData.start_axis_y = $("#start_axis_y").val();
-	//         inputData.start_axis_z = $("#start_axis_z").val();
-	//         inputData.goal_x = $("#goal_x").val();
-	//         inputData.goal_y = $("#goal_y").val();
-	//         inputData.goal_z = $("#goal_z").val();
-	//         inputData.goal_theta = $("#goal_theta").val();
-	//         inputData.goal_axis_x = $("#goal_axis_x").val();
-	//         inputData.goal_axis_y = $("#goal_axis_y").val();
-	//         inputData.goal_axis_z = $("#goal_axis_z").val();
-	//         inputData.bounds_min_x = $("#bounds_min_x").val();
-	//         inputData.bounds_min_y = $("#bounds_min_y").val();
-	//         inputData.bounds_min_z = $("#bounds_min_z").val();
-	//         inputData.bounds_max_x = $("#bounds_max_x").val();
-	//         inputData.bounds_max_y = $("#bounds_max_y").val();
-	//         inputData.bounds_max_z = $("#bounds_max_z").val();
-	//         inputData.time_limit = $("#time_limit").val();
-	//         inputData.mem_limit = $("#mem_limit").val();
-	//         inputData.run_count = $("#run_count").val();
-	//         inputData.planners = $("#planners").val();
+	//		   inputData.start_x = $("#start_x").val();
+	//		   inputData.start_y = $("#start_y").val();
+	//		   inputData.start_z = $("#start_z").val();
+	//		   inputData.start_theta = $("#start_theta").val();
+	//		   inputData.start_axis_x = $("#start_axis_x").val();
+	//		   inputData.start_axis_y = $("#start_axis_y").val();
+	//		   inputData.start_axis_z = $("#start_axis_z").val();
+	//		   inputData.goal_x = $("#goal_x").val();
+	//		   inputData.goal_y = $("#goal_y").val();
+	//		   inputData.goal_z = $("#goal_z").val();
+	//		   inputData.goal_theta = $("#goal_theta").val();
+	//		   inputData.goal_axis_x = $("#goal_axis_x").val();
+	//		   inputData.goal_axis_y = $("#goal_axis_y").val();
+	//		   inputData.goal_axis_z = $("#goal_axis_z").val();
+	//		   inputData.bounds_min_x = $("#bounds_min_x").val();
+	//		   inputData.bounds_min_y = $("#bounds_min_y").val();
+	//		   inputData.bounds_min_z = $("#bounds_min_z").val();
+	//		   inputData.bounds_max_x = $("#bounds_max_x").val();
+	//		   inputData.bounds_max_y = $("#bounds_max_y").val();
+	//		   inputData.bounds_max_z = $("#bounds_max_z").val();
+	//		   inputData.time_limit = $("#time_limit").val();
+	//		   inputData.mem_limit = $("#mem_limit").val();
+	//		   inputData.run_count = $("#run_count").val();
+	//		   inputData.planners = $("#planners").val();
 	//
-	//         inputData.location = "default_location";
-	//         inputData.date_modified = "2/15/2015";
-	//         inputData.env_path = "../../../robots/3D/Apartment_env.dae";
-	//         inputData.robot_path = "../../../robots/3D/Apartment_robot.dae";
+	//		   inputData.location = "default_location";
+	//		   inputData.date_modified = "2/15/2015";
+	//		   inputData.env_path = "../../../robots/3D/Apartment_env.dae";
+	//		   inputData.robot_path = "../../../robots/3D/Apartment_robot.dae";
 	//
 	// console.log(inputData);
 	
 	// var promise = postData(JSON.stringify(inputData));
 	//
-// 	promise.success(function (data){
-// 		console.log(data);
-// 		$('#results').html(
-// 			'<pre>' +
-// 			JSON.stringify(data, ['solved', 'path'], ' ') +
-// 			'</pre>'
-// 		);
-// 	})
+//	promise.success(function (data){
+//		console.log(data);
+//		$('#results').html(
+//			'<pre>' +
+//			JSON.stringify(data, ['solved', 'path'], ' ') +
+//			'</pre>'
+//		);
+//	})
 // }
 
 // function postData(sendData) {
-// 	return $.ajax({
-// 		url: "omplapp/solve",
-// 		type: "POST",
-// 		dataType: "json",
-// 		data: {settings : sendData}
-// 	});
+//	return $.ajax({
+//		url: "omplapp/solve",
+//		type: "POST",
+//		dataType: "json",
+//		data: {settings : sendData}
+//	});
 
