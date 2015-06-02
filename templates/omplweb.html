@@ -13,21 +13,11 @@
 		}
 		button {
 			background-color: #fff;
-			border: 1px solid #000;
-			border-radius: 2px;
+			border: 2px solid #777;
+			border-radius: 5px;
 			color: #000;
-				cursor: pointer;
+			cursor: pointer;
 			font-size: 18px;
-		}
-		.smallbutton {
-			background-color: #fff;
-			border: 1px solid #000;
-			border-radius: 2px;
-			color: #000;
-				cursor: pointer;
-			font-size: 12px;
-			padding: 5px;
-			width: 175px;
 		}
 		button:hover {
 			border-color: #64b566;
@@ -57,9 +47,14 @@
 			/* inline-block space fix */
 			margin-right:-4px;
 		}
+		.space {
+			display: inline;
+			padding: 50px;
+		}
 	</style>
 
 	<body>
+
 		<center><h2>Configure Problem</h2></center>
 		<br>
 		<br>
@@ -205,7 +200,8 @@
 
 		<div class="row row-centered">
 			<button onclick="solve()">Solve</button>
-			<button onclick="clearAllFields()">Clear Fields</button>
+			<div class="space"></div>
+			<button onclick="clearAllFields()">Clear</button>
 		</div>
 
 		<br>
@@ -215,8 +211,6 @@
 			</div>
 		</div>
 		</div>
-
-
 
 	</body>
 

@@ -1,20 +1,20 @@
-import json
 import os
+import json
+
+import flask
+from werkzeug import secure_filename
 
 from ompl import base as ob
 from ompl import geometric as og
 from ompl import control as oc
 from ompl import app as oa
 
-import flask
-from flask import request
-from werkzeug import secure_filename
-
 # Location of user uploaded .dae files
 UPLOAD_FOLDER = '/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/uploads'
 
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
+
 
 
 ########## OMPL Code ##########
@@ -66,55 +66,16 @@ class Problem(object):
 		self.planners = ''
 
 
+def allowed_file(filename):
+	"""
+	Checks that the parameter is a .dae file.
+	"""
 
+	if '.' in filename and filename.rsplit('.', 1)[1] == 'dae':
+		# Extract the file extension and return true if dae
+		return True
 
-
-
-
-
-
-
-
-
-		###########################
-		##	 Hard coded values	 ##
-		###########################
-
-
-		# self.name = "apartment_piano"
-		# self.location = "default_location" #TODO: not accurate, needs to be problem location
-
-		# self.date_modified = "2/15/2015"
-
-		# self.env_path = "../../../robots/3D/Apartment_env.dae"
-		# self.robot_path = "../../../robots/3D/Apartment_robot.dae"
-
-		# self.start_x = 241.81
-		# self.start_y = 106.15
-		# self.start_z = 36.46
-		# self.start_theta = 3.12413936107
-		# self.start_axis_x = 0.0
-		# self.start_axis_y = 0.0
-		# self.start_axis_z = -1.0
-		# self.goal_x = -31.19
-		# self.goal_y = -99.85
-		# self.goal_z = 36.46
-		# self.goal_theta = 3.12413936107
-		# self.goal_axis_x = 0.0
-		# self.goal_axis_y = 0.0
-		# self.goal_axis_z = -1.0
-		# self.bounds_min_x = -73.76
-		# self.bounds_min_y = -179.59
-		# self.bounds_min_z = -0.03
-		# self.bounds_max_x = 295.77
-		# self.bounds_max_y = 168.26
-		# self.bounds_max_z = 90.39
-
-		# self.time_limit = 5.0
-		# self.mem_limit = 10000.0
-		# self.run_count = 1
-
-		# self.planners = 'rrt'
+	return False
 
 
 def parse(settings, env_path, robot_path):
@@ -131,37 +92,64 @@ def parse(settings, env_path, robot_path):
 	# start filename stuff #
 	problem.env_path = env_path
 	problem.robot_path = robot_path
+
 	# start problem specific stuff #
-	problem.start_x = settings['start_x']
-	problem.start_y = settings['start_y']
-	problem.start_z = settings['start_z']
-	problem.start_theta = settings['start_theta']
-	problem.start_axis_x = settings['start_axis_x']
-	problem.start_axis_y = settings['start_axis_y']
-	problem.start_axis_z = settings['start_axis_z']
-	problem.goal_x = settings['goal_x']
-	problem.goal_y = settings['goal_y']
-	problem.goal_z = settings['goal_z']
-	problem.goal_theta = settings['goal_theta']
-	problem.goal_axis_x = settings['goal_axis_x']
-	problem.goal_axis_y = settings['goal_axis_y']
-	problem.goal_axis_z = settings['goal_axis_z']
-	problem.bounds_min_x = settings['bounds_min_x']
-	problem.bounds_min_y = settings['bounds_min_y']
-	problem.bounds_min_z = settings['bounds_min_z']
-	problem.bounds_max_x = settings['bounds_max_x']
-	problem.bounds_max_y = settings['bounds_max_y']
-	problem.bounds_max_z = settings['bounds_max_z']
+	problem.start_x = float(settings['start_x'])
+	problem.start_y = float(settings['start_y'])
+	problem.start_z = float(settings['start_z'])
+	problem.start_theta = float(settings['start_theta'])
+	problem.start_axis_x = float(settings['start_axis_x'])
+	problem.start_axis_y = float(settings['start_axis_y'])
+	problem.start_axis_z = float(settings['start_axis_z'])
+	problem.goal_x = float(settings['goal_x'])
+	problem.goal_y = float(settings['goal_y'])
+	problem.goal_z = float(settings['goal_z'])
+	problem.goal_theta = float(settings['goal_theta'])
+	problem.goal_axis_x = float(settings['goal_axis_x'])
+	problem.goal_axis_y = float(settings['goal_axis_y'])
+	problem.goal_axis_z = float(settings['goal_axis_z'])
+	problem.bounds_min_x = float(settings['bounds_min_x'])
+	problem.bounds_min_y = float(settings['bounds_min_y'])
+	problem.bounds_min_z = float(settings['bounds_min_z'])
+	problem.bounds_max_x = float(settings['bounds_max_x'])
+	problem.bounds_max_y = float(settings['bounds_max_y'])
+	problem.bounds_max_z = float(settings['bounds_max_z'])
 
 	# benchmark specific stuff #
-	problem.time_limit = settings['time_limit']
-	problem.mem_limit = settings['mem_limit']
-	problem.run_count = settings['run_count']
+	problem.time_limit = float(settings['time_limit'])
+	problem.mem_limit = float(settings['mem_limit'])
+	problem.run_count = float(settings['run_count'])
 
 	# planners for benchmarks #
 	problem.planners = settings['planners']
 
 	return problem
+
+
+def format_solution(path, messages, solved):
+	"""
+	Formats the either the solution, or a failure message for delivery to the
+	client.
+	"""
+
+	solution = {}
+
+	if solved:
+		solution['solved'] = 'true'
+	else:
+		solution['solved'] = 'false'
+
+	solution['path'] = str(path)
+
+	message_string = ""
+
+	# Concatenate the messages into a single string
+	for message in messages:
+		message_string += message
+
+	solution['messages'] = message_string
+
+	return solution
 
 
 def solve(problem):
@@ -170,7 +158,82 @@ def solve(problem):
 	data, solves the motion planning problem and returns either the solution
 	path or a failure message.
 	"""
-	print problem
+
+	# Array to hold information and user messages
+	messages = []
+
+	## Configure the problem
+	space = ob.SE3StateSpace()
+
+	# Set the dimensions of the bounding box
+	bounds = ob.RealVectorBounds(3)
+
+	bounds.low[0] = problem.bounds_min_x
+	bounds.low[1] = problem.bounds_min_y
+	bounds.low[2] = problem.bounds_min_z
+
+	bounds.high[0] = problem.bounds_max_x
+	bounds.high[1] = problem.bounds_max_y
+	bounds.high[2] = problem.bounds_max_z
+
+	space.setBounds(bounds)
+
+	# Create an instance of SimpleSetup
+	ompl_setup = og.SimpleSetup(space)
+
+	# TODO: Set state validity checker here?
+
+	# Set the start and goal states
+	start = ob.State(space)
+	start().setXYZ(problem.start_x, problem.start_y, problem.start_z)
+	start().rotation().setAxisAngle(
+			problem.start_axis_x, problem.start_axis_y,
+			problem.start_axis_z, problem.start_theta
+	)
+
+	goal = ob.State(space)
+	goal().setXYZ(problem.goal_x, problem.goal_y, problem.goal_z)
+	goal().rotation().setAxisAngle(
+			problem.goal_axis_x, problem.goal_axis_y,
+			problem.goal_axis_z, problem.goal_theta
+	)
+
+	ompl_setup.setStartAndGoalStates(start, goal)
+
+	## Solve the problem
+	solution = {}
+	solved = ompl_setup.solve(problem.time_limit)
+
+
+	## Check for validity
+	if solved:
+		path = ompl_setup.getSolutionPath();
+		initialValid = path.check()
+
+		if initialValid:
+			# If if initially valid, attempt to simplify
+			ompl_setup.simplifySolution()
+			# Get the simplified path
+			simple_path = ompl_setup.getSolutionPath()
+			simplifyValid = simple_path.check()
+			if simplifyValid:
+				solution = format_solution(simple_path, messages, True)
+			else:
+				messages.append("Simplified path was invalid. Returned non-simplified path.")
+				solution = format_solution(path, messages, True)
+
+			# TODO: Interpolation?
+
+		else :
+			messages.append("Path reported by planner seems to be invalid.")
+			solution = format_solution(path, messages, False)
+	else:
+		solution['solved'] = 'false'
+
+	solution['name'] = problem.name
+	solution['planner'] = ompl_setup.getPlanner().getName()
+
+	return json.dumps(solution)
 
 
 ########## Flask Code ##########
@@ -183,18 +246,6 @@ def omplapp():
 	"""
 
 	return flask.render_template("omplweb.html")
-
-
-def allowed_file(filename):
-	"""
-	Checks that the parameter is a .dae file.
-	"""
-
-	if '.' in filename and filename.rsplit('.', 1)[1] == 'dae':
-		# Extract the file extension and return true if dae
-		return True
-
-	return False
 
 
 @app.route('/omplapp/upload', methods=['POST'])
@@ -211,8 +262,8 @@ def upload():
 
 	"""
 
-	robotFile = request.files['robot']
-	envFile = request.files['env']
+	robotFile = flask.request.files['robot']
+	envFile = flask.request.files['env']
 
 	if robotFile and envFile:
 		if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
@@ -230,7 +281,7 @@ def upload():
 
 			print "SERVER: Will now parse configuration..."
 			#TODO# Put some try/catches here
-			problem = parse(request.form, env_path, robot_path)
+			problem = parse(flask.request.form, env_path, robot_path)
 
 			print "SERVER: Configuration has been parsed. Solving problem..."
 			solution = solve(problem);

@@ -2,13 +2,13 @@ $(document).ready(function() {
 	// Load config data when .cfg file is selected
 	$("#config").change(function (){
 		loadConfig();
-	});	
+	});
 })
 
 function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
-	
+
 	if (validConfig == true) {
 		// Bring up the loading screen
 		$.blockUI({
@@ -20,23 +20,26 @@ function solve(){
 				color: '#fff',
 			}
 		});
-		
+
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
-		
+
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
 			type: "POST",
 			data: formData,
 			success: function(data){
-				if(data.indexOf("{") < 0){
+				$.unblockUI()
+
+				console.log(data);
+
+				if(data.indexOf("Solution found.") < 0){
 					// There was an error, alert the user
 					var htmlString = "<pre><font color='red'>";
 					htmlString += data;
 					htmlString += "</font></pre>";
 					$("#results").html(htmlString);
-					$.unblockUI()
 				} else {
 					// Otherwise, push the results to the page
 					data = JSON.parse(data);
@@ -48,10 +51,10 @@ function solve(){
 						htmlString += "<font color='green'>Found solution.</font>"
 					}
 					htmlString += "<br><br>"
-					htmlString += JSON.stringify(data, ['solved', 'path'], ' ');
+					htmlString += data;
+					// htmlString += JSON.stringify(data, ['solved', 'path'], ' ');
 					htmlString += "</pre>";
 					$('#results').html(htmlString);
-					$.unblockUI()
 				}
 			},
 			cache: false,
@@ -60,21 +63,21 @@ function solve(){
 		});
 	} else {
 		// Invalid fields have been highlighted by 'validateField()'.
-	}	
+	}
 }
 
 function loadConfig() {
-	
+
 	var cfgFile = $("#config")[0].files[0];
-	
+
 	if (cfgFile != null) {
 		var reader = new FileReader();
-		
+
 		reader.readAsText(cfgFile);
-		
+
 		reader.onload = function () {
 			var cfgData = parseConfig(reader.result);
-		
+
 			//TODO: Make this neater
 			document.getElementsByName("name")[0].value = cfgData['name'];
 			document.getElementsByName("planners")[0].value = "rrt";
@@ -110,15 +113,15 @@ function loadConfig() {
 
 function parseConfig(cfgText) {
 	var cfgData = {};
-	
+
 	// Separate into lines
 	var cfgLines = cfgText.split("\n");
-	
+
 	for (var i=0; i < cfgLines.length; i++) {
 		if(cfgLines[i][0] != "[") {
 			// Remove all extra spacing
-			var line = cfgLines[i].replace(/\s+/g, ''); 
-			
+			var line = cfgLines[i].replace(/\s+/g, '');
+
 			// Split into (key, value) pairs
 			var items = line.split("=");
 			cfgData[items[0]]= items[1];
@@ -126,8 +129,8 @@ function parseConfig(cfgText) {
 			// This config line isn't used
 			// console.log("Ignored: ", cfgLines[i]);
 		}
-	}	
-	
+	}
+
 	return cfgData;
 }
 
@@ -141,12 +144,12 @@ function clearAllFields() {
 
 function validateFields() {
 	var valid = true;
-	
+
 	// Check that all the fields have values
 	$('.form-field').each(function () {
 		if ($(this).val() === '') {
 			valid = false;
-			
+
 			// Highlight the incorrect field
 			$(this).css("background-color", "#fda9a0");
 		} else {
@@ -159,7 +162,7 @@ function validateFields() {
 
 
 
-	
+
 	// inputData = {}
 	// inputData.name = $("#name").val();
 	//		   inputData.start_x = $("#start_x").val();
@@ -193,7 +196,7 @@ function validateFields() {
 	//		   inputData.robot_path = "../../../robots/3D/Apartment_robot.dae";
 	//
 	// console.log(inputData);
-	
+
 	// var promise = postData(JSON.stringify(inputData));
 	//
 //	promise.success(function (data){
