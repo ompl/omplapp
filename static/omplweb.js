@@ -30,32 +30,34 @@ function solve(){
 			type: "POST",
 			data: formData,
 			success: function(data){
-				$.unblockUI()
+				data = JSON.parse(data);
 
-				console.log(data);
+				var html = "";
 
-				if(data.indexOf("Solution found.") < 0){
-					// There was an error, alert the user
-					var htmlString = "<pre><font color='red'>";
-					htmlString += data;
-					htmlString += "</font></pre>";
-					$("#results").html(htmlString);
+				html = "<pre>";
+				html += data.name;
+				html += "<br>";
+				html += data.planner;
+				html += "<br>";
+
+
+				if (data.solved == "true") {
+					html += "<font color='green'>Found solution.</font><br><br>";
 				} else {
-					// Otherwise, push the results to the page
-					data = JSON.parse(data);
-					console.log("Results: ", data);
-					var htmlString = "<pre>";
-					if (data.solved == "false") {
-						htmlString += "<font color='red'>No solution found.</font>"
-					} else {
-						htmlString += "<font color='green'>Found solution.</font>"
-					}
-					htmlString += "<br><br>"
-					htmlString += data;
-					// htmlString += JSON.stringify(data, ['solved', 'path'], ' ');
-					htmlString += "</pre>";
-					$('#results').html(htmlString);
+					html += "<font color='red'>No solution found.</font><br><br>";
 				}
+
+				html += data.messages;
+				html += "<br><br>"
+
+				html += "Path Length: " + data.length + "<br>";
+
+				html += data.path;
+
+				html += "</pre>";
+
+				$.unblockUI()
+				$('#results').html(html);
 			},
 			cache: false,
 			contentType: false,

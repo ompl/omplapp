@@ -126,7 +126,7 @@ def parse(settings, env_path, robot_path):
 	return problem
 
 
-def format_solution(path, messages, solved):
+def format_solution(path, solved):
 	"""
 	Formats the either the solution, or a failure message for delivery to the
 	client.
@@ -136,18 +136,13 @@ def format_solution(path, messages, solved):
 
 	if solved:
 		solution['solved'] = 'true'
+		solution['length'] = path.length()
 	else:
 		solution['solved'] = 'false'
+		solution['length'] = 0
 
+	# TODO: Better, neater formatting of path
 	solution['path'] = str(path)
-
-	message_string = ""
-
-	# Concatenate the messages into a single string
-	for message in messages:
-		message_string += message
-
-	solution['messages'] = message_string
 
 	return solution
 
@@ -159,8 +154,8 @@ def solve(problem):
 	path or a failure message.
 	"""
 
-	# Array to hold information and user messages
-	messages = []
+	# Buffer to hold information and user messages
+	messages = "Messages: \n"
 
 	## Configure the problem
 	space = ob.SE3StateSpace()
@@ -217,21 +212,26 @@ def solve(problem):
 			simple_path = ompl_setup.getSolutionPath()
 			simplifyValid = simple_path.check()
 			if simplifyValid:
-				solution = format_solution(simple_path, messages, True)
+				messages += "Simplified path was found.\n"
+				solution = format_solution(simple_path, True)
 			else:
-				messages.append("Simplified path was invalid. Returned non-simplified path.")
-				solution = format_solution(path, messages, True)
+				messages += "Simplified path was invalid. Returned non-simplified path.\n"
+				solution = format_solution(path, True)
 
 			# TODO: Interpolation?
 
 		else :
-			messages.append("Path reported by planner seems to be invalid.")
-			solution = format_solution(path, messages, False)
+			messages += "Path reported by planner seems to be invalid.\n"
+			solution = format_solution(path, False)
 	else:
-		solution['solved'] = 'false'
+		messages += "No valid path was found with the provided configuration.\n"
+		solution = format_solution(None, False)
+
+	print messages
 
 	solution['name'] = problem.name
 	solution['planner'] = ompl_setup.getPlanner().getName()
+	solution['messages'] = messages
 
 	return json.dumps(solution)
 
