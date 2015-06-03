@@ -1,7 +1,7 @@
 #!/bin/sh
 rm -rf html
 doxygen Doxyfile
-cp -r ../ompl/doc/css ../ompl/doc/fonts ../ompl/doc/images ../ompl/doc/js ../ompl/doc/php ../ompl/doc/ieee-ram-2012-ompl.pdf images html
+cp -r ../ompl/doc/css ../ompl/doc/fonts ../ompl/doc/images ../ompl/doc/js ../ompl/doc/ieee-ram-2012-ompl.pdf images html
 
 cd html
 for f in md_doc_markdown_*; do mv $f `echo $f | cut -c17-1000`; done
