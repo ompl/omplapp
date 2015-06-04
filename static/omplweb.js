@@ -11,15 +11,15 @@ function solve(){
 
 	if (validConfig == true) {
 		// Bring up the loading screen
-		$.blockUI({
-			css: {
-				border: 'none',
-				padding: '30px',
-				backgroundColor: '#000',
-				opacity: '0.7',
-				color: '#fff',
-			}
-		});
+		// $.blockUI({
+			// css: {
+				// border: 'none',
+				// padding: '30px',
+				// backgroundColor: '#000',
+				// opacity: '0.7',
+				// color: '#fff',
+			// }
+		// });
 
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
@@ -56,7 +56,7 @@ function solve(){
 
 				html += "</pre>";
 
-				$.unblockUI()
+				// $.unblockUI()
 				$('#results').html(html);
 			},
 			cache: false,
@@ -82,7 +82,7 @@ function loadConfig() {
 
 			//TODO: Make this neater
 			document.getElementsByName("name")[0].value = cfgData['name'];
-			document.getElementsByName("planners")[0].value = "rrt";
+			// document.getElementsByName("planners")[0].value = "";
 			document.getElementsByName("start_x")[0].value = cfgData['start.x'];
 			document.getElementsByName("start_y")[0].value = cfgData['start.y'];
 			document.getElementsByName("start_z")[0].value = cfgData['start.z'];

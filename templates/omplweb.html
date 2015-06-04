@@ -4,7 +4,6 @@
 		<script src="{{ url_for('static', filename='jquery-2.1.4.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='jquery.blockUI.js') }}"></script>
 		<script src="{{ url_for('static', filename='omplweb.js') }}"></script>
-
 	</head>
 
 	<style>
@@ -79,6 +78,31 @@
 						<div class="subtitle">Configuration</div>
 						<input type="file" name="config" id="config">
 					</div>
+					<div class="col-md-2 col-centered">
+						<div class="subtitle">Planner</div>
+							<select name="planners" class="form-field">
+								<option value="geometric.BKPIECE1">BKPIECE1</option>
+								<option value="geometric.EST">EST</option>
+								<option value="geometric.FMT">FMT</option>
+								<option value="geometric.KPIECE1" selected="selected">KPIECE1</option>
+								<option value="geometric.LBKPIECE1">LBKPIECE1</option>
+								<option value="geometric.LBTRRT">LBTRRT</option>
+								<option value="geometric.LazyPRM">LazyPRM</option>
+								<option value="geometric.LazyPRMstar">LazyPRMstar</option>
+								<option value="geometric.LazyRRT">LazyRRT</option>
+								<option value="geometric.PDST">PDST</option>
+								<option value="geometric.PRM">PRM</option>
+								<option value="geometric.PRMstar">PRMstar</option>
+								<option value="geometric.RRT">RRT</option>
+								<option value="geometric.RRTConnect">RRTConnect</option>
+								<option value="geometric.RRTstar">RRTstar</option>
+								<option value="geometric.SBL">SBL</option>
+								<option value="geometric.SPARS">SPARS</option>
+								<option value="geometric.SPARStwo">SPARStwo</option>
+								<option value="geometric.STRIDE">STRIDE</option>
+								<option value="geometric.TRRT">TRRT</option>
+							</select>
+					</div>
 				</div>
 				</br>
 				<hr>
@@ -88,10 +112,6 @@
 							<tr>
 								<td>Name</td>
 								<td><input type="text" name="name" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Planners</td>
-								<td><input type="text" name="planners" class="form-field"></td>
 							</tr>
 							<tr>
 								<td>Start X</td>

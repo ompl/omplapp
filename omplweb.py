@@ -4,6 +4,7 @@ import json
 import flask
 from werkzeug import secure_filename
 
+import ompl
 from ompl import base as ob
 from ompl import geometric as og
 from ompl import control as oc
@@ -195,6 +196,21 @@ def solve(problem):
 
 	ompl_setup.setStartAndGoalStates(start, goal)
 
+
+	# Load the planner
+	space_info = ompl_setup.getSpaceInformation()
+
+	if problem.planners != "":
+		# If user selected a planner, load it
+		planner = eval("ompl.%s(space_info)" % problem.planners)
+		ompl_setup.setPlanner(planner)
+		messages += "Using planner: %s" % ompl_setup.getPlanner().getName()
+	else:
+		messages += "No planner specified, using default"
+
+
+	print ompl_setup.getStateValidityChecker()
+
 	## Solve the problem
 	solution = {}
 	solved = ompl_setup.solve(problem.time_limit)
@@ -203,20 +219,23 @@ def solve(problem):
 	## Check for validity
 	if solved:
 		path = ompl_setup.getSolutionPath();
+		# print ompl_setup.getSolutionPath().printAsMatrix()
 		initialValid = path.check()
 
 		if initialValid:
+			solution = format_solution(path, True)
+
 			# If if initially valid, attempt to simplify
-			ompl_setup.simplifySolution()
+			# ompl_setup.simplifySolution()
 			# Get the simplified path
-			simple_path = ompl_setup.getSolutionPath()
-			simplifyValid = simple_path.check()
-			if simplifyValid:
-				messages += "Simplified path was found.\n"
-				solution = format_solution(simple_path, True)
-			else:
-				messages += "Simplified path was invalid. Returned non-simplified path.\n"
-				solution = format_solution(path, True)
+			# simple_path = ompl_setup.getSolutionPath()
+			# simplifyValid = simple_path.check()
+			# if simplifyValid:
+				# messages += "Simplified path was found.\n"
+				# solution = format_solution(simple_path, True)
+			# else:
+				# messages += "Simplified path was invalid. Returned non-simplified path.\n"
+				# solution = format_solution(path, True)
 
 			# TODO: Interpolation?
 
