@@ -1,15 +1,140 @@
+
+var planners= {
+	"BKPIECE1" : {
+		"Border fraction" : 0.90,
+		"Range" : 0.0
+	},
+	"EST" : {
+		"Goal bias" : 0.05,
+		"Range" : 0.0
+	},
+	"FMT" : {
+		"Free space volume" : 1.0,
+		"Num samples" : 1000.0,
+		"Radius multiplier" : 1.10
+	},
+	"KPIECE1" : {
+		"Border fraction" : 0.90,
+		"Goal bias" : 0.05,
+		"Range" : 0.0
+	},
+	"LBKPIECE1" : {
+		"Border fraction" : 0.90,
+		"Range" : 0.0
+	},
+	"LBTRRT" : {
+		"Epsilon" : 0.40,
+		"Goal bias" : 0.05,
+		"Range" : 0.0
+	},
+	"LazyPRM" : {
+		"Max nearest neighbors" : 8,
+		"Range" : 0.0
+	},
+	"LazyPRMstar" : {
+		"Max nearest neighbors" : 8,
+		"Range" : 0
+	},
+	"LazyRRT" : {
+		"Goal bias" : 0.05,
+		"Range" : 0.0
+	},
+	"PDST" : {
+		"Goal bias" : 0.05,
+	},
+	"PRM" : {
+		"Max nearest neighbors" : 8,
+	},
+	"PRMstar" : {
+		"Max nearest neighbors" : 8,
+	},
+	"RRT" : {
+		"Goal bias" : 0.05,
+		"Range" : 0.0
+	},
+	"RRTConnect" : {
+		"Range" : 0.0
+	},
+	"RRTstar" : {
+		"Delay collision checking" : "False",
+		"Goal bias" : 0.05,
+		"Prune" : "False",
+		"Range" : 0.0
+	},
+	"SBL" : {
+		"Range" : 0.0
+	},
+	"SPARS" : {
+		"Dense delta fraction" : 0.0010,
+		"Max failures" : 1000.0,
+		"Sparse delta fraction" : 0.25,
+		"Stretch factor" : 3.0
+	},
+	"SPARStwo" : {
+		"Dense delta fraction" : 0.0010,
+		"Max failures" : 3000.0,
+		"Sparse delta fraction" : 0.25,
+		"Stretch factor" : 3.0
+
+	},
+	"STRIDE" : {
+		"Degree" : 16.0,
+		"Estimated dimension" : 1.0,
+		"Goal bias" : 0.05,
+		"Max degree" : 18.0,
+		"Max pts per leaf" : 6.0,
+		"Min degree" : 12.0,
+		"Min valid path fraction" : 0.20,
+		"Range" : 0.0,
+		"Use projected distance" : "False"
+	},
+	"TRRT" : {
+		"Goal bias" : 0.05,
+		"Max states failed" : 10.0,
+		"Range" : 0.0,
+		"Temp change factor" : 2.00
+	}
+}
+
+
+
 $(document).ready(function() {
 	// Load config data when .cfg file is selected
 	$("#config").change(function (){
 		loadConfig();
 	});
+
+
+	// Default planner
+	var planner_name = "KPIECE1";
+	var planner_params = planners["KPIECE1"]
+
+	// When user picks planner, update our info
+	$("#planners").change(function() {
+		planner_name = $("#planners").val().split(".")[1];
+		planner_params = planners[planner_name];
+
+		
+
+		$("#generalConfig").collapse("hide");
+		$("#plannerConfig").collapse("show");
+	});
 })
+
+
+function load_planner_params() {
+}
+
 
 function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
 
 	if (validConfig == true) {
+		var html = "";
+		html += "<h2><center>Results</h2>"
+		$('#results').html(html);
+		
 		// Bring up the loading screen
 		$.blockUI({
 			css: {
@@ -32,9 +157,6 @@ function solve(){
 			success: function(data){
 				data = JSON.parse(data);
 
-				var html = "";
-
-				html += "<h2><center>Results</h2>"
 				html += "<pre>";
 				html += data.name;
 
@@ -57,6 +179,11 @@ function solve(){
 				$('#plannerConfig').collapse('hide');
 				$.unblockUI();
 				$('#results').html(html);
+			},
+			error: function(data) {
+				$.unblockUI();
+				alert("Server responded with an error.");
+				console.log(data);
 			},
 			cache: false,
 			contentType: false,
@@ -221,4 +348,5 @@ function validateFields() {
 //		dataType: "json",
 //		data: {settings : sendData}
 //	});
+
 

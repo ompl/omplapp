@@ -207,10 +207,10 @@ def solve(problem):
 		# If user selected a planner, load it
 		planner = eval("ompl.%s(space_info)" % problem.planners)
 		ompl_setup.setPlanner(planner)
+		print "Planner range: %f" % planner.getRange()
 		messages += "Using planner: %s" % ompl_setup.getPlanner().getName()
 	else:
 		messages += "No planner specified, using default"
-
 
 	print ompl_setup.getStateValidityChecker()
 
@@ -326,6 +326,4 @@ def index():
 if __name__ == "__main__":
 	app.debug = True
 	app.run()
-
-
 
