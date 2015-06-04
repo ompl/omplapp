@@ -175,9 +175,12 @@ def solve(problem):
 	space.setBounds(bounds)
 
 	# Create an instance of SimpleSetup
-	ompl_setup = og.SimpleSetup(space)
+	# ompl_setup = og.SimpleSetup(space)
+	ompl_setup = oa.SE3RigidBodyPlanning()
 
 	# TODO: Set state validity checker here?
+	ompl_setup.setEnvironmentMesh(str(problem.env_path))
+	ompl_setup.setRobotMesh(str(problem.robot_path))
 
 	# Set the start and goal states
 	start = ob.State(space)
