@@ -11,15 +11,15 @@ function solve(){
 
 	if (validConfig == true) {
 		// Bring up the loading screen
-		// $.blockUI({
-			// css: {
-				// border: 'none',
-				// padding: '30px',
-				// backgroundColor: '#000',
-				// opacity: '0.7',
-				// color: '#fff',
-			// }
-		// });
+		$.blockUI({
+			css: {
+				border: 'none',
+				padding: '30px',
+				backgroundColor: '#000',
+				opacity: '0.7',
+				color: '#fff',
+			}
+		});
 
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
@@ -34,17 +34,14 @@ function solve(){
 
 				var html = "";
 
-				html = "<pre>";
+				html += "<h2><center>Results</h2>"
+				html += "<pre>";
 				html += data.name;
-				html += "<br>";
-				html += data.planner;
-				html += "<br>";
-
 
 				if (data.solved == "true") {
-					html += "<font color='green'>Found solution.</font><br><br>";
+					html += "<font color='green'>: Found solution.</font><br><br>";
 				} else {
-					html += "<font color='red'>No solution found.</font><br><br>";
+					html += "<font color='red'>: No solution found.</font><br><br>";
 				}
 
 				html += data.messages;
@@ -56,7 +53,9 @@ function solve(){
 
 				html += "</pre>";
 
-				// $.unblockUI()
+				$('#generalConfig').collapse('hide');
+				$('#plannerConfig').collapse('hide');
+				$.unblockUI();
 				$('#results').html(html);
 			},
 			cache: false,
@@ -142,6 +141,8 @@ function clearAllFields() {
 		$(this).css("background-color", "white");
 	});
 	$('#config').val('');
+	$('#results').html('');
+	$('#generalConfig').collapse('show');
 }
 
 function validateFields() {
@@ -149,7 +150,7 @@ function validateFields() {
 
 	// Check that all the fields have values
 	$('.form-field').each(function () {
-		if ($(this).val() === '') {
+		if ($(this).val() === '' || $(this).val() == null) {
 			valid = false;
 
 			// Highlight the incorrect field
@@ -158,6 +159,8 @@ function validateFields() {
 			$(this).css("background-color", "white");
 		}
 	});
+
+
 	return valid
 }
 
