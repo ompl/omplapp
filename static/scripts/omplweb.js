@@ -97,17 +97,19 @@ var planners= {
 }
 
 
-
 $(document).ready(function() {
 	// Load config data when .cfg file is selected
 	$("#config").change(function (){
 		loadConfig();
 	});
 
-
+	$("#customProblemBtn").click(function() {
+		$("#problems").val('');
+		$("#customProblem").toggle('show');
+		$("#generalConfig").toggle('show');
+	});
 	// Default planner
 	load_planner_params("KPIECE1", planners["KPIECE1"]);
-	$("#generalConfig").collapse("show");
 
 	// When user picks planner, update our info
 	$("#planners").change(function() {
@@ -147,7 +149,7 @@ function solve(){
 	if (validConfig == true) {
 		var html = "";
 		html += "<h2><center>Results</h2>"
-		$('#results').html(html);
+		// $('#results').html(html);
 
 		// Bring up the loading screen
 		$.blockUI({
@@ -183,8 +185,6 @@ function solve(){
 				html += data.messages;
 				html += "<br><br>"
 
-				html += "Path Length: " + data.length + "<br>";
-
 				html += data.path;
 
 				html += "</pre>";
@@ -195,8 +195,12 @@ function solve(){
 				$('#results').html(html);
 			},
 			error: function(data) {
+				$('#generalConfig').collapse('hide');
+				$('#plannerConfig').collapse('hide');
 				$.unblockUI();
-				alert("Server responded with an error.");
+				html += "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
+				$('#results').html(html);
+
 				console.log(data);
 			},
 			cache: false,
@@ -205,8 +209,10 @@ function solve(){
 		});
 	} else {
 		// Invalid fields have been highlighted by 'validateField()'.
+		alert("Select a problem from the dropdown, or upload a robot, environment, and configuration.");
 	}
 }
+
 
 function loadConfig() {
 	var cfgFile = $("#config")[0].files[0];
@@ -252,6 +258,7 @@ function loadConfig() {
 	}
 }
 
+
 function parseConfig(cfgText) {
 	var cfgData = {};
 
@@ -275,6 +282,7 @@ function parseConfig(cfgText) {
 	return cfgData;
 }
 
+
 function clearAllFields() {
 	$('.form-field').each(function () {
 		$(this).val('');
@@ -285,26 +293,44 @@ function clearAllFields() {
 	$('#generalConfig').collapse('show');
 }
 
+
 function validateFields() {
-	var valid = true;
+	// Check that a problem has been selected
+	if ($('#problems').val() != null && $('#planners').val() != null) {
+		return true;
+	}
 
-	// Check that all the fields have values
-	$('.form-field').each(function () {
-		if ($(this).val() === '' || $(this).val() == null) {
-			valid = false;
+	// Check that a planner has been selected
+	if ($('#planners').val() == null) {
+		alert("Please select a planner from the drop down menu.");
+		return false;
+	}
 
-			// Highlight the incorrect field
-			$(this).css("background-color", "#fda9a0");
-		} else {
-			$(this).css("background-color", "white");
-		}
-	});
+	// Check that a planner has been selected
+	if ($('#problems').val() == null && $('#planners').val() == null) {
+		alert("Please select a problem and planner from the drop down menus.");
+		return false;
+	}
 
+	// Check if the user uploaded a custom problem
+	if ($('#problems').val() == null && $('#planners').val() != null) {
+		var valid = true;
 
-	return valid
+		// Ensure that the all the needed fields for a problem have values
+		$('.form-field').each(function () {
+			if ($(this).val() === '') {
+				valid = false;
+
+				// Highlight the incorrect field
+				$(this).css("background-color", "#fda9a0");
+			} else {
+				$(this).css("background-color", "white");
+			}
+		});
+		return valid;
+	}
+
 }
-
-
 
 
 
