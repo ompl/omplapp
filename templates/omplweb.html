@@ -1,48 +1,16 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
 		<script src="{{ url_for('static', filename='scripts/jquery-2.1.4.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/jquery.blockUI.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/omplweb.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/bootstrap.min.js') }}"></script>
 	</head>
 
-	<style>
-		h1, h2, h3, h4{
-			font-weight: 200;
-		}
-		hr {
-			border-width: 1.5px;
-			border-color: black;
-			width: 80%;
-		}
-		.subtitle {
-			font-size: 16px;
-			font-weight: 600;
-		}
-		/* centered columns styles */
-		.row-centered {
-			text-align:center;
-		}
-		.col-centered {
-			display:inline-block;
-			float:none;
-			/* reset the text-align */
-			text-align:left;
-			/* inline-block space fix */
-			margin-right:-4px;
-		}
-		.space {
-			display: inline;
-			padding: 50px;
-		Ê
-	</style>
-
 	<body>
-
 		<center><h2>Configure Problem</h2></center>
-		<br>
-		<br>
+		<br><br>
 		<div class="container-fluid">
 			<form enctype="multipart/form-data">
 				<div class="row row-centered">
@@ -52,6 +20,45 @@
 				</div>
 				</br>
 				<div class="row row-centered">
+					<div class="col-md-2 col-centered">
+						<div class="subtitle">Problem</div>
+						<select name="problems" id="problems" class="form-field">
+							<option value="abstract">Abstract</option>
+							<option value="apartment">Apartment</option>
+							<option value="apartment-hard">Apartment Hard</option>
+							<option value="cubicles">Cubicles</option>
+						</select> 
+						or
+						<a class="btn btn-xs btn-default" data-toggle="collapse" href="#customProblem">Upload Custom Problem</a>
+					</div> <!-- Close column -->
+					<div class="col-md-2 col-centered">
+						<div class="subtitle">Planner</div>
+						<select name="planners" id="planners" class="form-field">
+							<option value="geometric.BKPIECE1">BKPIECE1</option>
+							<option value="geometric.EST">EST</option>
+							<option value="geometric.FMT">FMT</option>
+							<option value="geometric.KPIECE1" selected="selected">KPIECE1</option>
+							<option value="geometric.LBKPIECE1">LBKPIECE1</option>
+							<option value="geometric.LBTRRT">LBTRRT</option>
+							<option value="geometric.LazyPRM">LazyPRM</option>
+							<option value="geometric.LazyPRMstar">LazyPRMstar</option>
+							<option value="geometric.LazyRRT">LazyRRT</option>
+							<option value="geometric.PDST">PDST</option>
+							<option value="geometric.PRM">PRM</option>
+							<option value="geometric.PRMstar">PRMstar</option>
+							<option value="geometric.RRT">RRT</option>
+							<option value="geometric.RRTConnect">RRTConnect</option>
+							<option value="geometric.RRTstar">RRTstar</option>
+							<option value="geometric.SBL">SBL</option>
+							<option value="geometric.SPARS">SPARS</option>
+							<option value="geometric.SPARStwo">SPARStwo</option>
+							<option value="geometric.STRIDE">STRIDE</option>
+							<option value="geometric.TRRT">TRRT</option>
+						</select>
+					</div> <!-- Close column -->
+				</div> <!-- Close row -->
+				<div class="collapse row row-centered" id="customProblem">
+					<br>
 					<div class="col-md-2 col-centered">
 						<div class="subtitle">Environment</div>
 						<input type="file" name="env" id="env_path" class="form-field">
@@ -63,31 +70,6 @@
 					<div class="col-md-2 col-centered">
 						<div class="subtitle">Configuration</div>
 						<input type="file" name="config" id="config">
-					</div>
-					<div class="col-md-2 col-centered">
-						<div class="subtitle">Planner</div>
-							<select name="planners" id="planners" class="form-field">
-								<option value="geometric.BKPIECE1">BKPIECE1</option>
-								<option value="geometric.EST">EST</option>
-								<option value="geometric.FMT">FMT</option>
-								<option value="geometric.KPIECE1" selected="selected">KPIECE1</option>
-								<option value="geometric.LBKPIECE1">LBKPIECE1</option>
-								<option value="geometric.LBTRRT">LBTRRT</option>
-								<option value="geometric.LazyPRM">LazyPRM</option>
-								<option value="geometric.LazyPRMstar">LazyPRMstar</option>
-								<option value="geometric.LazyRRT">LazyRRT</option>
-								<option value="geometric.PDST">PDST</option>
-								<option value="geometric.PRM">PRM</option>
-								<option value="geometric.PRMstar">PRMstar</option>
-								<option value="geometric.RRT">RRT</option>
-								<option value="geometric.RRTConnect">RRTConnect</option>
-								<option value="geometric.RRTstar">RRTstar</option>
-								<option value="geometric.SBL">SBL</option>
-								<option value="geometric.SPARS">SPARS</option>
-								<option value="geometric.SPARStwo">SPARStwo</option>
-								<option value="geometric.STRIDE">STRIDE</option>
-								<option value="geometric.TRRT">TRRT</option>
-							</select>
 					</div>
 				</div>
 				</br>
@@ -237,7 +219,5 @@
 			</div>
 		</div>
 		</div>
-
 	</body>
-
 </html>
