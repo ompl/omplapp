@@ -6,8 +6,9 @@ A web front end for sample based motion planning and benchmarking using the Open
 
 ## Development Plan
 
-### Phase 1: simplesetup --> master
+### Phase 1: simplesetup --> master (current)
 ...
+
 Preparing to merge branch simplesetup into master.
 - Front end testing
 - Pull out styling from html to css
