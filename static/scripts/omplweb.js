@@ -106,23 +106,37 @@ $(document).ready(function() {
 
 
 	// Default planner
-	var planner_name = "KPIECE1";
-	var planner_params = planners["KPIECE1"]
+	load_planner_params("KPIECE1", planners["KPIECE1"]);
+	$("#generalConfig").collapse("show");
 
 	// When user picks planner, update our info
 	$("#planners").change(function() {
 		planner_name = $("#planners").val().split(".")[1];
 		planner_params = planners[planner_name];
-
-		
-
-		$("#generalConfig").collapse("hide");
-		$("#plannerConfig").collapse("show");
+		load_planner_params(planner_name, planner_params);
 	});
 })
 
 
-function load_planner_params() {
+function load_planner_params(planner_name, planner_params) {
+	var plannerConfigHTML = "";
+	plannerConfigHTML += "<div class='col-md-4'>";
+	plannerConfigHTML += "<h4>" + planner_name + " Parameters</h4>";
+	plannerConfigHTML += "<table class='table'>";
+
+	for (var key in planner_params) {
+		if (planner_params.hasOwnProperty(key)) {
+			plannerConfigHTML += "<tr><td>" + key  + "</td>";
+			plannerConfigHTML += "<td><input type='text' name='" + key +  "' class='form-field' value='" + planner_params[key] + "'></td></tr>";
+		}
+	}
+
+	plannerConfigHTML += "</table>";
+	plannerConfigHTML += "</div>";
+
+	$("#plannerConfig").html(plannerConfigHTML);
+	$("#generalConfig").collapse("hide");
+	$("#plannerConfig").collapse("show");
 }
 
 
@@ -134,7 +148,7 @@ function solve(){
 		var html = "";
 		html += "<h2><center>Results</h2>"
 		$('#results').html(html);
-		
+
 		// Bring up the loading screen
 		$.blockUI({
 			css: {
@@ -195,7 +209,6 @@ function solve(){
 }
 
 function loadConfig() {
-
 	var cfgFile = $("#config")[0].files[0];
 
 	if (cfgFile != null) {

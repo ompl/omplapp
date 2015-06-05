@@ -8,7 +8,7 @@
 	</head>
 
 	<style>
-		h1, h2 {
+		h1, h2, h3, h4{
 			font-weight: 200;
 		}
 		hr {
@@ -94,11 +94,11 @@
 				<hr>
 			<div class="row row-centered">
 				<div class="col-md-1 col-md-offset-1">
-					<a class="btn btn-default btn-block" data-toggle="collapse" href="#generalConfig">
+					<a class="btn btn-default" data-toggle="collapse" href="#generalConfig">
 						General Settings
 					</a>
 					</br></br>
-					<a class="btn btn-default btn-block" data-toggle="collapse" href="#plannerConfig">
+					<a class="btn btn-default" data-toggle="collapse" href="#plannerConfig">
 						Planner Settings
 					</a>
 					</br></br>
@@ -107,7 +107,7 @@
 				<div class="col-md-6 col-md-offset-1">
 					<!-- General Configuration Table -->
 					<div class="row collapse in well" id="generalConfig">
-						<div class="col-md-4">
+						<div class="col-md-3">
 							<table class="table">
 								<tr>
 									<td>Name</td>
@@ -160,7 +160,7 @@
 
 							</table>
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-3 col-centered">
 							<table class="table">
 								<tr>
 									<td>Goal Axis X</td>
@@ -223,10 +223,10 @@
 
 
 			<div class="col-md-1 col-md-offset-1">
-				<a class="btn btn-primary btn-block" onclick="solve()">Solve</a>
+				<a class="btn btn-primary" onclick="solve()">Solve Problem</a>
 				</br>
 				</br>
-				<a class="btn btn-warning btn-block" onclick="clearAllFields()">Clear</a>
+				<a class="btn btn-warning" onclick="clearAllFields()">Clear All Fields</a>
 			</div>
 			</form>
 		</div>
