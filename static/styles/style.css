@@ -1,0 +1,24 @@
+h1, h2, h3, h4{
+	font-weight: 200;
+}
+hr {
+	border-width: 1.5px;
+	border-color: black;
+	width: 80%;
+}
+.subtitle {
+	font-size: 16px;
+	font-weight: 600;
+}
+/* centered columns styles */
+.row-centered {
+	text-align:center;
+}
+.col-centered {
+	display:inline-block;
+	float:none;
+	/* reset the text-align */
+	text-align:left;
+	/* inline-block space fix */
+	margin-right:-4px;
+}
