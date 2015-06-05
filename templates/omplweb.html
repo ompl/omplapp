@@ -12,212 +12,226 @@
 		<center><h2>Configure Problem</h2></center>
 		<br><br>
 		<div class="container-fluid">
-			<form enctype="multipart/form-data">
-				<div class="row row-centered">
-					<div class="col-md-8 col-centered">
-					Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
-					</div>
-				</div>
-				</br>
-				<div class="row row-centered">
-					<div class="col-md-2 col-centered">
-						<div class="subtitle">Problem</div>
-						<select name="problems" id="problems" class="form-field">
-							<option value="abstract">Abstract</option>
-							<option value="apartment">Apartment</option>
-							<option value="apartment-hard">Apartment Hard</option>
-							<option value="cubicles">Cubicles</option>
-						</select> 
-						or
-						<a class="btn btn-xs btn-default" data-toggle="collapse" href="#customProblem">Upload Custom Problem</a>
-					</div> <!-- Close column -->
-					<div class="col-md-2 col-centered">
-						<div class="subtitle">Planner</div>
-						<select name="planners" id="planners" class="form-field">
-							<option value="geometric.BKPIECE1">BKPIECE1</option>
-							<option value="geometric.EST">EST</option>
-							<option value="geometric.FMT">FMT</option>
-							<option value="geometric.KPIECE1" selected="selected">KPIECE1</option>
-							<option value="geometric.LBKPIECE1">LBKPIECE1</option>
-							<option value="geometric.LBTRRT">LBTRRT</option>
-							<option value="geometric.LazyPRM">LazyPRM</option>
-							<option value="geometric.LazyPRMstar">LazyPRMstar</option>
-							<option value="geometric.LazyRRT">LazyRRT</option>
-							<option value="geometric.PDST">PDST</option>
-							<option value="geometric.PRM">PRM</option>
-							<option value="geometric.PRMstar">PRMstar</option>
-							<option value="geometric.RRT">RRT</option>
-							<option value="geometric.RRTConnect">RRTConnect</option>
-							<option value="geometric.RRTstar">RRTstar</option>
-							<option value="geometric.SBL">SBL</option>
-							<option value="geometric.SPARS">SPARS</option>
-							<option value="geometric.SPARStwo">SPARStwo</option>
-							<option value="geometric.STRIDE">STRIDE</option>
-							<option value="geometric.TRRT">TRRT</option>
-						</select>
-					</div> <!-- Close column -->
-				</div> <!-- Close row -->
-				<div class="collapse row row-centered" id="customProblem">
-					<br>
-					<div class="col-md-2 col-centered">
-						<div class="subtitle">Environment</div>
-						<input type="file" name="env" id="env_path" class="form-field">
-					</div>
-					<div class="col-md-2 col-centered">
-						<div class="subtitle">Robot</div>
-						<input type="file" name="robot" id="robot_path" class="form-field">
-					</div>
-					<div class="col-md-2 col-centered">
-						<div class="subtitle">Configuration</div>
-						<input type="file" name="config" id="config">
-					</div>
-				</div>
-				</br>
-				<hr>
 			<div class="row row-centered">
-				<div class="col-md-1 col-md-offset-1">
-					<a class="btn btn-default" data-toggle="collapse" href="#generalConfig">
-						General Settings
-					</a>
-					</br></br>
-					<a class="btn btn-default" data-toggle="collapse" href="#plannerConfig">
-						Planner Settings
-					</a>
-					</br></br>
-				</div>
+				<form enctype="multipart/form-data">
+					<div class="col-md-8 col-centered">
+						Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
+					</div>
+					
+					<br><br>
 
-				<div class="col-md-6 col-md-offset-1">
-					<!-- General Configuration Table -->
-					<div class="row collapse in well" id="generalConfig">
-						<div class="col-md-3">
-							<table class="table">
-								<tr>
-									<td>Name</td>
-									<td><input type="text" name="name" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start X</td>
-									<td><input type="number" step="any" name="start_x" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start Y</td>
-									<td><input type="number" step="any" name="start_y" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start Z</td>
-									<td><input type="number" step="any" name="start_z" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start Theta</td>
-									<td><input type="number" step="any" name="start_theta" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start Axis X</td>
-									<td><input type="number" step="any" name="start_axis_x" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start Axis Y</td>
-									<td><input type="number" step="any" name="start_axis_y" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Start Axis Z</td>
-									<td><input type="number" step="any" name="start_axis_z" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Goal X</td>
-									<td><input type="number" step="any" name="goal_x" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Goal Y</td>
-									<td><input type="number" step="any" name="goal_y" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Goal Z</td>
-									<td><input type="number" step="any" name="goal_z" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Goal Theta</td>
-									<td><input type="number" step="any" name="goal_theta" class="form-field"></td>
-								</tr>
-
-							</table>
+					<!-- Problem and Planner Selection -->
+					<div class="row row-centered">
+						<div class="col-md-2 col-centered">
+							<div class="subtitle">Problem</div>
+							<select name="problems" id="problems" class="required-field">
+								<option value="abstract">Abstract</option>
+								<option value="apartment">Apartment</option>
+								<option value="apartment-hard">Apartment Hard</option>
+								<option value="cubicles">Cubicles</option>
+							</select>
+							or
+							<a class="btn btn-xs btn-default" data-toggle="collapse" href="#customProblem" id="customProblemBtn">Upload Custom Problem</a>
+						</div> <!-- Close column -->
+						
+						<div class="col-md-2 col-centered">
+							<div class="subtitle">Planner</div>
+							<select name="planners" id="planners" class="required-field">
+								<option value="geometric.BKPIECE1">BKPIECE1</option>
+								<option value="geometric.EST">EST</option>
+								<option value="geometric.FMT">FMT</option>
+								<option value="geometric.KPIECE1" selected="selected">KPIECE1</option>
+								<option value="geometric.LBKPIECE1">LBKPIECE1</option>
+								<option value="geometric.LBTRRT">LBTRRT</option>
+								<option value="geometric.LazyPRM">LazyPRM</option>
+								<option value="geometric.LazyPRMstar">LazyPRMstar</option>
+								<option value="geometric.LazyRRT">LazyRRT</option>
+								<option value="geometric.PDST">PDST</option>
+								<option value="geometric.PRM">PRM</option>
+								<option value="geometric.PRMstar">PRMstar</option>
+								<option value="geometric.RRT">RRT</option>
+								<option value="geometric.RRTConnect">RRTConnect</option>
+								<option value="geometric.RRTstar">RRTstar</option>
+								<option value="geometric.SBL">SBL</option>
+								<option value="geometric.SPARS">SPARS</option>
+								<option value="geometric.SPARStwo">SPARStwo</option>
+								<option value="geometric.STRIDE">STRIDE</option>
+								<option value="geometric.TRRT">TRRT</option>
+							</select>
+						</div> <!-- Close column -->
+					</div> <!-- Close row -->
+					
+					<!-- Custom problem upload -->
+					<div class="collapse row row-centered" id="customProblem">
+						<br>
+						<div class="col-md-2 col-centered">
+							<div class="subtitle">Environment</div>
+							<input type="file" name="env" id="env_path" class="form-field">
 						</div>
-						<div class="col-md-3 col-centered">
-							<table class="table">
-								<tr>
-									<td>Goal Axis X</td>
-									<td><input type="number" step="any" name="goal_axis_x" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Goal Axis Y</td>
-									<td><input type="number" step="any" name="goal_axis_y" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Goal Axis Z</td>
-									<td><input type="number" step="any" name="goal_axis_z" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Bound Min X</td>
-									<td><input type="number" step="any" name="bounds_min_x" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Bounds Min Y</td>
-									<td><input type="number" step="any" name="bounds_min_y" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Bounds Min Z</td>
-									<td><input type="number" step="any" name="bounds_min_z" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Bounds Max X</td>
-									<td><input type="number" step="any" name="bounds_max_x" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Bounds Max Y</td>
-									<td><input type="number" step="any" name="bounds_max_y" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Bounds Max Z</td>
-									<td><input type="number" step="any" name="bounds_max_z" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Time Limit</td>
-									<td><input type="number" step="any" name="time_limit" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Memory Limit</td>
-									<td><input type="number" step="any" name="mem_limit" class="form-field"></td>
-								</tr>
-								<tr>
-									<td>Run Count</td>
-									<td><input type="number" step="any" name="run_count" class="form-field"></td>
-								</tr>
-
-							</table>
+						<div class="col-md-2 col-centered">
+							<div class="subtitle">Robot</div>
+							<input type="file" name="robot" id="robot_path" class="form-field">
+						</div>
+						<div class="col-md-2 col-centered">
+							<div class="subtitle">Configuration</div>
+							<input type="file" name="config" id="config">
 						</div>
 					</div>
+			
+					<br><hr>
+					
+					<!-- Main content (3 columns) -->
+					<div class="row row-centered">
+						<!-- Options toggle buttons -->
+						<div class="col-md-1 col-md-offset-1">
+							<a class="btn btn-default" data-toggle="collapse" href="#generalConfig">
+								General Settings
+							</a>
+							</br></br>
+							<a class="btn btn-default" data-toggle="collapse" href="#plannerConfig">
+								Planner Settings
+							</a>
+							</br></br>
+						</div>
+						
+						<!-- Settings -->
+						<div class="col-md-6 col-md-offset-1">
+							<!-- Begin General Configuration Table -->
+							<div class="row collapse well" id="generalConfig">
+								<div class="col-md-3">
+									<table class="table">
+										<tr>
+											<td>Name</td>
+											<td><input type="text" name="name" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start X</td>
+											<td><input type="number" step="any" name="start_x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Y</td>
+											<td><input type="number" step="any" name="start_y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Z</td>
+											<td><input type="number" step="any" name="start_z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Theta</td>
+											<td><input type="number" step="any" name="start_theta" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Axis X</td>
+											<td><input type="number" step="any" name="start_axis_x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Axis Y</td>
+											<td><input type="number" step="any" name="start_axis_y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Axis Z</td>
+											<td><input type="number" step="any" name="start_axis_z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal X</td>
+											<td><input type="number" step="any" name="goal_x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Y</td>
+											<td><input type="number" step="any" name="goal_y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Z</td>
+											<td><input type="number" step="any" name="goal_z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Theta</td>
+											<td><input type="number" step="any" name="goal_theta" class="form-field"></td>
+										</tr>
+									</table>
+								</div>
+								<div class="col-md-3 col-centered">
+									<table class="table">
+										<tr>
+											<td>Goal Axis X</td>
+											<td><input type="number" step="any" name="goal_axis_x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Axis Y</td>
+											<td><input type="number" step="any" name="goal_axis_y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Axis Z</td>
+											<td><input type="number" step="any" name="goal_axis_z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bound Min X</td>
+											<td><input type="number" step="any" name="bounds_min_x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Min Y</td>
+											<td><input type="number" step="any" name="bounds_min_y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Min Z</td>
+											<td><input type="number" step="any" name="bounds_min_z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Max X</td>
+											<td><input type="number" step="any" name="bounds_max_x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Max Y</td>
+											<td><input type="number" step="any" name="bounds_max_y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Max Z</td>
+											<td><input type="number" step="any" name="bounds_max_z" class="form-field"></td>
+										</tr>
+										<!-- <tr> -->
+											<!-- <td>Time Limit</td> -->
+											<!-- <td><input type="number" step="any" name="time_limit" class="form-field"></td> -->
+										<!-- </tr> -->
+										<!-- <tr> -->
+											<!-- <td>Memory Limit</td> -->
+											<!-- <td><input type="number" step="any" name="mem_limit" class="form-field"></td> -->
+										<!-- </tr> -->
+										<!-- <tr> -->
+											<!-- <td>Run Count</td> -->
+											<!-- <td><input type="number" step="any" name="run_count" class="form-field"></td> -->
+										<!-- </tr> -->
+									</table>
+								</div>
+							</div>
+							<!-- End General Configuration Table -->
 
-					<!-- Planner Configuration Table -->
-					<div class="row collapse well" id="plannerConfig">
-						Planner specific settings.
+							<!-- Begin Planner Configuration Table -->
+							<div class="row collapse well" id="plannerConfig">
+								Planner specific settings are displayed here when a
+								planner is selected.
+							</div>
+							<!-- End Planner Configuration Table -->
+						</div>
+						
+						<!-- Solve and Clear buttons -->
+						<div class="col-md-1 col-md-offset-1">
+							<a class="btn btn-primary" onclick="solve()">Solve Problem</a>
+							</br>
+							</br>
+							<a class="btn btn-warning" onclick="clearAllFields()">Clear All Fields</a>
+						</div>
 					</div>
+				</form> <!-- Close form -->
+			</div> <!-- Close row -->
+			
+			<br>
+			
+			<!-- Results -->
+			<div class="row row-centered">
+				<div class="col-md-8 col-centered">
+					<div id="results"><br><br><br></div>
 				</div>
-
-
-			<div class="col-md-1 col-md-offset-1">
-				<a class="btn btn-primary" onclick="solve()">Solve Problem</a>
-				</br>
-				</br>
-				<a class="btn btn-warning" onclick="clearAllFields()">Clear All Fields</a>
 			</div>
-			</form>
-		</div>
-		<br>
-		<div class="row row-centered">
-			<div class="col-md-8 col-centered">
-				<div id="results"><br><br><br></div>
-			</div>
-		</div>
-		</div>
+		</div> <!-- Close fluid container -->
 	</body>
 </html>
