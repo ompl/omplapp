@@ -1,5 +1,5 @@
 # OMPL Web
-A web front end for sample based motion planning using the Open Motion Planning Library.
+A web front end for sample based motion planning and benchmarking using the Open Motion Planning Library.
 
 [ompl.kavrakilab.org](http://ompl.kavrakilab.org)
 
@@ -27,7 +27,8 @@ Preparing to merge branch simplesetup into master.
 - Test benchmarking
 - Connect ompl\_web to [Planner Arena](http://www.plannerarena.org)
 - Test ompl\_web and Planner Arena interactions
-#### Merge benchmarking --> master
+
+***Merge benchmarking --> master***
 
 ### Phase 4: branch master --> visualization
 - Implement loading of 3D models
@@ -36,4 +37,5 @@ Preparing to merge branch simplesetup into master.
 - Test static visualization
 - Implement animated visualization
 - Test animated visualization
-#### Merge visualization --> master
+
+***Merge visualization --> master***
