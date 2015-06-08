@@ -6,16 +6,16 @@ A web front end for sample based motion planning and benchmarking using the Open
 
 ## Development Plan
 
-### Phase 1: simplesetup --> master (current)
+### ~~Phase 1: simplesetup --> master~~
 ...
 
-Preparing to merge branch simplesetup into master.
-- Front end testing
-- Pull out styling from html to css
-- Add ability to pick a problem (including robot, envrionment, and
-  configuration) from the server, instead of having to upload your own
+~~Preparing to merge branch simplesetup into master.~~
+- ~~Front end testing~~
+- ~~Pull out styling from html to css~~
+- ~~Add ability to pick a problem (including robot, envrionment, and
+  configuration) from the server, instead of having to upload your own~~
 
-### Phase 2: master
+### Phase 2: master (current)
 - Create planners and planner parameters dynamically using existing python
   bindings
 - Clean up and optimize existing code
