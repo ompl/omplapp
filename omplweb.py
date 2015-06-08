@@ -11,7 +11,10 @@ from ompl import control as oc
 from ompl import app as oa
 
 # Location of user uploaded .dae files
-UPLOAD_FOLDER = '/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/uploads'
+UPLOAD_FOLDER = \
+	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/uploads'
+PROBLEMS_FOLDER = \
+	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/problem_files'
 
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
@@ -125,7 +128,7 @@ def allowed_file(filename):
 	return False
 
 
-def parse(settings, env_path, robot_path):
+def create_problem(settings, env_path, robot_path):
 	"""
 	Reads the user submitted configuration data and creates an instance of the
 	Problem class to store the data.
@@ -141,26 +144,26 @@ def parse(settings, env_path, robot_path):
 	problem.robot_path = robot_path
 
 	# start problem specific stuff #
-	problem.start_x = float(settings['start_x'])
-	problem.start_y = float(settings['start_y'])
-	problem.start_z = float(settings['start_z'])
-	problem.start_theta = float(settings['start_theta'])
-	problem.start_axis_x = float(settings['start_axis_x'])
-	problem.start_axis_y = float(settings['start_axis_y'])
-	problem.start_axis_z = float(settings['start_axis_z'])
-	problem.goal_x = float(settings['goal_x'])
-	problem.goal_y = float(settings['goal_y'])
-	problem.goal_z = float(settings['goal_z'])
-	problem.goal_theta = float(settings['goal_theta'])
-	problem.goal_axis_x = float(settings['goal_axis_x'])
-	problem.goal_axis_y = float(settings['goal_axis_y'])
-	problem.goal_axis_z = float(settings['goal_axis_z'])
-	problem.bounds_min_x = float(settings['bounds_min_x'])
-	problem.bounds_min_y = float(settings['bounds_min_y'])
-	problem.bounds_min_z = float(settings['bounds_min_z'])
-	problem.bounds_max_x = float(settings['bounds_max_x'])
-	problem.bounds_max_y = float(settings['bounds_max_y'])
-	problem.bounds_max_z = float(settings['bounds_max_z'])
+	problem.start_x = float(settings['start.x'])
+	problem.start_y = float(settings['start.y'])
+	problem.start_z = float(settings['start.z'])
+	problem.start_theta = float(settings['start.theta'])
+	problem.start_axis_x = float(settings['start.axis.x'])
+	problem.start_axis_y = float(settings['start.axis.y'])
+	problem.start_axis_z = float(settings['start.axis.z'])
+	problem.goal_x = float(settings['goal.x'])
+	problem.goal_y = float(settings['goal.y'])
+	problem.goal_z = float(settings['goal.z'])
+	problem.goal_theta = float(settings['goal.theta'])
+	problem.goal_axis_x = float(settings['goal.axis.x'])
+	problem.goal_axis_y = float(settings['goal.axis.y'])
+	problem.goal_axis_z = float(settings['goal.axis.z'])
+	problem.bounds_min_x = float(settings['bounds.min.x'])
+	problem.bounds_min_y = float(settings['bounds.min.y'])
+	problem.bounds_min_z = float(settings['bounds.min.z'])
+	problem.bounds_max_x = float(settings['bounds.max.x'])
+	problem.bounds_max_y = float(settings['bounds.max.y'])
+	problem.bounds_max_z = float(settings['bounds.max.z'])
 
 	# benchmark specific stuff #
 	problem.time_limit = float(settings['time_limit'])
@@ -172,6 +175,27 @@ def parse(settings, env_path, robot_path):
 
 	return problem
 
+
+def parse_cfg(cfg_path):
+	"""
+	Parses the configuration file for pre-defined problems and returns a
+	settings dictionary that can be passed to create_problem
+	"""
+	settings = {}
+	cfg = open(cfg_path, 'r')
+
+	for line in cfg:
+		if line[0] != '[':
+			line = line.replace(" ", "")
+			line = line.replace("\n", "")
+			items = line.split("=", 1)
+			if len(items) == 2:
+				if 'volume' in items[0]:
+					items[0] = items[0].replace("volume", "bounds")
+				settings[items[0]] = items[1]
+
+	log.debug(settings)
+	return settings
 
 def format_solution(path, solved):
 	"""
@@ -272,7 +296,7 @@ def solve(problem):
 				solution = format_solution(simple_path, True)
 			else:
 				log.info("\tSimplified path was invalid. Returned \
-						non-simplified path.\n")
+					non-simplified path.\n")
 				log.info("\tPath length: %d\n" % path.length())
 				solution = format_solution(path, True)
 
@@ -283,7 +307,7 @@ def solve(problem):
 			solution = format_solution(path, False)
 	else:
 		log.info("\tNo valid path was found with the provided \
-				configuration.\n")
+			configuration.\n")
 		solution = format_solution(None, False)
 
 	solution['name'] = problem.name
@@ -319,13 +343,8 @@ def upload():
 
 	"""
 
-	# The data received from the user
-	data = flask.request.form
-
-	log.debug(data)
-
 	# Uploaded custom problem
-	if (data['problems'] == 'custom'):
+	if (flask.request.form['problems'] == 'custom'):
 		robotFile = flask.request.files['robot']
 		envFile = flask.request.files['env']
 
@@ -335,8 +354,10 @@ def upload():
 
 				# If valid files, save them to the server
 				robot_filename = secure_filename(robotFile.filename)
-				robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
-				robot_path = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
+				robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], \
+					robot_filename))
+				robot_path = os.path.join(app.config['UPLOAD_FOLDER'], \
+					robot_filename)
 
 				env_filename = secure_filename(envFile.filename)
 				envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
@@ -344,24 +365,50 @@ def upload():
 
 				log.debug("Files saved as: " + robot_path + " and " + env_path)
 
-				log.debug("Will now parse configuration...")
 				# TODO:Put some try/catches here
-				problem = parse(flask.request.form, env_path, robot_path)
+				problem = create_problem(flask.request.form, env_path, robot_path)
 
-				log.debug("Configuration has been parsed. Solving problem...")
+				log.debug("Solving problem...")
 				solution = solve(problem)
 				# TODO: Delete the uploaded files?
 				log.debug("Problem solved")
 				return solution
 
 			else:
-				return "Error: Wrong file format. Robot and environment files must be .dae"
+				return "Error: Wrong file format. Robot and environment files \
+					must be .dae"
 		else:
-			return "Error: Didn't upload any files! Please choose both a robot and an environment file in the .dae format."
-
+			return "Error: Didn't upload any files! Please choose both a robot \
+				and environment file in the .dae format."
 		return "Upload Successful."
 
 	# Selected pre-configured problem from server
+	else:
+		problem_name = flask.request.form['problems']
+		robot_filename = problem_name + "_robot.dae"
+		env_filename = problem_name + "_env.dae"
+		cfg_filename = problem_name + ".cfg"
+
+		robot_path = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
+		env_path = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
+		cfg_path = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
+
+		log.debug("Problem location: " + robot_path + " and " + env_path)
+
+		log.debug("Will now parse configuration...")
+		# TODO:Put some try/catches here
+		settings = parse_cfg(cfg_path)
+		settings['name'] = problem_name
+		settings['planners'] = flask.request.form['planners']
+
+		log.debug("Configuration has been parsed, creating problem.")
+		problem = create_problem(settings, env_path, robot_path)
+
+		log.debug("Solving problem...")
+		solution = solve(problem)
+		# TODO: Delete the uploaded files?
+		log.debug("Problem solved")
+		return solution
 
 
 @app.route("/")
