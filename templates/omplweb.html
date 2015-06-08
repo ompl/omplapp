@@ -17,7 +17,7 @@
 					<div class="col-md-8 col-centered">
 						Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
 					</div>
-					
+
 					<br><br>
 
 					<!-- Problem and Planner Selection -->
@@ -29,11 +29,10 @@
 								<option value="apartment">Apartment</option>
 								<option value="apartment-hard">Apartment Hard</option>
 								<option value="cubicles">Cubicles</option>
+								<option value="custom">Custom</option>
 							</select>
-							or
-							<a class="btn btn-xs btn-default" data-toggle="collapse" href="#customProblem" id="customProblemBtn">Upload Custom Problem</a>
 						</div> <!-- Close column -->
-						
+
 						<div class="col-md-2 col-centered">
 							<div class="subtitle">Planner</div>
 							<select name="planners" id="planners" class="required-field">
@@ -60,7 +59,7 @@
 							</select>
 						</div> <!-- Close column -->
 					</div> <!-- Close row -->
-					
+
 					<!-- Custom problem upload -->
 					<div class="collapse row row-centered" id="customProblem">
 						<br>
@@ -77,9 +76,9 @@
 							<input type="file" name="config" id="config">
 						</div>
 					</div>
-			
+
 					<br><hr>
-					
+
 					<!-- Main content (3 columns) -->
 					<div class="row row-centered">
 						<!-- Options toggle buttons -->
@@ -93,7 +92,7 @@
 							</a>
 							</br></br>
 						</div>
-						
+
 						<!-- Settings -->
 						<div class="col-md-6 col-md-offset-1">
 							<!-- Begin General Configuration Table -->
@@ -188,18 +187,18 @@
 											<td>Bounds Max Z</td>
 											<td><input type="number" step="any" name="bounds_max_z" class="form-field"></td>
 										</tr>
-										<!-- <tr> -->
-											<!-- <td>Time Limit</td> -->
-											<!-- <td><input type="number" step="any" name="time_limit" class="form-field"></td> -->
-										<!-- </tr> -->
-										<!-- <tr> -->
-											<!-- <td>Memory Limit</td> -->
-											<!-- <td><input type="number" step="any" name="mem_limit" class="form-field"></td> -->
-										<!-- </tr> -->
-										<!-- <tr> -->
-											<!-- <td>Run Count</td> -->
-											<!-- <td><input type="number" step="any" name="run_count" class="form-field"></td> -->
-										<!-- </tr> -->
+										<tr>
+											<td>Time Limit</td>
+											<td><input type="number" step="any" name="time_limit" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Memory Limit</td>
+											<td><input type="number" step="any" name="mem_limit" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Run Count</td>
+											<td><input type="number" step="any" name="run_count" class="form-field"></td>
+										</tr>
 									</table>
 								</div>
 							</div>
@@ -212,7 +211,7 @@
 							</div>
 							<!-- End Planner Configuration Table -->
 						</div>
-						
+
 						<!-- Solve and Clear buttons -->
 						<div class="col-md-1 col-md-offset-1">
 							<a class="btn btn-primary" onclick="solve()">Solve Problem</a>
@@ -223,9 +222,9 @@
 					</div>
 				</form> <!-- Close form -->
 			</div> <!-- Close row -->
-			
+
 			<br>
-			
+
 			<!-- Results -->
 			<div class="row row-centered">
 				<div class="col-md-8 col-centered">

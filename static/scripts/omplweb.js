@@ -102,12 +102,18 @@ $(document).ready(function() {
 	$("#config").change(function (){
 		loadConfig();
 	});
-
-	$("#customProblemBtn").click(function() {
-		$("#problems").val('');
-		$("#customProblem").toggle('show');
-		$("#generalConfig").toggle('show');
+	
+	// Show upload buttons if user selects 'Custom' problem
+	$("#problems").change(function() {
+		if ($("#problems").val() == 'custom'){
+			$("#customProblem").collapse('show');
+			$("#generalConfig").collapse('show');
+		} else {
+			$("#customProblem").collapse('hide');
+			$("#generalConfig").collapse('hide');
+		}
 	});
+	
 	// Default planner
 	load_planner_params("KPIECE1", planners["KPIECE1"]);
 
@@ -145,26 +151,25 @@ function load_planner_params(planner_name, planner_params) {
 function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
-
 	if (validConfig == true) {
 		var html = "";
 		html += "<h2><center>Results</h2>"
 		// $('#results').html(html);
 
 		// Bring up the loading screen
-		$.blockUI({
-			css: {
-				border: 'none',
-				padding: '30px',
-				backgroundColor: '#000',
-				opacity: '0.7',
-				color: '#fff',
-			}
-		});
+		// $.blockUI({
+			// css: {
+				// border: 'none',
+				// padding: '30px',
+				// backgroundColor: '#000',
+				// opacity: '0.7',
+				// color: '#fff',
+			// }
+		// });
 
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
-
+		console.log("Sending: ", formData);
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
@@ -209,7 +214,6 @@ function solve(){
 		});
 	} else {
 		// Invalid fields have been highlighted by 'validateField()'.
-		alert("Select a problem from the dropdown, or upload a robot, environment, and configuration.");
 	}
 }
 
@@ -296,7 +300,7 @@ function clearAllFields() {
 
 function validateFields() {
 	// Check that a problem has been selected
-	if ($('#problems').val() != null && $('#planners').val() != null) {
+	if ($('#problems').val() != 'custom' && $('#planners').val() != null) {
 		return true;
 	}
 
@@ -313,7 +317,7 @@ function validateFields() {
 	}
 
 	// Check if the user uploaded a custom problem
-	if ($('#problems').val() == null && $('#planners').val() != null) {
+	if ($('#problems').val() == 'custom' && $('#planners').val() != null) {
 		var valid = true;
 
 		// Ensure that the all the needed fields for a problem have values

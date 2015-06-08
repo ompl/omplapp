@@ -21,6 +21,52 @@ app.config.from_object(__name__)
 ########## OMPL Code ##########
 
 
+class LogOutputHandler(object):
+	"""
+	Object for handling various levels of logging.
+	"""
+
+	def __init__(self, log_level):
+		# Specifies the level of logging should be printed to the console
+		# 0 = Silent (probablly shouldn't use this)
+		# 1 = Errors only
+		# 2 = Level 0 and warnings
+		# 3 = Levels 0, 1 and info
+		# 4 = Levels 0, 1, 2 and debugging
+		self.log_level = log_level
+
+		self.messages = "Messages: \n"
+
+	def error(self, text):
+		if self.log_level > 0:
+			print "# Error:    " + str(text)
+
+	def warn(self, text):
+		if self.log_level > 1:
+			print "# Warning:    " + str(text)
+
+	def info(self, text):
+		"""
+		Info messages are always stored and can be retrieved to send to the
+		client
+		"""
+		# Store the message
+		self.messages += str(text)
+
+		if self.log_level > 2:
+			print "# Info:    " + str(text)
+
+	def debug(self, text):
+		if self.log_level > 3:
+			print "# Debug:    " + str(text)
+
+	def getMessages(self):
+		# 'Info' messages are stored and can be retrieved via this function to
+		# send to the client
+		return self.messages
+
+log = LogOutputHandler(4)
+
 class Problem(object):
 	"""
 	Defines the motion planning problem.
@@ -137,10 +183,8 @@ def format_solution(path, solved):
 
 	if solved:
 		solution['solved'] = 'true'
-		solution['length'] = path.length()
 	else:
 		solution['solved'] = 'false'
-		solution['length'] = 0
 
 	# TODO: Better, neater formatting of path
 	solution['path'] = str(path)
@@ -154,9 +198,6 @@ def solve(problem):
 	data, solves the motion planning problem and returns either the solution
 	path or a failure message.
 	"""
-
-	# Buffer to hold information and user messages
-	messages = "Messages: \n"
 
 	## Configure the problem
 	space = ob.SE3StateSpace()
@@ -174,11 +215,8 @@ def solve(problem):
 
 	space.setBounds(bounds)
 
-	# Create an instance of SimpleSetup
-	# ompl_setup = og.SimpleSetup(space)
 	ompl_setup = oa.SE3RigidBodyPlanning()
 
-	# TODO: Set state validity checker here?
 	ompl_setup.setEnvironmentMesh(str(problem.env_path))
 	ompl_setup.setRobotMesh(str(problem.robot_path))
 
@@ -207,53 +245,50 @@ def solve(problem):
 		# If user selected a planner, load it
 		planner = eval("ompl.%s(space_info)" % problem.planners)
 		ompl_setup.setPlanner(planner)
-		print "Planner range: %f" % planner.getRange()
-		messages += "Using planner: %s" % ompl_setup.getPlanner().getName()
+		log.info("\tUsing planner: %s\n" % ompl_setup.getPlanner().getName())
 	else:
-		messages += "No planner specified, using default"
-
-	print ompl_setup.getStateValidityChecker()
+		log.info("\tNo planner specified, using default\n")
 
 	## Solve the problem
 	solution = {}
 	solved = ompl_setup.solve(problem.time_limit)
 
-
 	## Check for validity
 	if solved:
-		path = ompl_setup.getSolutionPath();
-		# print ompl_setup.getSolutionPath().printAsMatrix()
+		path = ompl_setup.getSolutionPath()
 		initialValid = path.check()
 
 		if initialValid:
-			solution = format_solution(path, True)
+			log.info("\tInitial path length: %d\n" % path.length())
 
 			# If if initially valid, attempt to simplify
-			# ompl_setup.simplifySolution()
+			ompl_setup.simplifySolution()
 			# Get the simplified path
-			# simple_path = ompl_setup.getSolutionPath()
-			# simplifyValid = simple_path.check()
-			# if simplifyValid:
-				# messages += "Simplified path was found.\n"
-				# solution = format_solution(simple_path, True)
-			# else:
-				# messages += "Simplified path was invalid. Returned non-simplified path.\n"
-				# solution = format_solution(path, True)
+			simple_path = ompl_setup.getSolutionPath()
+			simplifyValid = simple_path.check()
+			if simplifyValid:
+				log.info("\tSimplified path was found.\n")
+				log.info("\tSimplified path length: %d\n" % path.length())
+				solution = format_solution(simple_path, True)
+			else:
+				log.info("\tSimplified path was invalid. Returned \
+						non-simplified path.\n")
+				log.info("\tPath length: %d\n" % path.length())
+				solution = format_solution(path, True)
 
 			# TODO: Interpolation?
 
 		else :
-			messages += "Path reported by planner seems to be invalid.\n"
+			log.info("\tPath reported by planner seems to be invalid.\n")
 			solution = format_solution(path, False)
 	else:
-		messages += "No valid path was found with the provided configuration.\n"
+		log.info("\tNo valid path was found with the provided \
+				configuration.\n")
 		solution = format_solution(None, False)
-
-	print messages
 
 	solution['name'] = problem.name
 	solution['planner'] = ompl_setup.getPlanner().getName()
-	solution['messages'] = messages
+	solution['messages'] = log.getMessages()
 
 	return json.dumps(solution)
 
@@ -284,38 +319,49 @@ def upload():
 
 	"""
 
-	robotFile = flask.request.files['robot']
-	envFile = flask.request.files['env']
+	# The data received from the user
+	data = flask.request.form
 
-	if robotFile and envFile:
-		if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
+	log.debug(data)
 
-			# If valid files, save them to the server
-			robot_filename = secure_filename(robotFile.filename)
-			robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
-			robot_path = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
+	# Uploaded custom problem
+	if (data['problems'] == 'custom'):
+		robotFile = flask.request.files['robot']
+		envFile = flask.request.files['env']
 
-			env_filename = secure_filename(envFile.filename)
-			envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
-			env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
+		# Check that the uploaded files are valid
+		if robotFile and envFile:
+			if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
 
-			print "SERVER: Files saved as: " + robot_path + " and " + env_path
+				# If valid files, save them to the server
+				robot_filename = secure_filename(robotFile.filename)
+				robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
+				robot_path = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
 
-			print "SERVER: Will now parse configuration..."
-			#TODO# Put some try/catches here
-			problem = parse(flask.request.form, env_path, robot_path)
+				env_filename = secure_filename(envFile.filename)
+				envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
+				env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
 
-			print "SERVER: Configuration has been parsed. Solving problem..."
-			solution = solve(problem);
-			# TODO # Delete the uploaded files?
-			return solution;
+				log.debug("Files saved as: " + robot_path + " and " + env_path)
 
+				log.debug("Will now parse configuration...")
+				# TODO:Put some try/catches here
+				problem = parse(flask.request.form, env_path, robot_path)
+
+				log.debug("Configuration has been parsed. Solving problem...")
+				solution = solve(problem)
+				# TODO: Delete the uploaded files?
+				log.debug("Problem solved")
+				return solution
+
+			else:
+				return "Error: Wrong file format. Robot and environment files must be .dae"
 		else:
-			return "Error: Wrong file format. Robot and environment files must be .dae"
-	else:
-		return "Error: Didn't upload any files! Please choose both a robot and an environment file in the .dae format."
+			return "Error: Didn't upload any files! Please choose both a robot and an environment file in the .dae format."
 
-	return "Upload Successful."
+		return "Upload Successful."
+
+	# Selected pre-configured problem from server
 
 
 @app.route("/")
