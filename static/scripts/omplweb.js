@@ -114,10 +114,10 @@ $(document).ready(function() {
 		}
 	});
 	
-	// Default planner
+	// Set the default planner
 	load_planner_params("KPIECE1", planners["KPIECE1"]);
 
-	// When user picks planner, update our info
+	// When user picks planner, load the planner params
 	$("#planners").change(function() {
 		planner_name = $("#planners").val().split(".")[1];
 		planner_params = planners[planner_name];
@@ -154,18 +154,17 @@ function solve(){
 	if (validConfig == true) {
 		var html = "";
 		html += "<h2><center>Results</h2>"
-		// $('#results').html(html);
 
 		// Bring up the loading screen
-		// $.blockUI({
-			// css: {
-				// border: 'none',
-				// padding: '30px',
-				// backgroundColor: '#000',
-				// opacity: '0.7',
-				// color: '#fff',
-			// }
-		// });
+		$.blockUI({
+			css: {
+				border: 'none',
+				padding: '30px',
+				backgroundColor: '#000',
+				opacity: '0.7',
+				color: '#fff',
+			}
+		});
 
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
@@ -335,61 +334,3 @@ function validateFields() {
 	}
 
 }
-
-
-
-	// inputData = {}
-	// inputData.name = $("#name").val();
-	//		   inputData.start_x = $("#start_x").val();
-	//		   inputData.start_y = $("#start_y").val();
-	//		   inputData.start_z = $("#start_z").val();
-	//		   inputData.start_theta = $("#start_theta").val();
-	//		   inputData.start_axis_x = $("#start_axis_x").val();
-	//		   inputData.start_axis_y = $("#start_axis_y").val();
-	//		   inputData.start_axis_z = $("#start_axis_z").val();
-	//		   inputData.goal_x = $("#goal_x").val();
-	//		   inputData.goal_y = $("#goal_y").val();
-	//		   inputData.goal_z = $("#goal_z").val();
-	//		   inputData.goal_theta = $("#goal_theta").val();
-	//		   inputData.goal_axis_x = $("#goal_axis_x").val();
-	//		   inputData.goal_axis_y = $("#goal_axis_y").val();
-	//		   inputData.goal_axis_z = $("#goal_axis_z").val();
-	//		   inputData.bounds_min_x = $("#bounds_min_x").val();
-	//		   inputData.bounds_min_y = $("#bounds_min_y").val();
-	//		   inputData.bounds_min_z = $("#bounds_min_z").val();
-	//		   inputData.bounds_max_x = $("#bounds_max_x").val();
-	//		   inputData.bounds_max_y = $("#bounds_max_y").val();
-	//		   inputData.bounds_max_z = $("#bounds_max_z").val();
-	//		   inputData.time_limit = $("#time_limit").val();
-	//		   inputData.mem_limit = $("#mem_limit").val();
-	//		   inputData.run_count = $("#run_count").val();
-	//		   inputData.planners = $("#planners").val();
-	//
-	//		   inputData.location = "default_location";
-	//		   inputData.date_modified = "2/15/2015";
-	//		   inputData.env_path = "../../../robots/3D/Apartment_env.dae";
-	//		   inputData.robot_path = "../../../robots/3D/Apartment_robot.dae";
-	//
-	// console.log(inputData);
-
-	// var promise = postData(JSON.stringify(inputData));
-	//
-//	promise.success(function (data){
-//		console.log(data);
-//		$('#results').html(
-//			'<pre>' +
-//			JSON.stringify(data, ['solved', 'path'], ' ') +
-//			'</pre>'
-//		);
-//	})
-// }
-
-// function postData(sendData) {
-//	return $.ajax({
-//		url: "omplapp/solve",
-//		type: "POST",
-//		dataType: "json",
-//		data: {settings : sendData}
-//	});
-
-

@@ -27,15 +27,16 @@ app.config.from_object(__name__)
 class LogOutputHandler(object):
 	"""
 	Object for handling various levels of logging.
+	Logging levels:
+		0 = Silent (probablly shouldn't use this)
+		1 = Errors only
+		2 = Level 0 and warnings
+		3 = Levels 1, 2 and debugging
+		4 = Levels 1, 2, 3 and info
 	"""
 
 	def __init__(self, log_level):
 		# Specifies the level of logging should be printed to the console
-		# 0 = Silent (probablly shouldn't use this)
-		# 1 = Errors only
-		# 2 = Level 0 and warnings
-		# 3 = Levels 0, 1 and info
-		# 4 = Levels 0, 1, 2 and debugging
 		self.log_level = log_level
 
 		self.messages = "Messages: \n"
@@ -48,27 +49,27 @@ class LogOutputHandler(object):
 		if self.log_level > 1:
 			print "# Warning:    " + str(text)
 
+	def debug(self, text):
+		if self.log_level > 2:
+			print "# Debug:    " + str(text)
+
 	def info(self, text):
-		"""
-		Info messages are always stored and can be retrieved to send to the
-		client
-		"""
 		# Store the message
 		self.messages += str(text)
 
-		if self.log_level > 2:
+		if self.log_level > 3:
 			print "# Info:    " + str(text)
 
-	def debug(self, text):
-		if self.log_level > 3:
-			print "# Debug:    " + str(text)
-
 	def getMessages(self):
-		# 'Info' messages are stored and can be retrieved via this function to
+		# Info messages are stored and can be retrieved via this function to
 		# send to the client
 		return self.messages
 
-log = LogOutputHandler(4)
+	def clearMessages(self):
+		# Clear the stored messages, this should be called after sending to client
+		self.messages = "Messages: \n"
+
+log = LogOutputHandler(3)
 
 class Problem(object):
 	"""
@@ -82,7 +83,7 @@ class Problem(object):
 
 	def __init__(self):
 		"""
-		Initializes attributes to default values.
+		Initializes attributes to empty values.
 		"""
 
 		self.name = ''
@@ -130,7 +131,7 @@ def allowed_file(filename):
 
 def create_problem(settings, env_path, robot_path):
 	"""
-	Reads the user submitted configuration data and creates an instance of the
+	Reads the configuration data and creates an instance of the
 	Problem class to store the data.
 	"""
 
@@ -186,16 +187,19 @@ def parse_cfg(cfg_path):
 
 	for line in cfg:
 		if line[0] != '[':
-			line = line.replace(" ", "")
-			line = line.replace("\n", "")
-			items = line.split("=", 1)
+			line = line.replace(" ", "") # Remove excess whitespace
+			line = line.replace("\n", "") # Remove newline characters
+			items = line.split("=", 1) # Split into [key, value] pairs
 			if len(items) == 2:
+				# 'bounds' is called 'volume' in the .cfg file, so change it
 				if 'volume' in items[0]:
 					items[0] = items[0].replace("volume", "bounds")
+
+				# Store (key, value) pair
 				settings[items[0]] = items[1]
 
-	log.debug(settings)
 	return settings
+
 
 def format_solution(path, solved):
 	"""
@@ -212,6 +216,11 @@ def format_solution(path, solved):
 
 	# TODO: Better, neater formatting of path
 	solution['path'] = str(path)
+
+	# Grab the messages to send to the user
+	solution['messages'] = log.getMessages()
+	# Clear messages in preparation for next request
+	log.clearMessages()
 
 	return solution
 
@@ -312,7 +321,6 @@ def solve(problem):
 
 	solution['name'] = problem.name
 	solution['planner'] = ompl_setup.getPlanner().getName()
-	solution['messages'] = log.getMessages()
 
 	return json.dumps(solution)
 
@@ -335,12 +343,11 @@ def upload():
 	This function is invoked when the client clicks 'Solve' and submits the
 	problem configuration data.
 
-	1.	The robot and environment files are checked for validity and downloaded to
-		the server.
-	2.	Configuration data is parsed and loaded via the parse function.
+	1.	If custom problem, the robot and environment files are checked for
+		validity and downloaded to the server.
+	2.	Problem configuration data is parsed and loaded.
 	3.	The problem is solved and the output of the solve function (either a
 		solution path or an error) is returned.
-
 	"""
 
 	# Uploaded custom problem
