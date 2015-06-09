@@ -10,7 +10,7 @@ from ompl import geometric as og
 from ompl import control as oc
 from ompl import app as oa
 
-# Location of user uploaded .dae files
+# Location of .dae files
 UPLOAD_FOLDER = \
 	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/uploads'
 PROBLEMS_FOLDER = \
@@ -116,6 +116,23 @@ class Problem(object):
 		self.run_count = 0
 		self.planners = ''
 
+
+def create_planners():
+	"""
+	Initializes the planner lists and formats each planner's parameters to be
+	sent to the client.
+	"""
+	ompl.initializePlannerLists()
+	# Create the geometric planners
+	planners = ompl.PlanningAlgorithms(og)
+	params_dict = planners.getPlanners()
+
+	retval = "{'param name' : ('display name', 'range type', 'range \
+		suggestion', 'default value')}\n"
+	retval += "For KPIECE1: \n"
+	retval += str(params_dict['ompl.geometric.KPIECE1'])
+
+	return params_dict
 
 def allowed_file(filename):
 	"""
@@ -271,16 +288,23 @@ def solve(problem):
 	ompl_setup.setStartAndGoalStates(start, goal)
 
 
-	# Load the planner
+	## Load the planner
 	space_info = ompl_setup.getSpaceInformation()
 
-	if problem.planners != "":
-		# If user selected a planner, load it
-		planner = eval("ompl.%s(space_info)" % problem.planners)
-		ompl_setup.setPlanner(planner)
-		log.info("\tUsing planner: %s\n" % ompl_setup.getPlanner().getName())
-	else:
-		log.info("\tNo planner specified, using default\n")
+	planner = eval("%s(space_info)" % problem.planners)
+	ompl_setup.setPlanner(planner)
+	log.info("\tUsing planner: %s\n" % ompl_setup.getPlanner().getName())
+
+	# TODO: This is not that good...find a better way to get planner params
+	params = str(planner.params()).split("\n")
+	# For each parameter that this planner has
+	for param in params:
+		param = param.split(" ")[0]
+		# See if a value for this param is provided by the client
+		if flask.request.form.has_key(param):
+			# If value exists, set the param to the value:w
+			planner.params().setParam(param, str(flask.request.form[param]))
+
 
 	## Solve the problem
 	solution = {}
@@ -327,6 +351,10 @@ def solve(problem):
 
 ########## Flask Code ##########
 
+@app.route("/")
+def index():
+	return flask.redirect(flask.url_for('omplapp'))
+
 
 @app.route("/omplapp", methods=['GET'])
 def omplapp():
@@ -349,6 +377,7 @@ def upload():
 	3.	The problem is solved and the output of the solve function (either a
 		solution path or an error) is returned.
 	"""
+
 
 	# Uploaded custom problem
 	if (flask.request.form['problems'] == 'custom'):
@@ -387,7 +416,6 @@ def upload():
 		else:
 			return "Error: Didn't upload any files! Please choose both a robot \
 				and environment file in the .dae format."
-		return "Upload Successful."
 
 	# Selected pre-configured problem from server
 	else:
@@ -418,9 +446,10 @@ def upload():
 		return solution
 
 
-@app.route("/")
-def index():
-	return flask.redirect(flask.url_for('omplapp'))
+@app.route('/omplapp/planners')
+def planners():
+	planners = create_planners()
+	return json.dumps(planners)
 
 
 if __name__ == "__main__":

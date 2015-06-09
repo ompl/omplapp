@@ -1,5 +1,5 @@
 
-var planners= {
+var asdf_planners= {
 	"BKPIECE1" : {
 		"Border fraction" : 0.90,
 		"Range" : 0.0
@@ -96,8 +96,29 @@ var planners= {
 	}
 }
 
+var planners = null;
 
 $(document).ready(function() {
+	
+	// {planner : {'param name' : ('display name', 'range type', 'range 
+	// suggestion', 'default value')}}
+	// Retrieve the planners:
+	$.get( "omplapp/planners", function( data ) {
+		planners = JSON.parse(data);
+		// Set the default planner
+		load_planner_params("ompl.geometric.KPIECE1");
+	});
+	
+	
+
+	// When user picks planner, load the planner params
+	$("#planners").change(function() {
+		planner_name = $("#planners").val();
+		planner_params = planners[planner_name];
+		load_planner_params(planner_name, planner_params);
+	});
+	
+	
 	// Load config data when .cfg file is selected
 	$("#config").change(function (){
 		loadConfig();
@@ -113,38 +134,33 @@ $(document).ready(function() {
 			$("#generalConfig").collapse('hide');
 		}
 	});
-	
-	// Set the default planner
-	load_planner_params("KPIECE1", planners["KPIECE1"]);
-
-	// When user picks planner, load the planner params
-	$("#planners").change(function() {
-		planner_name = $("#planners").val().split(".")[1];
-		planner_params = planners[planner_name];
-		load_planner_params(planner_name, planner_params);
-	});
 })
 
 
-function load_planner_params(planner_name, planner_params) {
-	var plannerConfigHTML = "";
-	plannerConfigHTML += "<div class='col-md-4'>";
-	plannerConfigHTML += "<h4>" + planner_name + " Parameters</h4>";
-	plannerConfigHTML += "<table class='table'>";
+function load_planner_params(planner_name) {
+	if (planners != null) {
+		var plannerConfigHTML = "";
+		plannerConfigHTML += "<div class='col-md-8'>";
+		plannerConfigHTML += "<h4>" + planner_name.split(".")[2] + " Parameters</h4>";
+		plannerConfigHTML += "<table class='table'>";
 
-	for (var key in planner_params) {
-		if (planner_params.hasOwnProperty(key)) {
-			plannerConfigHTML += "<tr><td>" + key  + "</td>";
-			plannerConfigHTML += "<td><input type='text' name='" + key +  "' class='form-field' value='" + planner_params[key] + "'></td></tr>";
+		params = planners[planner_name]
+		for (var key in params) {
+			if (params.hasOwnProperty(key)) {
+				plannerConfigHTML += "<tr><td>" + params[key][0]  + "</td>";
+				plannerConfigHTML += "<td><input type='text' name='" + key +  "' class='form-field' value='" + params[key][3] + "'></td></tr>";
+			}
 		}
+
+		plannerConfigHTML += "</table>";
+		plannerConfigHTML += "</div>";
+
+		$("#plannerConfig").html(plannerConfigHTML);
+		$("#generalConfig").collapse("hide");
+		$("#plannerConfig").collapse("show");
+	} else {
+		alert("Planners are not loaded yet. Please wait and try again.");
 	}
-
-	plannerConfigHTML += "</table>";
-	plannerConfigHTML += "</div>";
-
-	$("#plannerConfig").html(plannerConfigHTML);
-	$("#generalConfig").collapse("hide");
-	$("#plannerConfig").collapse("show");
 }
 
 
