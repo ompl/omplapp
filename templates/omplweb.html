@@ -10,15 +10,16 @@
 
 	<body>
 		<!-- Navigation -->
-		<nav class="navbar navbar-inverse navbar-static-top">
+		<nav class="navbar navbar-inverse navbar-fixed-top">
 			<div class="container">
-				<a class="navbar-brand">OMPL Web</a>
-				<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				
+				<div class="navbar-header">
+					<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="true" aria-controls="navbar">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand">OMPL Web</a>
+				</div>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav navbar-right">
 						<li id="nav_config"><a onclick="load_configuration()">Configure Problem</a></li>
@@ -28,7 +29,7 @@
 				</div>
 			</div>
 		</nav>
-	
+		
 		<div id="content">
 			<div class="container container-fluid" id="content">
 				<br><br>
@@ -38,6 +39,8 @@
 		
 		<!-- Footer -->
 		<div class="footer">
+			<a href="http://ompl.kavrakilab.org">Open Motion Planning Library</a>
+			•
 			<a href="http://www.kavrakilab.org">Physical and Biological Computing Group</a>
 			•
 			<a href="http://www.cs.rice.edu">Department of Computer Science</a>

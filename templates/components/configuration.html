@@ -1,6 +1,6 @@
 <div class="container container-fluid" id="content">
 	<h2>Configure Problem</h2>
-	<br><br>
+	<br>
 	Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
 	<br><br>
 	
@@ -50,17 +50,13 @@
 
 			<!-- Custom problem upload -->
 			<div class="collapse" id="customProblem">
-				<div class="col-md-2 col-md-offset-1">
+				<div class="col-md-3">
 					<h4>Environment</h4>
-					<input type="file" name="env" id="env_path" class="form-field">
+					<input type="file" name="env" id="env_path" class="form-field form-control">
 				</div>
-				<div class="col-md-2">
+				<div class="col-md-3">
 					<h4>Robot</h4>
-					<input type="file" name="robot" id="robot_path" class="form-field">
-				</div>
-				<div class="col-md-2">
-					<h4>Configuration</h4>
-					<input type="file" name="config" id="config">
+					<input type="file" name="robot" id="robot_path" class="form-field form-control">
 				</div>
 			</div> <!-- Close collapsible options column -->
 			
@@ -69,7 +65,7 @@
 		
 		
 		<!-- Begin Configuration and Results section -->
-		<div class=" settings_container">
+		<div class="settings_container">
 			<div class="sidebar col-md-3">
 				<div class="sidebar-link" id="plannerPaneLink" onclick="togglePane('#plannerPane')">Planner Parameters</div>
 				<div class="sidebar-link" id="robotPaneLink" onclick="togglePane('#robotPane')">Robot Configuration</div>
@@ -87,120 +83,127 @@
 				
 				<!-- Begin Robot Configuration Table -->
 				<div class="row collapse" id="robotPane">
-					<h4>Robot</h4>
-					<div class="col-md-3">
+					<div class="pane-title">Robot</div>
+					
+					<div class="container-fluid">
+						<div class="col-md-12">
+							<h4>Configuration</h4>
+							<input type="file" name="config" id="config" class="form-control">
+							<br>
+						</div>
 						
-						<table class="table">
-							<tr>
-								<td>Name</td>
-								<td><input type="text" name="name" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start X</td>
-								<td><input type="number" step="any" name="start.x" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start Y</td>
-								<td><input type="number" step="any" name="start.y" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start Z</td>
-								<td><input type="number" step="any" name="start.z" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start Theta</td>
-								<td><input type="number" step="any" name="start.theta" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start Axis X</td>
-								<td><input type="number" step="any" name="start.axis.x" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start Axis Y</td>
-								<td><input type="number" step="any" name="start.axis.y" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Start Axis Z</td>
-								<td><input type="number" step="any" name="start.axis.z" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Goal X</td>
-								<td><input type="number" step="any" name="goal.x" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Goal Y</td>
-								<td><input type="number" step="any" name="goal.y" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Goal Z</td>
-								<td><input type="number" step="any" name="goal.z" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Goal Theta</td>
-								<td><input type="number" step="any" name="goal.theta" class="form-field"></td>
-							</tr>
-						</table>
-					</div>
-					<div class="col-md-3 col-centered">
-						<table class="table">
-							<tr>
-								<td>Goal Axis X</td>
-								<td><input type="number" step="any" name="goal.axis.x" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Goal Axis Y</td>
-								<td><input type="number" step="any" name="goal.axis.y" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Goal Axis Z</td>
-								<td><input type="number" step="any" name="goal.axis.z" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Bound Min X</td>
-								<td><input type="number" step="any" name="bounds.min.x" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Bounds Min Y</td>
-								<td><input type="number" step="any" name="bounds.min.y" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Bounds Min Z</td>
-								<td><input type="number" step="any" name="bounds.min.z" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Bounds Max X</td>
-								<td><input type="number" step="any" name="bounds.max.x" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Bounds Max Y</td>
-								<td><input type="number" step="any" name="bounds.max.y" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Bounds Max Z</td>
-								<td><input type="number" step="any" name="bounds.max.z" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Time Limit</td>
-								<td><input type="number" step="any" name="time_limit" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Memory Limit</td>
-								<td><input type="number" step="any" name="mem_limit" class="form-field"></td>
-							</tr>
-							<tr>
-								<td>Run Count</td>
-								<td><input type="number" step="any" name="run_count" class="form-field"></td>
-							</tr>
-						</table>
+						<div class="col-md-6">
+							Name
+							<input type="text" name="name" class="form-field form-control form-control">
+							<br><br>
+							
+							Start X
+							<input type="number" step="any" name="start.x" class="form-field form-control">
+							<br><br>
+
+							Start Y
+							<input type="number" step="any" name="start.y" class="form-field form-control">
+							<br><br>
+					
+							Start Z
+							<input type="number" step="any" name="start.z" class="form-field form-control">
+							<br><br>
+
+							Start Theta
+							<input type="number" step="any" name="start.theta" class="form-field form-control">
+							<br><br>
+
+							Start Axis X
+							<input type="number" step="any" name="start.axis.x" class="form-field form-control">
+							<br><br>
+
+							Start Axis Y
+							<input type="number" step="any" name="start.axis.y" class="form-field form-control">
+							<br><br>
+
+							Start Axis Z
+							<input type="number" step="any" name="start.axis.z" class="form-field form-control">
+							<br><br>
+
+							Goal X
+							<input type="number" step="any" name="goal.x" class="form-field form-control">
+							<br><br>
+					
+							Goal Y
+							<input type="number" step="any" name="goal.y" class="form-field form-control">
+							<br><br>
+							Goal Z
+							<input type="number" step="any" name="goal.z" class="form-field form-control">
+							<br><br>
+
+							Goal Theta
+							<input type="number" step="any" name="goal.theta" class="form-field form-control">
+							<br><br>
+						</div>
+						<div class="col-md-6">
+							Goal Axis X
+							<input type="number" step="any" name="goal.axis.x" class="form-field form-control">
+							<br><br>
+
+							Goal Axis Y
+							<input type="number" step="any" name="goal.axis.y" class="form-field form-control">
+							<br><br>
+
+							Goal Axis Z
+							<input type="number" step="any" name="goal.axis.z" class="form-field form-control">
+							<br><br>
+					
+							Bound Min X
+							<input type="number" step="any" name="bounds.min.x" class="form-field form-control">
+							<br><br>
+					
+							Bounds Min Y
+							<input type="number" step="any" name="bounds.min.y" class="form-field form-control">
+							<br><br>
+					
+							Bounds Min Z
+							<input type="number" step="any" name="bounds.min.z" class="form-field form-control">
+							<br><br>
+					
+							Bounds Max X
+							<input type="number" step="any" name="bounds.max.x" class="form-field form-control">
+							<br><br>
+					
+							Bounds Max Y
+							<input type="number" step="any" name="bounds.max.y" class="form-field form-control">
+							<br><br>
+					
+							Bounds Max Z
+							<input type="number" step="any" name="bounds.max.z" class="form-field form-control">
+							<br><br>
+					
+							Time Limit
+							<input type="number" step="any" name="time_limit" class="form-field form-control">
+							<br><br>
+					
+							Memory Limit
+							<input type="number" step="any" name="mem_limit" class="form-field form-control">
+							<br><br>
+					
+							Run Count
+							<input type="number" step="any" name="run_count" class="form-field form-control">
+							<br><br>
+						</div>
 					</div>
 				</div>
 				<!-- End General Configuration Table -->
 				
 				<!-- Begin Results -->
 				<div class="row collapse" id="solvePane">
-					<a class="btn btn-primary" onclick="solve()">Solve Problem</a>
-					<a class="btn btn-warning" onclick="clearAllFields()">Clear All Fields</a>
-					<div id="results"><br><br><br></div>
+					<div class="pane-title">Find Solution</div>
+					<div class="container-fluid">
+						<center>
+							<a class="button" onclick="solve()">Solve Problem</a>
+							<a class="button button-warning" onclick="clearAllFields()">Clear All Fields</a>
+						</center>
+						
+						<div id="results"><br><br><br></div>
+					</div>
 				</div>
 				<!-- End Results -->
 				

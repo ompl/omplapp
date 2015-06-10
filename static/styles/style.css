@@ -1,6 +1,6 @@
 a {
 	color: #ddd !important;
-	font-size: 16px;
+/*	font-size: 16px;*/
 	font-weight: 200;
 }
 a:active {
@@ -15,6 +15,7 @@ a:hover {
 
 body {
 	font-size: 16px;
+	padding-top: 50px;
 }
 
 h1, h2, h3 {
@@ -34,17 +35,35 @@ hr {
 	background-color: #080808;
 }
 
+.button {
+	border-radius: 4px;
+	background-color: #022037;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 14px;
+	margin-right: 10px;
+	margin-left: 10px;
+	padding: 6px 12px;
+	text-align: center;
+	vertical-align: middle;
+}
+
 .footer {
 	background-color: #022037;
 /*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
 	color: #fff;
 	font-size: 14px;
-	height: 44px;
 	margin-top: 20px;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding: 10px;
 	text-align: center;
 	width: 100%;
+}
+
+.form-control {
+	display: inline;
+/*	width: 30%;*/
+	
+	
 }
 
 .navbar {
@@ -56,9 +75,17 @@ hr {
 	font-weight: 100;
 }
 
+.pane-title {
+	font-size: 30px;
+	font-weight: 200;
+	padding-top: 10px;
+	padding-bottom: 20px;
+	text-align: center;
+}
+
 .sidebar {
 	background-color: #022037;
-/*	height: 100%;*/
+/*	min-height: 100%;*/
 	padding-top: 20px;
 	padding-bottom: 20px;
 	padding-left: 0px;
@@ -87,7 +114,11 @@ hr {
 }
 .settings {
 	background-color: #f7f7f7;
-	height: 100%;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 45px;
+	padding-right: 45px;
+	min-height: 100%;
 }
 .settings_container {
 	margin-top: 36px;
