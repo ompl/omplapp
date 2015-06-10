@@ -1,0 +1,230 @@
+		<div class="container container-fluid" id="content">
+			<h2>Configure Problem</h2>
+			<br><br>
+			Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
+			<br><br>
+			
+			<form enctype="multipart/form-data">
+				<!-- Begin Problem and Planner selection -->
+				<div class="row">
+					
+					<div class="col-md-2">
+						<h4>Planner</h4>
+						<select name="planners" id="planners" class="required-field form-control">
+							<option value="ompl.geometric.BKPIECE1">BKPIECE1</option>
+							<option value="ompl.geometric.EST">EST</option>
+							<option value="ompl.geometric.FMT">FMT</option>
+							<option value="ompl.geometric.KPIECE1" selected="selected">KPIECE1</option>
+							<option value="ompl.geometric.LBKPIECE1">LBKPIECE1</option>
+							<option value="ompl.geometric.LBTRRT">LBTRRT</option>
+							<option value="ompl.geometric.LazyPRM">LazyPRM</option>
+							<option value="ompl.geometric.LazyPRMstar">LazyPRMstar</option>
+							<option value="ompl.geometric.LazyRRT">LazyRRT</option>
+							<option value="ompl.geometric.PDST">PDST</option>
+							<option value="ompl.geometric.PRM">PRM</option>
+							<option value="ompl.geometric.PRMstar">PRMstar</option>
+							<option value="ompl.geometric.RRT">RRT</option>
+							<option value="ompl.geometric.RRTConnect">RRTConnect</option>
+							<option value="ompl.geometric.RRTstar">RRTstar</option>
+							<option value="ompl.geometric.SBL">SBL</option>
+							<option value="ompl.geometric.SPARS">SPARS</option>
+							<option value="ompl.geometric.SPARStwo">SPARStwo</option>
+							<option value="ompl.geometric.STRIDE">STRIDE</option>
+							<option value="ompl.geometric.TRRT">TRRT</option>
+						</select>
+					</div> <!-- Close Planners column -->
+					
+					<div class="col-md-2">
+						<h4>Problem</h4>
+						<select name="problems" id="problems" class="required-field form-control">
+							<option value="abstract">Abstract</option>
+							<option value="apartment">Apartment</option>
+							<option value="apartment_hard">Apartment Hard</option>
+							<option value="cubicles">Cubicles</option>
+							<option value="custom">Custom</option>
+						</select>
+					</div> <!-- Close Problems column -->
+
+					<!-- Custom problem upload -->
+					<div class="collapse" id="customProblem">
+						<div class="col-md-2 col-md-offset-1">
+							<h4>Environment</h4>
+							<input type="file" name="env" id="env_path" class="form-field">
+						</div>
+						<div class="col-md-2">
+							<h4>Robot</h4>
+							<input type="file" name="robot" id="robot_path" class="form-field">
+						</div>
+						<div class="col-md-2">
+							<h4>Configuration</h4>
+							<input type="file" name="config" id="config">
+						</div>
+					</div> <!-- Close collapsible options column -->
+					
+				</div> <!-- Close row -->
+				<!-- End Problem and Planner Selection -->
+				
+				
+				
+				
+					<br><br>
+
+					
+
+					
+
+					<br><hr>
+
+					<!-- Main content (3 columns) -->
+					<div class="row row-centered">
+						<!-- Options toggle buttons -->
+						<div class="col-md-1 col-md-offset-1">
+							<a class="btn btn-default" data-toggle="collapse" href="#generalConfig">
+								General Settings
+							</a>
+							</br></br>
+							<a class="btn btn-default" data-toggle="collapse" href="#plannerConfig">
+								Planner Settings
+							</a>
+							</br></br>
+						</div>
+
+						<!-- Settings -->
+						<div class="col-md-6 col-md-offset-1">
+							<!-- Begin General Configuration Table -->
+							<div class="row collapse well" id="generalConfig">
+								<div class="col-md-3">
+									<table class="table">
+										<tr>
+											<td>Name</td>
+											<td><input type="text" name="name" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start X</td>
+											<td><input type="number" step="any" name="start.x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Y</td>
+											<td><input type="number" step="any" name="start.y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Z</td>
+											<td><input type="number" step="any" name="start.z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Theta</td>
+											<td><input type="number" step="any" name="start.theta" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Axis X</td>
+											<td><input type="number" step="any" name="start.axis.x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Axis Y</td>
+											<td><input type="number" step="any" name="start.axis.y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Start Axis Z</td>
+											<td><input type="number" step="any" name="start.axis.z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal X</td>
+											<td><input type="number" step="any" name="goal.x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Y</td>
+											<td><input type="number" step="any" name="goal.y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Z</td>
+											<td><input type="number" step="any" name="goal.z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Theta</td>
+											<td><input type="number" step="any" name="goal.theta" class="form-field"></td>
+										</tr>
+									</table>
+								</div>
+								<div class="col-md-3 col-centered">
+									<table class="table">
+										<tr>
+											<td>Goal Axis X</td>
+											<td><input type="number" step="any" name="goal.axis.x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Axis Y</td>
+											<td><input type="number" step="any" name="goal.axis.y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Goal Axis Z</td>
+											<td><input type="number" step="any" name="goal.axis.z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bound Min X</td>
+											<td><input type="number" step="any" name="bounds.min.x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Min Y</td>
+											<td><input type="number" step="any" name="bounds.min.y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Min Z</td>
+											<td><input type="number" step="any" name="bounds.min.z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Max X</td>
+											<td><input type="number" step="any" name="bounds.max.x" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Max Y</td>
+											<td><input type="number" step="any" name="bounds.max.y" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Bounds Max Z</td>
+											<td><input type="number" step="any" name="bounds.max.z" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Time Limit</td>
+											<td><input type="number" step="any" name="time_limit" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Memory Limit</td>
+											<td><input type="number" step="any" name="mem_limit" class="form-field"></td>
+										</tr>
+										<tr>
+											<td>Run Count</td>
+											<td><input type="number" step="any" name="run_count" class="form-field"></td>
+										</tr>
+									</table>
+								</div>
+							</div>
+							<!-- End General Configuration Table -->
+
+							<!-- Begin Planner Configuration Table -->
+							<div class="row collapse well" id="plannerConfig">
+								Planner specific settings are displayed here when a
+								planner is selected.
+							</div>
+							<!-- End Planner Configuration Table -->
+						</div>
+
+						<!-- Solve and Clear buttons -->
+						<div class="col-md-1 col-md-offset-1">
+							<a class="btn btn-primary" onclick="solve()">Solve Problem</a>
+							</br>
+							</br>
+							<a class="btn btn-warning" onclick="clearAllFields()">Clear All Fields</a>
+						</div>
+					</div>
+
+			</form> <!-- Close form -->
+			
+			<br>
+
+			<!-- Results -->
+			<div class="row row-centered">
+				<div class="col-md-8 col-centered">
+					<div id="results"><br><br><br></div>
+				</div>
+			</div>
+		</div> <!-- Close fluid container -->

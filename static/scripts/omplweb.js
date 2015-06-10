@@ -99,43 +99,66 @@ var asdf_planners= {
 var planners = null;
 
 $(document).ready(function() {
-	
-	// {planner : {'param name' : ('display name', 'range type', 'range 
-	// suggestion', 'default value')}}
-	// Retrieve the planners:
-	$.get( "omplapp/planners", function( data ) {
-		planners = JSON.parse(data);
-		// Set the default planner
-		load_planner_params("ompl.geometric.KPIECE1");
-	});
-	
-	
 
-	// When user picks planner, load the planner params
-	$("#planners").change(function() {
-		planner_name = $("#planners").val();
-		planner_params = planners[planner_name];
-		load_planner_params(planner_name, planner_params);
-	});
-	
-	
-	// Load config data when .cfg file is selected
-	$("#config").change(function (){
-		loadConfig();
-	});
-	
-	// Show upload buttons if user selects 'Custom' problem
-	$("#problems").change(function() {
-		if ($("#problems").val() == 'custom'){
-			$("#customProblem").collapse('show');
-			$("#generalConfig").collapse('show');
-		} else {
-			$("#customProblem").collapse('hide');
-			$("#generalConfig").collapse('hide');
-		}
-	});
-})
+});
 
+function load_configuration () {
+	$("#content").load("omplapp/components/configuration", function () {
+		$(".active_nav_item").removeClass('active_nav_item')
+	});
+
+	// Load the HTML for the configuration settings
+	$("#content").load("omplapp/components/configuration", function () {
+		// Make config the active tab
+		$('#nav_config').addClass('active_nav_item');
+
+		// Retrieve the planners:
+		$.get( "omplapp/planners", function( data ) {
+			planners = JSON.parse(data);
+			// Set the default planner
+			load_planner_params("ompl.geometric.KPIECE1");
+		});
+
+		// When user picks planner, load the planner params
+		$("#planners").change(function() {
+			planner_name = $("#planners").val();
+			planner_params = planners[planner_name];
+			load_planner_params(planner_name, planner_params);
+		});
+
+		// Load config data when .cfg file is selected
+		$("#config").change(function (){
+			loadConfig();
+		});
+
+		// Show upload buttons if user selects 'Custom' problem
+		$("#problems").change(function() {
+			if ($("#problems").val() == 'custom'){
+				$("#customProblem").collapse('show');
+				$("#generalConfig").collapse('show');
+			} else {
+				$("#customProblem").collapse('hide');
+				$("#generalConfig").collapse('hide');
+			}
+		});
+	});
+}
+
+function load_visualization () {
+	$(".active_nav_item").removeClass('active_nav_item')
+
+	$("#content").load("omplapp/components/visualization", function () {
+		$('#nav_viz').addClass('active_nav_item');
+	});
+}
+
+function load_benchmarking () {
+	$(".active_nav_item").removeClass('active_nav_item')
+
+	$("#content").load("omplapp/components/benchmarking", function () {
+		$('#nav_bench').addClass('active_nav_item');
+	});
+}
 
 function load_planner_params(planner_name) {
 	if (planners != null) {

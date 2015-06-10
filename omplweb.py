@@ -451,6 +451,19 @@ def planners():
 	planners = create_planners()
 	return json.dumps(planners)
 
+@app.route('/omplapp/components/configuration')
+def load_configuration():
+	return flask.render_template("components/configuration.html")
+
+@app.route('/omplapp/components/visualization')
+def load_visualization():
+	return flask.render_template("components/visualization.html")
+
+@app.route('/omplapp/components/benchmarking')
+def load_benchmarking():
+	return flask.render_template("components/benchmarking.html")
+
+
 
 if __name__ == "__main__":
 	app.debug = True
