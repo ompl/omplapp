@@ -1,3 +1,22 @@
+a {
+	color: #ddd !important;
+	font-size: 16px;
+	font-weight: 200;
+}
+a:active {
+	color: #fff !important;
+	background-color: #080808 !important;
+}
+a:hover {
+	color: #fff !important;
+	cursor: pointer;
+/*	border-bottom: 2px solid #fff;*/
+}
+
+body {
+	font-size: 16px;
+}
+
 h1, h2, h3 {
 	font-weight: 200;
 }
@@ -10,48 +29,66 @@ hr {
 	width: 80%;
 }
 
-/*select {
-	width: 150px !important;
-}*/
-.content {
-	margin-left: 5%;
-	margin-right: 5%;
-	margin-top: 2%;
-	margin-bottom: 2%;
-}
-/* centered columns styles */
-/*.row-centered {
-	text-align:center;
-}
-.col-centered {
-	display:inline-block;
-	float:none;
-	 reset the text-align
-	text-align:left;
-	 inline-block space fix
-	margin-right:-4px;
-}*/
-.navbar {
-	background-image: -webkit-linear-gradient(top, #034170, #000);
-}
-a {
-	color: #ddd !important;
-	font-size: 16px;
-	font-weight: 200;
-}
-a:active {
-	color: #fff !important;
-	background-color: #080808 !important;
-}
-a:hover {
-	color: #fff !important;
-/*	border-bottom: 2px solid #fff;*/
-}
 .active_nav_item {
 /*	border-bottom: 2px solid #fff;*/
 	background-color: #080808;
 }
+
+.footer {
+	background-color: #022037;
+/*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
+	color: #fff;
+	font-size: 14px;
+	height: 44px;
+	margin-top: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: center;
+	width: 100%;
+}
+
+.navbar {
+	background-color: #022037;
+/*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
+}
 .navbar-brand {
 	font-size: 36px;
 	font-weight: 100;
+}
+
+.sidebar {
+	background-color: #022037;
+/*	height: 100%;*/
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.sidebar-link {
+	color: #fff;
+	display: block;
+	font-size: 20px;
+	font-weight: 200;
+/*	margin-top: 20px;*/
+/*	margin-bottom: 20px;*/
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 45px;
+	padding-right: 45px;
+	width: 100%;
+	
+}
+.sidebar-link:hover {
+	background-color: #080808;
+	cursor: pointer;
+}
+.sidebar-link.sidebar-active {
+	background-color: #080808;
+}
+.settings {
+	background-color: #f7f7f7;
+	height: 100%;
+}
+.settings_container {
+	margin-top: 36px;
 }

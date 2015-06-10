@@ -98,9 +98,14 @@ var asdf_planners= {
 
 var planners = null;
 
+var results = "";
+
+
 $(document).ready(function() {
+	load_configuration();
 
 });
+
 
 function load_configuration () {
 	$("#content").load("omplapp/components/configuration", function () {
@@ -135,14 +140,19 @@ function load_configuration () {
 		$("#problems").change(function() {
 			if ($("#problems").val() == 'custom'){
 				$("#customProblem").collapse('show');
-				$("#generalConfig").collapse('show');
+				showPane('#robotPane');
 			} else {
 				$("#customProblem").collapse('hide');
-				$("#generalConfig").collapse('hide');
+				hidePane('#robotPane');
 			}
 		});
+
+		// If user previously solved a problem, reload those results
+		$('#results').html(results);
+
 	});
 }
+
 
 function load_visualization () {
 	$(".active_nav_item").removeClass('active_nav_item')
@@ -152,6 +162,7 @@ function load_visualization () {
 	});
 }
 
+
 function load_benchmarking () {
 	$(".active_nav_item").removeClass('active_nav_item')
 
@@ -159,6 +170,7 @@ function load_benchmarking () {
 		$('#nav_bench').addClass('active_nav_item');
 	});
 }
+
 
 function load_planner_params(planner_name) {
 	if (planners != null) {
@@ -178,14 +190,43 @@ function load_planner_params(planner_name) {
 		plannerConfigHTML += "</table>";
 		plannerConfigHTML += "</div>";
 
-		$("#plannerConfig").html(plannerConfigHTML);
-		$("#generalConfig").collapse("hide");
-		$("#plannerConfig").collapse("show");
+		$("#plannerPane").html(plannerConfigHTML);
+		hidePane('#robotPane');
+		showPane('#plannerPane');
 	} else {
 		alert("Planners are not loaded yet. Please wait and try again.");
 	}
 }
 
+
+function togglePane(paneID) {
+	// If this pane is visible
+	if ($(paneID).hasClass('in')) {
+		hidePane(paneID);
+	} else {
+		showPane(paneID)
+	}
+}
+
+function hidePane(paneID) {
+	linkID = paneID + "Link";
+	
+	// Hide the pane
+	$(paneID).collapse('hide');
+	
+	// Unhighlight sidebar item
+	$(linkID).removeClass('sidebar-active');
+}
+
+function showPane(paneID) {
+	linkID = paneID + "Link";
+	
+	// Show the pane
+	$(paneID).collapse('show');
+	
+	// Highlight sidebar item
+	$(linkID).addClass('sidebar-active');
+}
 
 function solve(){
 	// Check that all fields are filled in
@@ -231,15 +272,16 @@ function solve(){
 				html += data.path;
 
 				html += "</pre>";
-
-				$('#generalConfig').collapse('hide');
-				$('#plannerConfig').collapse('hide');
+				
+				hidePane('#robotPane');
+				hidePane('#plannerPane');
 				$.unblockUI();
+				results = html;
 				$('#results').html(html);
 			},
 			error: function(data) {
-				$('#generalConfig').collapse('hide');
-				$('#plannerConfig').collapse('hide');
+				hidePane('#robotPane');
+				hidePane('#plannerPane');
 				$.unblockUI();
 				html += "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
 				$('#results').html(html);
@@ -332,7 +374,7 @@ function clearAllFields() {
 	});
 	$('#config').val('');
 	$('#results').html('');
-	$('#generalConfig').collapse('show');
+	showPane('#robotPane');
 }
 
 
