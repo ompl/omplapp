@@ -1,4 +1,4 @@
-<div class="container container-fluid" id="content">
+<div class="container container-fluid" id="inner-content">
 	<h2>Configure Problem</h2>
 	<br>
 	Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
@@ -43,7 +43,7 @@
 					<option value="abstract">Abstract</option>
 					<option value="apartment">Apartment</option>
 					<option value="apartment_hard">Apartment Hard</option>
-					<option value="cubicles">Cubicles</option>
+					<option value="cubicles" selected="selected">Cubicles</option>
 					<option value="custom">Custom</option>
 				</select>
 			</div> <!-- Close Problems column -->
@@ -200,6 +200,7 @@
 						<center>
 							<a class="button" onclick="solve()">Solve Problem</a>
 							<a class="button button-warning" onclick="clearAllFields()">Clear All Fields</a>
+							<a class="button" onclick="load_visualization()">Visualization</a>
 						</center>
 						
 						<div id="results"><br><br><br></div>

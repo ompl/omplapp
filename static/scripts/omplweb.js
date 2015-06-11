@@ -3,6 +3,8 @@ var planners = null;
 
 var results = "";
 
+var solutionData;
+
 $(document).ready(function() {
 	load_configuration();
 
@@ -48,7 +50,9 @@ function load_configuration () {
 				hidePane('#robotPane');
 			}
 		});
-
+		
+		showPane('#solvePane');
+		
 		// If user previously solved a problem, reload those results
 		$('#results').html(results);
 
@@ -56,11 +60,15 @@ function load_configuration () {
 }
 
 function load_visualization () {
-	$(".active_nav_item").removeClass('active_nav_item')
+	if (solutionData != null) {
+		$(".active_nav_item").removeClass('active_nav_item')
 
-	$("#content").load("omplapp/components/visualization", function () {
-		$('#nav_viz').addClass('active_nav_item');
-	});
+		$("#content").load("omplapp/components/visualization", function () {
+			$('#nav_viz').addClass('active_nav_item');
+		});
+	} else {
+		alert("Visualization is only possible after successfully solving a problem.");
+	}
 }
 
 function load_benchmarking () {
@@ -268,36 +276,40 @@ function solve(){
 
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
-		console.log("Sending: ", formData);
+		
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
 			type: "POST",
 			data: formData,
 			success: function(data){
-				data = JSON.parse(data);
-
+				solutionData = JSON.parse(data);
+				
 				html += "<pre>";
-				html += data.name;
+				html += solutionData.name;
 
-				if (data.solved == "true") {
+				if (solutionData.solved == "true") {
 					html += "<font color='green'>: Found solution.</font><br><br>";
 				} else {
 					html += "<font color='red'>: No solution found.</font><br><br>";
 				}
 
-				html += data.messages;
+				html += solutionData.messages;
 				html += "<br><br>"
 
-				html += data.path;
+				// html += solutionData.path;
 
 				html += "</pre>";
 				
 				hidePane('#robotPane');
 				hidePane('#plannerPane');
-				$.unblockUI();
+				
 				results = html;
+				
+				
 				$('#results').html(html);
+				
+				$.unblockUI();
 			},
 			error: function(data) {
 				hidePane('#robotPane');

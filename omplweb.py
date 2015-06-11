@@ -12,9 +12,9 @@ from ompl import app as oa
 
 # Location of .dae files
 UPLOAD_FOLDER = \
-	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/uploads'
+	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/static/uploads'
 PROBLEMS_FOLDER = \
-	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/problem_files'
+	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/static/problem_files'
 
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
@@ -134,6 +134,7 @@ def create_planners():
 
 	return params_dict
 
+
 def allowed_file(filename):
 	"""
 	Checks that the parameter is a .dae file.
@@ -231,14 +232,27 @@ def format_solution(path, solved):
 	else:
 		solution['solved'] = 'false'
 
-	# TODO: Better, neater formatting of path
-	solution['path'] = str(path)
-
 	# Grab the messages to send to the user
 	solution['messages'] = log.getMessages()
 	# Clear messages in preparation for next request
 	log.clearMessages()
 
+	# Format the path
+	path_matrix = path.printAsMatrix().strip().split('\n')
+
+	# A list of n states, where path_list[0] is the start state and path_list[n]
+	# is the goal state, and path_list[i] are the intermediary states.
+	# Each state is also a list: [x, y, z,
+	# path_list = []
+
+	# for line in path_matrix:
+		# print "\t " + line
+		# path_list.append(line.split(" "))
+
+	# print path_list
+	# solution['path'] = path_list;
+
+	solution['path'] = path.printAsMatrix().strip()
 	return solution
 
 
@@ -293,7 +307,7 @@ def solve(problem):
 
 	planner = eval("%s(space_info)" % problem.planners)
 	ompl_setup.setPlanner(planner)
-	log.info("\tUsing planner: %s\n" % ompl_setup.getPlanner().getName())
+	log.info("Using planner: %s\n" % ompl_setup.getPlanner().getName())
 
 	# TODO: This is not that good...find a better way to get planner params
 	params = str(planner.params()).split("\n")
@@ -305,10 +319,12 @@ def solve(problem):
 			# If value exists, set the param to the value:w
 			planner.params().setParam(param, str(flask.request.form[param]))
 
-
 	## Solve the problem
 	solution = {}
 	solved = ompl_setup.solve(problem.time_limit)
+
+	log.info(str(ompl_setup))
+	log.info("\n\n")
 
 	## Check for validity
 	if solved:
@@ -316,7 +332,7 @@ def solve(problem):
 		initialValid = path.check()
 
 		if initialValid:
-			log.info("\tInitial path length: %d\n" % path.length())
+			log.info("Initial path length: %d\n" % path.length())
 
 			# If if initially valid, attempt to simplify
 			ompl_setup.simplifySolution()
@@ -324,29 +340,29 @@ def solve(problem):
 			simple_path = ompl_setup.getSolutionPath()
 			simplifyValid = simple_path.check()
 			if simplifyValid:
-				log.info("\tSimplified path was found.\n")
-				log.info("\tSimplified path length: %d\n" % path.length())
+				log.info("Simplified path was found.\n")
+				log.info("Simplified path length: %d\n" % path.length())
 				solution = format_solution(simple_path, True)
 			else:
-				log.info("\tSimplified path was invalid. Returned \
+				log.info("Simplified path was invalid. Returned \
 					non-simplified path.\n")
-				log.info("\tPath length: %d\n" % path.length())
+				log.info("Path length: %d\n" % path.length())
 				solution = format_solution(path, True)
 
 			# TODO: Interpolation?
 
 		else :
-			log.info("\tPath reported by planner seems to be invalid.\n")
+			log.info("Path reported by planner seems to be invalid.\n")
 			solution = format_solution(path, False)
 	else:
-		log.info("\tNo valid path was found with the provided \
+		log.info("No valid path was found with the provided \
 			configuration.\n")
 		solution = format_solution(None, False)
 
 	solution['name'] = problem.name
 	solution['planner'] = ompl_setup.getPlanner().getName()
 
-	return json.dumps(solution)
+	return solution
 
 
 ########## Flask Code ##########
@@ -378,6 +394,9 @@ def upload():
 		solution path or an error) is returned.
 	"""
 
+	problem = None
+	robot_location = ""
+	env_location = ""
 
 	# Uploaded custom problem
 	if (flask.request.form['problems'] == 'custom'):
@@ -399,16 +418,13 @@ def upload():
 				envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
 				env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
 
+				robot_location = "static/uploads/" + robot_filename
+				env_location = "static/uploads/" + env_filename
 				log.debug("Files saved as: " + robot_path + " and " + env_path)
 
 				# TODO:Put some try/catches here
 				problem = create_problem(flask.request.form, env_path, robot_path)
 
-				log.debug("Solving problem...")
-				solution = solve(problem)
-				# TODO: Delete the uploaded files?
-				log.debug("Problem solved")
-				return solution
 
 			else:
 				return "Error: Wrong file format. Robot and environment files \
@@ -428,6 +444,8 @@ def upload():
 		env_path = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
 		cfg_path = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
 
+		robot_location = "static/problem_files/" + robot_filename
+		env_location = "static/problem_files/" + env_filename
 		log.debug("Problem location: " + robot_path + " and " + env_path)
 
 		log.debug("Will now parse configuration...")
@@ -439,12 +457,13 @@ def upload():
 		log.debug("Configuration has been parsed, creating problem.")
 		problem = create_problem(settings, env_path, robot_path)
 
-		log.debug("Solving problem...")
-		solution = solve(problem)
-		# TODO: Delete the uploaded files?
-		log.debug("Problem solved")
-		return solution
+	log.debug("Solving problem...")
+	solution = solve(problem)
+	solution['robot_location'] = robot_location
+	solution['env_location'] = env_location
 
+	log.debug("Problem solved")
+	return json.dumps(solution)
 
 @app.route('/omplapp/planners')
 def planners():
