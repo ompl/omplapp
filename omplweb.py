@@ -11,10 +11,8 @@ from ompl import control as oc
 from ompl import app as oa
 
 # Location of .dae files
-UPLOAD_FOLDER = \
-	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/static/uploads'
-PROBLEMS_FOLDER = \
-	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/static/problem_files'
+UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
+PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
 
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
