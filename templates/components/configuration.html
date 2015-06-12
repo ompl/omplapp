@@ -27,21 +27,21 @@
 							<option value="abstract">Abstract</option>
 							<option value="apartment">Apartment</option>
 							<option value="apartment_hard">Apartment Hard</option>
-							<option value="cubicles" selected="selected">Cubicles</option>
-							<option value="custom">Custom</option>
+							<option value="cubicles">Cubicles</option>
+							<option value="custom" selected="selected">Custom</option>
 						</select>
 					</div> <!-- Close Problem -->
 					
 
 					<!-- Custom problem upload -->
-					<div class="collapse" id="customProblem">
+					<div class="collapse in" id="customProblem">
 						<div class="form-group">
 							<label>Environment</label>
-							<input type="file" name="env" id="env_path" class="form-field form-control input-sm">
+							<input type="file" name="env" id="env_path" class="form-field-custom form-control input-sm">
 						</div>
 						<div class="form-group">
 							<label>Robot</label>
-							<input type="file" name="robot" id="robot_path" class="form-field form-control input-sm">
+							<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
 						</div>
 						<div class="form-group">
 							<label>Configuration File</label>
@@ -215,7 +215,7 @@
 	</div> <!-- End tab panel -->
 	
 	
-<!--	<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script> -->
+	<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
 
 	<div class="visualization col-md-8" id="viewer"></div>			
 	

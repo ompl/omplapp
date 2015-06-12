@@ -3,6 +3,9 @@ var planners = null;
 
 var results = "";
 
+var robot_path;
+var env_path;
+
 var solutionData;
 
 $(document).ready(function() {
@@ -44,10 +47,12 @@ function load_configuration () {
 		$("#problems").change(function() {
 			if ($("#problems").val() == 'custom'){
 				$("#customProblem").collapse('show');
-				showPane('#robotPane');
 			} else {
 				$("#customProblem").collapse('hide');
-				hidePane('#robotPane');
+				
+				// Retrieve config data for this problem
+				loadRemoteProblem($("#problems").val());
+				
 			}
 		});
 		
@@ -84,13 +89,47 @@ function load_planner_params(planner_name) {
 		}
 		plannerConfigHTML += "</tbody></table>"
 		$("#plannerPane").html(plannerConfigHTML);
-		hidePane('#robotPane');
 		showPane('#plannerPane');
 	} else {
 		alert("Planners are not loaded yet. Please wait and try again.");
 	}
 }
 
+function loadRemoteProblem(problem_name) {
+	// Retrieve problem configuration:
+	var url = "omplapp/problems/" + problem_name;
+	$.get(url, function(data) {
+		var cfgData = JSON.parse(data);
+		console.log(cfgData);
+		// Load the data
+		$("[name='name']").val(cfgData['name']);
+		$("[name='start.x']").val(cfgData['start.x']);
+		$("[name='start.y']").val(cfgData['start.y']);
+		$("[name='start.z']").val(cfgData['start.z']);
+		$("[name='start.axis.x']").val(cfgData['start.axis.x']);
+		$("[name='start.axis.y']").val(cfgData['start.axis.y']);
+		$("[name='start.axis.z']").val(cfgData['start.axis.z']);
+		$("[name='goal.x']").val(cfgData['goal.x']);
+		$("[name='goal.y']").val(cfgData['goal.y']);
+		$("[name='goal.z']").val(cfgData['goal.z']);
+		$("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
+		$("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
+		$("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
+		$("[name='bounds.min.x']").val(cfgData['bounds.min.x']);
+		$("[name='bounds.min.y']").val(cfgData['bounds.min.y']);
+		$("[name='bounds.min.z']").val(cfgData['bounds.min.z']);
+		$("[name='bounds.max.x']").val(cfgData['bounds.max.x']);
+		$("[name='bounds.max.y']").val(cfgData['bounds.max.y']);
+		$("[name='bounds.max.z']").val(cfgData['bounds.max.z']);
+		$("[name='time_limit']").val(cfgData['time_limit']);
+		
+		robot_path = cfgData['robot_path'];
+		env_path = cfgData['env_path'];
+		clearAnimation();
+		init();
+		animate();
+	});
+}
 
 function togglePane(paneID) {
 	// If this pane is visible
@@ -185,47 +224,25 @@ function clearAllFields() {
 		$('#config').val('');
 		$('#results').html('');
 		results = "";
-		showPane('#robotPane');
 	}
 	
 }
 
 function validateFields() {
-	// Check that a problem has been selected
-	if ($('#problems').val() != 'custom' && $('#planners').val() != null) {
-		return true;
-	}
+	var valid = true;
 
-	// Check that a planner has been selected
-	if ($('#planners').val() == null) {
-		alert("Please select a planner from the drop down menu.");
-		return false;
-	}
+	// Ensure that the all the needed fields for a problem have values
+	$('.form-field').each(function () {
+		if ($(this).val() === '') {
+			valid = false;
 
-	// Check that a planner has been selected
-	if ($('#problems').val() == null && $('#planners').val() == null) {
-		alert("Please select a problem and planner from the drop down menus.");
-		return false;
-	}
-
-	// Check if the user uploaded a custom problem
-	if ($('#problems').val() == 'custom' && $('#planners').val() != null) {
-		var valid = true;
-
-		// Ensure that the all the needed fields for a problem have values
-		$('.form-field').each(function () {
-			if ($(this).val() === '') {
-				valid = false;
-
-				// Highlight the incorrect field
-				$(this).css("background-color", "#fda9a0");
-			} else {
-				$(this).css("background-color", "white");
-			}
-		});
-		return valid;
-	}
-
+			// Highlight the incorrect field
+			$(this).css("background-color", "#fda9a0");
+		} else {
+			$(this).css("background-color", "white");
+		}
+	});
+	return valid;
 }
 
 
@@ -274,7 +291,6 @@ function solve(){
 
 				html += "</pre>";
 				
-				hidePane('#robotPane');
 				hidePane('#plannerPane');
 				
 				results = html;
@@ -285,7 +301,6 @@ function solve(){
 				$.unblockUI();
 			},
 			error: function(data) {
-				hidePane('#robotPane');
 				hidePane('#plannerPane');
 				$.unblockUI();
 				html += "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";

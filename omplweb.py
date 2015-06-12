@@ -410,6 +410,8 @@ def upload():
 	problem = None
 	robot_location = ""
 	env_location = ""
+	robot_path = ""
+	env_path = ""
 
 	# Uploaded custom problem
 	if (flask.request.form['problems'] == 'custom'):
@@ -435,10 +437,6 @@ def upload():
 				env_location = "static/uploads/" + env_filename
 				log.debug("Files saved as: " + robot_path + " and " + env_path)
 
-				# TODO:Put some try/catches here
-				problem = create_problem(flask.request.form, env_path, robot_path)
-
-
 			else:
 				return "Error: Wrong file format. Robot and environment files \
 					must be .dae"
@@ -446,7 +444,7 @@ def upload():
 			return "Error: Didn't upload any files! Please choose both a robot \
 				and environment file in the .dae format."
 
-	# Selected pre-configured problem from server
+	# Select .dae files for pre-configured problems
 	else:
 		problem_name = flask.request.form['problems']
 		robot_filename = problem_name + "_robot.dae"
@@ -461,17 +459,16 @@ def upload():
 		env_location = "static/problem_files/" + env_filename
 		log.debug("Problem location: " + robot_path + " and " + env_path)
 
-		log.debug("Will now parse configuration...")
-		# TODO:Put some try/catches here
-		settings = parse_cfg(cfg_path)
-		settings['name'] = problem_name
-		settings['planners'] = flask.request.form['planners']
-
-		log.debug("Configuration has been parsed, creating problem.")
-		problem = create_problem(settings, env_path, robot_path)
+	log.debug("Will now parse configuration...")
+	# Create the Problem with the user submitted config data (regardless of
+	# whether custom or pre-configured problem, since they can edit config of a
+	# pre-configured problem
+	problem = create_problem(flask.request.form, env_path, robot_path)
 
 	log.debug("Solving problem...")
+
 	solution = solve(problem)
+
 	solution['robot_location'] = robot_location
 	solution['env_location'] = env_location
 
@@ -483,13 +480,23 @@ def planners():
 	planners = create_planners()
 	return json.dumps(planners)
 
+@app.route('/omplapp/problems/<problem_name>')
+def problem_info(problem_name):
+	robot_filename = problem_name + "_robot.dae"
+	env_filename = problem_name + "_env.dae"
+	cfg_filename = problem_name + ".cfg"
+
+	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
+
+	cfg_data = parse_cfg(cfg_file)
+	cfg_data['robot_path'] = os.path.join("static/problem_files", robot_filename)
+	cfg_data['env_path'] = os.path.join("static/problem_files", env_filename)
+
+	return json.dumps(cfg_data)
+
 @app.route('/omplapp/components/configuration')
 def load_configuration():
 	return flask.render_template("components/configuration.html")
-
-@app.route('/omplapp/components/visualization')
-def load_visualization():
-	return flask.render_template("components/visualization.html")
 
 @app.route('/omplapp/components/benchmarking')
 def load_benchmarking():

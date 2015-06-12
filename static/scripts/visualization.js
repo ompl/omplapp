@@ -7,10 +7,10 @@ var robot;
 
 // var path = parsePath();
 var path=[[0,0,0,0,0,0]]
-var env_location = "static/uploads/Abstract_env.dae";
-var robot_location = "static/uploads/Abstract_robot.dae";
-init();
-animate();
+// var env_location = "static/uploads/Abstract_env.dae";
+// var robot_location = "static/uploads/Abstract_robot.dae";
+// init();
+// animate();
 
 console.log(solutionData);
 
@@ -28,7 +28,12 @@ function parsePath() {
 	return path_list;
 }
 
+function clearAnimation() {
+	// Prep the canvas for loading a new env and robot
+}
+
 function init() {
+	console.log(robot_path, env_path);
 	// Create a new scene
 	scene = new THREE.Scene();
 
@@ -98,7 +103,7 @@ function init() {
 
 	var loader = new THREE.ColladaLoader();
 	loader.options.converUpAxis = true;
-	loader.load(env_location, function(collada){
+	loader.load(env_path, function(collada){
 		env = collada.scene.children[0];
 		var skin = collada.skins[0];
 
@@ -118,7 +123,7 @@ function init() {
 	});
 	
 	var robot_loader = new THREE.ColladaLoader();
-	robot_loader.load(robot_location, function(collada){
+	robot_loader.load(robot_path, function(collada){
 		robot = collada.scene;
 		var skin = collada.skins[0];
 
