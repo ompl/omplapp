@@ -1,217 +1,222 @@
 <div class="container container-fluid" id="inner-content">
 	<h2>Configure Problem</h2>
 	<br>
-	Select a robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, click solve to find a solution.
+	Select a pre-configured problem, or upload a custom robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, open the Solve tab to find a solution.
 	<br><br>
 	
 	
-	<form enctype="multipart/form-data">
-		
-		<!-- Begin Problem and Planner selection -->
-		<div class="row">
-			<!-- Planners column -->
-			<div class="col-md-2">
-				<h4>Planner</h4>
-				<select name="planners" id="planners" class="required-field form-control">
-					<option value="ompl.geometric.BKPIECE1">BKPIECE1</option>
-					<option value="ompl.geometric.EST">EST</option>
-					<option value="ompl.geometric.FMT">FMT</option>
-					<option value="ompl.geometric.KPIECE1" selected="selected">KPIECE1</option>
-					<option value="ompl.geometric.LBKPIECE1">LBKPIECE1</option>
-					<option value="ompl.geometric.LBTRRT">LBTRRT</option>
-					<option value="ompl.geometric.LazyPRM">LazyPRM</option>
-					<option value="ompl.geometric.LazyPRMstar">LazyPRMstar</option>
-					<option value="ompl.geometric.LazyRRT">LazyRRT</option>
-					<option value="ompl.geometric.PDST">PDST</option>
-					<option value="ompl.geometric.PRM">PRM</option>
-					<option value="ompl.geometric.PRMstar">PRMstar</option>
-					<option value="ompl.geometric.RRT">RRT</option>
-					<option value="ompl.geometric.RRTConnect">RRTConnect</option>
-					<option value="ompl.geometric.RRTstar">RRTstar</option>
-					<option value="ompl.geometric.SBL">SBL</option>
-					<option value="ompl.geometric.SPARS">SPARS</option>
-					<option value="ompl.geometric.SPARStwo">SPARStwo</option>
-					<option value="ompl.geometric.STRIDE">STRIDE</option>
-					<option value="ompl.geometric.TRRT">TRRT</option>
-				</select>
-			</div> <!-- Close Planners column -->
-			
-			<!-- Problems column -->
-			<div class="col-md-2">
-				<h4>Problem</h4>
-				<select name="problems" id="problems" class="required-field form-control">
-					<option value="abstract">Abstract</option>
-					<option value="apartment">Apartment</option>
-					<option value="apartment_hard">Apartment Hard</option>
-					<option value="cubicles" selected="selected">Cubicles</option>
-					<option value="custom">Custom</option>
-				</select>
-			</div> <!-- Close Problems column -->
+	<div class="col-md-4" role="tabpanel">
+		<form enctype="multipart/form-data">
+			<!-- Nav tabs -->
+			<ul class="nav tabs" role="tablist">
+				<li role="presentation"><a href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
+				<li role="presentation"><a href="#planner" aria-controls="planner" role="tab" data-toggle="tab">Planner</a></li>
+				<li role="presentation"><a href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab">Bounds</a></li>
+				<li role="presentation"><a href="#solve" aria-controls="solve" role="tab" data-toggle="tab">Solve</a></li>
+			</ul>
 
-			<!-- Custom problem upload -->
-			<div class="collapse" id="customProblem">
-				<div class="col-md-3">
-					<h4>Environment</h4>
-					<input type="file" name="env" id="env_path" class="form-field form-control">
-				</div>
-				<div class="col-md-3">
-					<h4>Robot</h4>
-					<input type="file" name="robot" id="robot_path" class="form-field form-control">
-				</div>
-			</div> <!-- Close collapsible options column -->
-			
-		</div> <!-- Close row -->
-		<!-- End Problem and Planner Selection -->
-		
-		
-		<!-- Begin Configuration and Results section -->
-		<div class="settings_container">
-			<div class="sidebar col-md-3">
-				<div class="sidebar-link" id="plannerPaneLink" onclick="togglePane('#plannerPane')">Planner Parameters</div>
-				<div class="sidebar-link" id="robotPaneLink" onclick="togglePane('#robotPane')">Robot Configuration</div>
-				<div class="sidebar-link" id="solvePaneLink" onclick="togglePane('#solvePane')">Solve Problem</div>
-			</div>
-			
-			<div class="settings col-md-9">
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<!-- Begin Problem Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="problem">
 
-				<!-- Begin Planner Configuration Table -->
-				<div class="row collapse" id="plannerPane">
-					Planner specific settings are displayed here when a
-					planner is selected.
-				</div>
-				<!-- End Planner Configuration Table -->
-				
-				<!-- Begin Robot Configuration Table -->
-				<div class="row collapse" id="robotPane">
-					<div class="pane-title">Robot</div>
+					<!-- Problem Selection -->
+					<div class="form-group">
+						<label>Problem</label>
+						<select name="problems" id="problems" class="required-field form-control input-sm">
+							<option value="abstract">Abstract</option>
+							<option value="apartment">Apartment</option>
+							<option value="apartment_hard">Apartment Hard</option>
+							<option value="cubicles" selected="selected">Cubicles</option>
+							<option value="custom">Custom</option>
+						</select>
+					</div> <!-- Close Problem -->
 					
-					<div class="container-fluid">
-						<div class="col-md-12">
-							<h4>Configuration</h4>
+
+					<!-- Custom problem upload -->
+					<div class="collapse" id="customProblem">
+						<div class="form-group">
+							<label>Environment</label>
+							<input type="file" name="env" id="env_path" class="form-field form-control input-sm">
+						</div>
+						<div class="form-group">
+							<label>Robot</label>
+							<input type="file" name="robot" id="robot_path" class="form-field form-control input-sm">
+						</div>
+						<div class="form-group">
+							<label>Configuration File</label>
 							<input type="file" name="config" id="config" class="form-control">
-							<br>
 						</div>
-						
-						<div class="col-md-6">
-							Name
-							<input type="text" name="name" class="form-field form-control form-control">
-							<br><br>
-							
-							Start X
-							<input type="number" step="any" name="start.x" class="form-field form-control">
-							<br><br>
+					</div> <!-- Close collapsible options -->
+				
+					<!-- Problem Configuration -->
+					<table class="table">
+						<caption>Start Pose</caption>
+						<thead>
+							<tr>
+							<th>Axis</th>
+							<th>Position</th>
+							<th>Rotation</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>X</th>
+								<td><input type="number" step="any" name="start.x" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="start.axis.x" class="form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Y</th>
+								<td><input type="number" step="any" name="start.y" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="start.axis.y" class="form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Z</th>
+								<td><input type="number" step="any" name="start.z" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="start.axis.z" class="form-field form-control input-sm"></td>
+							</tr>
+							<!-- <tr>
+								<th>Theta</th>
+								<td><input type="number" step="any" name="start.theta" class="form-field form-control input-sm"></td>
+								<td></td>
+							</tr> -->
+						</tbody>
+					</table>
+					<table class="table">
+						<caption>Goal Pose</caption>
+						<thead>
+							<tr>
+							<th>Axis</th>
+							<th>Position</th>
+							<th>Rotation</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>X</th>
+								<td><input type="number" step="any" name="goal.x" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="goal.axis.x" class="form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Y</th>
+								<td><input type="number" step="any" name="goal.y" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="goal.axis.y" class="form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Z</th>
+								<td><input type="number" step="any" name="goal.z" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="goal.axis.z" class="form-field form-control input-sm"></td>
+							</tr>
+							<!-- <tr>
+								<th>Theta</th>
+								<td><input type="number" step="any" name="goal.theta" class="form-field form-control input-sm"></td>
+								<td></td>
+							</tr> -->
+						</tbody>
+					</table>
+				</div>
+				<!-- End Problem Tab -->
 
-							Start Y
-							<input type="number" step="any" name="start.y" class="form-field form-control">
-							<br><br>
-					
-							Start Z
-							<input type="number" step="any" name="start.z" class="form-field form-control">
-							<br><br>
-
-							Start Theta
-							<input type="number" step="any" name="start.theta" class="form-field form-control">
-							<br><br>
-
-							Start Axis X
-							<input type="number" step="any" name="start.axis.x" class="form-field form-control">
-							<br><br>
-
-							Start Axis Y
-							<input type="number" step="any" name="start.axis.y" class="form-field form-control">
-							<br><br>
-
-							Start Axis Z
-							<input type="number" step="any" name="start.axis.z" class="form-field form-control">
-							<br><br>
-
-							Goal X
-							<input type="number" step="any" name="goal.x" class="form-field form-control">
-							<br><br>
-					
-							Goal Y
-							<input type="number" step="any" name="goal.y" class="form-field form-control">
-							<br><br>
-							Goal Z
-							<input type="number" step="any" name="goal.z" class="form-field form-control">
-							<br><br>
-
-							Goal Theta
-							<input type="number" step="any" name="goal.theta" class="form-field form-control">
-							<br><br>
-						</div>
-						<div class="col-md-6">
-							Goal Axis X
-							<input type="number" step="any" name="goal.axis.x" class="form-field form-control">
-							<br><br>
-
-							Goal Axis Y
-							<input type="number" step="any" name="goal.axis.y" class="form-field form-control">
-							<br><br>
-
-							Goal Axis Z
-							<input type="number" step="any" name="goal.axis.z" class="form-field form-control">
-							<br><br>
-					
-							Bound Min X
-							<input type="number" step="any" name="bounds.min.x" class="form-field form-control">
-							<br><br>
-					
-							Bounds Min Y
-							<input type="number" step="any" name="bounds.min.y" class="form-field form-control">
-							<br><br>
-					
-							Bounds Min Z
-							<input type="number" step="any" name="bounds.min.z" class="form-field form-control">
-							<br><br>
-					
-							Bounds Max X
-							<input type="number" step="any" name="bounds.max.x" class="form-field form-control">
-							<br><br>
-					
-							Bounds Max Y
-							<input type="number" step="any" name="bounds.max.y" class="form-field form-control">
-							<br><br>
-					
-							Bounds Max Z
-							<input type="number" step="any" name="bounds.max.z" class="form-field form-control">
-							<br><br>
-					
-							Time Limit
-							<input type="number" step="any" name="time_limit" class="form-field form-control">
-							<br><br>
-					
-							Memory Limit
-							<input type="number" step="any" name="mem_limit" class="form-field form-control">
-							<br><br>
-					
-							Run Count
-							<input type="number" step="any" name="run_count" class="form-field form-control">
-							<br><br>
-						</div>
+				<!-- Begin Planner Configuration Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="planner">
+					<div class="form-group">
+						<label>Planner</label>
+						<select name="planners" id="planners" class="required-field form-control input-sm">
+							<option value="ompl.geometric.BKPIECE1">BKPIECE1</option>
+							<option value="ompl.geometric.EST">EST</option>
+							<option value="ompl.geometric.FMT">FMT</option>
+							<option value="ompl.geometric.KPIECE1" selected="selected">KPIECE1</option>
+							<option value="ompl.geometric.LBKPIECE1">LBKPIECE1</option>
+							<option value="ompl.geometric.LBTRRT">LBTRRT</option>
+							<option value="ompl.geometric.LazyPRM">LazyPRM</option>
+							<option value="ompl.geometric.LazyPRMstar">LazyPRMstar</option>
+							<option value="ompl.geometric.LazyRRT">LazyRRT</option>
+							<option value="ompl.geometric.PDST">PDST</option>
+							<option value="ompl.geometric.PRM">PRM</option>
+							<option value="ompl.geometric.PRMstar">PRMstar</option>
+							<option value="ompl.geometric.RRT">RRT</option>
+							<option value="ompl.geometric.RRTConnect">RRTConnect</option>
+							<option value="ompl.geometric.RRTstar">RRTstar</option>
+							<option value="ompl.geometric.SBL">SBL</option>
+							<option value="ompl.geometric.SPARS">SPARS</option>
+							<option value="ompl.geometric.SPARStwo">SPARStwo</option>
+							<option value="ompl.geometric.STRIDE">STRIDE</option>
+							<option value="ompl.geometric.TRRT">TRRT</option>
+						</select>
+					</div>
+					<div class="collapse" id="plannerPane">
+						Planner specific settings are displayed here when a
+						planner is selected.
 					</div>
 				</div>
-				<!-- End General Configuration Table -->
+				<!-- End Planner Configuration Tab -->
 				
-				<!-- Begin Results -->
-				<div class="row collapse" id="solvePane">
-					<div class="pane-title">Find Solution</div>
-					<div class="container-fluid">
-						<center>
-							<a class="button" onclick="solve()">Solve Problem</a>
-							<a class="button button-warning" onclick="clearAllFields()">Clear All Fields</a>
-							<a class="button" onclick="load_visualization()">Visualization</a>
-						</center>
-						
-						<div id="results"><br><br><br></div>
-					</div>
+				<!-- Begin Bounds Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="bounds">
+					<table class="table">
+						<caption>Bounding Box</caption>
+						<thead>
+							<tr>
+							<th>Axis</th>
+							<th>Lower</th>
+							<th>Upper</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>X</th>
+								<td><input type="number" step="any" name="bounds.min.x" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="bounds.max.x" class="form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Y</th>
+								<td><input type="number" step="any" name="bounds.min.y" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="bounds.max.y" class="form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Z</th>
+								<td><input type="number" step="any" name="bounds.min.z" class="form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="bounds.max.z" class="form-field form-control input-sm"></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
-				<!-- End Results -->
+				<!-- End Bounds Tab -->
 				
+				<!-- Begin Solve Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="solve">
+					<table class="table">
+						<caption>Solve Problem</caption>
+						<tbody>
+							<tr>
+								<td>Name</td>
+								<td><input type="text" name="name" class="form-field form-control form-control input-sm"></td>
+							</tr>
+							<tr>
+								<td>Time Limit (sec)</td>
+								<td><input type="number" step="any" name="time_limit" class="form-field form-control input-sm"></td>
+							</tr>
+						</tbody>
+					</table>
+					<center>
+						<a class="button" onclick="solve()">Solve</a>
+						<a class="button button-warning" onclick="clearAllFields()">Clear</a>
+					</center>
+					
+					<div id="results"><br><br><br></div>
+				</div>
+				<!-- End Solve Tab -->
 			</div>
-		</div>	
-		<!-- End Configuration and Results section -->
-		
-	</form>
-	<!-- Close form -->
+			<!-- End Tab panes -->
+
+		</form>
+		<!-- Close form -->	
+			
+	</div> <!-- End tab panel -->
+	
+	
+<!--	<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script> -->
+
+	<div class="visualization col-md-8" id="viewer"></div>			
+	
 </div> <!-- Close fluid container -->

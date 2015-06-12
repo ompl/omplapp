@@ -46,6 +46,7 @@ hr {
 	padding: 6px 12px;
 	text-align: center;
 	vertical-align: middle;
+	width: 100px;
 }
 
 .footer {
@@ -75,6 +76,20 @@ hr {
 	font-weight: 100;
 }
 
+.tabs {
+	background-color: #022037;
+}
+.tabs>li {
+	float: left;
+}
+
+.tabs>li>a:hover {
+	background-color: #080808;
+}
+.tabs>li.active>a {
+	background-color: #080808;
+}
+
 .pane-title {
 	font-size: 30px;
 	font-weight: 200;
@@ -83,46 +98,16 @@ hr {
 	text-align: center;
 }
 
-.sidebar {
-	background-color: #022037;
-/*	min-height: 100%;*/
-	padding-top: 20px;
-	padding-bottom: 20px;
-	padding-left: 0px;
-	padding-right: 0px;
-}
-.sidebar-link {
-	color: #fff;
-	display: block;
-	font-size: 20px;
-	font-weight: 200;
-/*	margin-top: 20px;*/
-/*	margin-bottom: 20px;*/
-	padding-top: 20px;
-	padding-bottom: 20px;
-	padding-left: 45px;
-	padding-right: 45px;
-	width: 100%;
-	
-}
-.sidebar-link:hover {
-	background-color: #080808;
-	cursor: pointer;
-}
-.sidebar-link.sidebar-active {
-	background-color: #080808;
-}
-.settings {
-	background-color: #f7f7f7;
-	padding-top: 20px;
-	padding-bottom: 20px;
-	padding-left: 45px;
-	padding-right: 45px;
-	min-height: 100%;
-}
-.settings_container {
-	margin-top: 36px;
+.tab-content {
+	border: 2px solid #080808;
+	padding: 10px;
+/*	height: 564px;*/
 }
 
 .visualization {
+	background-color: #fafafa;
+	border: 2px solid #080808;
+	float: right;
+	height: 606;
+	padding: 0px;
 }

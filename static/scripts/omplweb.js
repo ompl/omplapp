@@ -51,24 +51,13 @@ function load_configuration () {
 			}
 		});
 		
-		showPane('#solvePane');
+		// Open the problem config tab
+		$('#problem-tab').click()
 		
 		// If user previously solved a problem, reload those results
 		$('#results').html(results);
 
 	});
-}
-
-function load_visualization () {
-	if (solutionData != null) {
-		$(".active_nav_item").removeClass('active_nav_item')
-
-		$("#content").load("omplapp/components/visualization", function () {
-			$('#nav_viz').addClass('active_nav_item');
-		});
-	} else {
-		alert("Visualization is only possible after successfully solving a problem.");
-	}
 }
 
 function load_benchmarking () {
@@ -82,21 +71,18 @@ function load_benchmarking () {
 function load_planner_params(planner_name) {
 	if (planners != null) {
 		var plannerConfigHTML = "";
-		plannerConfigHTML += "<div class='pane-title'>" + planner_name.split(".")[2] + " Parameters</div>";
-		plannerConfigHTML += "<div class='container-fluid'>";
-		plannerConfigHTML += "<div class='col-md-12'>";
-
+		plannerConfigHTML += "<table class='table'><caption>";
+		plannerConfigHTML += planner_name.split(".")[2]; 
+		plannerConfigHTML += " Options</caption><tbody>";
 		params = planners[planner_name]
 		for (var key in params) {
 			if (params.hasOwnProperty(key)) {
+				plannerConfigHTML += "<tr><td>";
 				plannerConfigHTML += params[key][0];
-				plannerConfigHTML += "<input type='text' name='" + key +  "' class='form-field form-control' value='" + params[key][3] + "'><br><br>";
+				plannerConfigHTML += "</td><td><input type='text' name='" + key +  "' class='form-field form-control input-sm' value='" + params[key][3] + "'></td></tr>";
 			}
 		}
-
-		plannerConfigHTML += "</div>";
-		plannerConfigHTML += "</div>";
-
+		plannerConfigHTML += "</tbody></table>"
 		$("#plannerPane").html(plannerConfigHTML);
 		hidePane('#robotPane');
 		showPane('#plannerPane');
@@ -116,23 +102,13 @@ function togglePane(paneID) {
 }
 
 function hidePane(paneID) {
-	linkID = paneID + "Link";
-	
 	// Hide the pane
 	$(paneID).collapse('hide');
-	
-	// Unhighlight sidebar item
-	$(linkID).removeClass('sidebar-active');
 }
 
 function showPane(paneID) {
-	linkID = paneID + "Link";
-	
 	// Show the pane
 	$(paneID).collapse('show');
-	
-	// Highlight sidebar item
-	$(linkID).addClass('sidebar-active');
 }
 
 
@@ -147,32 +123,29 @@ function loadConfig() {
 		reader.onload = function () {
 			var cfgData = parseConfig(reader.result);
 
-			//TODO: Make this neater
-			document.getElementsByName("name")[0].value = cfgData['name'];
-			// document.getElementsByName("planners")[0].value = "";
-			document.getElementsByName("start.x")[0].value = cfgData['start.x'];
-			document.getElementsByName("start.y")[0].value = cfgData['start.y'];
-			document.getElementsByName("start.z")[0].value = cfgData['start.z'];
-			document.getElementsByName("start.theta")[0].value = cfgData['start.theta'];
-			document.getElementsByName("start.axis.x")[0].value = cfgData['start.axis.x'];
-			document.getElementsByName("start.axis.y")[0].value = cfgData['start.axis.y'];
-			document.getElementsByName("start.axis.z")[0].value = cfgData['start.axis.z'];
-			document.getElementsByName("goal.x")[0].value = cfgData['goal.x'];
-			document.getElementsByName("goal.y")[0].value = cfgData['goal.y'];
-			document.getElementsByName("goal.z")[0].value = cfgData['goal.z'];
-			document.getElementsByName("goal.theta")[0].value = cfgData['goal.theta'];
-			document.getElementsByName("goal.axis.x")[0].value = cfgData['goal.axis.x'];
-			document.getElementsByName("goal.axis.y")[0].value = cfgData['goal.axis.y'];
-			document.getElementsByName("goal.axis.z")[0].value = cfgData['goal.axis.z'];
-			document.getElementsByName("bounds.min.x")[0].value = cfgData['volume.min.x'];
-			document.getElementsByName("bounds.min.y")[0].value = cfgData['volume.min.y'];
-			document.getElementsByName("bounds.min.z")[0].value = cfgData['volume.min.z'];
-			document.getElementsByName("bounds.max.x")[0].value = cfgData['volume.max.x'];
-			document.getElementsByName("bounds.max.y")[0].value = cfgData['volume.max.y'];
-			document.getElementsByName("bounds.max.z")[0].value = cfgData['volume.max.z'];
-			document.getElementsByName("time_limit")[0].value = cfgData['time_limit'];
-			document.getElementsByName("mem_limit")[0].value = cfgData['mem_limit'];
-			document.getElementsByName("run_count")[0].value = cfgData['run_count'];
+			$("[name='name']").val(cfgData['name']);
+			$("[name='start.x']").val(cfgData['start.x']);
+			$("[name='start.y']").val(cfgData['start.y']);
+			$("[name='start.z']").val(cfgData['start.z']);
+			$("[name='start.axis.x']").val(cfgData['start.axis.x']);
+			$("[name='start.axis.y']").val(cfgData['start.axis.y']);
+			$("[name='start.axis.z']").val(cfgData['start.axis.z']);
+			$("[name='goal.x']").val(cfgData['goal.x']);
+			$("[name='goal.y']").val(cfgData['goal.y']);
+			$("[name='goal.z']").val(cfgData['goal.z']);
+			$("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
+			$("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
+			$("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
+			$("[name='bounds.min.x']").val(cfgData['volume.min.x']);
+			$("[name='bounds.min.y']").val(cfgData['volume.min.y']);
+			$("[name='bounds.min.z']").val(cfgData['volume.min.z']);
+			$("[name='bounds.max.x']").val(cfgData['volume.max.x']);
+			$("[name='bounds.max.y']").val(cfgData['volume.max.y']);
+			$("[name='bounds.max.z']").val(cfgData['volume.max.z']);
+			$("[name='time_limit']").val(cfgData['time_limit']);
+			
+			// document.getElementsByName("start.theta")[0].value = cfgData['start.theta'];
+			// document.getElementsByName("goal.theta")[0].value = cfgData['goal.theta'];
 
 		}
 	} else {

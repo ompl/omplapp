@@ -1,6 +1,8 @@
 import os
 import json
 
+from math import cos, sin, pi
+
 import flask
 from werkzeug import secure_filename
 
@@ -11,10 +13,8 @@ from ompl import control as oc
 from ompl import app as oa
 
 # Location of .dae files
-UPLOAD_FOLDER = \
-	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/static/uploads'
-PROBLEMS_FOLDER = \
-	'/Users/prudhvi/Dropbox/School/Research/KavrakiLab/OMPL/flask/omplweb/static/problem_files'
+UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
+PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
 
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
@@ -166,14 +166,14 @@ def create_problem(settings, env_path, robot_path):
 	problem.start_x = float(settings['start.x'])
 	problem.start_y = float(settings['start.y'])
 	problem.start_z = float(settings['start.z'])
-	problem.start_theta = float(settings['start.theta'])
+	# problem.start_theta = float(settings['start.theta'])
 	problem.start_axis_x = float(settings['start.axis.x'])
 	problem.start_axis_y = float(settings['start.axis.y'])
 	problem.start_axis_z = float(settings['start.axis.z'])
 	problem.goal_x = float(settings['goal.x'])
 	problem.goal_y = float(settings['goal.y'])
 	problem.goal_z = float(settings['goal.z'])
-	problem.goal_theta = float(settings['goal.theta'])
+	# problem.goal_theta = float(settings['goal.theta'])
 	problem.goal_axis_x = float(settings['goal.axis.x'])
 	problem.goal_axis_y = float(settings['goal.axis.y'])
 	problem.goal_axis_z = float(settings['goal.axis.z'])
@@ -183,11 +183,11 @@ def create_problem(settings, env_path, robot_path):
 	problem.bounds_max_x = float(settings['bounds.max.x'])
 	problem.bounds_max_y = float(settings['bounds.max.y'])
 	problem.bounds_max_z = float(settings['bounds.max.z'])
+	problem.time_limit = float(settings['time_limit'])
 
 	# benchmark specific stuff #
-	problem.time_limit = float(settings['time_limit'])
-	problem.mem_limit = float(settings['mem_limit'])
-	problem.run_count = float(settings['run_count'])
+	# problem.mem_limit = float(settings['mem_limit'])
+	# problem.run_count = float(settings['run_count'])
 
 	# planners for benchmarks #
 	problem.planners = settings['planners']
@@ -287,17 +287,30 @@ def solve(problem):
 	# Set the start and goal states
 	start = ob.State(space)
 	start().setXYZ(problem.start_x, problem.start_y, problem.start_z)
-	start().rotation().setAxisAngle(
-			problem.start_axis_x, problem.start_axis_y,
-			problem.start_axis_z, problem.start_theta
-	)
+
+	# Copied and modified from lines 1150-1157 from ompl_app.py
+	# Compute and set the start rotation
+	angles = [problem.start_axis_x, problem.start_axis_y, problem.start_axis_z]
+	c = [ cos(angle*pi/360.) for angle in angles ]
+	s = [ sin(angle*pi/360.) for angle in angles ]
+	start().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
+	start().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
+	start().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
+	start().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
+
 
 	goal = ob.State(space)
 	goal().setXYZ(problem.goal_x, problem.goal_y, problem.goal_z)
-	goal().rotation().setAxisAngle(
-			problem.goal_axis_x, problem.goal_axis_y,
-			problem.goal_axis_z, problem.goal_theta
-	)
+
+	# Copied and modified from lines 1150-1157 from ompl_app.py
+	# Compute and set the start rotation
+	angles = [problem.goal_axis_x, problem.goal_axis_y, problem.goal_axis_z]
+	c = [ cos(angle*pi/360.) for angle in angles ]
+	s = [ sin(angle*pi/360.) for angle in angles ]
+	goal().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
+	goal().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
+	goal().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
+	goal().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
 
 	ompl_setup.setStartAndGoalStates(start, goal)
 
