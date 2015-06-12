@@ -41,22 +41,22 @@ class LogOutputHandler(object):
 
 	def error(self, text):
 		if self.log_level > 0:
-			print "# Error:    " + str(text)
+			print("# Error:    " + str(text))
 
 	def warn(self, text):
 		if self.log_level > 1:
-			print "# Warning:    " + str(text)
+			print("# Warning:    " + str(text))
 
 	def debug(self, text):
 		if self.log_level > 2:
-			print "# Debug:    " + str(text)
+			print("# Debug:    " + str(text))
 
 	def info(self, text):
 		# Store the message
 		self.messages += str(text)
 
 		if self.log_level > 3:
-			print "# Info:    " + str(text)
+			print ("# Info:    " + str(text))
 
 	def getMessages(self):
 		# Info messages are stored and can be retrieved via this function to
@@ -313,7 +313,7 @@ def solve(problem):
 	for param in params:
 		param = param.split(" ")[0]
 		# See if a value for this param is provided by the client
-		if flask.request.form.has_key(param):
+		if param in flask.request.form:
 			# If value exists, set the param to the value:w
 			planner.params().setParam(param, str(flask.request.form[param]))
 
