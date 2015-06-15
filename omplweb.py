@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 
 from math import cos, sin, pi
 
@@ -29,6 +30,8 @@ app.config.from_object(__name__)
 
 
 ########## OMPL Code ##########
+
+global_vars = {}
 
 
 class LogOutputHandler(object):
@@ -192,13 +195,6 @@ def create_problem(settings, env_path, robot_path):
 	problem.bounds_max_z = float(settings['bounds.max.z'])
 	problem.time_limit = float(settings['time_limit'])
 
-	# benchmark specific stuff #
-	# problem.mem_limit = float(settings['mem_limit'])
-	# problem.run_count = float(settings['run_count'])
-
-	# planners for benchmarks #
-	problem.planners = settings['planners']
-
 	return problem
 
 
@@ -207,40 +203,16 @@ def parse_cfg(cfg_path):
 	Parses the configuration file for pre-defined problems and returns a
 	settings dictionary that can be passed to create_problem
 	"""
-	settings = {}
-	newthing = {}
-
 
 	if (sys.version_info > (3, 0)):
 		config = ConfigParser.ConfigParser(strict = False)
 	else:
 		config = ConfigParser.ConfigParser()
+
 	config.readfp(open(cfg_path, 'r'))
 
+	return config._sections['problem']
 
-
-
-
-
-
-	####
-
-	cfg = open(cfg_path, 'r')
-
-	for line in cfg:
-		if line[0] != '[':
-			line = line.replace(" ", "") # Remove excess whitespace
-			line = line.replace("\n", "") # Remove newline characters
-			items = line.split("=", 1) # Split into [key, value] pairs
-			if len(items) == 2:
-				# 'bounds' is called 'volume' in the .cfg file, so change it
-				if 'volume' in items[0]:
-					items[0] = items[0].replace("volume", "bounds")
-
-				# Store (key, value) pair
-				settings[items[0]] = items[1]
-
-	return settings
 
 
 def format_solution(path, solved):
@@ -293,54 +265,41 @@ def solve(problem):
 	# Set the dimensions of the bounding box
 	bounds = ob.RealVectorBounds(3)
 
-	bounds.low[0] = problem.bounds_min_x
-	bounds.low[1] = problem.bounds_min_y
-	bounds.low[2] = problem.bounds_min_z
+	bounds.low[0] = float(problem['volume.min.x'])
+	bounds.low[1] = float(problem['volume.min.y'])
+	bounds.low[2] = float(problem['volume.min.z'])
 
-	bounds.high[0] = problem.bounds_max_x
-	bounds.high[1] = problem.bounds_max_y
-	bounds.high[2] = problem.bounds_max_z
+	bounds.high[0] = float(problem['volume.max.x'])
+	bounds.high[1] = float(problem['volume.max.y'])
+	bounds.high[2] = float(problem['volume.max.z'])
 
 	space.setBounds(bounds)
 
 	ompl_setup = oa.SE3RigidBodyPlanning()
 
-	ompl_setup.setEnvironmentMesh(str(problem.env_path))
-	ompl_setup.setRobotMesh(str(problem.robot_path))
+	ompl_setup.setEnvironmentMesh(str(global_vars['env_path']))
+	ompl_setup.setRobotMesh(str(global_vars['robot_path']))
 
-	# Set the start and goal states
+	# Set the start state
 	start = ob.State(space)
-	start().setXYZ(problem.start_x, problem.start_y, problem.start_z)
+	start().setXYZ(float(problem['start.x']), float(problem['start.y']),
+			float(problem['start.z']))
 
-	# Compute and set the start rotation
-	start().rotation().setAxisAngle(problem.start_axis_x, problem.start_axis_y,
-									problem.start_axis_z, problem.start_theta)
+	# Set the start rotation
+	start().rotation().setAxisAngle(float(problem['start.axis.x']),
+									float(problem['start.axis.y']),
+									float(problem['start.axis.z']),
+									float(problem['start.theta']))
 
-	# Copied and modified from lines 1150-1157 from ompl_app.py
-	# angles = [problem.start_axis_x, problem.start_axis_y, problem.start_axis_z]
-	# c = [ cos(angle*pi/360.) for angle in angles ]
-	# s = [ sin(angle*pi/360.) for angle in angles ]
-	# start().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
-	# start().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
-	# start().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
-	# start().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
-
-
+	# Set the goal state
 	goal = ob.State(space)
-	goal().setXYZ(problem.goal_x, problem.goal_y, problem.goal_z)
+	goal().setXYZ(float(problem['goal.x']), float(problem['goal.y']), float(problem['goal.z']))
 
-	# Compute and set the start rotation
-	goal().rotation().setAxisAngle(problem.goal_axis_x, problem.goal_axis_y,
-									problem.goal_axis_z, problem.goal_theta)
-
-	# Copied and modified from lines 1150-1157 from ompl_app.py
-	# angles = [problem.goal_axis_x, problem.goal_axis_y, problem.goal_axis_z]
-	# c = [ cos(angle*pi/360.) for angle in angles ]
-	# s = [ sin(angle*pi/360.) for angle in angles ]
-	# goal().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
-	# goal().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
-	# goal().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
-	# goal().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
+	# Set the goal rotation
+	goal().rotation().setAxisAngle(float(problem['goal.axis.x']),
+									float(problem['goal.axis.y']),
+									float(problem['goal.axis.z']),
+									float(problem['goal.theta']))
 
 	ompl_setup.setStartAndGoalStates(start, goal)
 
@@ -348,7 +307,7 @@ def solve(problem):
 	## Load the planner
 	space_info = ompl_setup.getSpaceInformation()
 
-	planner = eval("%s(space_info)" % problem.planners)
+	planner = eval("%s(space_info)" % problem['planner'])
 	ompl_setup.setPlanner(planner)
 	log.info("Using planner: %s\n" % ompl_setup.getPlanner().getName())
 
@@ -358,13 +317,13 @@ def solve(problem):
 	for param in params:
 		param = param.split(" ")[0]
 		# See if a value for this param is provided by the client
-		if flask.request.form.has_key(param):
+		if problem['planner_params'].has_key(param):
 			# If value exists, set the param to the value:w
-			planner.params().setParam(param, str(flask.request.form[param]))
+			planner.params().setParam(param, str(problem['planner_params'][param]))
 
 	## Solve the problem
 	solution = {}
-	solved = ompl_setup.solve(problem.time_limit)
+	solved = ompl_setup.solve(float(problem['time_limit']))
 
 	log.info(str(ompl_setup))
 	log.info("\n\n")
@@ -402,7 +361,7 @@ def solve(problem):
 			configuration.\n")
 		solution = format_solution(None, False)
 
-	solution['name'] = problem.name
+	solution['name'] = problem['name']
 	solution['planner'] = ompl_setup.getPlanner().getName()
 
 	return solution
@@ -437,72 +396,13 @@ def upload():
 		solution path or an error) is returned.
 	"""
 
-	problem = None
-	robot_location = ""
-	env_location = ""
-	robot_path = ""
-	env_path = ""
-
-	# Uploaded custom problem
-	if (flask.request.form['problems'] == 'custom'):
-		robotFile = flask.request.files['robot']
-		envFile = flask.request.files['env']
-
-		# Check that the uploaded files are valid
-		if robotFile and envFile:
-			if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
-
-				# If valid files, save them to the server
-				robot_filename = secure_filename(robotFile.filename)
-				robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], \
-					robot_filename))
-				robot_path = os.path.join(app.config['UPLOAD_FOLDER'], \
-					robot_filename)
-
-				env_filename = secure_filename(envFile.filename)
-				envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
-				env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
-
-				robot_location = "static/uploads/" + robot_filename
-				env_location = "static/uploads/" + env_filename
-				log.debug("Files saved as: " + robot_path + " and " + env_path)
-
-			else:
-				return "Error: Wrong file format. Robot and environment files \
-					must be .dae"
-		else:
-			return "Error: Didn't upload any files! Please choose both a robot \
-				and environment file in the .dae format."
-
-	# Select .dae files for pre-configured problems
-	else:
-		problem_name = flask.request.form['problems']
-		robot_filename = problem_name + "_robot.dae"
-		env_filename = problem_name + "_env.dae"
-		cfg_filename = problem_name + ".cfg"
-
-		robot_path = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
-		env_path = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
-		cfg_path = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
-
-		robot_location = "static/problem_files/" + robot_filename
-		env_location = "static/problem_files/" + env_filename
-		log.debug("Problem location: " + robot_path + " and " + env_path)
-
-	log.debug("Will now parse configuration...")
-	# Create the Problem with the user submitted config data (regardless of
-	# whether custom or pre-configured problem, since they can edit config of a
-	# pre-configured problem
-	problem = create_problem(flask.request.form, env_path, robot_path)
+	problem = flask.request.get_json(True, False, True)
+	print problem
 
 	log.debug("Solving problem...")
-
 	solution = solve(problem)
-
-	solution['robot_location'] = robot_location
-	solution['env_location'] = env_location
-
 	log.debug("Problem solved")
+
 	return json.dumps(solution)
 
 @app.route('/omplapp/planners')
@@ -510,15 +410,21 @@ def planners():
 	planners = create_planners()
 	return json.dumps(planners)
 
-@app.route('/omplapp/problems/<problem_name>')
-def problem_info(problem_name):
+@app.route("/omplapp/problem/<problem_name>", methods=['GET'])
+def request_models(problem_name):
+	"""
+	Sends the user the user the location of the requested problem's model files
+	and the problem configuration settings
+	"""
 	robot_filename = problem_name + "_robot.dae"
 	env_filename = problem_name + "_env.dae"
 	cfg_filename = problem_name + ".cfg"
 
+	global_vars['robot_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
+	global_vars['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
+
 	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
-	cfg_data = {}
-	# cfg_data = parse_cfg(cfg_file)
+	cfg_data = parse_cfg(cfg_file)
 	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
 	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
 
@@ -552,18 +458,15 @@ def upload_models():
 
 			# If valid files, save them to the server
 			robot_filename = secure_filename(robotFile.filename)
-			robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], \
-				robot_filename))
-			robot_path = os.path.join(app.config['UPLOAD_FOLDER'], \
-				robot_filename)
+			robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
+			global_vars['robot_path'] = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
 
 			env_filename = secure_filename(envFile.filename)
 			envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
-			env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
+			global_vars['env_path'] = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
 
 			filepaths['robot_loc'] = "static/uploads/" + robot_filename
 			filepaths['env_loc'] = "static/uploads/" + env_filename
-			log.debug("Files saved as: " + robot_path + " and " + env_path)
 
 		else:
 			return "Error: Wrong file format. Robot and environment files must be .dae"
@@ -572,21 +475,6 @@ def upload_models():
 
 	return json.dumps(filepaths)
 
-@app.route("/omplapp/request_models/<problem_name>", methods=['GET'])
-def request_models(problem_name):
-	"""
-	Sends the user the user the location of the requested problem's model files
-	"""
-
-	filepaths = {}
-
-	robot_filename = problem_name + "_robot.dae"
-	env_filename = problem_name + "_env.dae"
-
-	filepaths['robot_loc'] = "static/problem_files/" + robot_filename
-	filepaths['env_loc'] = "static/problem_files/" + env_filename
-
-	return json.dumps(filepaths)
 
 if __name__ == "__main__":
 	app.debug = True

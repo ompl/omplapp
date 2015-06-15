@@ -31,6 +31,9 @@ function clearAnimation() {
 	// Prep the canvas for loading a new env and robot
 }
 
+function updateViz() {
+}
+
 function initViz(env_path, robot_path) {
 	clearAnimation();
 

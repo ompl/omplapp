@@ -111,7 +111,6 @@ function uploadModels() {
 }
 
 
-
 function load_benchmarking () {
 	$(".active_nav_item").removeClass('active_nav_item')
 
@@ -123,7 +122,7 @@ function load_benchmarking () {
 function load_planner_params(planner_name) {
 	if (planners != null) {
 		var plannerConfigHTML = "";
-		plannerConfigHTML += "<table class='table'><caption>";
+		plannerConfigHTML += "<form name='param_form'><table class='table'><caption>";
 		plannerConfigHTML += planner_name.split(".")[2];
 		plannerConfigHTML += " Options</caption><tbody>";
 		params = planners[planner_name]
@@ -131,10 +130,10 @@ function load_planner_params(planner_name) {
 			if (params.hasOwnProperty(key)) {
 				plannerConfigHTML += "<tr><td>";
 				plannerConfigHTML += params[key][0];
-				plannerConfigHTML += "</td><td><input type='text' name='" + key +  "' class='form-field form-control input-sm' value='" + params[key][3] + "'></td></tr>";
+				plannerConfigHTML += "</td><td><input type='text' name='" + key +  "' class='planner_param form-field form-control input-sm' value='" + params[key][3] + "'></td></tr>";
 			}
 		}
-		plannerConfigHTML += "</tbody></table>"
+		plannerConfigHTML += "</tbody></table></form>"
 		$("#plannerPane").html(plannerConfigHTML);
 		showPane('#plannerPane');
 	} else {
@@ -144,36 +143,38 @@ function load_planner_params(planner_name) {
 
 function loadRemoteProblem(problem_name) {
 	// Retrieve problem configuration:
-	var url = "omplapp/problems/" + problem_name;
+	var url = "omplapp/problem/" + problem_name;
 	$.get(url, function(data) {
 		var data = JSON.parse(data);
 		console.log(data);
 
-		initViz(data['env_loc'], data['robot_loc']);
+		initViz(data.env_loc, data.robot_loc);
 		animate();
 
 		// Load the data
-		// $("[name='name']").val(cfgData['name']);
-		// $("[name='start.x']").val(cfgData['start.x']);
-		// $("[name='start.y']").val(cfgData['start.y']);
-		// $("[name='start.z']").val(cfgData['start.z']);
-		// $("[name='start.axis.x']").val(cfgData['start.axis.x']);
-		// $("[name='start.axis.y']").val(cfgData['start.axis.y']);
-		// $("[name='start.axis.z']").val(cfgData['start.axis.z']);
-		// $("[name='goal.x']").val(cfgData['goal.x']);
-		// $("[name='goal.y']").val(cfgData['goal.y']);
-		// $("[name='goal.z']").val(cfgData['goal.z']);
-		// $("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
-		// $("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
-		// $("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
-		// $("[name='bounds.min.x']").val(cfgData['bounds.min.x']);
-		// $("[name='bounds.min.y']").val(cfgData['bounds.min.y']);
-		// $("[name='bounds.min.z']").val(cfgData['bounds.min.z']);
-		// $("[name='bounds.max.x']").val(cfgData['bounds.max.x']);
-		// $("[name='bounds.max.y']").val(cfgData['bounds.max.y']);
-		// $("[name='bounds.max.z']").val(cfgData['bounds.max.z']);
-		// $("[name='time_limit']").val(cfgData['time_limit']);
+		$("[name='name']").val(data['name']);
+		$("[name='start.x']").val(data['start.x']);
+		$("[name='start.y']").val(data['start.y']);
+		$("[name='start.z']").val(data['start.z']);
+		$("[name='start.axis.x']").val(data['start.axis.x']);
+		$("[name='start.axis.y']").val(data['start.axis.y']);
+		$("[name='start.axis.z']").val(data['start.axis.z']);
+		$("[name='start.theta']").val(data['start.theta']);
+		$("[name='goal.x']").val(data['goal.x']);
+		$("[name='goal.y']").val(data['goal.y']);
+		$("[name='goal.z']").val(data['goal.z']);
+		$("[name='goal.axis.x']").val(data['goal.axis.x']);
+		$("[name='goal.axis.y']").val(data['goal.axis.y']);
+		$("[name='goal.axis.z']").val(data['goal.axis.z']);
+		$("[name='goal.theta']").val(data['goal.theta']);
+		$("[name='volume.min.x']").val(data['volume.min.x']);
+		$("[name='volume.min.y']").val(data['volume.min.y']);
+		$("[name='volume.min.z']").val(data['volume.min.z']);
+		$("[name='volume.max.x']").val(data['volume.max.x']);
+		$("[name='volume.max.y']").val(data['volume.max.y']);
+		$("[name='volume.max.z']").val(data['volume.max.z']);
 
+		updateViz();
 	});
 }
 
@@ -215,23 +216,22 @@ function loadConfig() {
 			$("[name='start.axis.x']").val(cfgData['start.axis.x']);
 			$("[name='start.axis.y']").val(cfgData['start.axis.y']);
 			$("[name='start.axis.z']").val(cfgData['start.axis.z']);
+			$("[name='start.theta']").val(cfgData['start.theta']);
 			$("[name='goal.x']").val(cfgData['goal.x']);
 			$("[name='goal.y']").val(cfgData['goal.y']);
 			$("[name='goal.z']").val(cfgData['goal.z']);
 			$("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
 			$("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
 			$("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
-			$("[name='bounds.min.x']").val(cfgData['volume.min.x']);
-			$("[name='bounds.min.y']").val(cfgData['volume.min.y']);
-			$("[name='bounds.min.z']").val(cfgData['volume.min.z']);
-			$("[name='bounds.max.x']").val(cfgData['volume.max.x']);
-			$("[name='bounds.max.y']").val(cfgData['volume.max.y']);
-			$("[name='bounds.max.z']").val(cfgData['volume.max.z']);
-			$("[name='time_limit']").val(cfgData['time_limit']);
+			$("[name='goal.theta']").val(cfgData['goal.theta']);
+			$("[name='volume.min.x']").val(cfgData['volume.min.x']);
+			$("[name='volume.min.y']").val(cfgData['volume.min.y']);
+			$("[name='volume.min.z']").val(cfgData['volume.min.z']);
+			$("[name='volume.max.x']").val(cfgData['volume.max.x']);
+			$("[name='volume.max.y']").val(cfgData['volume.max.y']);
+			$("[name='volume.max.z']").val(cfgData['volume.max.z']);
 
-			// document.getElementsByName("start.theta")[0].value = cfgData['start.theta'];
-			// document.getElementsByName("goal.theta")[0].value = cfgData['goal.theta'];
-
+			updateViz();
 		}
 	} else {
 		alert("Please select a valid configuration file.")
@@ -270,6 +270,7 @@ function clearAllFields() {
 		$('#config').val('');
 		$('#results').html('');
 		results = "";
+		clearAnimation();
 	}
 
 }
@@ -312,13 +313,46 @@ function solve(){
 		});
 
 		// Read the input fields
-		var formData = new FormData($('form')[0]);
+		var problemData = {}
+		problemData['name'] = $("[name='name']").val();
+		problemData['start.x'] = $("[name='start.x']").val();
+		problemData['start.y'] = $("[name='start.y']").val();
+		problemData['start.z'] = $("[name='start.z']").val();
+		problemData['start.axis.x'] = $("[name='start.axis.x']").val();
+		problemData['start.axis.y'] = $("[name='start.axis.y']").val();
+		problemData['start.axis.z'] = $("[name='start.axis.z']").val();
+		problemData['start.theta'] = $("[name='start.theta']").val();
+		problemData['goal.x'] = $("[name='goal.x']").val();
+		problemData['goal.y'] = $("[name='goal.y']").val();
+		problemData['goal.z'] = $("[name='goal.z']").val();
+		problemData['goal.axis.x'] = $("[name='goal.axis.x']").val();
+		problemData['goal.axis.y'] = $("[name='goal.axis.y']").val();
+		problemData['goal.axis.z'] = $("[name='goal.axis.z']").val();
+		problemData['goal.theta'] = $("[name='goal.theta']").val();
+		problemData['volume.min.x'] = $("[name='volume.min.x']").val();
+		problemData['volume.min.y'] = $("[name='volume.min.y']").val();
+		problemData['volume.min.z'] = $("[name='volume.min.z']").val();
+		problemData['volume.max.x'] = $("[name='volume.max.x']").val();
+		problemData['volume.max.y'] = $("[name='volume.max.y']").val();
+		problemData['volume.max.z'] = $("[name='volume.max.z']").val();
+		problemData['time_limit'] = $("[name='time_limit']").val();
+		problemData['planner'] = $("[name='planners']").val();
+
+		// Get the params for the specific planner
+		paramData = {};
+		$('.planner_param').each(function () {
+			paramData[$(this).attr('name')] = $(this).val();
+		})
+
+		problemData['planner_params'] = paramData;
+		problemJSON = JSON.stringify(problemData);
+		console.log(problemJSON);
 
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
 			type: "POST",
-			data: formData,
+			data: problemJSON,
 			success: function(data){
 				solutionData = JSON.parse(data);
 
@@ -356,7 +390,7 @@ function solve(){
 				console.log(data);
 			},
 			cache: false,
-			contentType: false,
+			contentType: 'application/json',
 			processData: false
 		});
 	} else {
