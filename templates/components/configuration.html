@@ -3,10 +3,9 @@
 	<br>
 	Select a pre-configured problem, or upload a custom robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, open the Solve tab to find a solution.
 	<br><br>
-	
-	
+
+
 	<div class="col-md-4" role="tabpanel">
-		<form enctype="multipart/form-data">
 			<!-- Nav tabs -->
 			<ul class="nav tabs" role="tablist">
 				<li role="presentation"><a href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
@@ -31,10 +30,11 @@
 							<option value="custom" selected="selected">Custom</option>
 						</select>
 					</div> <!-- Close Problem -->
-					
+
 
 					<!-- Custom problem upload -->
 					<div class="collapse in" id="customProblem">
+					<form enctype="multipart/form-data">
 						<div class="form-group">
 							<label>Environment</label>
 							<input type="file" name="env" id="env_path" class="form-field-custom form-control input-sm">
@@ -43,12 +43,15 @@
 							<label>Robot</label>
 							<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
 						</div>
+					</form>
+					<center><a class="button" onclick="uploadModels()">Load Models</a></center>
+					</br>
 						<div class="form-group">
 							<label>Configuration File</label>
 							<input type="file" name="config" id="config" class="form-control">
 						</div>
 					</div> <!-- Close collapsible options -->
-				
+
 					<!-- Problem Configuration -->
 					<table class="table">
 						<caption>Start Pose</caption>
@@ -150,7 +153,7 @@
 					</div>
 				</div>
 				<!-- End Planner Configuration Tab -->
-				
+
 				<!-- Begin Bounds Tab -->
 				<div role="tabpanel" class="tab-pane fade" id="bounds">
 					<table class="table">
@@ -182,7 +185,7 @@
 					</table>
 				</div>
 				<!-- End Bounds Tab -->
-				
+
 				<!-- Begin Solve Tab -->
 				<div role="tabpanel" class="tab-pane fade" id="solve">
 					<table class="table">
@@ -202,7 +205,7 @@
 						<a class="button" onclick="solve()">Solve</a>
 						<a class="button button-warning" onclick="clearAllFields()">Clear</a>
 					</center>
-					
+
 					<div id="results"><br><br><br></div>
 				</div>
 				<!-- End Solve Tab -->
@@ -210,13 +213,13 @@
 			<!-- End Tab panes -->
 
 		</form>
-		<!-- Close form -->	
-			
+		<!-- Close form -->
+
 	</div> <!-- End tab panel -->
-	
-	
+
+
 	<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
 
-	<div class="visualization col-md-8" id="viewer"></div>			
-	
+	<div class="visualization col-md-8" id="viewer"></div>
+
 </div> <!-- Close fluid container -->

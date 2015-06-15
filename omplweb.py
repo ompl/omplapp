@@ -3,6 +3,13 @@ import json
 
 from math import cos, sin, pi
 
+from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
+# The ConfigParser module has been renamed to configparser in Python 3.0
+try:
+	import ConfigParser
+except:
+	import configparser as ConfigParser
+
 import flask
 from werkzeug import secure_filename
 
@@ -201,6 +208,23 @@ def parse_cfg(cfg_path):
 	settings dictionary that can be passed to create_problem
 	"""
 	settings = {}
+	newthing = {}
+
+
+	if (sys.version_info > (3, 0)):
+		config = ConfigParser.ConfigParser(strict = False)
+	else:
+		config = ConfigParser.ConfigParser()
+	config.readfp(open(cfg_path, 'r'))
+
+
+
+
+
+
+
+	####
+
 	cfg = open(cfg_path, 'r')
 
 	for line in cfg:
@@ -288,29 +312,35 @@ def solve(problem):
 	start = ob.State(space)
 	start().setXYZ(problem.start_x, problem.start_y, problem.start_z)
 
-	# Copied and modified from lines 1150-1157 from ompl_app.py
 	# Compute and set the start rotation
-	angles = [problem.start_axis_x, problem.start_axis_y, problem.start_axis_z]
-	c = [ cos(angle*pi/360.) for angle in angles ]
-	s = [ sin(angle*pi/360.) for angle in angles ]
-	start().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
-	start().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
-	start().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
-	start().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
+	start().rotation().setAxisAngle(problem.start_axis_x, problem.start_axis_y,
+									problem.start_axis_z, problem.start_theta)
+
+	# Copied and modified from lines 1150-1157 from ompl_app.py
+	# angles = [problem.start_axis_x, problem.start_axis_y, problem.start_axis_z]
+	# c = [ cos(angle*pi/360.) for angle in angles ]
+	# s = [ sin(angle*pi/360.) for angle in angles ]
+	# start().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
+	# start().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
+	# start().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
+	# start().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
 
 
 	goal = ob.State(space)
 	goal().setXYZ(problem.goal_x, problem.goal_y, problem.goal_z)
 
-	# Copied and modified from lines 1150-1157 from ompl_app.py
 	# Compute and set the start rotation
-	angles = [problem.goal_axis_x, problem.goal_axis_y, problem.goal_axis_z]
-	c = [ cos(angle*pi/360.) for angle in angles ]
-	s = [ sin(angle*pi/360.) for angle in angles ]
-	goal().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
-	goal().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
-	goal().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
-	goal().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
+	goal().rotation().setAxisAngle(problem.goal_axis_x, problem.goal_axis_y,
+									problem.goal_axis_z, problem.goal_theta)
+
+	# Copied and modified from lines 1150-1157 from ompl_app.py
+	# angles = [problem.goal_axis_x, problem.goal_axis_y, problem.goal_axis_z]
+	# c = [ cos(angle*pi/360.) for angle in angles ]
+	# s = [ sin(angle*pi/360.) for angle in angles ]
+	# goal().rotation().w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
+	# goal().rotation().x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
+	# goal().rotation().y = c[0]*s[1]*c[2] - s[0]*c[1]*s[2]
+	# goal().rotation().z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
 
 	ompl_setup.setStartAndGoalStates(start, goal)
 
@@ -487,10 +517,10 @@ def problem_info(problem_name):
 	cfg_filename = problem_name + ".cfg"
 
 	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
-
-	cfg_data = parse_cfg(cfg_file)
-	cfg_data['robot_path'] = os.path.join("static/problem_files", robot_filename)
-	cfg_data['env_path'] = os.path.join("static/problem_files", env_filename)
+	cfg_data = {}
+	# cfg_data = parse_cfg(cfg_file)
+	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
+	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
 
 	return json.dumps(cfg_data)
 
@@ -503,6 +533,60 @@ def load_benchmarking():
 	return flask.render_template("components/benchmarking.html")
 
 
+@app.route("/omplapp/upload_models", methods=['POST'])
+def upload_models():
+	"""
+	Uploads the user's robot and environment files and saves them to the
+	server. The URL to these files are then returned for use by ColladaLoader
+	to visualize.
+	"""
+
+	robotFile = flask.request.files['robot']
+	envFile = flask.request.files['env']
+
+	filepaths = {}
+
+	# Check that the uploaded files are valid
+	if robotFile and envFile:
+		if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
+
+			# If valid files, save them to the server
+			robot_filename = secure_filename(robotFile.filename)
+			robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], \
+				robot_filename))
+			robot_path = os.path.join(app.config['UPLOAD_FOLDER'], \
+				robot_filename)
+
+			env_filename = secure_filename(envFile.filename)
+			envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
+			env_path = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
+
+			filepaths['robot_loc'] = "static/uploads/" + robot_filename
+			filepaths['env_loc'] = "static/uploads/" + env_filename
+			log.debug("Files saved as: " + robot_path + " and " + env_path)
+
+		else:
+			return "Error: Wrong file format. Robot and environment files must be .dae"
+	else:
+		return "Error: Didn't upload any files! Please choose both a robot and environment file in the .dae format."
+
+	return json.dumps(filepaths)
+
+@app.route("/omplapp/request_models/<problem_name>", methods=['GET'])
+def request_models(problem_name):
+	"""
+	Sends the user the user the location of the requested problem's model files
+	"""
+
+	filepaths = {}
+
+	robot_filename = problem_name + "_robot.dae"
+	env_filename = problem_name + "_env.dae"
+
+	filepaths['robot_loc'] = "static/problem_files/" + robot_filename
+	filepaths['env_loc'] = "static/problem_files/" + env_filename
+
+	return json.dumps(filepaths)
 
 if __name__ == "__main__":
 	app.debug = True

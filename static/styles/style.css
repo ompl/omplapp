@@ -46,7 +46,7 @@ hr {
 	padding: 6px 12px;
 	text-align: center;
 	vertical-align: middle;
-	width: 100px;
+	min-width: 100px;
 }
 
 .footer {
@@ -101,13 +101,14 @@ hr {
 .tab-content {
 	border: 2px solid #080808;
 	padding: 10px;
-/*	height: 564px;*/
+	min-height: 558px;
 }
 
 .visualization {
 	background-color: #fafafa;
 	border: 2px solid #080808;
 	float: right;
-	height: 606;
+	height: 600;
 	padding: 0px;
+	min-width: 720px;
 }

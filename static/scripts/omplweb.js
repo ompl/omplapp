@@ -49,21 +49,68 @@ function load_configuration () {
 				$("#customProblem").collapse('show');
 			} else {
 				$("#customProblem").collapse('hide');
-				
+
 				// Retrieve config data for this problem
 				loadRemoteProblem($("#problems").val());
-				
+
 			}
 		});
-		
+
 		// Open the problem config tab
 		$('#problem-tab').click()
-		
+
 		// If user previously solved a problem, reload those results
 		$('#results').html(results);
 
+
 	});
 }
+
+function validateFiles() {
+	env_file = $('#env_path')[0].files[0];
+	robot_file = $('#robot_path')[0].files[0];
+
+	if (env_file != null && robot_file != null) {
+		if (env_file.name.indexOf(".dae") > 0 && robot_file.name.indexOf(".dae") > 0) {
+			return true;
+		} else {
+			alert("Robot and environment files must be in the .dae format.")
+		}
+	} else {
+		alert("Please select both robot and environment files in the .dae format.")
+	}
+
+	return false;
+}
+
+function uploadModels() {
+	// Read the input fields
+	var formData = new FormData($('form')[0]);
+
+	var valid = validateFiles();
+
+	if (valid) {
+		// Send the request
+		$.ajax({
+			url: "omplapp/upload_models",
+			type: "POST",
+			data: formData,
+			success: function(data){
+				data = JSON.parse(data);
+				initViz(data.env_loc, data.robot_loc);
+				animate();
+			},
+			error: function(data) {
+				console.log(data);
+			},
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+	}
+}
+
+
 
 function load_benchmarking () {
 	$(".active_nav_item").removeClass('active_nav_item')
@@ -77,7 +124,7 @@ function load_planner_params(planner_name) {
 	if (planners != null) {
 		var plannerConfigHTML = "";
 		plannerConfigHTML += "<table class='table'><caption>";
-		plannerConfigHTML += planner_name.split(".")[2]; 
+		plannerConfigHTML += planner_name.split(".")[2];
 		plannerConfigHTML += " Options</caption><tbody>";
 		params = planners[planner_name]
 		for (var key in params) {
@@ -99,35 +146,34 @@ function loadRemoteProblem(problem_name) {
 	// Retrieve problem configuration:
 	var url = "omplapp/problems/" + problem_name;
 	$.get(url, function(data) {
-		var cfgData = JSON.parse(data);
-		console.log(cfgData);
-		// Load the data
-		$("[name='name']").val(cfgData['name']);
-		$("[name='start.x']").val(cfgData['start.x']);
-		$("[name='start.y']").val(cfgData['start.y']);
-		$("[name='start.z']").val(cfgData['start.z']);
-		$("[name='start.axis.x']").val(cfgData['start.axis.x']);
-		$("[name='start.axis.y']").val(cfgData['start.axis.y']);
-		$("[name='start.axis.z']").val(cfgData['start.axis.z']);
-		$("[name='goal.x']").val(cfgData['goal.x']);
-		$("[name='goal.y']").val(cfgData['goal.y']);
-		$("[name='goal.z']").val(cfgData['goal.z']);
-		$("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
-		$("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
-		$("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
-		$("[name='bounds.min.x']").val(cfgData['bounds.min.x']);
-		$("[name='bounds.min.y']").val(cfgData['bounds.min.y']);
-		$("[name='bounds.min.z']").val(cfgData['bounds.min.z']);
-		$("[name='bounds.max.x']").val(cfgData['bounds.max.x']);
-		$("[name='bounds.max.y']").val(cfgData['bounds.max.y']);
-		$("[name='bounds.max.z']").val(cfgData['bounds.max.z']);
-		$("[name='time_limit']").val(cfgData['time_limit']);
-		
-		robot_path = cfgData['robot_path'];
-		env_path = cfgData['env_path'];
-		clearAnimation();
-		init();
+		var data = JSON.parse(data);
+		console.log(data);
+
+		initViz(data['env_loc'], data['robot_loc']);
 		animate();
+
+		// Load the data
+		// $("[name='name']").val(cfgData['name']);
+		// $("[name='start.x']").val(cfgData['start.x']);
+		// $("[name='start.y']").val(cfgData['start.y']);
+		// $("[name='start.z']").val(cfgData['start.z']);
+		// $("[name='start.axis.x']").val(cfgData['start.axis.x']);
+		// $("[name='start.axis.y']").val(cfgData['start.axis.y']);
+		// $("[name='start.axis.z']").val(cfgData['start.axis.z']);
+		// $("[name='goal.x']").val(cfgData['goal.x']);
+		// $("[name='goal.y']").val(cfgData['goal.y']);
+		// $("[name='goal.z']").val(cfgData['goal.z']);
+		// $("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
+		// $("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
+		// $("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
+		// $("[name='bounds.min.x']").val(cfgData['bounds.min.x']);
+		// $("[name='bounds.min.y']").val(cfgData['bounds.min.y']);
+		// $("[name='bounds.min.z']").val(cfgData['bounds.min.z']);
+		// $("[name='bounds.max.x']").val(cfgData['bounds.max.x']);
+		// $("[name='bounds.max.y']").val(cfgData['bounds.max.y']);
+		// $("[name='bounds.max.z']").val(cfgData['bounds.max.z']);
+		// $("[name='time_limit']").val(cfgData['time_limit']);
+
 	});
 }
 
@@ -182,7 +228,7 @@ function loadConfig() {
 			$("[name='bounds.max.y']").val(cfgData['volume.max.y']);
 			$("[name='bounds.max.z']").val(cfgData['volume.max.z']);
 			$("[name='time_limit']").val(cfgData['time_limit']);
-			
+
 			// document.getElementsByName("start.theta")[0].value = cfgData['start.theta'];
 			// document.getElementsByName("goal.theta")[0].value = cfgData['goal.theta'];
 
@@ -225,7 +271,7 @@ function clearAllFields() {
 		$('#results').html('');
 		results = "";
 	}
-	
+
 }
 
 function validateFields() {
@@ -244,6 +290,7 @@ function validateFields() {
 	});
 	return valid;
 }
+
 
 
 function solve(){
@@ -266,7 +313,7 @@ function solve(){
 
 		// Read the input fields
 		var formData = new FormData($('form')[0]);
-		
+
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
@@ -274,7 +321,7 @@ function solve(){
 			data: formData,
 			success: function(data){
 				solutionData = JSON.parse(data);
-				
+
 				html += "<pre>";
 				html += solutionData.name;
 
@@ -290,14 +337,14 @@ function solve(){
 				// html += solutionData.path;
 
 				html += "</pre>";
-				
+
 				hidePane('#plannerPane');
-				
+
 				results = html;
-				
-				
+
+
 				$('#results').html(html);
-				
+
 				$.unblockUI();
 			},
 			error: function(data) {
