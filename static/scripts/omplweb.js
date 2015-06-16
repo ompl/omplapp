@@ -3,21 +3,14 @@ var planners = null;
 
 var results = "";
 
-var robot_path;
-var env_path;
-
-var solutionData;
-
 $(document).ready(function() {
-	load_configuration();
-
+	load_configuration_page();
 });
 
-
-function load_configuration () {
-	$("#content").load("omplapp/components/configuration", function () {
-		$(".active_nav_item").removeClass('active_nav_item')
-	});
+// Problem Configuration
+function load_configuration_page () {
+	// Unhighlight the old active tab
+	$(".active_nav_item").removeClass('active_nav_item');
 
 	// Load the HTML for the configuration settings
 	$("#content").load("omplapp/components/configuration", function () {
@@ -34,8 +27,7 @@ function load_configuration () {
 		// When user picks planner, load the planner params
 		$("#planners").change(function() {
 			planner_name = $("#planners").val();
-			planner_params = planners[planner_name];
-			load_planner_params(planner_name, planner_params);
+			load_planner_params(planner_name);
 		});
 
 		// Load config data when .cfg file is selected
@@ -62,63 +54,14 @@ function load_configuration () {
 		// If user previously solved a problem, reload those results
 		$('#results').html(results);
 
-
+		// Refresh the viz if pose fields are changed
+		$('.pose').change(function () {
+			updateViz();
+		})
 	});
 }
 
-function validateFiles() {
-	env_file = $('#env_path')[0].files[0];
-	robot_file = $('#robot_path')[0].files[0];
-
-	if (env_file != null && robot_file != null) {
-		if (env_file.name.indexOf(".dae") > 0 && robot_file.name.indexOf(".dae") > 0) {
-			return true;
-		} else {
-			alert("Robot and environment files must be in the .dae format.")
-		}
-	} else {
-		alert("Please select both robot and environment files in the .dae format.")
-	}
-
-	return false;
-}
-
-function uploadModels() {
-	// Read the input fields
-	var formData = new FormData($('form')[0]);
-
-	var valid = validateFiles();
-
-	if (valid) {
-		// Send the request
-		$.ajax({
-			url: "omplapp/upload_models",
-			type: "POST",
-			data: formData,
-			success: function(data){
-				data = JSON.parse(data);
-				initViz(data.env_loc, data.robot_loc);
-				animate();
-			},
-			error: function(data) {
-				console.log(data);
-			},
-			cache: false,
-			contentType: false,
-			processData: false
-		});
-	}
-}
-
-
-function load_benchmarking () {
-	$(".active_nav_item").removeClass('active_nav_item')
-
-	$("#content").load("omplapp/components/benchmarking", function () {
-		$('#nav_bench').addClass('active_nav_item');
-	});
-}
-
+// Server Interaction
 function load_planner_params(planner_name) {
 	if (planners != null) {
 		var plannerConfigHTML = "";
@@ -146,10 +89,6 @@ function loadRemoteProblem(problem_name) {
 	var url = "omplapp/problem/" + problem_name;
 	$.get(url, function(data) {
 		var data = JSON.parse(data);
-		console.log(data);
-
-		initViz(data.env_loc, data.robot_loc);
-		animate();
 
 		// Load the data
 		$("[name='name']").val(data['name']);
@@ -174,10 +113,42 @@ function loadRemoteProblem(problem_name) {
 		$("[name='volume.max.y']").val(data['volume.max.y']);
 		$("[name='volume.max.z']").val(data['volume.max.z']);
 
-		updateViz();
+		// Load the robot and env models
+		initViz(data);
+
 	});
 }
 
+function uploadModels() {
+	// Read the input fields
+	var formData = new FormData($('form')[0]);
+
+	var valid = validateFiles();
+
+	if (valid) {
+		// Send the request
+		$.ajax({
+			url: "omplapp/upload_models",
+			type: "POST",
+			data: formData,
+			success: function(data){
+				data = JSON.parse(data);
+				initViz(data);
+				animate();
+			},
+			error: function(data) {
+				console.log(data);
+			},
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+	}
+}
+
+
+
+// Views Toggling
 function togglePane(paneID) {
 	// If this pane is visible
 	if ($(paneID).hasClass('in')) {
@@ -197,7 +168,7 @@ function showPane(paneID) {
 	$(paneID).collapse('show');
 }
 
-
+// Configuration
 function loadConfig() {
 	var cfgFile = $("#config")[0].files[0];
 
@@ -261,6 +232,7 @@ function parseConfig(cfgText) {
 	return cfgData;
 }
 
+// Data Validation
 function clearAllFields() {
 	if (confirm("Are you sure you want to clear all fields?")) {
 		$('.form-field').each(function () {
@@ -272,7 +244,6 @@ function clearAllFields() {
 		results = "";
 		clearAnimation();
 	}
-
 }
 
 function validateFields() {
@@ -292,8 +263,25 @@ function validateFields() {
 	return valid;
 }
 
+function validateFiles() {
+	env_file = $('#env_path')[0].files[0];
+	robot_file = $('#robot_path')[0].files[0];
+
+	if (env_file != null && robot_file != null) {
+		if (env_file.name.indexOf(".dae") > 0 && robot_file.name.indexOf(".dae") > 0) {
+			return true;
+		} else {
+			alert("Robot and environment files must be in the .dae format.")
+		}
+	} else {
+		alert("Please select both robot and environment files in the .dae format.")
+	}
+
+	return false;
+}
 
 
+// Solve and Results
 function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
@@ -346,7 +334,6 @@ function solve(){
 
 		problemData['planner_params'] = paramData;
 		problemJSON = JSON.stringify(problemData);
-		console.log(problemJSON);
 
 		// Send the request
 		$.ajax({
@@ -360,6 +347,9 @@ function solve(){
 				html += solutionData.name;
 
 				if (solutionData.solved == "true") {
+					// Draw the solution path
+					visualizePath(solutionData);
+
 					html += "<font color='green'>: Found solution.</font><br><br>";
 				} else {
 					html += "<font color='red'>: No solution found.</font><br><br>";
@@ -396,4 +386,14 @@ function solve(){
 	} else {
 		// Invalid fields have been highlighted by 'validateField()'.
 	}
+}
+
+
+// Benchmarking
+function load_benchmarking () {
+	$(".active_nav_item").removeClass('active_nav_item')
+
+	$("#content").load("omplapp/components/benchmarking", function () {
+		$('#nav_bench').addClass('active_nav_item');
+	});
 }

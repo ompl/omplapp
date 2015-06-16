@@ -3,41 +3,28 @@ var camera;
 var renderer;
 var controls;
 var env;
-var robot;
-
-// var path = parsePath();
-var path=[[0,0,0,0,0,0]]
-// var env_location = "static/uploads/Abstract_env.dae";
-// var robot_location = "static/uploads/Abstract_robot.dae";
-// init();
-// animate();
+var start_robot;
+var goal_robot;
+var env_loc;
+var robot_loc;
 
 
-function parsePath() {
-	// console.log(solutionData.path);
-	var path_list = []
-	var pathStrings = solutionData.path.split("\n");
-
-
-	for (var i = 0; i < pathStrings.length; i++) {
-		var state = pathStrings[i].trim();
-		path_list.push(state.split(" "));
-	}
-
-	return path_list;
-}
-
-function clearAnimation() {
-	// Prep the canvas for loading a new env and robot
-}
-
-function updateViz() {
-}
-
-function initViz(env_path, robot_path) {
+/**
+ * Creates the initial, static visualization. Loads the robot and environment
+ * files and set position and rotation. Also creates lights. The animate()
+ * function must be called to actually draw the scene to the screen.
+ *
+ * @param 	{object} data A mapping of all the problem configuration fields
+ * 			(start and goal positions and rotations, bounding box, etc.) to their
+ * 			values.
+ * @return 	None
+ */
+function initViz(data) {
 	clearAnimation();
 
-	console.log(robot_path, env_path);
+	env_loc = data.env_loc;
+	robot_loc = data.robot_loc;
+
 	// Create a new scene
 	scene = new THREE.Scene();
 
@@ -83,9 +70,9 @@ function initViz(env_path, robot_path) {
 	light_right.position.x = 1000;
 	scene.add(light_right);
 
-	var loader = new THREE.ColladaLoader();
-	loader.options.converUpAxis = true;
-	loader.load(env_path, function(collada){
+	var env_loader = new THREE.ColladaLoader();
+	env_loader.options.converUpAxis = true;
+	env_loader.load(env_loc, function(collada){
 		env = collada.scene.children[0];
 		var skin = collada.skins[0];
 
@@ -97,27 +84,109 @@ function initViz(env_path, robot_path) {
 		scene.add(env);
 	});
 
-
-	var robot_loader = new THREE.ColladaLoader();
-	robot_loader.load(robot_path, function(collada){
-		robot = collada.scene;
+	var start_robot_loader = new THREE.ColladaLoader();
+	start_robot_loader.load(robot_loc, function(collada){
+		start_robot = collada.scene;
 		var skin = collada.skins[0];
 
 		// Initially set position at origin
-		robot.position.set(0, 0, 0);
-		robot.rotation.set(0, 0, 0);
-		robot.scale.set(1,1,1);
+		start_robot.position.set(-50, 0, 0);
+		start_robot.rotation.set(0, 0, 0);
+		start_robot.scale.set(1,1,1);
 
-		scene.add(robot);
+		scene.add(start_robot);
 	});
 
+	var goal_robot_loader = new THREE.ColladaLoader();
+	goal_robot_loader.load(data.robot_loc, function(collada){
+		goal_robot = collada.scene;
+		var skin = collada.skins[0];
+
+		// Initially set position at origin
+		goal_robot.position.set(50, 0, 0);
+		goal_robot.rotation.set(0, 0, 0);
+		goal_robot.scale.set(1,1,1);
+
+		scene.add(goal_robot);
+	});
 	// Create the controls
 	controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+	animate();
 }
 
+/**
+ * Draws the scene created by initViz() to the screen.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function animate() {
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 	controls.update();
+
+	updateViz();
 }
+
+/**
+ * Clears the canvas so that a new robot and envrionment can be loaded.
+ *
+ * @param 	None
+ * @return 	None
+ */
+function clearAnimation() {
+	// Prep the canvas for loading a new env and robot
+}
+
+/**
+ * Refreshes the visualization to reflect changes in position, rotation, etc.
+ * from user input.
+ *
+ * @param 	None
+ * @return 	None
+ */
+function updateViz() {
+	// Update the start position
+	start = {};
+	start.x = $("[name='start.x']").val()
+	start.y = $("[name='start.y']").val()
+	start.z = $("[name='start.z']").val()
+	// TODO: Try catch here in case not loaded yet, to avoid error msg
+	start_robot.position.set(start.x, start.y, start.z)
+
+	// Update the goal position
+	goal = {};
+	goal.x = $("[name='goal.x']").val()
+	goal.y = $("[name='goal.y']").val()
+	goal.z = $("[name='goal.z']").val()
+	// TODO: Try catch here in case not loaded yet, to avoid error msg
+	goal_robot.position.set(goal.x, goal.y, goal.z)
+}
+
+function visualizePath(solutionData) {
+	var path = solutionData.path;
+	for (var i = 0; i < path.length; i++) {
+		console.log("I: ", i);
+		console.log(path[i]);
+
+		// Initially set position at origin
+		// start_robot.position.set(path[i][0], path[i][1], path[i][2]);
+	}
+}
+
+function parsePath() {
+	// console.log(solutionData.path);
+	var path_list = []
+	var pathStrings = solutionData.path.split("\n");
+
+
+	for (var i = 0; i < pathStrings.length; i++) {
+		var state = pathStrings[i].trim();
+		path_list.push(state.split(" "));
+	}
+
+	return path_list;
+}
+
 

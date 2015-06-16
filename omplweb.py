@@ -81,51 +81,6 @@ class LogOutputHandler(object):
 
 log = LogOutputHandler(3)
 
-class Problem(object):
-	"""
-	Defines the motion planning problem.
-
-	Attributes:
-		The class attributes are the configuration options that define the
-		motion planing problem; they include general information and the start
-		and goal poses of the robot.
-	"""
-
-	def __init__(self):
-		"""
-		Initializes attributes to empty values.
-		"""
-
-		self.name = ''
-		self.location = ''
-		self.date_modified = ''
-		self.env_path = ''
-		self.robot_path = ''
-		self.start_x = 0
-		self.start_y = 0
-		self.start_z = 0
-		self.start_theta = 0
-		self.start_axis_x = 0
-		self.start_axis_y = 0
-		self.start_axis_z = 0
-		self.goal_x = 0
-		self.goal_y = 0
-		self.goal_z = 0
-		self.goal_theta = 0
-		self.goal_axis_x = 0
-		self.goal_axis_y = 0
-		self.goal_axis_z = 0
-		self.bounds_min_x = 0
-		self.bounds_min_y = 0
-		self.bounds_min_z = 0
-		self.bounds_max_x = 0
-		self.bounds_max_y = 0
-		self.bounds_max_z = 0
-		self.time_limit = 0
-		self.mem_limit = 0
-		self.run_count = 0
-		self.planners = ''
-
 
 def create_planners():
 	"""
@@ -157,51 +112,11 @@ def allowed_file(filename):
 	return False
 
 
-def create_problem(settings, env_path, robot_path):
-	"""
-	Reads the configuration data and creates an instance of the
-	Problem class to store the data.
-	"""
-
-	problem = Problem()
-	problem.name = settings['name']
-	problem.location = "default_location"
-	problem.date_modified = "2/15/2015"
-
-	# start filename stuff #
-	problem.env_path = env_path
-	problem.robot_path = robot_path
-
-	# start problem specific stuff #
-	problem.start_x = float(settings['start.x'])
-	problem.start_y = float(settings['start.y'])
-	problem.start_z = float(settings['start.z'])
-	# problem.start_theta = float(settings['start.theta'])
-	problem.start_axis_x = float(settings['start.axis.x'])
-	problem.start_axis_y = float(settings['start.axis.y'])
-	problem.start_axis_z = float(settings['start.axis.z'])
-	problem.goal_x = float(settings['goal.x'])
-	problem.goal_y = float(settings['goal.y'])
-	problem.goal_z = float(settings['goal.z'])
-	# problem.goal_theta = float(settings['goal.theta'])
-	problem.goal_axis_x = float(settings['goal.axis.x'])
-	problem.goal_axis_y = float(settings['goal.axis.y'])
-	problem.goal_axis_z = float(settings['goal.axis.z'])
-	problem.bounds_min_x = float(settings['bounds.min.x'])
-	problem.bounds_min_y = float(settings['bounds.min.y'])
-	problem.bounds_min_z = float(settings['bounds.min.z'])
-	problem.bounds_max_x = float(settings['bounds.max.x'])
-	problem.bounds_max_y = float(settings['bounds.max.y'])
-	problem.bounds_max_z = float(settings['bounds.max.z'])
-	problem.time_limit = float(settings['time_limit'])
-
-	return problem
-
 
 def parse_cfg(cfg_path):
 	"""
 	Parses the configuration file for pre-defined problems and returns a
-	settings dictionary that can be passed to create_problem
+	settings dictionary
 	"""
 
 	if (sys.version_info > (3, 0)):
@@ -225,6 +140,22 @@ def format_solution(path, solved):
 
 	if solved:
 		solution['solved'] = 'true'
+		# Format the path
+		path_matrix = path.printAsMatrix().strip().split('\n')
+
+		# A list of n states, where path_list[0] is the start state and path_list[n]
+		# is the goal state, and path_list[i] are the intermediary states.
+		# Each state is also a list: [x, y, z,
+		path_list = []
+
+		for line in path_matrix:
+			# print "\t " + line
+			path_list.append(line.split(" "))
+
+		# print path_list
+		solution['path'] = path_list;
+
+		# solution['path'] = path.printAsMatrix().strip()
 	else:
 		solution['solved'] = 'false'
 
@@ -233,22 +164,6 @@ def format_solution(path, solved):
 	# Clear messages in preparation for next request
 	log.clearMessages()
 
-	# Format the path
-	path_matrix = path.printAsMatrix().strip().split('\n')
-
-	# A list of n states, where path_list[0] is the start state and path_list[n]
-	# is the goal state, and path_list[i] are the intermediary states.
-	# Each state is also a list: [x, y, z,
-	# path_list = []
-
-	# for line in path_matrix:
-		# print "\t " + line
-		# path_list.append(line.split(" "))
-
-	# print path_list
-	# solution['path'] = path_list;
-
-	solution['path'] = path.printAsMatrix().strip()
 	return solution
 
 
@@ -369,10 +284,10 @@ def solve(problem):
 
 ########## Flask Code ##########
 
+# This section loads html
 @app.route("/")
 def index():
 	return flask.redirect(flask.url_for('omplapp'))
-
 
 @app.route("/omplapp", methods=['GET'])
 def omplapp():
@@ -382,6 +297,20 @@ def omplapp():
 
 	return flask.render_template("omplweb.html")
 
+@app.route('/omplapp/components/configuration')
+def load_configuration():
+	return flask.render_template("components/configuration.html")
+
+@app.route('/omplapp/components/benchmarking')
+def load_benchmarking():
+	return flask.render_template("components/benchmarking.html")
+
+
+# This section manages communication when solving a problem
+@app.route('/omplapp/planners')
+def planners():
+	planners = create_planners()
+	return json.dumps(planners)
 
 @app.route('/omplapp/upload', methods=['POST'])
 def upload():
@@ -397,47 +326,12 @@ def upload():
 	"""
 
 	problem = flask.request.get_json(True, False, True)
-	print problem
 
 	log.debug("Solving problem...")
 	solution = solve(problem)
 	log.debug("Problem solved")
 
 	return json.dumps(solution)
-
-@app.route('/omplapp/planners')
-def planners():
-	planners = create_planners()
-	return json.dumps(planners)
-
-@app.route("/omplapp/problem/<problem_name>", methods=['GET'])
-def request_models(problem_name):
-	"""
-	Sends the user the user the location of the requested problem's model files
-	and the problem configuration settings
-	"""
-	robot_filename = problem_name + "_robot.dae"
-	env_filename = problem_name + "_env.dae"
-	cfg_filename = problem_name + ".cfg"
-
-	global_vars['robot_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
-	global_vars['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
-
-	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
-	cfg_data = parse_cfg(cfg_file)
-	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
-	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
-
-	return json.dumps(cfg_data)
-
-@app.route('/omplapp/components/configuration')
-def load_configuration():
-	return flask.render_template("components/configuration.html")
-
-@app.route('/omplapp/components/benchmarking')
-def load_benchmarking():
-	return flask.render_template("components/benchmarking.html")
-
 
 @app.route("/omplapp/upload_models", methods=['POST'])
 def upload_models():
@@ -475,8 +369,27 @@ def upload_models():
 
 	return json.dumps(filepaths)
 
+@app.route("/omplapp/problem/<problem_name>", methods=['GET'])
+def request_models(problem_name):
+	"""
+	Sends the user the user the location of the requested problem's model files
+	and the problem configuration settings
+	"""
+	robot_filename = problem_name + "_robot.dae"
+	env_filename = problem_name + "_env.dae"
+	cfg_filename = problem_name + ".cfg"
+
+	global_vars['robot_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
+	global_vars['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
+
+	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
+	cfg_data = parse_cfg(cfg_file)
+	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
+	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
+
+	return json.dumps(cfg_data)
+
 
 if __name__ == "__main__":
 	app.debug = True
 	app.run()
-
