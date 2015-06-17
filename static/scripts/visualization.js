@@ -9,7 +9,12 @@ var env_loc;
 var robot_loc;
 var bbox;
 var baseRotation;
-var gdata;
+var spline;
+var counter = 0;
+var tangent = new THREE.Vector3();
+var axis = new THREE.Vector3();
+var up = new THREE.Vector3(0, 1, 0);
+var step = 0;
 
 initViz();
 
@@ -24,7 +29,7 @@ initViz();
  * @return 	None
  */
 function initViz() {
-	// Cre ate a new scene
+	// Create a new scene
 	scene = new THREE.Scene();
 
 	// Set width and height
@@ -52,6 +57,9 @@ function initViz() {
 		camera.aspect = WIDTH / HEIGHT;
 		camera.updateProjectionMatrix();
 	});
+	
+	// Create the controls
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 	var axisHelper = new THREE.AxisHelper( 500 );
 	scene.add( axisHelper );
@@ -149,8 +157,6 @@ function drawModels(data) {
 
 		scene.add(goal_robot);
 	});
-	// Create the controls
-	controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 	render();
 }
@@ -223,28 +229,46 @@ function updateViz() {
 
 function visualizePath(solutionData) {
 	var path = solutionData.path;
+	pathVectorsArray = [];
+	console.log(path);
 	for (var i = 0; i < path.length; i++) {
-		console.log("I: ", i);
-		console.log(path[i][0]);
+		pathVectorsArray.push(new THREE.Vector3(
+			parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
+		));
+	}
+	
+	console.log(pathVectorsArray);
 
-		// Initially set position at origin
-		start_robot.position.set(path[i][0], path[i][1], path[i][2]);
+	spline = new THREE.SplineCurve3(pathVectorsArray);
+	
+	console.log("spline: ", spline);
+	
+	setInterval(function() {
+		moveRobot(path);
+	}, 100);
+}
+
+function moveRobot(path) {
+	if (counter <= 1) {
+		start_robot.position.copy(spline.getPointAt(counter));
+		// start_robot.quaternion = new THREE.Quaternion(
+			// parseFloat(path[step][3]), parseFloat(path[step][4]),
+			// parseFloat(path[step][5]), parseFloat(path[step][6])		
+		// );
+		
+		// tangent = spline.getTangentAt(counter).normalize();
+		// axis.crossVectors(up, tangent).normalize();
+		// var radians = Math.acos(up.dot(tangent));
+		// start_robot.quaternion.setFromAxisAngle(axis, radians);
+
+		counter += 0.005;
+		step += 1;
+	} else {
+		counter = 0;
+		step = 0;
 	}
 }
 
-function parsePath() {
-	// console.log(solutionData.path);
-	var path_list = []
-	var pathStrings = solutionData.path.split("\n");
-
-
-	for (var i = 0; i < pathStrings.length; i++) {
-		var state = pathStrings[i].trim();
-		path_list.push(state.split(" "));
-	}
-
-	return path_list;
-}
 
 function axisAngleToQuaternion(x, y, z, theta) {
 	var q = new THREE.Quaternion();

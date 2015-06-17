@@ -316,23 +316,34 @@ function solve(){
 			}
 		});
 
+		var startQ = start_robot.quaternion;
+		var goalQ = goal_robot.quaternion;
+
 		// Read the input fields
 		var problemData = {}
 		problemData['name'] = $("[name='name']").val();
 		problemData['start.x'] = $("[name='start.x']").val();
 		problemData['start.y'] = $("[name='start.y']").val();
 		problemData['start.z'] = $("[name='start.z']").val();
-		problemData['start.axis.x'] = $("[name='start.axis.x']").val();
-		problemData['start.axis.y'] = $("[name='start.axis.y']").val();
-		problemData['start.axis.z'] = $("[name='start.axis.z']").val();
-		problemData['start.theta'] = $("[name='start.theta']").val();
+		problemData['start.q.x'] = startQ.x;
+		problemData['start.q.y'] = startQ.y;
+		problemData['start.q.z'] = startQ.z; 
+		problemData['start.q.w'] = startQ.w;
+		// problemData['start.axis.x'] = $("[name='start.axis.x']").val();
+		// problemData['start.axis.y'] = $("[name='start.axis.y']").val();
+		// problemData['start.axis.z'] = $("[name='start.axis.z']").val();
+		// problemData['start.theta'] = $("[name='start.theta']").val();
 		problemData['goal.x'] = $("[name='goal.x']").val();
 		problemData['goal.y'] = $("[name='goal.y']").val();
 		problemData['goal.z'] = $("[name='goal.z']").val();
-		problemData['goal.axis.x'] = $("[name='goal.axis.x']").val();
-		problemData['goal.axis.y'] = $("[name='goal.axis.y']").val();
-		problemData['goal.axis.z'] = $("[name='goal.axis.z']").val();
-		problemData['goal.theta'] = $("[name='goal.theta']").val();
+		problemData['goal.q.x'] = goalQ.x;
+		problemData['goal.q.y'] = goalQ.y;
+		problemData['goal.q.z'] = goalQ.z; 
+		problemData['goal.q.w'] = goalQ.w;
+		// problemData['goal.axis.x'] = $("[name='goal.axis.x']").val();
+		// problemData['goal.axis.y'] = $("[name='goal.axis.y']").val();
+		// problemData['goal.axis.z'] = $("[name='goal.axis.z']").val();
+		// problemData['goal.theta'] = $("[name='goal.theta']").val();
 		problemData['volume.min.x'] = $("[name='volume.min.x']").val();
 		problemData['volume.min.y'] = $("[name='volume.min.y']").val();
 		problemData['volume.min.z'] = $("[name='volume.min.z']").val();

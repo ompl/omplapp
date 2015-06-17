@@ -201,20 +201,20 @@ def solve(problem):
 			float(problem['start.z']))
 
 	# Set the start rotation
-	start().rotation().setAxisAngle(float(problem['start.axis.x']),
-									float(problem['start.axis.y']),
-									float(problem['start.axis.z']),
-									float(problem['start.theta']))
+	start().rotation().x = float(problem['start.q.x'])
+	start().rotation().y = float(problem['start.q.y'])
+	start().rotation().z = float(problem['start.q.z'])
+	start().rotation().w = float(problem['start.q.w'])
 
 	# Set the goal state
 	goal = ob.State(space)
 	goal().setXYZ(float(problem['goal.x']), float(problem['goal.y']), float(problem['goal.z']))
 
 	# Set the goal rotation
-	goal().rotation().setAxisAngle(float(problem['goal.axis.x']),
-									float(problem['goal.axis.y']),
-									float(problem['goal.axis.z']),
-									float(problem['goal.theta']))
+	goal().rotation().x = float(problem['goal.q.x'])
+	goal().rotation().y = float(problem['goal.q.y'])
+	goal().rotation().z = float(problem['goal.q.z'])
+	goal().rotation().w = float(problem['goal.q.w'])
 
 	ompl_setup.setStartAndGoalStates(start, goal)
 
