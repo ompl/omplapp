@@ -59,7 +59,8 @@ function initViz() {
 	});
 	
 	// Create the controls
-	controls = new THREE.OrbitControls(camera, renderer.domElement);
+	controls = new THREE.TrackballControls(camera, renderer.domElement);
+	controls.target.set(0,0,0);
 
 	var axisHelper = new THREE.AxisHelper( 500 );
 	scene.add( axisHelper );
