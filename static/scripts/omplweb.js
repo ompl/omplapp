@@ -90,22 +90,30 @@ function loadRemoteProblem(problem_name) {
 	$.get(url, function(data) {
 		var data = JSON.parse(data);
 
+		var startQ = axisAngleToQuaternion(data['start.axis.x'],
+			data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+		var startRot = quaternionToAxisDegrees(startQ);
+
+		var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+			data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+		var goalRot = quaternionToAxisDegrees(goalQ);
+
 		// Load the data
 		$("[name='name']").val(data['name']);
 		$("[name='start.x']").val(data['start.x']);
 		$("[name='start.y']").val(data['start.y']);
 		$("[name='start.z']").val(data['start.z']);
-		$("[name='start.axis.x']").val(data['start.axis.x']);
-		$("[name='start.axis.y']").val(data['start.axis.y']);
-		$("[name='start.axis.z']").val(data['start.axis.z']);
-		$("[name='start.theta']").val(data['start.theta']);
+		$("[name='start.axis.x']").val(startRot.x);
+		$("[name='start.axis.y']").val(startRot.y);
+		$("[name='start.axis.z']").val(startRot.z);
+		// $("[name='start.theta']").val(data['start.theta']);
 		$("[name='goal.x']").val(data['goal.x']);
 		$("[name='goal.y']").val(data['goal.y']);
 		$("[name='goal.z']").val(data['goal.z']);
-		$("[name='goal.axis.x']").val(data['goal.axis.x']);
-		$("[name='goal.axis.y']").val(data['goal.axis.y']);
-		$("[name='goal.axis.z']").val(data['goal.axis.z']);
-		$("[name='goal.theta']").val(data['goal.theta']);
+		$("[name='goal.axis.x']").val(goalRot.x);
+		$("[name='goal.axis.y']").val(goalRot.y);
+		$("[name='goal.axis.z']").val(goalRot.z);
+		// $("[name='goal.theta']").val(data['goal.theta']);
 		$("[name='volume.min.x']").val(data['volume.min.x']);
 		$("[name='volume.min.y']").val(data['volume.min.y']);
 		$("[name='volume.min.z']").val(data['volume.min.z']);
@@ -114,10 +122,10 @@ function loadRemoteProblem(problem_name) {
 		$("[name='volume.max.z']").val(data['volume.max.z']);
 
 		// Load the robot and env models
-		initViz(data);
-
+		drawModels(data);
 	});
 }
+
 
 function uploadModels() {
 	// Read the input fields
@@ -133,8 +141,7 @@ function uploadModels() {
 			data: formData,
 			success: function(data){
 				data = JSON.parse(data);
-				initViz(data);
-				animate();
+				// drawModels(data);
 			},
 			error: function(data) {
 				console.log(data);
@@ -178,31 +185,41 @@ function loadConfig() {
 		reader.readAsText(cfgFile);
 
 		reader.onload = function () {
-			var cfgData = parseConfig(reader.result);
+			var data = parseConfig(reader.result);
 
-			$("[name='name']").val(cfgData['name']);
-			$("[name='start.x']").val(cfgData['start.x']);
-			$("[name='start.y']").val(cfgData['start.y']);
-			$("[name='start.z']").val(cfgData['start.z']);
-			$("[name='start.axis.x']").val(cfgData['start.axis.x']);
-			$("[name='start.axis.y']").val(cfgData['start.axis.y']);
-			$("[name='start.axis.z']").val(cfgData['start.axis.z']);
-			$("[name='start.theta']").val(cfgData['start.theta']);
-			$("[name='goal.x']").val(cfgData['goal.x']);
-			$("[name='goal.y']").val(cfgData['goal.y']);
-			$("[name='goal.z']").val(cfgData['goal.z']);
-			$("[name='goal.axis.x']").val(cfgData['goal.axis.x']);
-			$("[name='goal.axis.y']").val(cfgData['goal.axis.y']);
-			$("[name='goal.axis.z']").val(cfgData['goal.axis.z']);
-			$("[name='goal.theta']").val(cfgData['goal.theta']);
-			$("[name='volume.min.x']").val(cfgData['volume.min.x']);
-			$("[name='volume.min.y']").val(cfgData['volume.min.y']);
-			$("[name='volume.min.z']").val(cfgData['volume.min.z']);
-			$("[name='volume.max.x']").val(cfgData['volume.max.x']);
-			$("[name='volume.max.y']").val(cfgData['volume.max.y']);
-			$("[name='volume.max.z']").val(cfgData['volume.max.z']);
+			var startQ = axisAngleToQuaternion(data['start.axis.x'],
+				data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+			var startRot = quaternionToAxisDegrees(startQ);
 
-			updateViz();
+			var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+				data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+			var goalRot = quaternionToAxisDegrees(goalQ);
+
+			// Load the data
+			$("[name='name']").val(data['name']);
+			$("[name='start.x']").val(data['start.x']);
+			$("[name='start.y']").val(data['start.y']);
+			$("[name='start.z']").val(data['start.z']);
+			$("[name='start.axis.x']").val(startRot.x);
+			$("[name='start.axis.y']").val(startRot.y);
+			$("[name='start.axis.z']").val(startRot.z);
+			// $("[name='start.theta']").val(data['start.theta']);
+			$("[name='goal.x']").val(data['goal.x']);
+			$("[name='goal.y']").val(data['goal.y']);
+			$("[name='goal.z']").val(data['goal.z']);
+			$("[name='goal.axis.x']").val(goalRot.x);
+			$("[name='goal.axis.y']").val(goalRot.y);
+			$("[name='goal.axis.z']").val(goalRot.z);
+			// $("[name='goal.theta']").val(data['goal.theta']);
+			$("[name='volume.min.x']").val(data['volume.min.x']);
+			$("[name='volume.min.y']").val(data['volume.min.y']);
+			$("[name='volume.min.z']").val(data['volume.min.z']);
+			$("[name='volume.max.x']").val(data['volume.max.x']);
+			$("[name='volume.max.y']").val(data['volume.max.y']);
+			$("[name='volume.max.z']").val(data['volume.max.z']);
+
+			// Load the robot and env models
+			drawModels(data);
 		}
 	} else {
 		alert("Please select a valid configuration file.")
@@ -242,7 +259,6 @@ function clearAllFields() {
 		$('#config').val('');
 		$('#results').html('');
 		results = "";
-		clearAnimation();
 	}
 }
 
@@ -387,6 +403,7 @@ function solve(){
 		// Invalid fields have been highlighted by 'validateField()'.
 	}
 }
+
 
 
 // Benchmarking
