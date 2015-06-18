@@ -10,11 +10,11 @@ var robot_loc;
 var bbox;
 var baseRotation;
 var spline;
-var counter = 0;
 var tangent = new THREE.Vector3();
 var axis = new THREE.Vector3();
 var up = new THREE.Vector3(0, 1, 0);
 var step = 0;
+var path;
 
 initViz();
 
@@ -57,13 +57,13 @@ function initViz() {
 		camera.aspect = WIDTH / HEIGHT;
 		camera.updateProjectionMatrix();
 	});
-	
+
 	// Create the controls
 	controls = new THREE.TrackballControls(camera, renderer.domElement);
 	controls.target.set(0,0,0);
 
-	var axisHelper = new THREE.AxisHelper( 500 );
-	scene.add( axisHelper );
+	// var axisHelper = new THREE.AxisHelper( 500 );
+	// scene.add( axisHelper );
 
 	var light_top = new THREE.PointLight(0xffffff, 0.7, 0);
 	light_top.position.y = 1000;
@@ -91,30 +91,29 @@ function initViz() {
 
 }
 
-function drawModels(data) {
-	env_loc = data.env_loc;
-	robot_loc = data.robot_loc;
+function drawModels(e_loc, r_loc) {
+	env_loc = e_loc;
+	robot_loc = r_loc;
 
 	// Needed to get the inital orientation right. Add this to every rotation.
 	baseRotation = new THREE.Vector3(-1.57079632679, 0, 0);
 
 	var env_loader = new THREE.ColladaLoader();
-	// env_loader.options.
 	env_loader.options.convertUpAxis = true;
 	env_loader.load(env_loc, function(collada){
 		env = collada.scene.children[0];
 		var skin = collada.skins[0];
 
 		// Initially set position at origin
-		env.position.set(0, 0, 0); // x,z,-y in blender dimensions
-		// Necessary to get the right initial orientation, try to fix
+		env.position.set(0, 0, 0);
 		env.scale.set(1,1,1);
 
 		scene.add(env);
 
-		bbox = new THREE.BoundingBoxHelper(env, 0xffffff);
-		bbox.update();
-		scene.add(bbox);
+		// Draw the bounding box, temporary
+		// bbox = new THREE.BoundingBoxHelper(env, 0xffffff);
+		// bbox.update();
+		// scene.add(bbox);
 	});
 
 	var start_robot_loader = new THREE.ColladaLoader();
@@ -124,37 +123,21 @@ function drawModels(data) {
 		var skin = collada.skins[0];
 
 		// Initially set position at origin
-		start_robot.position.set(data['start.x'], data['start.y'], data['start.z']);
+		start_robot.position.set(0, 0, 0);
 		start_robot.scale.set(1,1,1);
-
-		// Get rotation data into quaternion form
-		var q = new THREE.Quaternion();
-		q.setFromAxisAngle(new THREE.Vector3(data['start.axis.x'], data['start.axis.y'],
-				data['start.axis.z']), data['start.theta']);
-
-		// Set the goal robot's rotation with quaternion
-		start_robot.rotation.setFromQuaternion(q);
 
 		scene.add(start_robot);
 	});
 
 	var goal_robot_loader = new THREE.ColladaLoader();
 	goal_robot_loader.options.convertUpAxis = true;
-	goal_robot_loader.load(data.robot_loc, function(collada){
+	goal_robot_loader.load(robot_loc, function(collada){
 		goal_robot = collada.scene;
 		var skin = collada.skins[0];
 
 		// Initially set position at origin
-		goal_robot.position.set(data['goal.x'], data['goal.y'], data['goal.z']);
+		goal_robot.position.set(0, 0, 0);
 		goal_robot.scale.set(1,1,1);
-
-		// Get rotation data into quaternion form
-		var q = new THREE.Quaternion();
-		q.setFromAxisAngle(new THREE.Vector3(data['goal.axis.x'], data['goal.axis.y'],
-				data['goal.axis.z']), data['goal.theta']);
-
-		// Set the goal robot's rotation with quaternion
-		goal_robot.rotation.setFromQuaternion(q);
 
 		scene.add(goal_robot);
 	});
@@ -229,47 +212,68 @@ function updateViz() {
 }
 
 function visualizePath(solutionData) {
-	var path = solutionData.path;
+	path = solutionData.path;
 	pathVectorsArray = [];
-	console.log(path);
+
 	for (var i = 0; i < path.length; i++) {
 		pathVectorsArray.push(new THREE.Vector3(
 			parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
 		));
 	}
-	
-	console.log(pathVectorsArray);
 
 	spline = new THREE.SplineCurve3(pathVectorsArray);
-	
-	console.log("spline: ", spline);
-	
-	setInterval(function() {
-		moveRobot(path);
-	}, 100);
+
+	var material = new THREE.LineBasicMaterial({
+		color: 0x329B71,
+	});
+	var geometry = new THREE.Geometry();
+	var splinePoints = spline.getPoints(pathVectorsArray.length);
+	for (var i = 0; i < splinePoints.length; i++) {
+		geometry.vertices.push(splinePoints[i]);
+	}
+	var line = new THREE.Line(geometry, material);
+	scene.add(line);
+
+
 }
 
 function moveRobot(path) {
-	if (counter <= 1) {
-		start_robot.position.copy(spline.getPointAt(counter));
-		// start_robot.quaternion = new THREE.Quaternion(
-			// parseFloat(path[step][3]), parseFloat(path[step][4]),
-			// parseFloat(path[step][5]), parseFloat(path[step][6])		
-		// );
+	if (step < path.length) {
+		start_robot.position.set(path[step][0], path[step][1], path[step][2]);
 		
-		// tangent = spline.getTangentAt(counter).normalize();
-		// axis.crossVectors(up, tangent).normalize();
-		// var radians = Math.acos(up.dot(tangent));
-		// start_robot.quaternion.setFromAxisAngle(axis, radians);
+		start_robot.quaternion.set(parseFloat(path[step][3]), parseFloat(path[step][4]), 
+			parseFloat(path[step][5]), parseFloat(path[step][6]));
 
-		counter += 0.005;
 		step += 1;
 	} else {
-		counter = 0;
 		step = 0;
 	}
 }
 
+function showRobotPath() {
+	var path_robot_loader = new THREE.ColladaLoader();
+	path_robot_loader.options.convertUpAxis = true;
+	path_robot_loader.load(robot_loc, function(collada){
+		var path_robot = collada.scene;
+		var skin = collada.skins[0];
+
+		// Initially set position at origin
+		path_robot.position.set(0, 0, 0);
+		path_robot.scale.set(1,1,1);
+
+		for (var i = 0; i < path.length; i++){
+			var temp_robot = path_robot.clone();
+			temp_robot.position.set(path[i][0], path[i][1], path[i][2]);
+			temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]), 
+				parseFloat(path[i][5]), parseFloat(path[i][6]));
+			env.add(temp_robot);
+		}
+	});
+}
+
+function hideRobotPath() {
+	//TODO
+}
 
 function axisAngleToQuaternion(x, y, z, theta) {
 	var q = new THREE.Quaternion();
@@ -279,7 +283,6 @@ function axisAngleToQuaternion(x, y, z, theta) {
 }
 
 function quaternionToAxisDegrees(q) {
-    console.log("q: ", q);
     rad2deg = 180/Math.PI;
 
     var rot = {};

@@ -35,18 +35,32 @@ hr {
 	background-color: #080808;
 }
 
-.button {
+button {
+	border: 2px solid #022037;
 	border-radius: 4px;
-	background-color: #022037;
+	background-color: #fff;
 	cursor: pointer;
-	display: inline-block;
 	font-size: 14px;
-	margin-right: 10px;
-	margin-left: 10px;
+	margin: 10px;
 	padding: 6px 12px;
 	text-align: center;
 	vertical-align: middle;
-	min-width: 100px;
+	min-width: 140px;
+}
+button:hover {
+	background-color: #e4f3fe;
+}
+button:focus {
+}
+button:disabled {
+	border: 2px solid #ddd;
+	background-color: #eee;
+}
+button:active {
+	background-color: #c3e4fd;
+}
+button.active {
+	background-color: #e4f3fe;
 }
 
 .footer {
@@ -63,8 +77,8 @@ hr {
 .form-control {
 	display: inline;
 /*	width: 30%;*/
-	
-	
+
+
 }
 
 .navbar {
@@ -110,5 +124,10 @@ hr {
 	float: right;
 	height: 600;
 	padding: 0px;
+	margin-bottom: 30px;
 	min-width: 720px;
+}
+
+.vizOptions {
+	text-align: center;
 }

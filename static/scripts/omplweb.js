@@ -1,7 +1,7 @@
 
 var planners = null;
-
 var results = "";
+var animateRobot;
 
 $(document).ready(function() {
 	load_configuration_page();
@@ -122,7 +122,14 @@ function loadRemoteProblem(problem_name) {
 		$("[name='volume.max.z']").val(data['volume.max.z']);
 
 		// Load the robot and env models
-		drawModels(data);
+		drawModels(data['env_loc'], data['robot_loc']);
+
+		// Give the models time to load, then update the positions and rotations
+		setTimeout(function() {
+			updateViz();
+		}, 100);
+
+
 	});
 }
 
@@ -141,7 +148,9 @@ function uploadModels() {
 			data: formData,
 			success: function(data){
 				data = JSON.parse(data);
-				// drawModels(data);
+				drawModels(data['env_loc'], data['robot_loc']);
+				loadDefaultPositions();
+				$('#uploadModelsButton').addClass('disabled');
 			},
 			error: function(data) {
 				console.log(data);
@@ -151,6 +160,18 @@ function uploadModels() {
 			processData: false
 		});
 	}
+}
+
+function loadDefaultPositions() {
+	$('.pose').each(function () {
+		$(this).val(0);
+	});
+	$("[name='start.x']").val(-50);
+	$("[name='goal.x']").val(50);
+
+	setTimeout(function() {
+		updateViz();
+	}, 100);
 }
 
 
@@ -218,8 +239,10 @@ function loadConfig() {
 			$("[name='volume.max.y']").val(data['volume.max.y']);
 			$("[name='volume.max.z']").val(data['volume.max.z']);
 
-			// Load the robot and env models
-			drawModels(data);
+
+			setTimeout(function() {
+				updateViz();
+			}, 100);
 		}
 	} else {
 		alert("Please select a valid configuration file.")
@@ -271,7 +294,7 @@ function validateFields() {
 			valid = false;
 
 			// Highlight the incorrect field
-			$(this).css("background-color", "#fda9a0");
+			$(this).css("background-color", "#fec7c1");
 		} else {
 			$(this).css("background-color", "white");
 		}
@@ -327,7 +350,7 @@ function solve(){
 		problemData['start.z'] = $("[name='start.z']").val();
 		problemData['start.q.x'] = startQ.x;
 		problemData['start.q.y'] = startQ.y;
-		problemData['start.q.z'] = startQ.z; 
+		problemData['start.q.z'] = startQ.z;
 		problemData['start.q.w'] = startQ.w;
 		// problemData['start.axis.x'] = $("[name='start.axis.x']").val();
 		// problemData['start.axis.y'] = $("[name='start.axis.y']").val();
@@ -338,7 +361,7 @@ function solve(){
 		problemData['goal.z'] = $("[name='goal.z']").val();
 		problemData['goal.q.x'] = goalQ.x;
 		problemData['goal.q.y'] = goalQ.y;
-		problemData['goal.q.z'] = goalQ.z; 
+		problemData['goal.q.z'] = goalQ.z;
 		problemData['goal.q.w'] = goalQ.w;
 		// problemData['goal.axis.x'] = $("[name='goal.axis.x']").val();
 		// problemData['goal.axis.y'] = $("[name='goal.axis.y']").val();
@@ -370,17 +393,19 @@ function solve(){
 			success: function(data){
 				solutionData = JSON.parse(data);
 
-				html += "<pre>";
-				html += solutionData.name;
 
 				if (solutionData.solved == "true") {
 					// Draw the solution path
 					visualizePath(solutionData);
-
-					html += "<font color='green'>: Found solution.</font><br><br>";
+					html += "<button type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>";
+					html += "<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>";
+					html += "<font color='#329B71'><br>Found solution.</font><br><br>";
 				} else {
-					html += "<font color='red'>: No solution found.</font><br><br>";
+					html += "<font color='#cd535a'><br>No solution found. To try again, click the solve button.</font><br><br>";
 				}
+
+				html += "<pre>"
+				html += solutionData.name;
 
 				html += solutionData.messages;
 				html += "<br><br>"
@@ -415,6 +440,30 @@ function solve(){
 	}
 }
 
+function animateToggle() {
+	if ($('#animateToggleBtn').hasClass('active')) {
+		$('#animateToggleBtn').removeClass('active');
+		
+		clearInterval(animateRobot);
+	} else {
+		$('#animateToggleBtn').addClass('active');
+		animateRobot = setInterval(function() {
+			moveRobot(path);
+		}, 100);
+	}
+}
+
+function toggleRobotPath() {
+	if ($('#toggleRobotPathBtn').hasClass('active')) {
+		$('#toggleRobotPathBtn').removeClass('active');
+		
+		hideRobotPath();
+	} else {
+		$('#toggleRobotPathBtn').addClass('active');
+		
+		showRobotPath();	
+	}
+}
 
 
 // Benchmarking
