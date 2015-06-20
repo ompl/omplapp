@@ -15,6 +15,8 @@ var axis = new THREE.Vector3();
 var up = new THREE.Vector3(0, 1, 0);
 var step = 0;
 var path;
+var robotPath = [];
+
 
 initViz();
 
@@ -42,8 +44,9 @@ function initViz() {
 	renderer.setClearColor(0x022037);
 	$('#viewer').append(renderer.domElement);
 
+
 	// Create a camera
-	camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 10000);
+	camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 10000);
 	camera.position.z = 1000;
 
 	// Attach the camera to the scene
@@ -60,8 +63,14 @@ function initViz() {
 
 	// Create the controls
 	controls = new THREE.TrackballControls(camera, renderer.domElement);
-	controls.target.set(0,0,0);
-
+	controls.rotateSpeed = 1.0;
+	controls.zoomSpeed = 0.8;
+	controls.panSpeed = 0.8;
+	controls.noZoom = false;
+	controls.noPan = false;
+	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.3;
+	
 	// var axisHelper = new THREE.AxisHelper( 500 );
 	// scene.add( axisHelper );
 
@@ -88,12 +97,17 @@ function initViz() {
 	var light_back = new THREE.PointLight(0xffffff, 0.7, 0);
 	light_back.position.z = -1000;
 	scene.add(light_back);
-
+	
+	
+	render();
 }
 
 function drawModels(e_loc, r_loc) {
 	env_loc = e_loc;
 	robot_loc = r_loc;
+
+	// Clear the scene in case there are robots/env left from a previous draw
+	clearScene()
 
 	// Needed to get the inital orientation right. Add this to every rotation.
 	baseRotation = new THREE.Vector3(-1.57079632679, 0, 0);
@@ -104,16 +118,19 @@ function drawModels(e_loc, r_loc) {
 		env = collada.scene.children[0];
 		var skin = collada.skins[0];
 
+		env.name = "env";
+
 		// Initially set position at origin
-		env.position.set(0, 0, 0);
+		// env.position.set(0, 0, 0);
 		env.scale.set(1,1,1);
 
 		scene.add(env);
-
+		
 		// Draw the bounding box, temporary
 		// bbox = new THREE.BoundingBoxHelper(env, 0xffffff);
 		// bbox.update();
 		// scene.add(bbox);
+
 	});
 
 	var start_robot_loader = new THREE.ColladaLoader();
@@ -121,6 +138,8 @@ function drawModels(e_loc, r_loc) {
 	start_robot_loader.load(robot_loc, function(collada){
 		start_robot = collada.scene;
 		var skin = collada.skins[0];
+
+		start_robot.name = "start_robot";
 
 		// Initially set position at origin
 		start_robot.position.set(0, 0, 0);
@@ -135,14 +154,15 @@ function drawModels(e_loc, r_loc) {
 		goal_robot = collada.scene;
 		var skin = collada.skins[0];
 
+		goal_robot.name = "goal_robot"
+
 		// Initially set position at origin
 		goal_robot.position.set(0, 0, 0);
 		goal_robot.scale.set(1,1,1);
-
+		
 		scene.add(goal_robot);
 	});
 
-	render();
 }
 
 /**
@@ -158,17 +178,15 @@ function render() {
 }
 
 /**
- * Clears the canvas so that a new robot and envrionment can be loaded.
- *
+ * Clears the canvas so that a new robot and environment can be loaded.
+ *k
  * @param 	None
  * @return 	None
  */
-function clearAnimation() {
-	cancelAnimationFrame(render);
-	scene = null;
-	camera = null;
-	controls = null;
-	initViz();
+function clearScene() {
+	scene.remove(env);
+	scene.remove(start_robot);
+	scene.remove(goal_robot);
 }
 
 /**
@@ -187,7 +205,7 @@ function updateViz() {
 	// TODO: Try catch here in case not loaded yet, to avoid error msg
 	start_robot.position.set(start.x, start.y, start.z)
 
-	degToRad = Math.PI/180;
+	var degToRad = Math.PI/180;
 	// Update start rotation
 	var startRot = {};
 	startRot.x = $("[name='start.axis.x']").val()
@@ -232,16 +250,15 @@ function visualizePath(solutionData) {
 		geometry.vertices.push(splinePoints[i]);
 	}
 	var line = new THREE.Line(geometry, material);
-	scene.add(line);
-
+	env.add(line);
 
 }
 
 function moveRobot(path) {
 	if (step < path.length) {
 		start_robot.position.set(path[step][0], path[step][1], path[step][2]);
-		
-		start_robot.quaternion.set(parseFloat(path[step][3]), parseFloat(path[step][4]), 
+
+		start_robot.quaternion.set(parseFloat(path[step][3]), parseFloat(path[step][4]),
 			parseFloat(path[step][5]), parseFloat(path[step][6]));
 
 		step += 1;
@@ -251,28 +268,40 @@ function moveRobot(path) {
 }
 
 function showRobotPath() {
-	var path_robot_loader = new THREE.ColladaLoader();
-	path_robot_loader.options.convertUpAxis = true;
-	path_robot_loader.load(robot_loc, function(collada){
-		var path_robot = collada.scene;
-		var skin = collada.skins[0];
+	// If the robot path is empty, create it
+	if (robotPath.length == 0) {
+		var path_robot_loader = new THREE.ColladaLoader();
+		path_robot_loader.options.convertUpAxis = true;
+		path_robot_loader.load(robot_loc, function(collada){
+			var path_robot = collada.scene;
+			var skin = collada.skins[0];
 
-		// Initially set position at origin
-		path_robot.position.set(0, 0, 0);
-		path_robot.scale.set(1,1,1);
+			// Initially set position at origin
+			path_robot.position.set(0, 0, 0);
+			path_robot.scale.set(1,1,1);
 
-		for (var i = 0; i < path.length; i++){
-			var temp_robot = path_robot.clone();
-			temp_robot.position.set(path[i][0], path[i][1], path[i][2]);
-			temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]), 
-				parseFloat(path[i][5]), parseFloat(path[i][6]));
-			env.add(temp_robot);
-		}
-	});
+			// Clone the robot and place it along each point in the path
+			for (var i = 0; i < path.length; i++){
+				var temp_robot = path_robot.clone();
+				temp_robot.position.set(path[i][0], path[i][1], path[i][2]);
+				temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]),
+					parseFloat(path[i][5]), parseFloat(path[i][6]));
+				env.add(temp_robot);
+			}
+		});
+	} else {
+		// Since the robot path has already been created, just reload it
+		env.children = env.children.concat(robotPath);
+	}
 }
 
+
 function hideRobotPath() {
-	//TODO
+	/**
+	 * Take the robots along the path out of the environment and store them
+	 * for easy reloading later.
+	 */
+	robotPath = env.children.splice(1, path.length);
 }
 
 function axisAngleToQuaternion(x, y, z, theta) {
@@ -283,13 +312,13 @@ function axisAngleToQuaternion(x, y, z, theta) {
 }
 
 function quaternionToAxisDegrees(q) {
-    rad2deg = 180/Math.PI;
+	var rad2deg = 180/Math.PI;
 
-    var rot = {};
-    rot.x = rad2deg * Math.atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y));
-    rot.y = rad2deg * Math.asin(Math.max(Math.min(2.*(q.w*q.y-q.z*q.x),1.),-1.));
-    rot.z = rad2deg * Math.atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z));
+	var rot = {};
+	rot.x = rad2deg * Math.atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y));
+	rot.y = rad2deg * Math.asin(Math.max(Math.min(2.*(q.w*q.y-q.z*q.x),1.),-1.));
+	rot.z = rad2deg * Math.atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z));
 
-    return rot;
+	return rot;
 }
 

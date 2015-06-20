@@ -282,6 +282,7 @@ function clearAllFields() {
 		$('#config').val('');
 		$('#results').html('');
 		results = "";
+		clearScene();
 	}
 }
 
