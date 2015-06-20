@@ -63,13 +63,7 @@ function initViz() {
 
 	// Create the controls
 	controls = new THREE.TrackballControls(camera, renderer.domElement);
-	controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 0.8;
-	controls.panSpeed = 0.8;
-	controls.noZoom = false;
-	controls.noPan = false;
-	controls.staticMoving = true;
-	controls.dynamicDampingFactor = 0.3;
+	controls.zoomSpeed = 0.5;
 	
 	// var axisHelper = new THREE.AxisHelper( 500 );
 	// scene.add( axisHelper );

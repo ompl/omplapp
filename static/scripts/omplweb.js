@@ -274,16 +274,15 @@ function parseConfig(cfgText) {
 
 // Data Validation
 function clearAllFields() {
-	if (confirm("Are you sure you want to clear all fields?")) {
-		$('.form-field').each(function () {
-			$(this).val('');
-			$(this).css("background-color", "white");
-		});
-		$('#config').val('');
-		$('#results').html('');
-		results = "";
-		clearScene();
-	}
+	$('.form-field').each(function () {
+		$(this).val('');
+		$(this).css("background-color", "white");
+	});
+	$('#config').val('');
+	$('#results').html('');
+	$('#pathButtons').collapse('hide');
+	results = "";
+	clearScene();
 }
 
 function validateFields() {
@@ -326,8 +325,8 @@ function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
 	if (validConfig == true) {
-		var html = "<br><br>";
-		html += "<div class='pane-title'>Results</div>"
+		var html = "";
+		html += "<h3>Results</h3>"
 
 		// Bring up the loading screen
 		$.blockUI({
@@ -398,11 +397,10 @@ function solve(){
 				if (solutionData.solved == "true") {
 					// Draw the solution path
 					visualizePath(solutionData);
-					html += "<button type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>";
-					html += "<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>";
-					html += "<font color='#329B71'><br>Found solution.</font><br><br>";
+					$('#pathButtons').collapse('show');
+					html += "<font color='#329B71'>Found solution.</font><br><br>";
 				} else {
-					html += "<font color='#cd535a'><br>No solution found. To try again, click the solve button.</font><br><br>";
+					html += "<font color='#cd535a'>No solution found. To try again, click the solve button.</font><br><br>";
 				}
 
 				html += "<pre>"

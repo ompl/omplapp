@@ -63,6 +63,10 @@ button.active {
 	background-color: #e4f3fe;
 }
 
+pre {
+	max-height: 150px;
+}
+
 .footer {
 	background-color: #022037;
 /*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
@@ -114,20 +118,18 @@ button.active {
 
 .tab-content {
 	border: 2px solid #080808;
+	min-height: 300px;
 	padding: 10px;
-	min-height: 558px;
 }
 
 .visualization {
 	background-color: #fafafa;
 	border: 2px solid #080808;
-	float: right;
-	height: 600;
+	height: 70%;
 	padding: 0px;
-	margin-bottom: 30px;
-	min-width: 720px;
+	width: 100%;
 }
 
 .vizOptions {
-	text-align: center;
+	text-align: center;*/
 }

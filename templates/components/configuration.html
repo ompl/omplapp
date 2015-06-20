@@ -1,11 +1,11 @@
 <div class="container container-fluid" id="inner-content">
-	<h2>Configure Problem</h2>
+	<!-- <h2>Configure Problem</h2> -->
 	<br>
-	Select a pre-configured problem, or upload a custom robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, open the Solve tab to find a solution.
-	<br><br>
+	<!-- Select a pre-configured problem, or upload a custom robot and environment. Then, either enter the configuration fields manually, or load a configuration file in the .cfg format. Finally, open the Solve tab to find a solution. -->
+	<!-- <br><br> -->
 
 
-	<div class="col-md-4" role="tabpanel">
+	<div class="row" role="tabpanel">
 			<!-- Nav tabs -->
 			<ul class="nav tabs" role="tablist">
 				<li role="presentation"><a href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
@@ -18,110 +18,116 @@
 			<div class="tab-content">
 				<!-- Begin Problem Tab -->
 				<div role="tabpanel" class="tab-pane fade" id="problem">
-
 					<!-- Problem Selection -->
-					<div class="form-group">
-						<label>Problem</label>
-						<select name="problems" id="problems" class="required-field form-control input-sm">
-							<option value="abstract">Abstract</option>
-							<option value="apartment">Apartment</option>
-							<option value="apartment_hard">Apartment Hard</option>
-							<option value="cubicles">Cubicles</option>
-							<option value="custom" selected="selected">Custom</option>
-						</select>
-					</div> <!-- Close Problem -->
-
-
-					<!-- Custom problem upload -->
-					<div class="collapse in" id="customProblem">
-					<form enctype="multipart/form-data">
+					<div class="col-md-3">
+						<!-- Problem Selection -->
 						<div class="form-group">
-							<label>Environment</label>
-							<input type="file" name="env" id="env_path" class="form-field-custom form-control input-sm">
-						</div>
-						<div class="form-group">
-							<label>Robot</label>
-							<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
-						</div>
-					</form>
-					<center><button onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
-					</br>
-						<div class="form-group">
-							<label>Configuration File</label>
-							<input type="file" name="config" id="config" class="form-control">
-						</div>
-					</div> <!-- Close collapsible options -->
+							<label>Problem</label>
+							<select name="problems" id="problems" class="required-field form-control input-sm">
+								<option value="abstract">Abstract</option>
+								<option value="apartment">Apartment</option>
+								<option value="apartment_hard">Apartment Hard</option>
+								<option value="cubicles">Cubicles</option>
+								<option value="custom" selected="selected">Custom</option>
+							</select>
+						</div> <!-- Close Problem -->
 
-					<!-- Problem Configuration -->
-					<table class="table">
-						<caption>Start Pose</caption>
-						<thead>
-							<tr>
-							<th>Axis</th>
-							<th>Position</th>
-							<th>Rotation (degrees)</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>X</th>
-								<td><input type="number" step="any" name="start.x" class="pose form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="start.axis.x" class="pose form-field form-control input-sm"></td>
-							</tr>
-							<tr>
-								<th>Y</th>
-								<td><input type="number" step="any" name="start.y" class="pose form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="start.axis.y" class="pose form-field form-control input-sm"></td>
-							</tr>
-							<tr>
-								<th>Z</th>
-								<td><input type="number" step="any" name="start.z" class="pose form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="start.axis.z" class="pose form-field form-control input-sm"></td>
-							</tr>
-							<!-- <tr> -->
-								<!-- <th>&theta;</th> -->
-								<!-- <td></td> -->
-								<!-- <td><input type="number" step="any" name="start.theta" class="pose form-field form-control input-sm"></td> -->
-							<!-- </tr> -->
-						</tbody>
-					</table>
-					<table class="table">
-						<caption>Goal Pose</caption>
-						<thead>
-							<tr>
-							<th>Axis</th>
-							<th>Position</th>
-							<th>Rotation (degrees)</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>X</th>
-								<td><input type="number" step="any" name="goal.x" class="pose form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="goal.axis.x" class="pose form-field form-control input-sm"></td>
-							</tr>
-							<tr>
-								<th>Y</th>
-								<td><input type="number" step="any" name="goal.y" class="pose form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="goal.axis.y" class="pose form-field form-control input-sm"></td>
-							</tr>
-							<tr>
-								<th>Z</th>
-								<td><input type="number" step="any" name="goal.z" class="pose form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="goal.axis.z" class="pose form-field form-control input-sm"></td>
-							</tr>
-							<!-- <tr> -->
-								<!-- <th>&theta;</th> -->
-								<!-- <td></td> -->
-								<!-- <td><input type="number" step="any" name="goal.theta" class="pose form-field form-control input-sm"></td> -->
-							<!-- </tr> -->
-						</tbody>
-					</table>
+						<!-- Custom problem upload -->
+						<div class="collapse in" id="customProblem">
+							<form enctype="multipart/form-data">
+								<div class="form-group">
+									<label>Environment</label>
+									<input type="file" name="env" id="env_path" class="form-field-custom form-control input-sm">
+								</div>
+								<div class="form-group">
+									<label>Robot</label>
+									<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
+								</div>
+							</form>
+							<center><button onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
+						
+							
+						</div> <!-- Close collapsible options -->
+					</div>
+					<div class="col-md-3 form-group" id="customProblem">
+						<label>Configuration File</label>
+						<input type="file" name="config" id="config" class="form-control">
+					</div>
+					<!-- Start Pose -->
+					<div class="col-md-3">
+						<table class="table">
+							<caption>Start Pose</caption>
+							<thead>
+								<tr>
+								<th>Axis</th>
+								<th>Position</th>
+								<th>Rotation (degrees)</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>X</th>
+									<td><input type="number" step="any" name="start.x" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.axis.x" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Y</th>
+									<td><input type="number" step="any" name="start.y" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.axis.y" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Z</th>
+									<td><input type="number" step="any" name="start.z" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.axis.z" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<!-- <tr> -->
+									<!-- <th>&theta;</th> -->
+									<!-- <td></td> -->
+									<!-- <td><input type="number" step="any" name="start.theta" class="pose form-field form-control input-sm"></td> -->
+								<!-- </tr> -->
+							</tbody>
+						</table>
+					</div>
+					<!-- Goal Pose -->
+					<div class="col-md-3">
+						<table class="table">
+							<caption>Goal Pose</caption>
+							<thead>
+								<tr>
+								<th>Axis</th>
+								<th>Position</th>
+								<th>Rotation (degrees)</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>X</th>
+									<td><input type="number" step="any" name="goal.x" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.axis.x" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Y</th>
+									<td><input type="number" step="any" name="goal.y" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.axis.y" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Z</th>
+									<td><input type="number" step="any" name="goal.z" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.axis.z" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<!-- <tr> -->
+									<!-- <th>&theta;</th> -->
+									<!-- <td></td> -->
+									<!-- <td><input type="number" step="any" name="goal.theta" class="pose form-field form-control input-sm"></td> -->
+								<!-- </tr> -->
+							</tbody>
+						</table>
+					</div>
 				</div>
 				<!-- End Problem Tab -->
 
 				<!-- Begin Bounds Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="bounds">
+				<div role="tabpanel" class="tab-pane fade col-md-4" id="bounds">
 					<table class="table">
 						<caption>Bounding Box</caption>
 						<thead>
@@ -153,7 +159,7 @@
 				<!-- End Bounds Tab -->
 
 				<!-- Begin Planner Configuration Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="planner">
+				<div role="tabpanel" class="tab-pane fade col-md-4" id="planner">
 					<div class="form-group">
 						<label>Planner</label>
 						<select name="planners" id="planners" class="required-field form-control input-sm">
@@ -188,25 +194,33 @@
 
 				<!-- Begin Solve Tab -->
 				<div role="tabpanel" class="tab-pane fade" id="solve">
-					<table class="table">
-						<caption>Solve Problem</caption>
-						<tbody>
-							<tr>
-								<td>Name</td>
-								<td><input type="text" name="name" class="form-field form-control form-control input-sm"></td>
-							</tr>
-							<tr>
-								<td>Time Limit (sec)</td>
-								<td><input type="number" step="any" name="time_limit" class="form-field form-control input-sm" value="10"></td>
-							</tr>
-						</tbody>
-					</table>
-					<center>
-						<button type="button" onclick="solve()">Solve</a>
-						<button type="button" onclick="clearAllFields()">Clear</a>
-					</center>
-
-					<div id="results"><br><br><br></div>
+					<div class="col-md-4">
+						<table class="table">
+							<caption>Solve Problem</caption>
+							<tbody>
+								<tr>
+									<td>Name</td>
+									<td><input type="text" name="name" class="form-field form-control form-control input-sm"></td>
+								</tr>
+								<tr>
+									<td>Time Limit (sec)</td>
+									<td><input type="number" step="any" name="time_limit" class="form-field form-control input-sm" value="10"></td>
+								</tr>
+							</tbody>
+						</table>
+						<!-- <center> -->
+							<button type="button" onclick="solve()">Solve</button>
+							<button type="button" onclick="clearAllFields()">Clear</button>
+							
+							<div class="collapse" id="pathButtons">
+								<button type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
+								<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>	
+							</div>
+						<!-- </center> -->
+					</div>
+					<div class="col-md-8">
+						<div id="results"></div>
+					</div>
 				</div>
 				<!-- End Solve Tab -->
 			</div>
@@ -216,11 +230,12 @@
 		<!-- Close form -->
 
 	</div> <!-- End tab panel -->
-
+	
+	<br>
 
 	<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
 
-	<div class="col-md-8">
+	<div class="row">
 		<div class="visualization" id="viewer"></div>
 
 		<div class="vizOptions">
