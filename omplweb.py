@@ -194,6 +194,7 @@ def solve(problem):
 
 	ompl_setup.setEnvironmentMesh(str(global_vars['env_path']))
 	ompl_setup.setRobotMesh(str(global_vars['robot_path']))
+	print ompl_setup.inferEnvironmentBounds()
 
 	# Set the start state
 	start = ob.State(space)

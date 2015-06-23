@@ -12,7 +12,8 @@
     <library_visual_scenes>
         <visual_scene id="ID1">
             <node name="SketchUp">
-                <instance_geometry url="#ID2">
+				<matrix>0.9997812 0.0208984 0.0008886 -17.3634892 0.0015110 -0.0297845 -0.9995552 -67.3277640 -0.0208627 0.9993379 -0.0298096 -34.8280907 0.0000000 0.0000000 0.0000000 1.0000000</matrix>
+				<instance_geometry url="#ID2">
                     <bind_material>
                         <technique_common>
                             <instance_material symbol="Material2" target="#ID9">

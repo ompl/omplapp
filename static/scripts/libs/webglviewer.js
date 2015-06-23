@@ -42,7 +42,7 @@ function init() {
 	var light = new THREE.DirectionalLight(0xffffff,0.8);
 	light.position.set(300,0,0);
 	scene.add(light);
-
+	
 	// var sphereSize = 1;
 	// var pointLightHelper = new THREE.PointLightHelper( light, sphereSize );
 	// scene.add( pointLightHelper );
@@ -110,5 +110,6 @@ function animate() {
 	// robot.position.set(84.98,-60,180.16);
 	renderer.render(scene, camera);
 	controls.update();
+	alert("talsd;function");
 }
 

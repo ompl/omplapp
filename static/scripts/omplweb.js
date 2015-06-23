@@ -56,8 +56,32 @@ function load_configuration_page () {
 
 		// Refresh the viz if pose fields are changed
 		$('.pose').change(function () {
-			updateViz();
-		})
+			updatePose();
+		});
+
+		// Refresh the viz if the bounds are changed
+		$('.bounds').change(function () {
+			updateBounds();
+		});
+
+		// Toggle display of bounding box
+		$('#showBoundingBox').change(function() {
+			if ($('#showBoundingBox').prop('checked') == true) {
+				bbox.visible = true;
+			} else {
+				bbox.visible = false;
+			}
+		});
+
+		// Toggle display of axis helper
+		$('#showAxisHelper').change(function() {
+			if ($('#showAxisHelper').prop('checked') == true) {
+				axisHelper.visible = true;
+			} else {
+				axisHelper.visible = false;
+			}
+		});
+
 	});
 }
 
@@ -126,8 +150,9 @@ function loadRemoteProblem(problem_name) {
 
 		// Give the models time to load, then update the positions and rotations
 		setTimeout(function() {
-			updateViz();
-		}, 100);
+			updatePose();
+			updateBounds();
+		}, 500);
 
 
 	});
@@ -170,7 +195,7 @@ function loadDefaultPositions() {
 	$("[name='goal.x']").val(50);
 
 	setTimeout(function() {
-		updateViz();
+		updatePose();
 	}, 100);
 }
 
@@ -241,7 +266,8 @@ function loadConfig() {
 
 
 			setTimeout(function() {
-				updateViz();
+				updatePose();
+				updateBounds();
 			}, 100);
 		}
 	} else {
@@ -444,7 +470,9 @@ function animateToggle() {
 		$('#animateToggleBtn').removeClass('active');
 		
 		clearInterval(animateRobot);
+		path_robot.visible = false;
 	} else {
+		path_robot.visible = true;
 		$('#animateToggleBtn').addClass('active');
 		animateRobot = setInterval(function() {
 			moveRobot(path);

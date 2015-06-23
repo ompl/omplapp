@@ -64,7 +64,7 @@ button.active {
 }
 
 pre {
-	max-height: 150px;
+	max-height: 250px;
 }
 
 .footer {
@@ -96,6 +96,8 @@ pre {
 
 .tabs {
 	background-color: #022037;
+	outline: 2px solid #080808;
+	
 }
 .tabs>li {
 	float: left;
@@ -117,19 +119,21 @@ pre {
 }
 
 .tab-content {
-	border: 2px solid #080808;
-	min-height: 300px;
+	outline: 2px solid #080808;
+	min-height: 70%;
+	overflow: auto;
 	padding: 10px;
 }
 
 .visualization {
-	background-color: #fafafa;
-	border: 2px solid #080808;
+	outline: 2px solid #080808;
 	height: 70%;
-	padding: 0px;
-	width: 100%;
+	margin-left: 15px;
 }
 
-.vizOptions {
-	text-align: center;*/
+.col-md-4 {
+	padding: 0 !important;
+}
+.col-md-8 {
+	padding: 0 !important;
 }
