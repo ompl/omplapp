@@ -300,6 +300,58 @@ function parseConfig(cfgText) {
 	return cfgData;
 }
 
+function downloadConfig() {
+		
+		var startQ = start_robot.quaternion;
+		var goalQ = goal_robot.quaternion;
+		
+		var cfg = "";
+		cfg += "[problem]\n";
+		
+		cfg += "name = " + $("[name='name']").val() + "\n";
+		cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
+		cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
+		
+		cfg += "start.x = " + $("[name='start.x']").val() + "\n";
+		cfg += "start.y = " + $("[name='start.y']").val() + "\n";
+		cfg += "start.z = " + $("[name='start.z']").val() + "\n";
+		
+		cfg += "start.axis.x = " + startQ.x + "\n";
+		cfg += "start.axis.y = " + startQ.y + "\n";
+		cfg += "start.axis.z = " + startQ.z + "\n";
+		cfg += "start.theta = " + startQ.w + "\n";
+		
+		cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
+		cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
+		cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
+		
+		cfg += "goal.axis.x = " + goalQ.x + "\n";
+		cfg += "goal.axis.y = " + goalQ.y + "\n";
+		cfg += "goal.axis.z = " + goalQ.z + "\n";
+		cfg += "goal.theta = " + goalQ.w + "\n";
+		
+		cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
+		cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
+		cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
+		cfg += "volume.max.x = " + $("[name='volume.max.x']").val() + "\n";
+		cfg += "volume.max.y = " + $("[name='volume.max.y']").val() + "\n";
+		cfg += "volume.max.z = " + $("[name='volume.max.z']").val() + "\n";
+
+
+		var blob = new Blob([cfg], {type: "octet/stream"});
+		var url = window.URL.createObjectURL(blob);
+
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		a.style = "display: none";		
+		a.href = url;
+		a.download = $("[name='name']").val() + ".cfg";
+		a.click();
+		window.URL.revokeObjectURL(url);
+		
+}
+
+
 // Data Validation
 function clearAllFields() {
 	$('.form-field').each(function () {
