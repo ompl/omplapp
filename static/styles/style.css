@@ -96,8 +96,6 @@ pre {
 
 .tabs {
 	background-color: #022037;
-	outline: 2px solid #080808;
-	
 }
 .tabs>li {
 	float: left;
@@ -118,16 +116,18 @@ pre {
 	text-align: center;
 }
 
+.tab-container {
+	outline: 2px solid #022037;
+	min-height: 75%;
+}
+
 .tab-content {
-	outline: 2px solid #080808;
-	min-height: 70%;
-	overflow: auto;
 	padding: 10px;
 }
 
 .visualization {
 	outline: 2px solid #080808;
-	height: 70%;
+	height: 75%;
 	margin-left: 15px;
 }
 
