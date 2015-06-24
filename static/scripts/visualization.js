@@ -54,7 +54,7 @@ function initViz() {
 
 	// Create a camera
 	camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 1, 10000);
-	camera.position.z = 1000;
+	camera.position.set(0, 0, 1000);
 
 	// Attach the camera to the scene
 	scene.add(camera);
@@ -76,30 +76,10 @@ function initViz() {
 	axisHelper = new THREE.AxisHelper( 500 );
 	scene.add( axisHelper );
 
-	// Create the lights
-	var light_top = new THREE.PointLight(0xffffff, 0.8, 0);
-	light_top.position.y = 1000;
-	scene.add(light_top);
+	// Create a light and attach it to the camera
+	var point_light = new THREE.PointLight(0xffffff, 1.0, 0);
+	camera.add(point_light);
 
-	var light_bottom= new THREE.PointLight(0xffffff, 0.8, 0);
-	light_bottom.position.y = -1000;
-	scene.add(light_bottom);
-
-	var light_left = new THREE.PointLight(0xffffff, 0.8, 0);
-	light_left.position.x = -1000;
-	scene.add(light_left);
-
-	var light_right = new THREE.PointLight(0xffffff, 0.8, 0);
-	light_right.position.x = 1000;
-	scene.add(light_right);
-
-	var light_front = new THREE.PointLight(0xffffff, 0.8, 0);
-	light_front.position.z = 1000;
-	scene.add(light_front);
-
-	var light_back = new THREE.PointLight(0xffffff, 0.8, 0);
-	light_back.position.z = -1000;
-	scene.add(light_back);
 	
 	// Render everything to the screen
 	render();

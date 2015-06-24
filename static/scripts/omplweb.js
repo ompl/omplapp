@@ -1,13 +1,24 @@
-
+/* Global Variables */
 var planners = null;
 var results = "";
 var animateRobot;
 
+
+// Load the configuration page by default
 $(document).ready(function() {
 	load_configuration_page();
 });
 
-// Problem Configuration
+
+/* Problem Configuration */
+
+/**
+ * Loads the components of the configuration page and sets up listeners to make
+ * that make the page interactive.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function load_configuration_page () {
 	// Unhighlight the old active tab
 	$(".active_nav_item").removeClass('active_nav_item');
@@ -37,9 +48,9 @@ function load_configuration_page () {
 
 		// Show upload buttons if user selects 'Custom' problem
 		$("#problems").change(function() {
-			
+
 			clearAllFields();
-			
+
 			if ($("#problems").val() == 'custom'){
 				$("#customProblem").collapse('show');
 			} else {
@@ -88,7 +99,16 @@ function load_configuration_page () {
 	});
 }
 
-// Server Interaction
+
+/* Server Interaction */
+
+/**
+ * Given that the planners have been retrieved from the server, creates the
+ * parameter fields for a specific planner and adds them to the page.
+ *
+ * @param 	{String} planner_name The planner to setup parameters for.
+ * @return 	None
+ */
 function load_planner_params(planner_name) {
 	if (planners != null) {
 		var plannerConfigHTML = "";
@@ -105,12 +125,19 @@ function load_planner_params(planner_name) {
 		}
 		plannerConfigHTML += "</tbody></table></form>"
 		$("#plannerPane").html(plannerConfigHTML);
-		showPane('#plannerPane');
 	} else {
 		alert("Planners are not loaded yet. Please wait and try again.");
 	}
 }
 
+
+/**
+ * Loads a pre-defined problem from the server by drawing the models and
+ * filling in configuration information.
+ *
+ * @param 	{String} problem_name The name of problem to load.
+ * @return 	None
+ */
 function loadRemoteProblem(problem_name) {
 	// Retrieve problem configuration:
 	var url = "omplapp/problem/" + problem_name;
@@ -162,6 +189,12 @@ function loadRemoteProblem(problem_name) {
 }
 
 
+/**
+ * Uploads the user's models to the server and then draws them to the scene.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function uploadModels() {
 	// Read the input fields
 	var formData = new FormData($('form')[0]);
@@ -177,7 +210,6 @@ function uploadModels() {
 			success: function(data){
 				data = JSON.parse(data);
 				drawModels(data['env_loc'], data['robot_loc']);
-				loadDefaultPositions();
 				$('#uploadModelsButton').addClass('disabled');
 			},
 			error: function(data) {
@@ -190,40 +222,15 @@ function uploadModels() {
 	}
 }
 
-function loadDefaultPositions() {
-	$('.pose').each(function () {
-		$(this).val(0);
-	});
-	$("[name='start.x']").val(-50);
-	$("[name='goal.x']").val(50);
 
-	setTimeout(function() {
-		updatePose();
-	}, 100);
-}
+/* Configuration */
 
-
-
-// Views Toggling
-function togglePane(paneID) {
-	// If this pane is visible
-	if ($(paneID).hasClass('in')) {
-		hidePane(paneID);
-	} else {
-		showPane(paneID)
-	}
-}
-
-function hidePane(paneID) {
-	// Hide the pane
-	$(paneID).collapse('hide');
-}
-function showPane(paneID) {
-	// Show the pane
-	$(paneID).collapse('show');
-}
-
-// Configuration
+/**
+ * Reads the user selected config file and loads values into config fields.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function loadConfig() {
 	var cfgFile = $("#config")[0].files[0];
 
@@ -277,6 +284,13 @@ function loadConfig() {
 	}
 }
 
+
+/**
+ * Parses a configuration text file into a mapping.
+ *
+ * @param 	{String} cfgText A configuration file in string form.
+ * @return  {Object} cfgData An object mapping configuration fields to values.
+ */
 function parseConfig(cfgText) {
 	var cfgData = {};
 
@@ -300,36 +314,44 @@ function parseConfig(cfgText) {
 	return cfgData;
 }
 
+
+/**
+ * Formats configuration fields into a .cfg text file and prompts the user to
+ * download it.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function downloadConfig() {
-		
+
 		var startQ = start_robot.quaternion;
 		var goalQ = goal_robot.quaternion;
-		
+
 		var cfg = "";
 		cfg += "[problem]\n";
-		
+
 		cfg += "name = " + $("[name='name']").val() + "\n";
 		cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
 		cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
-		
+
 		cfg += "start.x = " + $("[name='start.x']").val() + "\n";
 		cfg += "start.y = " + $("[name='start.y']").val() + "\n";
 		cfg += "start.z = " + $("[name='start.z']").val() + "\n";
-		
+
 		cfg += "start.axis.x = " + startQ.x + "\n";
 		cfg += "start.axis.y = " + startQ.y + "\n";
 		cfg += "start.axis.z = " + startQ.z + "\n";
 		cfg += "start.theta = " + startQ.w + "\n";
-		
+
 		cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
 		cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
 		cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
-		
+
 		cfg += "goal.axis.x = " + goalQ.x + "\n";
 		cfg += "goal.axis.y = " + goalQ.y + "\n";
 		cfg += "goal.axis.z = " + goalQ.z + "\n";
 		cfg += "goal.theta = " + goalQ.w + "\n";
-		
+
 		cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
 		cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
 		cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
@@ -343,16 +365,24 @@ function downloadConfig() {
 
 		var a = document.createElement("a");
 		document.body.appendChild(a);
-		a.style = "display: none";		
+		a.style = "display: none";
 		a.href = url;
 		a.download = $("[name='name']").val() + ".cfg";
 		a.click();
 		window.URL.revokeObjectURL(url);
-		
+
 }
 
 
-// Data Validation
+/* Data Validation */
+
+/**
+ * Clears all configuration fields and removes all objects from the scene by
+ * calling 'clearScene()'.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function clearAllFields() {
 	$('.form-field').each(function () {
 		$(this).val('');
@@ -365,6 +395,13 @@ function clearAllFields() {
 	clearScene();
 }
 
+
+/**
+ * Validates all required fields.
+ *
+ * @param 	None
+ * @return 	{Boolean} valid A boolean indicating form validity.
+ */
 function validateFields() {
 	var valid = true;
 
@@ -382,6 +419,13 @@ function validateFields() {
 	return valid;
 }
 
+
+/**
+ * Validates the user selected environment and robot files.
+ *
+ * @param 	None
+ * @return 	{Boolean} valid A boolean indicating the validity of the files.
+ */
 function validateFiles() {
 	env_file = $('#env_path')[0].files[0];
 	robot_file = $('#robot_path')[0].files[0];
@@ -400,7 +444,15 @@ function validateFiles() {
 }
 
 
-// Solve and Results
+/* Solve and Results */
+
+/**
+ * Gathers and formats problem data and submits the problem to the server for solving.
+ * On successful solve, saves solution data and loads solution visualization.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
@@ -460,7 +512,7 @@ function solve(){
 
 		// Clear the old solution information, if there was one
 		clearOldSolution();
-		
+
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
@@ -490,8 +542,6 @@ function solve(){
 
 				html += "</pre>";
 
-				hidePane('#plannerPane');
-
 				results = html;
 
 				$('#results').html(html);
@@ -499,7 +549,6 @@ function solve(){
 				$.unblockUI();
 			},
 			error: function(data) {
-				hidePane('#plannerPane');
 				$.unblockUI();
 				html += "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
 				$('#results').html(html);
@@ -516,6 +565,13 @@ function solve(){
 	}
 }
 
+
+/**
+ * Toggles the animation of robot along solution path.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function animateToggle() {
 	if ($('#animateToggleBtn').hasClass('active')) {
 		$('#animateToggleBtn').removeClass('active');
@@ -534,6 +590,13 @@ function animateToggle() {
 	}
 }
 
+
+/**
+ * Toggles the display of static robots at each point along solution path.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function toggleRobotPath() {
 	if ($('#toggleRobotPathBtn').hasClass('active')) {
 		$('#toggleRobotPathBtn').removeClass('active');
@@ -547,7 +610,14 @@ function toggleRobotPath() {
 }
 
 
-// Benchmarking
+/* Benchmarking */
+/**
+ * Loads benchmarking components.
+ * TODO: Should probably move all benchmarking related code to another file.
+ *
+ * @param 	None
+ * @return 	None
+ */
 function load_benchmarking () {
 	$(".active_nav_item").removeClass('active_nav_item')
 
