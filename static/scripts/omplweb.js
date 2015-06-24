@@ -37,6 +37,9 @@ function load_configuration_page () {
 
 		// Show upload buttons if user selects 'Custom' problem
 		$("#problems").change(function() {
+			
+			clearAllFields();
+			
 			if ($("#problems").val() == 'custom'){
 				$("#customProblem").collapse('show');
 			} else {
@@ -215,7 +218,6 @@ function hidePane(paneID) {
 	// Hide the pane
 	$(paneID).collapse('hide');
 }
-
 function showPane(paneID) {
 	// Show the pane
 	$(paneID).collapse('show');
@@ -378,10 +380,6 @@ function solve(){
 		problemData['start.q.y'] = startQ.y;
 		problemData['start.q.z'] = startQ.z;
 		problemData['start.q.w'] = startQ.w;
-		// problemData['start.axis.x'] = $("[name='start.axis.x']").val();
-		// problemData['start.axis.y'] = $("[name='start.axis.y']").val();
-		// problemData['start.axis.z'] = $("[name='start.axis.z']").val();
-		// problemData['start.theta'] = $("[name='start.theta']").val();
 		problemData['goal.x'] = $("[name='goal.x']").val();
 		problemData['goal.y'] = $("[name='goal.y']").val();
 		problemData['goal.z'] = $("[name='goal.z']").val();
@@ -389,10 +387,6 @@ function solve(){
 		problemData['goal.q.y'] = goalQ.y;
 		problemData['goal.q.z'] = goalQ.z;
 		problemData['goal.q.w'] = goalQ.w;
-		// problemData['goal.axis.x'] = $("[name='goal.axis.x']").val();
-		// problemData['goal.axis.y'] = $("[name='goal.axis.y']").val();
-		// problemData['goal.axis.z'] = $("[name='goal.axis.z']").val();
-		// problemData['goal.theta'] = $("[name='goal.theta']").val();
 		problemData['volume.min.x'] = $("[name='volume.min.x']").val();
 		problemData['volume.min.y'] = $("[name='volume.min.y']").val();
 		problemData['volume.min.z'] = $("[name='volume.min.z']").val();
@@ -412,6 +406,9 @@ function solve(){
 		console.log("Problem data: ", problemData);
 		problemJSON = JSON.stringify(problemData);
 
+		// Clear the old solution information, if there was one
+		clearOldSolution();
+		
 		// Send the request
 		$.ajax({
 			url: "omplapp/upload",
@@ -432,10 +429,11 @@ function solve(){
 
 				html += "<pre>"
 				html += solutionData.name;
-
+				html += "<br>";
 				html += solutionData.messages;
 				html += "<br><br>"
 
+				// Uncomment to display list of path states
 				// html += solutionData.path;
 
 				html += "</pre>";
@@ -443,7 +441,6 @@ function solve(){
 				hidePane('#plannerPane');
 
 				results = html;
-
 
 				$('#results').html(html);
 
@@ -455,7 +452,7 @@ function solve(){
 				html += "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
 				$('#results').html(html);
 
-				console.log(data);
+				console.log('Solve failed, server responded with an error.', data);
 			},
 			cache: false,
 			contentType: 'application/json',
@@ -463,18 +460,22 @@ function solve(){
 		});
 	} else {
 		// Invalid fields have been highlighted by 'validateField()'.
+		alert("Please enter values for the indicated fields.");
 	}
 }
 
 function animateToggle() {
 	if ($('#animateToggleBtn').hasClass('active')) {
 		$('#animateToggleBtn').removeClass('active');
-		
+
 		clearInterval(animateRobot);
 		path_robot.visible = false;
+		// Reset the step to the beginning of the path
+		step = 0;
 	} else {
 		path_robot.visible = true;
 		$('#animateToggleBtn').addClass('active');
+
 		animateRobot = setInterval(function() {
 			moveRobot(path);
 		}, 100);
@@ -484,12 +485,12 @@ function animateToggle() {
 function toggleRobotPath() {
 	if ($('#toggleRobotPathBtn').hasClass('active')) {
 		$('#toggleRobotPathBtn').removeClass('active');
-		
+
 		hideRobotPath();
 	} else {
 		$('#toggleRobotPathBtn').addClass('active');
-		
-		showRobotPath();	
+
+		showRobotPath();
 	}
 }
 
