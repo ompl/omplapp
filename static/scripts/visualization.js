@@ -17,6 +17,7 @@ var axis = new THREE.Vector3();
 var up = new THREE.Vector3(0, 1, 0);
 var step = 0;
 var path;
+var path_line;
 var robotPath = [];
 
 
@@ -191,6 +192,8 @@ function clearScene() {
 	scene.remove(env);
 	scene.remove(start_robot);
 	scene.remove(goal_robot);
+	scene.remove(path_robot);
+	scene.remove(bbox);
 }
 
 /**
@@ -266,7 +269,7 @@ function updateBounds() {
 
 
 function visualizePath(solutionData) {
-	path = solutionData.path;
+	path = solutionData.path; 
 	pathVectorsArray = [];
 
 	for (var i = 0; i < path.length; i++) {
@@ -285,8 +288,9 @@ function visualizePath(solutionData) {
 	for (var i = 0; i < splinePoints.length; i++) {
 		geometry.vertices.push(splinePoints[i]);
 	}
-	var line = new THREE.Line(geometry, material);
-	env.add(line);
+	path_line = new THREE.Line(geometry, material);
+	path_line.parent = env;
+	env.add(path_line);
 
 
 	var path_robot_loader = new THREE.ColladaLoader();

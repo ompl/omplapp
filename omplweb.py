@@ -92,8 +92,8 @@ def create_planners():
 	planners = ompl.PlanningAlgorithms(og)
 	params_dict = planners.getPlanners()
 
-	retval = "{'param name' : ('display name', 'range type', 'range \
-		suggestion', 'default value')}\n"
+	# TODO: Por que? Is this accidentally left over from testing?
+	retval = "{'param name' : ('display name', 'range type', 'range suggestion', 'default value')}\n"
 	retval += "For KPIECE1: \n"
 	retval += str(params_dict['ompl.geometric.KPIECE1'])
 
@@ -174,6 +174,7 @@ def solve(problem):
 	path or a failure message.
 	"""
 
+
 	## Configure the problem
 	space = ob.SE3StateSpace()
 
@@ -188,18 +189,16 @@ def solve(problem):
 	bounds.high[1] = float(problem['volume.max.y'])
 	bounds.high[2] = float(problem['volume.max.z'])
 
-	space.setBounds(bounds)
 
 	ompl_setup = oa.SE3RigidBodyPlanning()
+	ompl_setup.getGeometricComponentStateSpace().setBounds(bounds)
 
 	ompl_setup.setEnvironmentMesh(str(global_vars['env_path']))
 	ompl_setup.setRobotMesh(str(global_vars['robot_path']))
-	print ompl_setup.inferEnvironmentBounds()
 
 	# Set the start state
 	start = ob.State(space)
-	start().setXYZ(float(problem['start.x']), float(problem['start.y']),
-			float(problem['start.z']))
+	start().setXYZ(float(problem['start.x']), float(problem['start.y']), float(problem['start.z']))
 
 	# Set the start rotation
 	start().rotation().x = float(problem['start.q.x'])
@@ -262,8 +261,7 @@ def solve(problem):
 				log.info("Simplified path length: %d\n" % path.length())
 				solution = format_solution(simple_path, True)
 			else:
-				log.info("Simplified path was invalid. Returned \
-					non-simplified path.\n")
+				log.info("Simplified path was invalid. Returned non-simplified path.\n")
 				log.info("Path length: %d\n" % path.length())
 				solution = format_solution(path, True)
 
@@ -273,8 +271,7 @@ def solve(problem):
 			log.info("Path reported by planner seems to be invalid.\n")
 			solution = format_solution(path, False)
 	else:
-		log.info("No valid path was found with the provided \
-			configuration.\n")
+		log.info("No valid path was found with the provided configuration.\n")
 		solution = format_solution(None, False)
 
 	solution['name'] = problem['name']

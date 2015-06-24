@@ -409,6 +409,7 @@ function solve(){
 		})
 
 		problemData['planner_params'] = paramData;
+		console.log("Problem data: ", problemData);
 		problemJSON = JSON.stringify(problemData);
 
 		// Send the request
