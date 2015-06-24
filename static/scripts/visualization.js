@@ -100,7 +100,7 @@ function initViz() {
 	var light_back = new THREE.PointLight(0xffffff, 0.8, 0);
 	light_back.position.z = -1000;
 	scene.add(light_back);
-
+	
 	// Render everything to the screen
 	render();
 
@@ -188,6 +188,7 @@ function drawModels(e_loc, r_loc) {
 	scene.add(bbox);
 
 }
+
 
 
 /**
@@ -480,5 +481,4 @@ function quaternionToAxisDegrees(q) {
 
 	return rot;
 }
-
 
