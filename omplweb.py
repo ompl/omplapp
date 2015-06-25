@@ -260,13 +260,19 @@ def solve(problem):
 			if simplifyValid:
 				log.info("Simplified path was found.\n")
 				log.info("Simplified path length: %d\n" % path.length())
-				solution = format_solution(simple_path, True)
+				path = simple_path;
 			else:
 				log.info("Simplified path was invalid. Returned non-simplified path.\n")
 				log.info("Path length: %d\n" % path.length())
-				solution = format_solution(path, True)
 
-			# TODO: Interpolation?
+			# Interpolate path
+			ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
+			log.info("Interpolating solution path to " + str(ns) + " states")
+			path.interpolate(ns)
+			if len(path.getStates()) != ns:
+				log.info("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.")
+
+			solution = format_solution(path, True)
 
 		else :
 			log.info("Path reported by planner seems to be invalid.\n")
