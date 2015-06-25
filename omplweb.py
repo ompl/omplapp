@@ -156,7 +156,7 @@ def format_solution(path, solved):
 		# print path_list
 		solution['path'] = path_list;
 
-		# solution['path'] = path.printAsMatrix().strip()
+		solution['pathAsMatrix'] = path.printAsMatrix()
 	else:
 		solution['solved'] = 'false'
 

@@ -616,17 +616,21 @@ function toggleRobotPath() {
 
 /**
  * If a solution has been found, allows the user to download the path.
- * 
+ *
  * @param 	None
  * @return 	None
  */
 function downloadPath() {
-	// TODO: Format path into string matrix before making blob
-	var blob = new Blob([solutionData.path], {type: "octet/stream"});
-	var pathName = $("[name='name']").val() + "_path.txt";
-		
-	// TODO: Check that solution exists first
-	downloadFile(blob, pathName);
+
+	if (solutionData.pathAsMatrix != null) {
+		var blob = new Blob([solutionData.pathAsMatrix], {type: "octet/stream"});
+		var pathName = $("[name='name']").val() + "_path.txt";
+
+		// TODO: Check that solution exists first
+		downloadFile(blob, pathName);
+	} else {
+		alert("There is no valid solution path to download.")
+	}
 }
 
 
