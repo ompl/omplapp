@@ -27,10 +27,6 @@ var step = 0;
 var staticPathRobots = [];
 
 
-// Initialize the scene with basic object
-initViz();
-
-
 /**
  * Sets up the initial scene and loads the lights, camera, and axis helper.
  *
