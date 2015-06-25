@@ -94,6 +94,26 @@ pre {
 	font-weight: 100;
 }
 
+.pane-title {
+	font-size: 30px;
+	font-weight: 200;
+	padding-top: 10px;
+	padding-bottom: 20px;
+	text-align: center;
+}
+
+#settingsIcon{
+	font-size: 32px;
+	line-height: 62%;
+}
+
+.small-button {
+	border: 0px;
+	margin: 0px;
+	min-width: 10px;
+	padding: 0px;
+}
+
 .tabs {
 	background-color: #022037;
 }
@@ -106,14 +126,6 @@ pre {
 }
 .tabs>li.active>a {
 	background-color: #080808;
-}
-
-.pane-title {
-	font-size: 30px;
-	font-weight: 200;
-	padding-top: 10px;
-	padding-bottom: 20px;
-	text-align: center;
 }
 
 .tab-container {

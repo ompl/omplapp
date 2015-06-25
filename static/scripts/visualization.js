@@ -80,7 +80,7 @@ function initViz() {
 	var point_light = new THREE.PointLight(0xffffff, 1.0, 0);
 	camera.add(point_light);
 
-	
+
 	// Render everything to the screen
 	render();
 
@@ -259,7 +259,7 @@ function updatePose() {
  * @return 	None
  */
 function updateBounds() {
-	
+
 	// Update bounds
 	var min = {};
 	min.x = $("[name='volume.min.x']").val();
@@ -320,7 +320,7 @@ function visualizePath(solutionData) {
 	for (var i = 0; i < splinePoints.length; i++) {
 		geometry.vertices.push(splinePoints[i]);
 	}
-	
+
 	path_line = new THREE.Line(geometry, material);
 	path_line.parent = env;
 	scene.add(path_line);
@@ -332,10 +332,14 @@ function visualizePath(solutionData) {
 		path_robot = collada.scene.children[0];
 		path_robot.scale.set(1,1,1);
 
-		// Initially set at start position 
+		// Initially place the path robot at the start state
 		path_robot.position.x = start_robot.position.x;
 		path_robot.position.y = start_robot.position.y;
 		path_robot.position.z = start_robot.position.z;
+
+		path_robot.rotation.x = start_robot.rotation.x;
+		path_robot.rotation.y = start_robot.rotation.y;
+		path_robot.rotation.z = start_robot.rotation.z;
 
 		scene.add(path_robot);
 	});

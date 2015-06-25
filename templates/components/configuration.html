@@ -12,6 +12,7 @@
 				<li role="presentation"><a href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab">Bounds</a></li>
 				<li role="presentation"><a href="#planner" aria-controls="planner" role="tab" data-toggle="tab">Planner</a></li>
 				<li role="presentation"><a href="#solve" aria-controls="solve" role="tab" data-toggle="tab">Solve</a></li>
+				<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab"><div id="settingsIcon">&#9881;</div></a></li>
 			</ul>
 
 			<!-- Tab panes -->
@@ -44,14 +45,15 @@
 								</div>
 							</form>
 							<center><button onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
+							<br>
 							<div class="form-group" id="customProblem">
 								<label>Configuration File</label>
 								<input type="file" name="config" id="config" class="form-control">
 							</div>
-							
+
 						</div> <!-- Close collapsible options -->
 					</div>
-		
+
 					<!-- Start Pose -->
 					<div class="">
 						<table class="table">
@@ -60,7 +62,7 @@
 								<tr>
 								<th>Axis</th>
 								<th>Position</th>
-								<th>Rotation (degrees)</th>
+								<th>Rotation &deg;</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -95,7 +97,7 @@
 								<tr>
 								<th>Axis</th>
 								<th>Position</th>
-								<th>Rotation (degrees)</th>
+								<th>Rotation Degrees</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -154,25 +156,6 @@
 							</tr>
 						</tbody>
 					</table>
-					
-					<!-- Other view options -->
-					<table class="table">
-						<caption>View Options</caption>
-						<tbody>
-							<tr>
-								<td>Show Bounding Box</td>
-								<td><input type='checkbox' id='showBoundingBox' checked></input></td>
-							</tr>
-							<tr>
-								<td>Show Axis Helper</td>
-								<td><input type='checkbox' id='showAxisHelper' checked></input></td>
-							</tr>
-							<tr>
-								<td><button class="button" onclick="downloadConfig()" id="downloadConfigButton">Download Configuration File</button></td>
-							</tr>
-						</tbody>
-					</table>
-
 				</div>
 				<!-- End Bounds Tab -->
 
@@ -230,16 +213,15 @@
 							<button type="button" onclick="solve()">Solve</button>
 							<button type="button" onclick="clearAllFields()">Clear</button>
 						</center>
-							
+
 						<div class="collapse" id="pathButtons">
 							<center>
 								<button type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
-								<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>	
+								<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
 							</center>
 							<br>
 							<label for="animationSpeed">Animation Speed</label>
 							<input type="range" min=700 max =999 id="animationSpeed"></input>
-							
 						</div>
 					</div>
 					<div class="">
@@ -247,6 +229,28 @@
 					</div>
 				</div>
 				<!-- End Solve Tab -->
+				
+				<!-- Begin Settings Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="settings">
+					<table class="table">
+						<caption>Settings</caption>
+						<tbody>
+							<tr>
+								<td>Show Axis Helper</td>
+								<td><input type='checkbox' id='showAxisHelper' checked></input></td>
+							</tr>
+							<tr>
+								<td>Show Bounding Box</td>
+								<td><input type='checkbox' id='showBoundingBox' checked></input></td>
+							</tr>
+							<tr>
+								<td>Download Configuration File</td>
+								<td colspan="2"><button class="small-button" onclick="downloadConfig()" id="downloadConfigButton">&#11015;</button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- End Settings Tab -->
 			</div>
 			<!-- End Tab panes -->
 
