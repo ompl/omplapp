@@ -1,6 +1,7 @@
 /* Global Variables */
 var planners = null;
 var results = "";
+var solutionData;
 var animateRobot;
 var animationSpeed;
 
@@ -370,15 +371,10 @@ function downloadConfig() {
 
 
 		var blob = new Blob([cfg], {type: "octet/stream"});
-		var url = window.URL.createObjectURL(blob);
+		var cfgName = $("[name='name']").val() + ".cfg";
+		downloadFile(blob, cfgName);
 
-		var a = document.createElement("a");
-		document.body.appendChild(a);
-		a.style = "display: none";
-		a.href = url;
-		a.download = $("[name='name']").val() + ".cfg";
-		a.click();
-		window.URL.revokeObjectURL(url);
+
 
 }
 
@@ -616,6 +612,44 @@ function toggleRobotPath() {
 		showRobotPath();
 	}
 }
+
+
+/**
+ * If a solution has been found, allows the user to download the path.
+ * 
+ * @param 	None
+ * @return 	None
+ */
+function downloadPath() {
+	// TODO: Format path into string matrix before making blob
+	var blob = new Blob([solutionData.path], {type: "octet/stream"});
+	var pathName = $("[name='name']").val() + "_path.txt";
+		
+	// TODO: Check that solution exists first
+	downloadFile(blob, pathName);
+}
+
+
+/* Helper Functions */
+
+/**
+ * Prompts the user to download a file.
+ *
+ * @param 	{Blog} blob The file blob to download
+ * @param 	{String} name The filename
+ * @return 	None
+ */
+function downloadFile(blob, name) {
+		var url = window.URL.createObjectURL(blob);
+		var a = document.createElement("a");
+		document.body.appendChild(a);
+		a.style = "display: none";
+		a.href = url;
+		a.download = name;
+		a.click();
+		window.URL.revokeObjectURL(url);
+}
+
 
 
 /* Benchmarking */

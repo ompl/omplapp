@@ -202,6 +202,7 @@ function clearScene() {
  */
 function clearOldSolution() {
 
+	scene.remove(path_robot);
 	staticPathRobots.forEach(function (element, index) {
 		scene.remove(element);
 	});
@@ -287,6 +288,27 @@ function updateBounds() {
 	bbox.geometry.vertices = vertices;
 	bbox.geometry.verticesNeedUpdate = true;
 
+}
+
+/**
+ * Estimates upper and lower bounds from the environment and updates the bounding box.
+ *
+ * @param 	None
+ * @return 	None
+ */
+function estimateBounds() {
+	var estimated = new THREE.BoundingBoxHelper(env, 0x000000);
+	estimated.update();
+	
+	$("[name='volume.min.x']").val(estimated.box.min.x);
+	$("[name='volume.min.y']").val(estimated.box.min.y);
+	$("[name='volume.min.z']").val(estimated.box.min.z);
+	
+	$("[name='volume.max.x']").val(estimated.box.max.x);
+	$("[name='volume.max.y']").val(estimated.box.max.y);
+	$("[name='volume.max.z']").val(estimated.box.max.z);
+	
+	updateBounds();
 }
 
 /**

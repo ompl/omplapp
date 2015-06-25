@@ -28,6 +28,7 @@
 								<option value="abstract">Abstract</option>
 								<option value="cubicles">Cubicles</option>
 								<option value="easy">Easy</option>
+								<option value="home" selected="selected">Home</option>
 								<option value="custom" selected="selected">Custom</option>
 							</select>
 						</div> <!-- Close Problem -->
@@ -156,6 +157,9 @@
 							</tr>
 						</tbody>
 					</table>
+					<center>
+						<button class="button" onclick="estimateBounds()">Estimate Bounding Box</button>
+					</center>
 				</div>
 				<!-- End Bounds Tab -->
 
@@ -246,6 +250,10 @@
 							<tr>
 								<td>Download Configuration File</td>
 								<td colspan="2"><button class="small-button" onclick="downloadConfig()" id="downloadConfigButton">&#11015;</button></td>
+							</tr>
+							<tr>
+								<td>Download Solution Path</td>
+								<td colspan="2"><button class="small-button" onclick="downloadPath()" id="downloadConfigButton">&#11015;</button></td>
 							</tr>
 						</tbody>
 					</table>
