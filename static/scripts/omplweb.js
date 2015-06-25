@@ -2,7 +2,7 @@
 var planners = null;
 var results = "";
 var animateRobot;
-
+var animationSpeed;
 
 // Load the configuration page by default
 $(document).ready(function() {
@@ -49,10 +49,11 @@ function load_configuration_page () {
 		// Show upload buttons if user selects 'Custom' problem
 		$("#problems").change(function() {
 
-			clearAllFields();
 
 			if ($("#problems").val() == 'custom'){
 				$("#customProblem").collapse('show');
+				clearScene();
+				clearAllFields();
 			} else {
 				$("#customProblem").collapse('hide');
 
@@ -95,6 +96,14 @@ function load_configuration_page () {
 				axisHelper.visible = false;
 			}
 		});
+
+		// Adjust animation speed
+		$('#animationSpeed').change(function() {
+			animationSpeed = 1000 - $('#animationSpeed').val();
+			$('#animateToggleBtn').click();
+			$('#animateToggleBtn').click();
+			console.log(animationSpeed);
+		})
 
 	});
 }
@@ -458,7 +467,7 @@ function solve(){
 	var validConfig = validateFields();
 	if (validConfig == true) {
 		var html = "";
-		html += "<h3>Results</h3>"
+		// html += "<h3>Results</h3>"
 
 		// Bring up the loading screen
 		$.blockUI({
@@ -525,8 +534,9 @@ function solve(){
 				if (solutionData.solved == "true") {
 					// Draw the solution path
 					visualizePath(solutionData);
+					animationSpeed = 1000 - $('#animationSpeed').val();
 					$('#pathButtons').collapse('show');
-					html += "<font color='#329B71'>Found solution.</font><br><br>";
+					html += "<br><h4><font color='#329B71'>Found solution.</font></h4>";
 				} else {
 					html += "<font color='#cd535a'>No solution found. To try again, click the solve button.</font><br><br>";
 				}
@@ -578,15 +588,13 @@ function animateToggle() {
 
 		clearInterval(animateRobot);
 		path_robot.visible = false;
-		// Reset the step to the beginning of the path
-		step = 0;
 	} else {
 		path_robot.visible = true;
 		$('#animateToggleBtn').addClass('active');
 
 		animateRobot = setInterval(function() {
 			moveRobot(path);
-		}, 100);
+		}, animationSpeed);
 	}
 }
 

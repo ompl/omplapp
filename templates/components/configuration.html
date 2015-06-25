@@ -226,15 +226,21 @@
 								</tr>
 							</tbody>
 						</table>
-						<!-- <center> -->
+						<center>
 							<button type="button" onclick="solve()">Solve</button>
 							<button type="button" onclick="clearAllFields()">Clear</button>
+						</center>
 							
-							<div class="collapse" id="pathButtons">
+						<div class="collapse" id="pathButtons">
+							<center>
 								<button type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
 								<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>	
-							</div>
-						<!-- </center> -->
+							</center>
+							<br>
+							<label for="animationSpeed">Animation Speed</label>
+							<input type="range" min=700 max =999 id="animationSpeed"></input>
+							
+						</div>
 					</div>
 					<div class="">
 						<div id="results"></div>
