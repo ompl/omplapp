@@ -66,6 +66,32 @@ pre {
 	max-height: 225px;
 }
 
+.benchmarking-options {
+	border: 2px solid #080808;
+	padding: 10px 15px;
+}
+
+.options-header{
+	background-color: #022037;
+	color: #ddd;
+	padding: 10px 15px;
+	width: 100%;
+}
+
+.dropdown-menu {
+	height: 300px;
+	overflow: auto;
+	margin-top: -5px;
+}
+.dropdown-link{
+	color: #022037 !important;
+}
+.dropdown-link:hover {
+	color: #022037 !important;
+}
+.dropdown-link:active {
+	color: #ddd !important;
+}
 .footer {
 	background-color: #022037;
 /*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
@@ -119,6 +145,10 @@ pre {
 	text-align: center;
 }
 
+.planners-table{
+	margin-left: 20px
+}
+
 .icon-bar {
 	background-color: #fff;
 }
@@ -136,7 +166,7 @@ pre {
 
 .tabs {
 	background-color: #022037;
-	
+
 }
 .tabs>li {
 	float: left;

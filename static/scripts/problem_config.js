@@ -4,7 +4,7 @@ var results = "";
 var solutionData;
 var animateRobot;
 var animationSpeed;
-
+var planner_config = "[planner]\n";
 
 
 // Load the configuration page by default
@@ -104,7 +104,7 @@ function initialize() {
 			$('#animateToggleBtn').click();
 			console.log(animationSpeed);
 		});
-		
+
 		initializeBenchmarking();
 	});
 }
@@ -184,6 +184,10 @@ function loadRemoteProblem(problem_name) {
 		$("[name='volume.max.x']").val(data['volume.max.x']);
 		$("[name='volume.max.y']").val(data['volume.max.y']);
 		$("[name='volume.max.z']").val(data['volume.max.z']);
+
+		$("[name='time_limit']").val(data['time_limit']);
+		$("[name='mem_limit']").val(data['mem_limit']);
+		$("[name='run_count']").val(data['run_count']);
 
 		// Load the robot and env models
 		drawModels(data['env_loc'], data['robot_loc']);
@@ -283,6 +287,9 @@ function loadConfig() {
 			$("[name='volume.max.y']").val(data['volume.max.y']);
 			$("[name='volume.max.z']").val(data['volume.max.z']);
 
+			$("[name='time_limit']").val(data['time_limit']);
+			$("[name='mem_limit']").val(data['mem_limit']);
+			$("[name='run_count']").val(data['run_count']);
 
 			setTimeout(function() {
 				updatePose();
@@ -334,48 +341,56 @@ function parseConfig(cfgText) {
  */
 function downloadConfig() {
 
-		var startQ = start_robot.quaternion;
-		var goalQ = goal_robot.quaternion;
+	if (validateFields()) {
+			var startQ = start_robot.quaternion;
+			var goalQ = goal_robot.quaternion;
 
-		var cfg = "";
-		cfg += "[problem]\n";
+			var cfg = "";
+			cfg += "[problem]\n";
 
-		cfg += "name = " + $("[name='name']").val() + "\n";
-		cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
-		cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
+			cfg += "name = " + $("[name='name']").val() + "\n";
+			cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
+			cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
 
-		cfg += "start.x = " + $("[name='start.x']").val() + "\n";
-		cfg += "start.y = " + $("[name='start.y']").val() + "\n";
-		cfg += "start.z = " + $("[name='start.z']").val() + "\n";
+			cfg += "start.x = " + $("[name='start.x']").val() + "\n";
+			cfg += "start.y = " + $("[name='start.y']").val() + "\n";
+			cfg += "start.z = " + $("[name='start.z']").val() + "\n";
 
-		cfg += "start.axis.x = " + startQ.x + "\n";
-		cfg += "start.axis.y = " + startQ.y + "\n";
-		cfg += "start.axis.z = " + startQ.z + "\n";
-		cfg += "start.theta = " + startQ.w + "\n";
+			cfg += "start.axis.x = " + startQ.x + "\n";
+			cfg += "start.axis.y = " + startQ.y + "\n";
+			cfg += "start.axis.z = " + startQ.z + "\n";
+			cfg += "start.theta = " + startQ.w + "\n";
 
-		cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
-		cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
-		cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
+			cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
+			cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
+			cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
 
-		cfg += "goal.axis.x = " + goalQ.x + "\n";
-		cfg += "goal.axis.y = " + goalQ.y + "\n";
-		cfg += "goal.axis.z = " + goalQ.z + "\n";
-		cfg += "goal.theta = " + goalQ.w + "\n";
+			cfg += "goal.axis.x = " + goalQ.x + "\n";
+			cfg += "goal.axis.y = " + goalQ.y + "\n";
+			cfg += "goal.axis.z = " + goalQ.z + "\n";
+			cfg += "goal.theta = " + goalQ.w + "\n";
 
-		cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
-		cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
-		cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
-		cfg += "volume.max.x = " + $("[name='volume.max.x']").val() + "\n";
-		cfg += "volume.max.y = " + $("[name='volume.max.y']").val() + "\n";
-		cfg += "volume.max.z = " + $("[name='volume.max.z']").val() + "\n";
+			cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
+			cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
+			cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
+			cfg += "volume.max.x = " + $("[name='volume.max.x']").val() + "\n";
+			cfg += "volume.max.y = " + $("[name='volume.max.y']").val() + "\n";
+			cfg += "volume.max.z = " + $("[name='volume.max.z']").val() + "\n";
 
+			cfg += "\n";
+			cfg += "[benchmark]\n";
+			cfg += "time_limit = " + $("[name='time_limit']").val() + "\n";
+			cfg += "mem_limit = " + $("[name='mem_limit']").val() + "\n";
+			cfg += "run_count = " + $("[name='run_count']").val() + "\n";
 
-		var blob = new Blob([cfg], {type: "octet/stream"});
-		var cfgName = $("[name='name']").val() + ".cfg";
-		downloadFile(blob, cfgName);
+			cfg += planner_config;
 
-
-
+			var blob = new Blob([cfg], {type: "octet/stream"});
+			var cfgName = $("[name='name']").val() + ".cfg";
+			downloadFile(blob, cfgName);
+	} else {
+		alert("Please enter values for the indicated fields.");
+	}
 }
 
 
@@ -388,7 +403,7 @@ function downloadConfig() {
  * @param 	None
  * @return 	None
  */
-function clearAllFields() { 
+function clearAllFields() {
 	$('.form-field').each(function () {
 		$(this).val('');
 		$(this).css("background-color", "white");
@@ -503,14 +518,14 @@ function solve(){
 		problemData['volume.max.x'] = $("[name='volume.max.x']").val();
 		problemData['volume.max.y'] = $("[name='volume.max.y']").val();
 		problemData['volume.max.z'] = $("[name='volume.max.z']").val();
-		problemData['time_limit'] = $("[name='time_limit']").val();
+		problemData['solve_time'] = $("[name='solve_time']").val();
 		problemData['planner'] = $("[name='planners']").val();
 
 		// Get the params for the specific planner
 		paramData = {};
 		$('.planner_param').each(function () {
 			paramData[$(this).attr('name')] = $(this).val();
-		})
+		});
 
 		problemData['planner_params'] = paramData;
 		problemJSON = JSON.stringify(problemData);
@@ -622,7 +637,7 @@ function toggleRobotPath() {
  */
 function downloadPath() {
 
-	if (solutionData.pathAsMatrix != null) {
+	if (solutionData != null) {
 		var blob = new Blob([solutionData.pathAsMatrix], {type: "octet/stream"});
 		var pathName = $("[name='name']").val() + "_path.txt";
 
@@ -654,10 +669,6 @@ function downloadFile(blob, name) {
 		window.URL.revokeObjectURL(url);
 }
 
-
-function getProblemConfig() {
-
-}
 
 function getConfiguredPlanner() {
 	var planner = {};

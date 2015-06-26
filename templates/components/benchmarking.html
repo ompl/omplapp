@@ -1,19 +1,104 @@
 <div class="container container-fluid" id="content">
+
 	<h2>Planner Benchmarking</h2>
 	<br><br>
-	
-	<div class="">
-		<table class="table">
+
+	<div class="col-md-4">
+		<div class="options-header">
+			Benchmarking
+		</div>
+
+		<div class="benchmarking-options">
+			<table class="table">
+				<caption>Settings</caption>
+				<tbody>
+					<tr>
+						<td>Time Limit (sec)</td>
+						<td><input type='number' name="time_limit" class="form-control input-sm"></input></td>
+					</tr>
+					<tr>
+						<td>Memory Limit (MB)</td>
+						<td><input type='number' name="mem_limit" class="form-control input-sm"></input></td>
+					</tr>
+					<tr>
+						<td>Run Count</td>
+						<td><input type='number' name="run_count" class="form-control input-sm"></input></td>
+					</tr>
+					<tr>
+						<td>Save Paths</td>
+						<td>
+							<label class="radio">
+								<input type="radio" name="savePaths" id="saveNone" checked> None</input>
+							</label>
+							<label class="radio">
+								<input type="radio" name="savePaths" id="saveAll"> All</input>
+							</label>
+							<label class="radio">
+								<input type="radio" name="savePaths" id="saveShortest"> Shortest</input>
+							</label>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<center>
+				<button onclick="downloadConfig()">Export Configuration</button>
+
+				<!-- Add Planners button -->
+				<div class="btn-group">
+					<button type="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Add Planner &nbsp; <span class='caret'></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.BKPIECE1')">BKPIECE1</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.EST')">EST</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.FMT')">FMT</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.KPIECE1')">KPIECE1</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.LBKPIECE1')">LBKPIECE1</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.LBTRRT')">LBTRRT</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.LazyPRM')">LazyPRM</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.LazyPRMstar')">LazyPRMstar</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.LazyRRT')">LazyRRT</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.PDST')">PDST</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.PRM')">PRM</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.PRMstar')">PRMstar</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.RRT')">RRT</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.RRTConnect')">RRTConnect</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.RRTstar')">RRTstar</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.SBL')">SBL</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.SPARS')">SPARS</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.SPARStwo')">SPARStwo</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.STRIDE')">STRIDE</a></li>
+						<li><a class="dropdown-link" onclick="createPlannerEntry('ompl.geometric.TRRT')">TRRT</a></li>
+					</ul>
+				</div>
+
+				<br>
+				<button>Benchmark</button>
+
+			</center>
+		</div>
+	</div>
+
+	<div class="col-md-8">
+		<table class="table planners-table">
 			<thead>
 				<tr>
 					<th>Planner</th>
 					<th>Parameters</th>
 				</tr>
 			</thead>
-			<tbody id="planners">
-				
+			<tbody id="planner-entries">
+				<tr>
+					<th id="defaultPlannerName"></th>
+					<td>
+						<table class="table-condensed" id="defaultPlannerParams">
+
+						</table>
+					</td>
+				</tr>
 			</tbody>
 		</table>
-		<button id="addPlanner">Add Planner</button>
 	</div>
+
 </div>

@@ -239,7 +239,7 @@ def solve(problem):
 
 	## Solve the problem
 	solution = {}
-	solved = ompl_setup.solve(float(problem['time_limit']))
+	solved = ompl_setup.solve(float(problem['solve_time']))
 
 	log.info(str(ompl_setup))
 	log.info("\n\n")
