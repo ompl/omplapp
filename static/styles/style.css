@@ -15,7 +15,6 @@ a:hover {
 
 body {
 	font-size: 16px;
-	padding-top: 50px;
 }
 
 h1, h2, h3 {
@@ -85,13 +84,31 @@ pre {
 
 }
 
+.main-nav {
+	background-color: #022037;
+	width: 100%;
+}
+.main-content {
+	margin-top: 50px;
+}
+.main-tabs {
+	float: right;
+	line-height: 2;
+}
+
 .navbar {
 	background-color: #022037;
 /*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
 }
-.navbar-brand {
-	font-size: 36px;
+.logo{
+	color: #ddd;
+	font-size: 35px;
 	font-weight: 100;
+}
+.navbar-toggle {
+	color: #fff;
+	border-color: #fff;
+	min-width: 0px;
 }
 
 .pane-title {
@@ -100,6 +117,10 @@ pre {
 	padding-top: 10px;
 	padding-bottom: 20px;
 	text-align: center;
+}
+
+.icon-bar {
+	background-color: #fff;
 }
 
 #settingsIcon{
@@ -115,6 +136,7 @@ pre {
 
 .tabs {
 	background-color: #022037;
+	
 }
 .tabs>li {
 	float: left;
