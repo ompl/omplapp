@@ -30,6 +30,19 @@ function initializeBenchmarking() {
 	});
 }
 
+/**
+ * Adds a new editable planner to be benchmarked and updates the cfg file.
+ *
+ * @param 	{String} name The name of the planner to add
+ * @return 	None
+ */
+function addPlanner (name) {
+
+	createPlannerEntry(name);
+
+	updateCfgPlanners();
+
+}
 
 
 function createPlannerEntry(name) {
@@ -53,16 +66,12 @@ function createPlannerEntry(name) {
 
 }
 
-
-function load_planner_entry(name) {
-
-	if (planners != null) {
-		var plannerConfigHTML = "";
-
-
-	} else {
-		alert("Planners are not loaded yet. Please wait and try again.");
-	}
+/**
+ * Updates the internal cfg file to reflect the planners the user has configured.
+ *
+ * @param  None
+ * @return None
+ */
+function updateCfgPlanners () {
 
 }
-
