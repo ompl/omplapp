@@ -42,6 +42,7 @@
 			</table>
 
 			<center>
+
 				<button onclick="downloadConfig()">Export Configuration</button>
 
 				<!-- Add Planners button -->
@@ -50,6 +51,7 @@
 						Add Planner &nbsp; <span class='caret'></span>
 					</button>
 					<ul class="dropdown-menu">
+						<!-- TODO: poplulate this dynamically when planners are retrieved -->
 						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.BKPIECE1')">BKPIECE1</a></li>
 						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.EST')">EST</a></li>
 						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.FMT')">FMT</a></li>
@@ -74,6 +76,7 @@
 				</div>
 
 				<br>
+
 				<button>Benchmark</button>
 
 			</center>
@@ -81,23 +84,8 @@
 	</div>
 
 	<div class="col-md-8">
-		<table class="table planners-table">
-			<thead>
-				<tr>
-					<th>Planner</th>
-					<th>Parameters</th>
-				</tr>
-			</thead>
-			<tbody id="planner-entries">
-				<tr>
-					<th id="defaultPlannerName"></th>
-					<td>
-						<table class="table-condensed" id="defaultPlannerParams">
+		<table class="table planners-table" id="planner-entries">
 
-						</table>
-					</td>
-				</tr>
-			</tbody>
 		</table>
 	</div>
 

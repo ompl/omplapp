@@ -4,7 +4,6 @@ var results = "";
 var solutionData;
 var animateRobot;
 var animationSpeed;
-var planner_config = "[planner]\n";
 
 
 // Load the configuration page by default
@@ -383,7 +382,9 @@ function downloadConfig() {
 			cfg += "mem_limit = " + $("[name='mem_limit']").val() + "\n";
 			cfg += "run_count = " + $("[name='run_count']").val() + "\n";
 
-			cfg += planner_config;
+			cfg += "\n";
+			cfg += "[planner]\n";
+			cfg += getBenchmarkingPlanners();
 
 			var blob = new Blob([cfg], {type: "octet/stream"});
 			var cfgName = $("[name='name']").val() + ".cfg";

@@ -1,5 +1,8 @@
 /* Benchmarking */
 
+var benchmarkPlanners = {};
+var firstTime = true;
+
 /**
  * Loads benchmarking components.
  * TODO: Should probably move all benchmarking related code to another file.
@@ -11,24 +14,34 @@ function initializeBenchmarking() {
 
 	// Load the HTML for the configuration settings
 	$("#benchmarking").load("omplapp/components/benchmarking", function () {
-
-		$('#benchmarking-page').click(function () {
-				var defaultPlanner = getConfiguredPlanner();
-				var name = defaultPlanner['name'];
-				var params = defaultPlanner['parameters'];
-
-				$('#defaultPlannerName').html(name.split(".")[2]);
-
-				$('#defaultPlannerParams').html("");
-
-				for (var param in params) {
-					$('#defaultPlannerParams').append("<tr><td>" + planners[name][param][0] + "</td><td>" + params[param] + "</td></tr>");
+			$("#benchmarking-page").click(function() {
+				if (firstTime) {
+					createDefaultPlannerEntry();
+					firstTime = false;
 				}
-
-		});
-
+			});
 	});
 }
+
+
+function createDefaultPlannerEntry () {
+	var defaultPlanner = getConfiguredPlanner();
+	var name = defaultPlanner['name'];
+	var params = defaultPlanner['parameters'];
+	var numParams = Object.keys(params).length + 1;
+
+	var planner = "<tr><th colspan='3' rowspan='" + numParams + "' class='planner-name'>" + name.split(".")[2] + "</th></tr>";
+
+	for (var param in params) {
+		planner += "<tr><td class='planner-param'>" + planners[name][param][0] + "</td>";
+		planner += "<td class='param-value'><input type='text' name='" + name.split(".")[2] + "' class='form-control input-sm' value='" + params[param] + "' id='" + param + "'></td></tr>";
+
+	}
+
+	$('#planner-entries').append(planner);
+}
+
+
 
 /**
  * Adds a new editable planner to be benchmarked and updates the cfg file.
@@ -40,38 +53,51 @@ function addPlanner (name) {
 
 	createPlannerEntry(name);
 
-	updateCfgPlanners();
-
 }
 
 
 function createPlannerEntry(name) {
+	var params = planners[name]
+	var numParams = Object.keys(params).length + 1;
 	var planner = "";
-	planner += "<tr>";
-	planner += "<th>" + name.split(".")[2] + "</th><td>";
+	var name = name.split(".")[2];
 
-	planner += "<table class='table-condensed'>";
+	planner += "<tr><th colspan='3' rowspan='" + numParams + "' class='planner-name'>";
+	planner += name;
+	planner += "</th></tr>";
 
-	params = planners[name]
+
 	for (var key in params) {
 		if (params.hasOwnProperty(key)) {
-		planner	+= "<tr><td>";
-		planner	+= params[key][0];
-		planner	+= "</td><td><input type='text' name='" + key +  "' class='form-control input-sm' value='" + params[key][3] + "'></td></tr>";
+			planner	+= "<tr>";
+			planner	+= "<td class='planner-param'>" + params[key][0] + "</td>";
+			planner	+= "<td class='param-value'><input type='text' name='" + name + "' class='form-control input-sm' value='" + params[key][3] + "' id='" + key + "'></td></tr>";
 		}
 	}
-	planner += "</tbody></table>"
 
 	$('#planner-entries').append(planner);
 
 }
 
+
 /**
  * Updates the internal cfg file to reflect the planners the user has configured.
  *
  * @param  None
- * @return None
+ * @return {String} benchPlanners A string containing the planners to use for benchmarking.
  */
-function updateCfgPlanners () {
+function getBenchmarkingPlanners() {
+	var benchPlanners = "";
+	var currentPlanner = "";
 
+	var inputs = $('#planner-entries input');
+	for (var i = 0; i < inputs.length; i++) {
+		if (currentPlanner != inputs[i].name) {
+			benchPlanners += inputs[i].name.toLowerCase() + "=\n";
+		}
+		currentPlanner = inputs[i].name;
+
+		benchPlanners += inputs[i].name.toLowerCase() + "." + inputs[i].id + "=" + inputs[i].value + "\n";
+	}
+	return benchPlanners;
 }
