@@ -24,20 +24,6 @@
 						<td>Run Count</td>
 						<td><input type='number' name="run_count" class="form-control input-sm"></input></td>
 					</tr>
-					<tr>
-						<td>Save Paths</td>
-						<td>
-							<label class="radio">
-								<input type="radio" name="savePaths" id="saveNone" checked> None</input>
-							</label>
-							<label class="radio">
-								<input type="radio" name="savePaths" id="saveAll"> All</input>
-							</label>
-							<label class="radio">
-								<input type="radio" name="savePaths" id="saveShortest"> Shortest</input>
-							</label>
-						</td>
-					</tr>
 				</tbody>
 			</table>
 
@@ -77,7 +63,7 @@
 
 				<br>
 
-				<button>Benchmark</button>
+				<button onclick="startBenchmarking()">Benchmark</button>
 
 			</center>
 		</div>

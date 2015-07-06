@@ -101,3 +101,22 @@ function getBenchmarkingPlanners() {
 	}
 	return benchPlanners;
 }
+
+
+function startBenchmarking() {
+	$.ajax({
+		url: "omplapp/benchmark",
+		type: "GET",
+		success: function(data){
+			console.log(data);
+		},
+		error: function(data) {
+			console.log(data);
+		},
+		cache: false,
+		contentType: false,
+		processData: false
+	});
+}
+
+

@@ -13,7 +13,10 @@ except:
 	import configparser as ConfigParser
 
 import flask
+from flask import Flask
 from werkzeug import secure_filename
+
+from celery import Celery
 
 import ompl
 from ompl import base as ob
@@ -25,12 +28,16 @@ from ompl import app as oa
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
 PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
 
+
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
 
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
-
-########## OMPL Code ##########
+########## OMPL ##########
 
 global_vars = {}
 
@@ -287,7 +294,15 @@ def solve(problem):
 	return solution
 
 
-########## Flask Code ##########
+########## Celery ##########
+
+@celery.task()
+def add_together(a, b):
+	print(a + b)
+	return a + b
+
+
+########## Flask ##########
 
 # This section loads html
 @app.route("/")
@@ -395,6 +410,17 @@ def request_models(problem_name):
 	return json.dumps(cfg_data)
 
 
+# Benchmarking
+@app.route('/omplapp/benchmark')
+def benchmark():
+	print("Called benchmark.")
+
+	result = add_together.apply_async(args=[23, 42], countdown=10)
+	result.wait()
+	return "hello"
+
 if __name__ == "__main__":
 	app.debug = True
 	app.run()
+
+
