@@ -28,7 +28,6 @@ from ompl import app as oa
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
 PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
 
-
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
@@ -295,13 +294,56 @@ def solve(problem):
 
 
 ########## Celery ##########
-
 @celery.task()
-def benchmark(cfg_log):
+def benchmark(name, cfg_loc, user_email):
+	"""
+	Runs ompl_benchmark on cfg_loc and converts the resulting log file to a
+	database with ompl_benchmark_statistics.
 
-	# Run ompl_benchmark on cfg_log
+	cfg_loc - the location of the .cfg file to be benchmarked
+	"""
 
-	# Convert log file to db with benchmarking script
+	os.system("ompl_benchmark " + cfg_loc + ".cfg")
+	os.system("python ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + name + ".db")
+	db = open("static/problem_files/" + name + ".db", 'r')
+	send_email(name, db, user_email)
+
+
+def send_email(name, db, user_email):
+	import smtplib
+	from os.path import basename
+	from email.mime.application import MIMEApplication
+	from email.mime.multipart import MIMEMultipart
+	from email.mime.base import MIMEBase
+	from email.mime.text import MIMEText
+	from email.utils import COMMASPACE, formatdate
+
+	passfile = open("pass", "r")
+	username = "prrb02@gmail.com"
+	password = passfile.read();
+	db_name = name + ".db"
+	subject = "OMPL Benchmarking Results"
+
+	msg = MIMEMultipart()
+	msg['Subject'] = subject
+	msg['From'] = username
+	msg['To'] = user_email
+
+	msg_body = "OMPL Web\n\n"
+	msg_body += "Benchmarking for problem '" + name + "' is complete. "
+	msg_body += "The results database can be uploaded to plannerarena.org under the 'Change Database' tab."
+	msg.attach(MIMEText(msg_body))
+
+	attachment = MIMEApplication(db.read())
+	attachment.add_header('Content-Disposition', 'attachment', filename=db_name)
+	msg.attach(attachment)
+
+	s = smtplib.SMTP('smtp.gmail.com:25')
+	s.starttls()
+	s.login(username, password)
+	s.sendmail(username, [user_email], msg.as_string())
+	s.quit()
+
 
 ########## Flask ##########
 
@@ -411,10 +453,10 @@ def request_models(problem_name):
 	return json.dumps(cfg_data)
 
 
-def save_text_file(name, text):
-	file_loc = os.path.join(app.config['UPLOAD_FOLDER'], name);
+def save_cfg_file(name, text):
+	file_loc = os.path.join(app.config['PROBLEMS_FOLDER'], name);
 
-	f = open(file_loc, 'w')
+	f = open(file_loc + ".cfg", 'w')
 	f.write(text)
 	f.close()
 
@@ -426,14 +468,14 @@ def save_text_file(name, text):
 def init_benchmark():
 	print("Called benchmark.")
 
-	cfg_name = flask.request.form['filename'] + ".cfg"
+	cfg_name = flask.request.form['filename']
 	cfg = flask.request.form['cfg']
+	user_email = flask.request.form['email']
 
-	cfg_loc = save_text_file(cfg_name, cfg)
+	cfg_loc = save_cfg_file(cfg_name, cfg)
 
-	benchmark(cfg_loc)
-	# result = benchmark.apply_async(args=[cfg_loc], countdown=3)
-	# result.wait()
+	result = benchmark.delay(cfg_name, cfg_loc, user_email)
+
 
 	return "Saved file at: " + cfg_loc
 
