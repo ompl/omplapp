@@ -1,16 +1,29 @@
 a {
-	color: #ddd !important;
-/*	font-size: 16px;*/
 	font-weight: 200;
 }
-a:active {
-	color: #fff !important;
-	background-color: #080808 !important;
+a.remove {
+	color: #FB9F76;
 }
-a:hover {
-	color: #fff !important;
+a.remove:hover {
+	color: #F97A6F;
 	cursor: pointer;
-/*	border-bottom: 2px solid #fff;*/
+}
+a.remove:active {
+	color: #F96E6C;
+	cursor: pointer;
+}
+a.tablink {
+	color: #ddd;
+}
+a.tablink:active {
+	color: #fff;
+}
+a.tablink:hover {
+	color: #fff;
+}
+
+.glyphicon-remove {
+	padding-top: 2px;
 }
 
 body {
@@ -65,6 +78,7 @@ button.active {
 pre {
 	max-height: 225px;
 }
+
 
 .benchmarking-options {
 	border: 2px solid #080808;
@@ -145,8 +159,8 @@ pre {
 	text-align: center;
 }
 
-.planners-table{
-	margin-left: 20px
+.planner-tables{
+	padding: 0px 15px;
 }
 
 .icon-bar {
@@ -188,10 +202,24 @@ pre {
 	padding: 10px;
 }
 
+.planner-table tr, .planner-table th, .planner-table td {
+	border: none !important;
+}
+table.planner-table {
+	border-bottom: 1px solid grey;
+}
+
+td.planner-param {
+	width: 40%;
+}
+td.param-value {
+	text-align: right;
+}
+
 .visualization {
 	outline: 2px solid #080808;
 	height: 75%;
-	margin-left: 15px;
+	margin: 0px 15px;
 }
 
 .col-md-4 {

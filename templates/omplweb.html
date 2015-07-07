@@ -3,7 +3,7 @@
 		<!-- Styles -->
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
-		
+
 		<!-- Libraries -->
 		<script src="{{ url_for('static', filename='scripts/libs/jquery-2.1.4.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/libs/jquery.blockUI.js') }}"></script>
@@ -15,7 +15,7 @@
 		<!-- Problem Configuration -->
 		<script src="{{ url_for('static', filename='scripts/problem_config.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
-		
+
 		<!-- Benchmarking -->
 		<script src="{{ url_for('static', filename='scripts/benchmarking.js') }}"></script>
 	</head>
@@ -36,38 +36,38 @@
 					</div>
 					<div class="collapse navbar-collapse" id="navbar-collapse">
 						<ul class="nav tabs main-tabs" role="tablist">
-							<li role="presentation"><a href="#configure" aria-controls="configure" role="tab" data-toggle="tab" id="configure-problem-page">Configure Problem</a></li>
-							<li role="presentation"><a href="#benchmarking" aria-controls="benchmarking" role="tab" data-toggle="tab" id="benchmarking-page">Benchmarking</a></li>
+							<li role="presentation"><a class="tablink" href="#configure" aria-controls="configure" role="tab" data-toggle="tab" id="configure-problem-page">Configure Problem</a></li>
+							<li role="presentation"><a class="tablink" href="#benchmarking" aria-controls="benchmarking" role="tab" data-toggle="tab" id="benchmarking-page">Benchmarking</a></li>
 						</ul>
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="main-content tab-content">
 				<!-- Configure Problem Page -->
 				<div role="tabpanel" class="tab-pane fade" id="configure">
 					<!-- This gets filled in by initialize() -->
 				</div>
-				
-				
+
+
 				<!-- Benchmarking Page -->
 				<div role="tabpanel" class="tab-pane fade" id="benchmarking">
 					<!-- This gets filled in by initialize() -->
-				</div>	
+				</div>
 			</div>
-			
+
 		</div>
-		
+
 
 		<!-- Footer -->
 		<div class="footer">
-			<a href="http://ompl.kavrakilab.org">Open Motion Planning Library</a>
+			<a class="tablink" href="http://ompl.kavrakilab.org">Open Motion Planning Library</a>
 			•
-			<a href="http://www.kavrakilab.org">Physical and Biological Computing Group</a>
+			<a class="tablink" href="http://www.kavrakilab.org">Physical and Biological Computing Group</a>
 			•
-			<a href="http://www.cs.rice.edu">Department of Computer Science</a>
+			<a class="tablink" href="http://www.cs.rice.edu">Department of Computer Science</a>
 			•
-			<a href="http://www.rice.edu">Rice University</a><br>
+			<a class="tablink" href="http://www.rice.edu">Rice University</a><br>
 		</div>
 	</body>
 </html>
