@@ -297,10 +297,11 @@ def solve(problem):
 ########## Celery ##########
 
 @celery.task()
-def add_together(a, b):
-	print(a + b)
-	return a + b
+def benchmark(cfg_log):
 
+	# Run ompl_benchmark on cfg_log
+
+	# Convert log file to db with benchmarking script
 
 ########## Flask ##########
 
@@ -410,14 +411,31 @@ def request_models(problem_name):
 	return json.dumps(cfg_data)
 
 
+def save_text_file(name, text):
+	file_loc = os.path.join(app.config['UPLOAD_FOLDER'], name);
+
+	f = open(file_loc, 'w')
+	f.write(text)
+	f.close()
+
+	return file_loc
+
+
 # Benchmarking
-@app.route('/omplapp/benchmark')
-def benchmark():
+@app.route('/omplapp/benchmark', methods=['POST'])
+def init_benchmark():
 	print("Called benchmark.")
 
-	result = add_together.apply_async(args=[23, 42], countdown=10)
-	result.wait()
-	return "hello"
+	cfg_name = flask.request.form['filename'] + ".cfg"
+	cfg = flask.request.form['cfg']
+
+	cfg_loc = save_text_file(cfg_name, cfg)
+
+	benchmark(cfg_loc)
+	# result = benchmark.apply_async(args=[cfg_loc], countdown=3)
+	# result.wait()
+
+	return "Saved file at: " + cfg_loc
 
 if __name__ == "__main__":
 	app.debug = True

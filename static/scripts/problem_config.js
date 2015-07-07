@@ -330,67 +330,81 @@ function parseConfig(cfgText) {
 	return cfgData;
 }
 
+/**
+ * Formats configuration fields into a .cfg text file
+ *
+ * @param 	None
+ * @return 	{String} cfg All the configuration inforamtion in text.
+ */
+function getConfigText() {
+
+	if (validateFields()) {
+		var startQ = start_robot.quaternion;
+		var goalQ = goal_robot.quaternion;
+
+		var cfg = "";
+		cfg += "[problem]\n";
+
+		cfg += "name = " + $("[name='name']").val() + "\n";
+		cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
+		cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
+
+		cfg += "start.x = " + $("[name='start.x']").val() + "\n";
+		cfg += "start.y = " + $("[name='start.y']").val() + "\n";
+		cfg += "start.z = " + $("[name='start.z']").val() + "\n";
+
+		cfg += "start.axis.x = " + startQ.x + "\n";
+		cfg += "start.axis.y = " + startQ.y + "\n";
+		cfg += "start.axis.z = " + startQ.z + "\n";
+		cfg += "start.theta = " + startQ.w + "\n";
+
+		cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
+		cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
+		cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
+
+		cfg += "goal.axis.x = " + goalQ.x + "\n";
+		cfg += "goal.axis.y = " + goalQ.y + "\n";
+		cfg += "goal.axis.z = " + goalQ.z + "\n";
+		cfg += "goal.theta = " + goalQ.w + "\n";
+
+		cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
+		cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
+		cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
+		cfg += "volume.max.x = " + $("[name='volume.max.x']").val() + "\n";
+		cfg += "volume.max.y = " + $("[name='volume.max.y']").val() + "\n";
+		cfg += "volume.max.z = " + $("[name='volume.max.z']").val() + "\n";
+
+		cfg += "\n";
+		cfg += "[benchmark]\n";
+		cfg += "time_limit = " + $("[name='time_limit']").val() + "\n";
+		cfg += "mem_limit = " + $("[name='mem_limit']").val() + "\n";
+		cfg += "run_count = " + $("[name='run_count']").val() + "\n";
+
+		cfg += "\n";
+		cfg += "[planner]\n";
+		cfg += getBenchmarkingPlanners();
+
+		return cfg;
+	} else {
+		alert("Please enter values for the indicated fields.");
+		return null;
+	}
+}
+
 
 /**
- * Formats configuration fields into a .cfg text file and prompts the user to
- * download it.
+ * Gets the config data and prompts the user to download it.
  *
  * @param 	None
  * @return 	None
  */
 function downloadConfig() {
 
-	if (validateFields()) {
-			var startQ = start_robot.quaternion;
-			var goalQ = goal_robot.quaternion;
-
-			var cfg = "";
-			cfg += "[problem]\n";
-
-			cfg += "name = " + $("[name='name']").val() + "\n";
-			cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
-			cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
-
-			cfg += "start.x = " + $("[name='start.x']").val() + "\n";
-			cfg += "start.y = " + $("[name='start.y']").val() + "\n";
-			cfg += "start.z = " + $("[name='start.z']").val() + "\n";
-
-			cfg += "start.axis.x = " + startQ.x + "\n";
-			cfg += "start.axis.y = " + startQ.y + "\n";
-			cfg += "start.axis.z = " + startQ.z + "\n";
-			cfg += "start.theta = " + startQ.w + "\n";
-
-			cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
-			cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
-			cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
-
-			cfg += "goal.axis.x = " + goalQ.x + "\n";
-			cfg += "goal.axis.y = " + goalQ.y + "\n";
-			cfg += "goal.axis.z = " + goalQ.z + "\n";
-			cfg += "goal.theta = " + goalQ.w + "\n";
-
-			cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
-			cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
-			cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
-			cfg += "volume.max.x = " + $("[name='volume.max.x']").val() + "\n";
-			cfg += "volume.max.y = " + $("[name='volume.max.y']").val() + "\n";
-			cfg += "volume.max.z = " + $("[name='volume.max.z']").val() + "\n";
-
-			cfg += "\n";
-			cfg += "[benchmark]\n";
-			cfg += "time_limit = " + $("[name='time_limit']").val() + "\n";
-			cfg += "mem_limit = " + $("[name='mem_limit']").val() + "\n";
-			cfg += "run_count = " + $("[name='run_count']").val() + "\n";
-
-			cfg += "\n";
-			cfg += "[planner]\n";
-			cfg += getBenchmarkingPlanners();
-
-			var blob = new Blob([cfg], {type: "octet/stream"});
-			var cfgName = $("[name='name']").val() + ".cfg";
-			downloadFile(blob, cfgName);
-	} else {
-		alert("Please enter values for the indicated fields.");
+	var cfg = getConfigText();
+	if (cfg != null) {
+		var blob = new Blob([cfg], {type: "octet/stream"});
+		var cfgName = $("[name='name']").val() + ".cfg";
+		downloadFile(blob, cfgName);
 	}
 }
 

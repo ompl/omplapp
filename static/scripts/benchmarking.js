@@ -32,12 +32,9 @@ function createDefaultPlannerEntry () {
 	var numParams = Object.keys(params).length + 1;
 
 	var planner = "<table class='table planner-table table-condensed' id='" + plannerCounter + "'>";
-	// planner += "<a class='remove'><span class='glyphicon glyphicon-remove'></a>";
-	// planner += "<caption class='planner-name'>" + name.split(".")[2];
-	// planner += "</caption>";
 
 	planner += "<tr><th>" + name.split(".")[2] + "</th>";
-	planner += "<th><a class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
+	planner += "<th><a title='Remove planner' class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
 	plannerCounter += 1;
 
 	for (var param in params) {
@@ -67,7 +64,7 @@ function addPlanner (name) {
 	var planner = "<table class='table planner-table table-condensed' id='" + plannerCounter + "'>";
 
 	planner += "<tr><th>" + name + "</th>";
-	planner += "<th><a class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
+	planner += "<th><a title='Remove planner' class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
 	plannerCounter += 1;
 
 	for (var key in params) {
@@ -113,15 +110,20 @@ function getBenchmarkingPlanners() {
 
 		benchPlanners += modifiedPlannerName + "." + inputs[i].id + "=" + inputs[i].value + "\n";
 	}
-	console.log(benchPlanners);
+
 	return benchPlanners;
 }
 
 
 function startBenchmarking() {
+	var form = new FormData();
+	form.append('cfg', getConfigText());
+	form.append('filename', $("[name='name']").val());
+
 	$.ajax({
-		url: "omplapp/benchmark",
-		type: "GET",
+		url: "/omplapp/benchmark",
+		type: "POST",
+		data: form,
 		success: function(data){
 			console.log(data);
 		},
