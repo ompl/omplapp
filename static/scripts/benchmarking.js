@@ -115,26 +115,32 @@ function getBenchmarkingPlanners() {
 
 
 function startBenchmarking() {
-	var form = new FormData();
-	form.append('cfg', getConfigText());
-	form.append('filename', $("[name='name']").val());
-	form.append('email', $("#notificationEmail").val());
 
-	$.ajax({
-		url: "/omplapp/benchmark",
-		type: "POST",
-		data: form,
-		success: function(data){
-			alert("The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
-		},
-		error: function(data) {
-			alert("There was a problem submitting the benchmark job. Try again.");
-			console.log(data);
-		},
-		cache: false,
-		contentType: false,
-		processData: false
-	});
+	if (getBenchmarkingPlanners() == "") {
+		alert("Please add one or more planners to benchmark.");
+	} else {
+		var form = new FormData();
+		form.append('cfg', getConfigText());
+		form.append('filename', $("[name='name']").val());
+		form.append('email', $("#notificationEmail").val());
+
+		$.ajax({
+			url: "/omplapp/benchmark",
+			type: "POST",
+			data: form,
+			success: function(data){
+				alert("The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
+			},
+			error: function(data) {
+				alert("There was a problem submitting the benchmark job. Try again.");
+				console.log(data);
+			},
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+	}
+
 }
 
 
