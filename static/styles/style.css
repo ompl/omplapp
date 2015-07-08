@@ -1,5 +1,4 @@
 a {
-	font-weight: 200;
 }
 a.remove {
 	color: #FB9F76;
@@ -14,6 +13,7 @@ a.remove:active {
 }
 a.tablink {
 	color: #ddd;
+	font-weight: 200;
 }
 a.tablink:active {
 	color: #fff;
@@ -73,6 +73,10 @@ button:active {
 }
 button.active {
 	background-color: #e4f3fe;
+}
+
+p {
+	line-height: 1.5;
 }
 
 pre {
