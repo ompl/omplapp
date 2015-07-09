@@ -45,7 +45,7 @@
 									<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
 								</div>
 							</form>
-							<center><button onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
+							<center><button class="normal" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
 							<br>
 							<div class="form-group" id="customProblem">
 								<label>Configuration File</label>
@@ -158,7 +158,7 @@
 						</tbody>
 					</table>
 					<center>
-						<button class="button" onclick="estimateBounds()">Estimate Bounding Box</button>
+						<button class="button normal" onclick="estimateBounds()">Estimate Bounding Box</button>
 					</center>
 				</div>
 				<!-- End Bounds Tab -->
@@ -214,14 +214,14 @@
 							</tbody>
 						</table>
 						<center>
-							<button type="button" onclick="solve()">Solve</button>
-							<button type="button" onclick="clearAllFields()">Clear</button>
+							<button class="normal" type="button" onclick="solve()">Solve</button>
+							<button class="normal" type="button" onclick="clearAllFields()">Clear</button>
 						</center>
 
 						<div class="collapse" id="pathButtons">
 							<center>
-								<button type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
-								<button type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
+								<button class="normal" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
+								<button class="normal" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
 							</center>
 							<br>
 							<label for="animationSpeed">Animation Speed</label>
@@ -249,11 +249,11 @@
 							</tr>
 							<tr>
 								<td>Download Configuration File</td>
-								<td colspan="2"><button class="small-button" onclick="downloadConfig()" id="downloadConfigButton">&#11015;</button></td>
+								<td colspan="2"><a class="iconlink" onclick="downloadConfig()" id="downloadConfigButton">&#11015;</a></td>
 							</tr>
 							<tr>
 								<td>Download Solution Path</td>
-								<td colspan="2"><button class="small-button" onclick="downloadPath()" id="downloadConfigButton">&#11015;</button></td>
+								<td colspan="2"><a class="iconlink" onclick="downloadPath()" id="downloadConfigButton">&#11015;</a></td>
 							</tr>
 						</tbody>
 					</table>

@@ -4,6 +4,7 @@ var benchmarkPlanners = {};
 var firstTime = true;
 var plannerCounter = 0;
 
+
 /**
  * Loads benchmarking components.
  * TODO: Should probably move all benchmarking related code to another file.
@@ -13,6 +14,7 @@ var plannerCounter = 0;
  */
 function initializeBenchmarking() {
 
+
 	// Load the HTML for the configuration settings
 	$("#benchmarking").load("omplapp/components/benchmarking", function () {
 			$("#benchmarking-page").click(function() {
@@ -21,6 +23,7 @@ function initializeBenchmarking() {
 					firstTime = false;
 				}
 			});
+
 	});
 }
 
@@ -34,7 +37,7 @@ function createDefaultPlannerEntry () {
 	var planner = "<table class='table planner-table table-condensed' id='" + plannerCounter + "'>";
 
 	planner += "<tr><th>" + name.split(".")[2] + "</th>";
-	planner += "<th><a title='Remove planner' class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
+	planner += "<th><a title='Remove planner' data-toggle='tooltip' data-placement='right' class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
 	plannerCounter += 1;
 
 	for (var param in params) {
@@ -45,6 +48,7 @@ function createDefaultPlannerEntry () {
 
 	planner += "</table>";
 	$('#planner-tables').append(planner);
+	$('[data-toggle="tooltip"]').tooltip();
 }
 
 
@@ -63,7 +67,7 @@ function addPlanner (name) {
 	var planner = "<table class='table planner-table table-condensed' id='" + plannerCounter + "'>";
 
 	planner += "<tr><th>" + name + "</th>";
-	planner += "<th><a title='Remove planner' class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
+	planner += "<th><a title='Remove planner' data-toggle='tooltip' data-placement='right' class='remove' onclick='removePlanner(" + plannerCounter  + ")'><span class='glyphicon glyphicon-remove'></a></th></tr>";
 	plannerCounter += 1;
 
 	for (var key in params) {
@@ -76,6 +80,7 @@ function addPlanner (name) {
 
 	planner += "</table>";
 	$('#planner-tables').append(planner);
+	$('[data-toggle="tooltip"]').tooltip();
 
 }
 
@@ -117,7 +122,7 @@ function getBenchmarkingPlanners() {
 function startBenchmarking() {
 
 	if (getBenchmarkingPlanners() == "") {
-		alert("Please add one or more planners to benchmark.");
+		showAlert("warning", "Please add one or more planners to benchmark.");
 	} else {
 		var form = new FormData();
 		form.append('cfg', getConfigText());
@@ -129,11 +134,12 @@ function startBenchmarking() {
 			type: "POST",
 			data: form,
 			success: function(data){
-				alert("The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
+				showAlert("success", "The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
 			},
 			error: function(data) {
-				alert("There was a problem submitting the benchmark job. Try again.");
 				console.log(data);
+
+				showAlert("error", "There was a problem submitting the benchmark job. Try again.");
 			},
 			cache: false,
 			contentType: false,
@@ -142,6 +148,5 @@ function startBenchmarking() {
 	}
 
 }
-
 
 

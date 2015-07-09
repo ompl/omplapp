@@ -1,5 +1,3 @@
-a {
-}
 a.remove {
 	color: #FB9F76;
 }
@@ -15,11 +13,15 @@ a.tablink {
 	color: #ddd;
 	font-weight: 200;
 }
-a.tablink:active {
-	color: #fff;
-}
 a.tablink:hover {
 	color: #fff;
+}
+a.iconlink {
+	color: #4bb467;
+	text-decoration: none;
+}
+a.iconlink:hover {
+	color: #63BE7B;
 }
 
 .glyphicon-remove {
@@ -47,7 +49,7 @@ hr {
 	background-color: #080808;
 }
 
-button {
+button.normal {
 	border: 2px solid #022037;
 	border-radius: 4px;
 	background-color: #fff;
@@ -59,19 +61,19 @@ button {
 	vertical-align: middle;
 	min-width: 140px;
 }
-button:hover {
+button.normal:hover {
 	background-color: #e4f3fe;
 }
-button:focus {
+button.normal:focus {
 }
-button:disabled {
+button.normal:disabled {
 	border: 2px solid #ddd;
 	background-color: #eee;
 }
-button:active {
+button.normal:active {
 	background-color: #c3e4fd;
 }
-button.active {
+button.normal.active {
 	background-color: #e4f3fe;
 }
 
@@ -106,6 +108,7 @@ pre {
 }
 .dropdown-link:hover {
 	color: #022037 !important;
+	cursor: pointer;
 }
 .dropdown-link:active {
 	color: #ddd !important;
