@@ -24,6 +24,8 @@ from ompl import geometric as og
 from ompl import control as oc
 from ompl import app as oa
 
+import helpers
+
 # Location of .dae files
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
 PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
@@ -303,13 +305,15 @@ def benchmark(name, cfg_loc, user_email):
 	cfg_loc - the location of the .cfg file to be benchmarked
 	"""
 
+	db_id = helpers.rand_num_as_str(10)
+
 	os.system("ompl_benchmark " + cfg_loc + ".cfg")
-	os.system("python ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + name + ".db")
+	os.system("python ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + db_id + ".db")
 	db = open("static/problem_files/" + name + ".db", 'r')
-	send_email(name, db, user_email)
+	send_email(name, db, db_id, user_email)
 
 
-def send_email(name, db, user_email):
+def send_email(name, db, db_id, user_email):
 	import smtplib
 	from os.path import basename
 	from email.mime.application import MIMEApplication
@@ -330,8 +334,9 @@ def send_email(name, db, user_email):
 	msg['To'] = user_email
 
 	msg_body = "OMPL Web\n\n"
-	msg_body += "Benchmarking for problem '" + name + "' is complete. "
-	msg_body += "The results database can be uploaded to plannerarena.org under the 'Change Database' tab."
+	msg_body += "Benchmarking for problem '" + name + "' is complete.\n\n"
+	msg_body += "View the results at: http://127.0.0.1:4290/?id=" + db_id + "\n\n"
+	msg_body += "The results database has also been attached to this email."
 	msg.attach(MIMEText(msg_body))
 
 	attachment = MIMEApplication(db.read())

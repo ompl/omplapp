@@ -122,7 +122,7 @@ function getBenchmarkingPlanners() {
 function startBenchmarking() {
 
 	if (getBenchmarkingPlanners() == "") {
-		showAlert("warning", "Please add one or more planners to benchmark.");
+		showAlert("benchmark", "warning", "Please add one or more planners to benchmark.");
 	} else {
 		var form = new FormData();
 		form.append('cfg', getConfigText());
@@ -134,12 +134,12 @@ function startBenchmarking() {
 			type: "POST",
 			data: form,
 			success: function(data){
-				showAlert("success", "The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
+				showAlert("benchmark", "success", "The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
 			},
 			error: function(data) {
 				console.log(data);
 
-				showAlert("error", "There was a problem submitting the benchmark job. Try again.");
+				showAlert("benchmark", "error", "There was a problem submitting the benchmark job. Try again.");
 			},
 			cache: false,
 			contentType: false,

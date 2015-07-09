@@ -1,5 +1,5 @@
 
-function showAlert(type, msg) {
+function showAlert(page, type, msg) {
 	var alert = "<div class='alert alert-dismissible";
 	alert += " alert-" + type;
 	alert += "' role='alert'>";
@@ -9,5 +9,7 @@ function showAlert(type, msg) {
 	alert += msg
 
 	alert += "</div>";
-	$("#alerts-area").html(alert);
+
+	var area = "#" + page + "-alerts";
+	$(area).html(alert);
 }

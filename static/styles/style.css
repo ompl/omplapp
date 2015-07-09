@@ -82,7 +82,7 @@ p {
 }
 
 pre {
-	max-height: 225px;
+	max-height: 300px;
 }
 
 
@@ -167,7 +167,7 @@ pre {
 }
 
 .planner-tables{
-	padding: 0px 15px;
+	padding-left: 15px;
 }
 
 .icon-bar {
@@ -226,7 +226,8 @@ td.param-value {
 .visualization {
 	outline: 2px solid #080808;
 	height: 75%;
-	margin: 0px 15px;
+	margin-left: 15px;
+	margin-right: 2px;
 }
 
 .col-md-4 {
