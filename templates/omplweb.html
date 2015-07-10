@@ -11,6 +11,7 @@
 		<script src="{{ url_for('static', filename='scripts/libs/three.min.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/libs/TrackballControls.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/libs/ColladaLoader.js') }}"></script>
+		<script src="{{ url_for('static', filename='scripts/libs/mousetrap.min.js') }}"></script>
 
 		<!-- Problem Configuration -->
 		<script src="{{ url_for('static', filename='scripts/problem_config.js') }}"></script>
@@ -193,6 +194,35 @@
 									The number of times to repeat the
 									experiment for each planner.
 								</td>
+							</tr>
+						</table>
+						<br>
+
+						<h2>Keyboard Shortcuts</h2>
+						<table class="table">
+							<tr>
+								<td>Open configure problem page</td>
+								<td>ctrl + c</td>
+							</tr>
+							<tr>
+								<td>Open benchmakring page</td>
+								<td>ctrl + b</td>
+							</tr>
+							<tr>
+								<td>Solve problem</td>
+								<td>ctrl + s</td>
+							<tr>
+							<tr>
+								<td>Select custom environment</td>
+								<td>ctrl + e</td>
+							</tr>
+							<tr>
+								<td>Select custom robot</td>
+								<td>ctrl + r</td>
+							</tr>
+								<td>Upload custom configuration file</td>
+								<td>ctrl + o</td>
+							</tr>
 							</tr>
 						</table>
 					</div>

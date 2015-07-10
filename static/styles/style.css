@@ -18,10 +18,18 @@ a.tablink:hover {
 }
 a.iconlink {
 	color: #4bb467;
+	padding: 2px 5px;
 	text-decoration: none;
 }
 a.iconlink:hover {
+	border-radius: 3px;
+	background-color: #eee;
 	color: #63BE7B;
+	cursor: pointer;
+}
+a.iconlink:active {
+	border-radius: 3px;
+	background-color: #ccc;
 }
 
 .glyphicon-remove {
@@ -99,9 +107,8 @@ pre {
 }
 
 .dropdown-menu {
-	height: 300px;
+	height: 350px;
 	overflow: auto;
-	margin-top: -5px;
 }
 .dropdown-link{
 	color: #022037 !important;

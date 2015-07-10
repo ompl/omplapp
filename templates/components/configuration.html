@@ -8,10 +8,10 @@
 			<!-- Nav tabs -->
 			<ul class="nav tabs" role="tablist">
 				<li role="presentation"><a class="tablink" href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
-				<li role="presentation"><a class="tablink" href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab">Bounds</a></li>
-				<li role="presentation"><a class="tablink" href="#planner" aria-controls="planner" role="tab" data-toggle="tab">Planner</a></li>
-				<li role="presentation"><a class="tablink" href="#solve" aria-controls="solve" role="tab" data-toggle="tab">Solve</a></li>
-				<li role="presentation"><a class="tablink" href="#settings" aria-controls="settings" role="tab" data-toggle="tab"><div id="settingsIcon"><span class="glyphicon glyphicon-cog"></span></div></a></li>
+				<li role="presentation"><a class="tablink" href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab" id="bounds-tab">Bounds</a></li>
+				<li role="presentation"><a class="tablink" href="#planner" aria-controls="planner" role="tab" data-toggle="tab" id="planner-tab">Planner</a></li>
+				<li role="presentation"><a class="tablink" href="#solve" aria-controls="solve" role="tab" data-toggle="tab" id="solve-tab">Solve</a></li>
+				<li role="presentation"><a class="tablink" href="#settings" aria-controls="settings" role="tab" data-toggle="tab" id="settings-tab"><div id="settingsIcon"><span class="glyphicon glyphicon-cog"></span></div></a></li>
 			</ul>
 
 			<!-- Tab panes -->
@@ -44,7 +44,7 @@
 									<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
 								</div>
 							</form>
-							<center><button class="normal" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
+							<center><button class="btn btn-default" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
 							<br>
 							<div class="form-group" id="customProblem">
 								<label>Configuration File</label>
@@ -157,7 +157,7 @@
 						</tbody>
 					</table>
 					<center>
-						<button class="button normal" onclick="estimateBounds()">Estimate Bounding Box</button>
+						<button class="button btn btn-default" onclick="estimateBounds()">Estimate Bounding Box</button>
 					</center>
 				</div>
 				<!-- End Bounds Tab -->
@@ -213,14 +213,14 @@
 							</tbody>
 						</table>
 						<center>
-							<button class="normal" type="button" onclick="solve()">Solve</button>
-							<button class="normal" type="button" onclick="clearAllFields()">Clear</button>
+							<button class="btn btn-default" type="button" onclick="solve()" id="solve-button">Solve</button>
+							<button class="btn btn-default" type="button" onclick="clearAllFields()">Clear</button>
 						</center>
-
+						<br>
 						<div class="collapse" id="pathButtons">
 							<center>
-								<button class="normal" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
-								<button class="normal" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
+								<button class="btn btn-default" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
+								<button class="btn btn-default" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
 							</center>
 							<br>
 							<label for="animationSpeed">Animation Speed</label>
