@@ -1,9 +1,12 @@
 /* Global Variables */
 var planners = null;
 var results = "";
+var intervalID;
 var solutionData;
 var animateRobot;
 var animationSpeed;
+var env_path;
+var robot_path;
 
 
 // Load the configuration page by default
@@ -152,6 +155,8 @@ function loadRemoteProblem(problem_name) {
 	var url = "omplapp/problem/" + problem_name;
 	$.get(url, function(data) {
 		var data = JSON.parse(data);
+		env_path = data['env_path'];
+		robot_path = data['robot_path'];
 
 		var startQ = axisAngleToQuaternion(data['start.axis.x'],
 			data['start.axis.y'], data['start.axis.z'], data['start.theta']);
@@ -222,7 +227,11 @@ function uploadModels() {
 			data: formData,
 			success: function(data){
 				data = JSON.parse(data);
+				env_path = data['env_path'];
+				robot_path = data['robot_path'];
+
 				drawModels(data['env_loc'], data['robot_loc']);
+
 				$('#uploadModelsButton').addClass('disabled');
 			},
 			error: function(data) {
@@ -497,7 +506,6 @@ function solve(){
 	var validConfig = validateFields();
 	if (validConfig == true) {
 		var html = "";
-		// html += "<h3>Results</h3>"
 
 		// Bring up the loading screen
 		$.blockUI({
@@ -513,31 +521,36 @@ function solve(){
 		var startQ = start_robot.quaternion;
 		var goalQ = goal_robot.quaternion;
 
-		// Read the input fields
-		var problemData = {}
-		problemData['name'] = $("[name='name']").val();
-		problemData['start.x'] = $("[name='start.x']").val();
-		problemData['start.y'] = $("[name='start.y']").val();
-		problemData['start.z'] = $("[name='start.z']").val();
-		problemData['start.q.x'] = startQ.x;
-		problemData['start.q.y'] = startQ.y;
-		problemData['start.q.z'] = startQ.z;
-		problemData['start.q.w'] = startQ.w;
-		problemData['goal.x'] = $("[name='goal.x']").val();
-		problemData['goal.y'] = $("[name='goal.y']").val();
-		problemData['goal.z'] = $("[name='goal.z']").val();
-		problemData['goal.q.x'] = goalQ.x;
-		problemData['goal.q.y'] = goalQ.y;
-		problemData['goal.q.z'] = goalQ.z;
-		problemData['goal.q.w'] = goalQ.w;
-		problemData['volume.min.x'] = $("[name='volume.min.x']").val();
-		problemData['volume.min.y'] = $("[name='volume.min.y']").val();
-		problemData['volume.min.z'] = $("[name='volume.min.z']").val();
-		problemData['volume.max.x'] = $("[name='volume.max.x']").val();
-		problemData['volume.max.y'] = $("[name='volume.max.y']").val();
-		problemData['volume.max.z'] = $("[name='volume.max.z']").val();
-		problemData['solve_time'] = $("[name='solve_time']").val();
-		problemData['planner'] = $("[name='planners']").val();
+		{
+			// Read the input fields
+			var problemData = {}
+			problemData['name'] = $("[name='name']").val();
+			problemData['start.x'] = $("[name='start.x']").val();
+			problemData['start.y'] = $("[name='start.y']").val();
+			problemData['start.z'] = $("[name='start.z']").val();
+			problemData['start.q.x'] = startQ.x;
+			problemData['start.q.y'] = startQ.y;
+			problemData['start.q.z'] = startQ.z;
+			problemData['start.q.w'] = startQ.w;
+			problemData['goal.x'] = $("[name='goal.x']").val();
+			problemData['goal.y'] = $("[name='goal.y']").val();
+			problemData['goal.z'] = $("[name='goal.z']").val();
+			problemData['goal.q.x'] = goalQ.x;
+			problemData['goal.q.y'] = goalQ.y;
+			problemData['goal.q.z'] = goalQ.z;
+			problemData['goal.q.w'] = goalQ.w;
+			problemData['volume.min.x'] = $("[name='volume.min.x']").val();
+			problemData['volume.min.y'] = $("[name='volume.min.y']").val();
+			problemData['volume.min.z'] = $("[name='volume.min.z']").val();
+			problemData['volume.max.x'] = $("[name='volume.max.x']").val();
+			problemData['volume.max.y'] = $("[name='volume.max.y']").val();
+			problemData['volume.max.z'] = $("[name='volume.max.z']").val();
+			problemData['solve_time'] = $("[name='solve_time']").val();
+			problemData['planner'] = $("[name='planners']").val();
+
+			problemData['env_path'] = env_path;
+			problemData['robot_path'] = robot_path;
+		}
 
 		// Get the params for the specific planner
 		paramData = {};
@@ -557,37 +570,9 @@ function solve(){
 			type: "POST",
 			data: problemJSON,
 			success: function(data){
-				solutionData = JSON.parse(data);
-
-
-				if (solutionData.solved == "true") {
-					// Draw the solution path
-					visualizePath(solutionData);
-					animationSpeed = 1000 - $('#animationSpeed').val();
-					$('#pathButtons').collapse('show');
-					showAlert("configure", "success", "Solution found!");
-					// html += "<br><h4><font color='#329B71'>Found solution.</font></h4>";
-				} else {
-					showAlert("configure", "info", "No solution found. Try solving again.");
-					// html += "<font color='#cd535a'>No solution found. To try again, click the solve button.</font><br><br>";
-				}
-
-				html += "<br><br><pre>"
-				html += solutionData.name;
-				html += "<br>";
-				html += solutionData.messages;
-				html += "<br><br>"
-
-				// Uncomment to display list of path states
-				// html += solutionData.path;
-
-				html += "</pre>";
-
-				results = html;
-
-				$('#results').html(html);
-
-				$.unblockUI();
+				var taskID = String(data);
+				console.log("Server successfully recieved solve request. Given task ID: " + taskID);
+				waitForSolution(data);
 			},
 			error: function(data) {
 				$.unblockUI();
@@ -604,6 +589,74 @@ function solve(){
 		// Invalid fields have been highlighted by 'validateField()'.
 		showAlert("configure", "warning", "Please enter values for the indicated fields.");
 	}
+}
+
+function waitForSolution(taskID) {
+	var completed = false;
+	var pollURL = '/omplapp/poll/' + taskID;
+
+	intervalID = window.setInterval(function() {
+
+		$.ajax({
+			url: pollURL,
+			type: 'POST',
+			data: taskID,
+			success: function (data, textStatus, jqXHR) {
+				if (jqXHR.status == 200) {
+					clearInterval(intervalID);
+					displaySolution(data);
+				} else {
+					console.log(data, textStatus);
+				}
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				$.unblockUI();
+				html = "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
+				$('#results').html(html);
+
+				console.log('Solve failed, server responded with an error.', errorThrown);
+			}
+		});
+
+	}, 1000);
+}
+
+
+function displaySolution(data) {
+	solutionData = JSON.parse(data);
+	console.log(solutionData);
+
+	var html = "";
+
+	if (solutionData.solved == "true") {
+		// Draw the solution path
+		visualizePath(solutionData);
+		animationSpeed = 1000 - $('#animationSpeed').val();
+		$('#pathButtons').collapse('show');
+		showAlert("configure", "success", "Solution found!");
+		// html += "<br><h4><font color='#329B71'>Found solution.</font></h4>";
+	} else {
+		showAlert("configure", "info", "No solution found. Try solving again.");
+		// html += "<font color='#cd535a'>No solution found. To try again, click the solve button.</font><br><br>";
+	}
+
+	html += "<br><br><pre>"
+	html += solutionData.name;
+	html += "<br>";
+	html += solutionData.messages;
+	html += "<br><br>"
+
+	// Uncomment to display list of path states
+	// html += solutionData.path;
+
+	html += "</pre>";
+
+	results = html;
+
+	$('#results').html(html);
+
+	$.unblockUI();
+
 }
 
 
@@ -679,14 +732,14 @@ function downloadPath() {
  * @return 	None
  */
 function downloadFile(blob, name) {
-		var url = window.URL.createObjectURL(blob);
-		var a = document.createElement("a");
-		document.body.appendChild(a);
-		a.style = "display: none";
-		a.href = url;
-		a.download = name;
-		a.click();
-		window.URL.revokeObjectURL(url);
+	var url = window.URL.createObjectURL(blob);
+	var a = document.createElement("a");
+	document.body.appendChild(a);
+	a.style = "display: none";
+	a.href = url;
+	a.download = name;
+	a.click();
+	window.URL.revokeObjectURL(url);
 }
 
 

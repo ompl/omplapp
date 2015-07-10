@@ -17,6 +17,7 @@ from flask import Flask
 from werkzeug import secure_filename
 
 from celery import Celery
+from celery.result import AsyncResult
 
 import ompl
 from ompl import base as ob
@@ -25,6 +26,7 @@ from ompl import control as oc
 from ompl import app as oa
 
 import helpers
+from helpers import LogOutputHandler as Logger
 
 # Location of .dae files
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
@@ -42,53 +44,7 @@ celery.conf.update(app.config)
 
 global_vars = {}
 
-
-class LogOutputHandler(object):
-	"""
-	Object for handling various levels of logging.
-	Logging levels:
-		0 = Silent (probablly shouldn't use this)
-		1 = Errors only
-		2 = Level 0 and warnings
-		3 = Levels 1, 2 and debugging
-		4 = Levels 1, 2, 3 and info
-	"""
-
-	def __init__(self, log_level):
-		# Specifies the level of logging should be printed to the console
-		self.log_level = log_level
-
-		self.messages = "Messages: \n"
-
-	def error(self, text):
-		if self.log_level > 0:
-			print("# Error:    " + str(text))
-
-	def warn(self, text):
-		if self.log_level > 1:
-			print("# Warning:    " + str(text))
-
-	def debug(self, text):
-		if self.log_level > 2:
-			print("# Debug:    " + str(text))
-
-	def info(self, text):
-		# Store the message
-		self.messages += str(text)
-
-		if self.log_level > 3:
-			print ("# Info:    " + str(text))
-
-	def getMessages(self):
-		# Info messages are stored and can be retrieved via this function to
-		# send to the client
-		return self.messages
-
-	def clearMessages(self):
-		# Clear the stored messages, this should be called after sending to client
-		self.messages = "Messages: \n"
-
-log = LogOutputHandler(3)
+log = Logger(3)
 
 
 def create_planners():
@@ -121,7 +77,6 @@ def allowed_file(filename):
 	return False
 
 
-
 def parse_cfg(cfg_path):
 	"""
 	Parses the configuration file for pre-defined problems and returns a
@@ -137,6 +92,15 @@ def parse_cfg(cfg_path):
 
 	return config._sections['problem']
 
+
+def save_cfg_file(name, text):
+	file_loc = os.path.join(app.config['PROBLEMS_FOLDER'], name);
+
+	f = open(file_loc + ".cfg", 'w')
+	f.write(text)
+	f.close()
+
+	return file_loc
 
 
 def format_solution(path, solved):
@@ -175,8 +139,8 @@ def format_solution(path, solved):
 
 	return solution
 
-
-def solve(problem):
+@celery.task()
+def solve(problem, flask_request_form):
 	"""
 	Given an instance of the Problem class, containing the problem configuration
 	data, solves the motion planning problem and returns either the solution
@@ -202,8 +166,8 @@ def solve(problem):
 	ompl_setup = oa.SE3RigidBodyPlanning()
 	ompl_setup.getGeometricComponentStateSpace().setBounds(bounds)
 
-	ompl_setup.setEnvironmentMesh(str(global_vars['env_path']))
-	ompl_setup.setRobotMesh(str(global_vars['robot_path']))
+	ompl_setup.setEnvironmentMesh(str(problem['env_path']))
+	ompl_setup.setRobotMesh(str(problem['robot_path']))
 
 	# Set the start state
 	start = ob.State(space)
@@ -241,7 +205,7 @@ def solve(problem):
 	for param in params:
 		param = param.split(" ")[0]
 		# See if a value for this param is provided by the client
-		if param in flask.request.form:
+		if param in flask_request_form:
 			# If value exists, set the param to the value:w
 			planner.params().setParam(param, str(problem['planner_params'][param]))
 
@@ -289,13 +253,12 @@ def solve(problem):
 		log.info("No valid path was found with the provided configuration.\n")
 		solution = format_solution(None, False)
 
-	solution['name'] = problem['name']
+	solution['name'] = str(problem['name'])
 	solution['planner'] = ompl_setup.getPlanner().getName()
 
-	return solution
+	return json.dumps(solution)
 
 
-########## Celery ##########
 @celery.task()
 def benchmark(name, cfg_loc, user_email):
 	"""
@@ -395,11 +358,24 @@ def upload():
 
 	problem = flask.request.get_json(True, False, True)
 
-	log.debug("Solving problem...")
-	solution = solve(problem)
-	log.debug("Problem solved")
+	solve_task = solve.delay(problem, flask.request.form)
+	log.debug("Started solving task with id: " + solve_task.task_id)
 
-	return json.dumps(solution)
+	return str(solve_task.task_id)
+
+@app.route('/omplapp/poll/<task_id>', methods=['POST'])
+def poll(task_id):
+	"""docstring for poll"""
+
+	log.info("Recieved poll for task: " + task_id)
+
+	result = solve.AsyncResult(task_id)
+
+	if result.ready():
+		return str(result.get()), 200
+	else :
+		return "Result for task id: " + task_id + " isn't ready yet.", 202
+
 
 @app.route("/omplapp/upload_models", methods=['POST'])
 def upload_models():
@@ -421,13 +397,14 @@ def upload_models():
 			# If valid files, save them to the server
 			robot_filename = secure_filename(robotFile.filename)
 			robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
-			global_vars['robot_path'] = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
+
+			filepaths['robot_path'] = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
+			filepaths['robot_loc'] = "static/uploads/" + robot_filename
 
 			env_filename = secure_filename(envFile.filename)
 			envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
-			global_vars['env_path'] = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
 
-			filepaths['robot_loc'] = "static/uploads/" + robot_filename
+			filepaths['env_path'] = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
 			filepaths['env_loc'] = "static/uploads/" + env_filename
 
 		else:
@@ -447,25 +424,18 @@ def request_models(problem_name):
 	env_filename = problem_name + "_env.dae"
 	cfg_filename = problem_name + ".cfg"
 
-	global_vars['robot_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
-	global_vars['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
 
 	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
 	cfg_data = parse_cfg(cfg_file)
 	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
 	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
 
+	cfg_data['robot_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
+	cfg_data['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
+
 	return json.dumps(cfg_data)
 
 
-def save_cfg_file(name, text):
-	file_loc = os.path.join(app.config['PROBLEMS_FOLDER'], name);
-
-	f = open(file_loc + ".cfg", 'w')
-	f.write(text)
-	f.close()
-
-	return file_loc
 
 
 # Benchmarking
