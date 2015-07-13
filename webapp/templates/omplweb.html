@@ -13,13 +13,12 @@
 		<script src="{{ url_for('static', filename='scripts/libs/ColladaLoader.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/libs/mousetrap.min.js') }}"></script>
 
-		<!-- Problem Configuration -->
-		<script src="{{ url_for('static', filename='scripts/problem_config.js') }}"></script>
+		<!-- Application Scripts -->
+		<script src="{{ url_for('static', filename='scripts/configuration.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
+		<script src="{{ url_for('static', filename='scripts/benchmarking.js') }}"></script>
 		<script src="{{ url_for('static', filename='scripts/helpers.js') }}"></script>
 
-		<!-- Benchmarking -->
-		<script src="{{ url_for('static', filename='scripts/benchmarking.js') }}"></script>
 	</head>
 
 	<body>
@@ -38,7 +37,7 @@
 					</div>
 					<div class="collapse navbar-collapse" id="navbar-collapse">
 						<ul class="nav tabs main-tabs" role="tablist">
-							<li role="presentation"><a class="tablink" href="#configure" aria-controls="configure" role="tab" data-toggle="tab" id="configure-problem-page">Configure Problem</a></li>
+							<li role="presentation"><a class="tablink" href="#configuration" aria-controls="configuration" role="tab" data-toggle="tab" id="configuration-page">Configure Problem</a></li>
 							<li role="presentation"><a class="tablink" href="#benchmarking" aria-controls="benchmarking" role="tab" data-toggle="tab" id="benchmarking-page">Benchmarking</a></li>
 							<li role="presentation"><a class="tablink" href="#about" aria-controls="about" role="tab" data-toggle="tab" id="about-page">About</a></li>
 						</ul>
@@ -49,7 +48,7 @@
 			<div class="main-content tab-content">
 
 				<!-- Configure Problem Page -->
-				<div role="tabpanel" class="tab-pane fade" id="configure">
+				<div role="tabpanel" class="tab-pane fade" id="configuration">
 					<!-- This gets filled in by initialize() -->
 				</div>
 
@@ -62,171 +61,8 @@
 
 				<!-- About Page -->
 				<div role="tabpanel" class="tab-pane fade" id="about">
-					<div class="container container-fluid" id="content">
-
-						<!-- <h2>About OMPL Web</h2> -->
-
-						<h2>Configuring a Problem</h2>
-						<br>
-						<h4><strong>Robot and Environment</strong></h4>
-						<p>
-							Before solving a motion planning problem, an
-							environment and robot must be configured. This can be
-							accomplished by either selecting a pre-configured
-							problem, or by uploading custom Collada (.dae) files. If a
-							custom problem is to be used, the user must enter
-							position and rotation information to set
-							up the environment. The bounding box for the problem
-							can be estimated by the application, or entered
-							manually by the user.
-						</p>
-						<h4><strong>Planner</strong></h4>
-						<p>
-							To solve the problem, a planner must also be
-							configured. The
-							<a href="http://ompl.kavrakilab.org/classompl_1_1geometric_1_1KPIECE1.html#gKPIECE1" target=none>
-							KPIECE</a> planner is selected by default,
-							but can be changed in the Planner tab. When a planner
-							is selected, its parameters will be set to their
-							default values, which can be altered by the user.
-						</p>
-						<h4><strong>Solving</strong></h4>
-						<p>
-							When the robot, environment, and planner have been
-							configured, the problem is ready to solve. The problem
-							can be named and a maximum time limit can be set.
-							Clicking solve will send the problem to be processed
-							and the results will be displayed when solving is
-							complete.
-						</p>
-						<br>
-
-						<h2>Visualization</h2>
-						<br>
-						<p>
-							When the robot and environment files have been
-							selected (either by picking a pre-configured
-							problem or uploading custom files), they will be
-							displayed in the visualization pane.
-						</p>
-						<p>
-							Once the problem has been solved, a green line is
-							displayed to indicate the solution path. The path
-							can be visualized either by animating a robot along
-							the path, or by viewing a static robot at each
-							point on the path.
-						</p>
-						<p>
-							The axis helper and bounding box can be toggled
-							on and off in the
-							<span class="glyphicon glyphicon-cog"></span> tab.
-						</p>
-						<div class="row">
-							<div class="col-md-6 ">
-								<table class="table">
-									<caption>Controls</caption>
-									<tr>
-										<td>Rotate</td>
-										<td>Left-click and drag</td>
-									</tr>
-									<tr>
-										<td>Pan</td>
-										<td>Right-click and drag</td>
-									</tr>
-									<tr>
-										<td>Zoom In/Out</td>
-										<td>Scroll Up/Down</td>
-									</tr>
-								</table>
-							</div>
-							<div class="col-md-6 ">
-								<table class="table">
-									<caption>Axis Helper</caption>
-									<tr>
-										<td>Red</td>
-										<td>X-Axis</td>
-									</tr>
-									<tr>
-										<td>Green</td>
-										<td>Y-Axis</td>
-									</tr>
-									<tr>
-										<td>Blue</td>
-										<td>Z-Axis</td>
-									</tr>
-								</table>
-							</div>
-						</div>
-						<br>
-
-						<h2>Benchmarking</h2>
-						<br>
-						<p>
-							The benchmarking functionality of OMPL Web allows a
-							user to repeatedly solve a problem <i>n</i> times with
-							multiple planners in order to compare performance.
-							On the Benchmarking page, the user
-							can add and configure the planners to be
-							benchmarked. Then, they can submit a job to the
-							server and be notified via email when the job
-							completes.
-						</p>
-
-						<table class="table">
-							<caption>Options</caption>
-							<tr>
-								<td>Time Limit</td>
-								<td>
-									The amount of time (seconds) for each plan
-									computation.
-								</td>
-							</tr>
-							<tr>
-								<td>Memory Limit</td>
-								<td>
-									The maximum amount of memory (MB) for each
-									planner.
-								</td>
-							</tr>
-							<tr>
-								<td>Run Count</td>
-								<td>
-									The number of times to repeat the
-									experiment for each planner.
-								</td>
-							</tr>
-						</table>
-						<br>
-
-						<h2>Keyboard Shortcuts</h2>
-						<table class="table">
-							<tr>
-								<td>Open configure problem page</td>
-								<td>ctrl + c</td>
-							</tr>
-							<tr>
-								<td>Open benchmakring page</td>
-								<td>ctrl + b</td>
-							</tr>
-							<tr>
-								<td>Solve problem</td>
-								<td>ctrl + s</td>
-							<tr>
-							<tr>
-								<td>Select custom environment</td>
-								<td>ctrl + e</td>
-							</tr>
-							<tr>
-								<td>Select custom robot</td>
-								<td>ctrl + r</td>
-							</tr>
-								<td>Upload custom configuration file</td>
-								<td>ctrl + o</td>
-							</tr>
-							</tr>
-						</table>
-					</div>
-				</div> <!-- End About Page -->
+					<!-- This gets filled in by initialize() -->
+				</div>
 
 			</div> <!-- End tab content -->
 

@@ -26,7 +26,7 @@ Mousetrap.bind('ctrl+b', function(e) {
 });
 
 Mousetrap.bind('ctrl+s', function(e) {
-	$("#configure-problem-page").click();
+	$("#configuration-page").click();
 	$("#solve-tab").click();
 	$("#solve-button").click();
 });

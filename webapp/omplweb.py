@@ -4,13 +4,21 @@ import sys
 import StringIO
 
 from math import cos, sin, pi
-
 from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
+
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
 	import ConfigParser
 except:
 	import configparser as ConfigParser
+
+import smtplib
+from os.path import basename
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
 
 import flask
 from flask import Flask
@@ -25,13 +33,14 @@ from ompl import geometric as og
 from ompl import control as oc
 from ompl import app as oa
 
+# Helper functions from helpers.py
 import helpers
-from helpers import LogOutputHandler as Logger
 
 # Location of .dae files
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
 PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
 
+# Configure Flask and Celery
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
@@ -40,11 +49,11 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
+
 ########## OMPL ##########
 
-global_vars = {}
-
-log = Logger(3)
+# Create logger
+log = helpers.LogOutputHandler(3)
 
 
 def create_planners():
@@ -94,6 +103,10 @@ def parse_cfg(cfg_path):
 
 
 def save_cfg_file(name, text):
+	"""
+	Saves a .cfg file intended for benchmarking
+	"""
+
 	file_loc = os.path.join(app.config['PROBLEMS_FOLDER'], name);
 
 	f = open(file_loc + ".cfg", 'w')
@@ -268,26 +281,32 @@ def benchmark(name, cfg_loc, user_email):
 	cfg_loc - the location of the .cfg file to be benchmarked
 	"""
 
+	# Create a random id for this benchmark job
 	db_id = helpers.rand_num_as_str(10)
 
+	# Run the benchmark, produces .log file
 	os.system("ompl_benchmark " + cfg_loc + ".cfg")
+
+	# Convert .log into database
 	os.system("python ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + db_id + ".db")
-	db = open("static/problem_files/" + name + ".db", 'r')
+
+	# Notify the user that the benchmarking job is complete
+	db = open("static/problem_files/" + db_id + ".db", 'r')
 	send_email(name, db, db_id, user_email)
 
 
 def send_email(name, db, db_id, user_email):
-	import smtplib
-	from os.path import basename
-	from email.mime.application import MIMEApplication
-	from email.mime.multipart import MIMEMultipart
-	from email.mime.base import MIMEBase
-	from email.mime.text import MIMEText
-	from email.utils import COMMASPACE, formatdate
+	"""
+	Notifies the user via email that their benchmark job is complete. Provides
+	a link to Planner Arena with results as well as an attached database file.
+	"""
 
+	# TEMPORARY: Get email password from file
 	passfile = open("pass", "r")
 	username = "prrb02@gmail.com"
 	password = passfile.read();
+
+	# Construct notification email
 	db_name = name + ".db"
 	subject = "OMPL Benchmarking Results"
 
@@ -302,10 +321,12 @@ def send_email(name, db, db_id, user_email):
 	msg_body += "The results database has also been attached to this email."
 	msg.attach(MIMEText(msg_body))
 
+	# Attach the database
 	attachment = MIMEApplication(db.read())
 	attachment.add_header('Content-Disposition', 'attachment', filename=db_name)
 	msg.attach(attachment)
 
+	# Send email
 	s = smtplib.SMTP('smtp.gmail.com:25')
 	s.starttls()
 	s.login(username, password)
@@ -315,7 +336,7 @@ def send_email(name, db, db_id, user_email):
 
 ########## Flask ##########
 
-# This section loads html
+# Page Loading 
 @app.route("/")
 def index():
 	return flask.redirect(flask.url_for('omplapp'))
@@ -336,8 +357,11 @@ def load_configuration():
 def load_benchmarking():
 	return flask.render_template("components/benchmarking.html")
 
+@app.route('/omplapp/components/about')
+def load_about():
+	return flask.render_template("components/about.html")
 
-# This section manages communication when solving a problem
+# Problem Configuration
 @app.route('/omplapp/planners')
 def planners():
 	planners = create_planners()
@@ -375,7 +399,6 @@ def poll(task_id):
 		return str(result.get()), 200
 	else :
 		return "Result for task id: " + task_id + " isn't ready yet.", 202
-
 
 @app.route("/omplapp/upload_models", methods=['POST'])
 def upload_models():
@@ -434,7 +457,6 @@ def request_models(problem_name):
 	cfg_data['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
 
 	return json.dumps(cfg_data)
-
 
 
 

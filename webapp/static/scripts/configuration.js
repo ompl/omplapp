@@ -11,8 +11,9 @@ var robot_path;
 
 // Load the configuration page by default
 $(document).ready(function() {
-	$('#configure-problem-page').click();
+	$('#configuration-page').click();
 	initialize();
+
 });
 
 
@@ -26,7 +27,7 @@ $(document).ready(function() {
  * @return 	None
  */
 function initialize() {
-	$("#configure").load("omplapp/components/configuration", function () {
+	$("#configuration").load("omplapp/components/configuration", function () {
 		// Get the visualization ready
 		initViz();
 
@@ -108,6 +109,9 @@ function initialize() {
 		});
 
 		initializeBenchmarking();
+
+		// Load the about page
+		$("#about").load("omplapp/components/about");
 	});
 }
 
@@ -138,7 +142,7 @@ function load_planner_params(planner_name) {
 		plannerConfigHTML += "</tbody></table></form>"
 		$("#plannerPane").html(plannerConfigHTML);
 	} else {
-		showAlert("configure", "error", "Planners are not loaded yet. Please wait and try again.");
+		showAlert("configuration", "error", "Planners are not loaded yet. Please wait and try again.");
 	}
 }
 
@@ -237,7 +241,7 @@ function uploadModels() {
 			error: function(data) {
 				console.log(data);
 
-				showAlert("configure", "error", "Unable to upload files.");
+				showAlert("configuration", "error", "Unable to upload files.");
 			},
 			cache: false,
 			contentType: false,
@@ -307,7 +311,7 @@ function loadConfig() {
 			}, 100);
 		}
 	} else {
-		showAlert("configure", "warning" , "Please select a valid configuration file.");
+		showAlert("configuration", "warning" , "Please select a valid configuration file.");
 	}
 }
 
@@ -397,7 +401,7 @@ function getConfigText() {
 
 		return cfg;
 	} else {
-		showAlert("configure", "warning", "Please enter values for the indicated fields.");
+		showAlert("configuration", "warning", "Please enter values for the indicated fields.");
 		return null;
 	}
 }
@@ -482,10 +486,10 @@ function validateFiles() {
 			return true;
 		} else {
 			alert('error;');
-			showAlert("configure", "warning", "Robot and environment files must be in the .dae format.");
+			showAlert("configuration", "warning", "Robot and environment files must be in the .dae format.");
 		}
 	} else {
-		showAlert("configure", "warning", "Please select both robot and environment files in the .dae format.");
+		showAlert("configuration", "warning", "Please select both robot and environment files in the .dae format.");
 	}
 
 	return false;
@@ -587,7 +591,7 @@ function solve(){
 		});
 	} else {
 		// Invalid fields have been highlighted by 'validateField()'.
-		showAlert("configure", "warning", "Please enter values for the indicated fields.");
+		showAlert("configuration", "warning", "Please enter values for the indicated fields.");
 	}
 }
 
@@ -633,10 +637,10 @@ function displaySolution(data) {
 		visualizePath(solutionData);
 		animationSpeed = 1000 - $('#animationSpeed').val();
 		$('#pathButtons').collapse('show');
-		showAlert("configure", "success", "Solution found!");
+		showAlert("configuration", "success", "Solution found!");
 		// html += "<br><h4><font color='#329B71'>Found solution.</font></h4>";
 	} else {
-		showAlert("configure", "info", "No solution found. Try solving again.");
+		showAlert("configuration", "info", "No solution found. Try solving again.");
 		// html += "<font color='#cd535a'>No solution found. To try again, click the solve button.</font><br><br>";
 	}
 
@@ -717,7 +721,7 @@ function downloadPath() {
 		// TODO: Check that solution exists first
 		downloadFile(blob, pathName);
 	} else {
-		showAlert("configure", "warning", "There is no valid solution path to download.");
+		showAlert("configuration", "warning", "There is no valid solution path to download.");
 	}
 }
 
