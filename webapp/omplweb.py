@@ -336,7 +336,7 @@ def send_email(name, db, db_id, user_email):
 
 ########## Flask ##########
 
-# Page Loading 
+# Page Loading
 @app.route("/")
 def index():
 	return flask.redirect(flask.url_for('omplapp'))
@@ -344,9 +344,8 @@ def index():
 @app.route("/omplapp", methods=['GET'])
 def omplapp():
 	"""
-	Returns the problem configuration page.
+	Application starting point, loads everything.
 	"""
-
 	return flask.render_template("omplweb.html")
 
 @app.route('/omplapp/components/configuration')
@@ -371,13 +370,9 @@ def planners():
 def upload():
 	"""
 	This function is invoked when the client clicks 'Solve' and submits the
-	problem configuration data.
-
-	1.	If custom problem, the robot and environment files are checked for
-		validity and downloaded to the server.
-	2.	Problem configuration data is parsed and loaded.
-	3.	The problem is solved and the output of the solve function (either a
-		solution path or an error) is returned.
+	problem configuration data. Problem configuration data is parsed and loaded
+	and the problem is solved by an asynchronous celery task. The task ID of
+	the task is returned.
 	"""
 
 	problem = flask.request.get_json(True, False, True)
@@ -389,7 +384,10 @@ def upload():
 
 @app.route('/omplapp/poll/<task_id>', methods=['POST'])
 def poll(task_id):
-	"""docstring for poll"""
+	"""
+	Checks if the task corresponding to the input ID has completed. If the
+	task is done solving, the solution is returned.
+	"""
 
 	log.info("Recieved poll for task: " + task_id)
 
@@ -473,8 +471,8 @@ def init_benchmark():
 
 	result = benchmark.delay(cfg_name, cfg_loc, user_email)
 
-
 	return "Saved file at: " + cfg_loc
+
 
 if __name__ == "__main__":
 	app.debug = True

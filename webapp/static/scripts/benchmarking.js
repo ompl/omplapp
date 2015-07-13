@@ -1,5 +1,5 @@
-/* Benchmarking */
 
+/* Global Variables */
 var benchmarkPlanners = {};
 var firstTime = true;
 var plannerCounter = 0;
@@ -7,29 +7,57 @@ var plannerCounter = 0;
 
 /**
  * Loads benchmarking components.
- * TODO: Should probably move all benchmarking related code to another file.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function initializeBenchmarking() {
-
-
 	// Load the HTML for the configuration settings
 	$("#benchmarking").load("omplapp/components/benchmarking", function () {
-			$("#benchmarking-page").click(function() {
-				if (firstTime) {
-					createDefaultPlannerEntry();
-					firstTime = false;
-				}
-			});
+
+		$("#benchmarking-page").click(function() {
+			if (firstTime) {
+				createDefaultPlannerEntry();
+				firstTime = false;
+			}
+		});
 
 	});
 }
 
 
+/**
+ * Retrieves information about the user configured planner from the configuration page.
+ *
+ * @param None
+ * @return {Object} A mapping of the planner info and parameters to their values
+ */
+function getConfiguredPlanner() {
+	var planner = {};
+	planner['name'] = $("[name='planners']").val();
+
+	// Get the params for the specific planner
+	paramData = {};
+	$('.planner_param').each(function () {
+		paramData[$(this).attr('name')] = $(this).val();
+	});
+
+	planner['parameters'] = paramData;
+
+	return planner;
+}
+
+
+/**
+ * Creates an default planner entry for benchmarking by retrieving the user
+ * configured planner from the configuration page.
+ *
+ * @param None
+ * @return None
+ */
 function createDefaultPlannerEntry () {
 	var defaultPlanner = getConfiguredPlanner();
+
 	var name = defaultPlanner['name'];
 	var params = defaultPlanner['parameters'];
 	var numParams = Object.keys(params).length + 1;
@@ -55,8 +83,8 @@ function createDefaultPlannerEntry () {
 /**
  * Adds a new editable planner to be benchmarked and updates the cfg file.
  *
- * @param 	{String} name The name of the planner to add
- * @return 	None
+ * @param {String} name The name of the planner to add
+ * @return None
  */
 function addPlanner (name) {
 
@@ -85,7 +113,10 @@ function addPlanner (name) {
 }
 
 /**
+ * Removes a planner entry from the table
  *
+ * @param {string} planner The ID of the planner entry to remove
+ * @return None
  */
 function removePlanner (planner) {
 	$('table').remove('#' + planner);
@@ -96,7 +127,7 @@ function removePlanner (planner) {
  * Updates the internal cfg file to reflect the planners the user has configured.
  *
  * @param  None
- * @return {String} benchPlanners A string containing the planners to use for benchmarking.
+ * @return {String} A string containing the planners to use for benchmarking.
  */
 function getBenchmarkingPlanners() {
 	var benchPlanners = "";
@@ -119,6 +150,12 @@ function getBenchmarkingPlanners() {
 }
 
 
+/**
+ * Sends configuration data to the server for benchmarking.
+ *
+ * @param None
+ * @return None
+ */
 function startBenchmarking() {
 
 	if (getBenchmarkingPlanners() == "") {

@@ -9,22 +9,21 @@ var env_path;
 var robot_path;
 
 
-// Load the configuration page by default
+/* Load the configuration page */
 $(document).ready(function() {
 	$('#configuration-page').click();
 	initialize();
-
 });
 
 
 /* Problem Configuration */
 
 /**
- * Loads the components of the configuration page and sets up listeners to make
+ * Loads the components of the configuration page and sets up listeners
  * that make the page interactive.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function initialize() {
 	$("#configuration").load("omplapp/components/configuration", function () {
@@ -116,14 +115,14 @@ function initialize() {
 }
 
 
-/* Server Interaction */
+/* Set and Get Server Data */
 
 /**
  * Given that the planners have been retrieved from the server, creates the
  * parameter fields for a specific planner and adds them to the page.
  *
- * @param 	{String} planner_name The planner to setup parameters for.
- * @return 	None
+ * @param {string} planner_name The planner to setup parameters for.
+ * @return None
  */
 function load_planner_params(planner_name) {
 	if (planners != null) {
@@ -136,13 +135,13 @@ function load_planner_params(planner_name) {
 			if (params.hasOwnProperty(key)) {
 				plannerConfigHTML += "<tr><td>";
 				plannerConfigHTML += params[key][0];
-				plannerConfigHTML += "</td><td><input type='text' name='" + key +  "' class='planner_param form-field form-control input-sm' value='" + params[key][3] + "'></td></tr>";
+				plannerConfigHTML += "</td><td><input type='text' name='" + key + "' class='planner_param form-field form-control input-sm' value='" + params[key][3] + "'></td></tr>";
 			}
 		}
 		plannerConfigHTML += "</tbody></table></form>"
 		$("#plannerPane").html(plannerConfigHTML);
 	} else {
-		showAlert("configuration", "error", "Planners are not loaded yet. Please wait and try again.");
+		showAlert("configuration", "danger", "Planners are not loaded yet. Please wait and try again.");
 	}
 }
 
@@ -151,8 +150,8 @@ function load_planner_params(planner_name) {
  * Loads a pre-defined problem from the server by drawing the models and
  * filling in configuration information.
  *
- * @param 	{String} problem_name The name of problem to load.
- * @return 	None
+ * @param {string} problem_name The name of problem to load.
+ * @return None
  */
 function loadRemoteProblem(problem_name) {
 	// Retrieve problem configuration:
@@ -214,8 +213,8 @@ function loadRemoteProblem(problem_name) {
 /**
  * Uploads the user's models to the server and then draws them to the scene.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function uploadModels() {
 	// Read the input fields
@@ -241,7 +240,7 @@ function uploadModels() {
 			error: function(data) {
 				console.log(data);
 
-				showAlert("configuration", "error", "Unable to upload files.");
+				showAlert("configuration", "danger", "Unable to upload files.");
 			},
 			cache: false,
 			contentType: false,
@@ -256,8 +255,8 @@ function uploadModels() {
 /**
  * Reads the user selected config file and loads values into config fields.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function loadConfig() {
 	var cfgFile = $("#config")[0].files[0];
@@ -319,8 +318,8 @@ function loadConfig() {
 /**
  * Parses a configuration text file into a mapping.
  *
- * @param 	{String} cfgText A configuration file in string form.
- * @return  {Object} cfgData An object mapping configuration fields to values.
+ * @param {string} cfgText A configuration file in string form.
+ * @return {Object} An object mapping configuration fields to values.
  */
 function parseConfig(cfgText) {
 	var cfgData = {};
@@ -345,11 +344,12 @@ function parseConfig(cfgText) {
 	return cfgData;
 }
 
+
 /**
  * Formats configuration fields into a .cfg text file
  *
- * @param 	None
- * @return 	{String} cfg All the configuration inforamtion in text.
+ * @param None
+ * @return {string} All the configuration inforamtion in text.
  */
 function getConfigText() {
 
@@ -410,8 +410,8 @@ function getConfigText() {
 /**
  * Gets the config data and prompts the user to download it.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function downloadConfig() {
 
@@ -430,8 +430,8 @@ function downloadConfig() {
  * Clears all configuration fields and removes all objects from the scene by
  * calling 'clearScene()'.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function clearAllFields() {
 	$('.form-field').each(function () {
@@ -450,8 +450,8 @@ function clearAllFields() {
 /**
  * Validates all required fields.
  *
- * @param 	None
- * @return 	{Boolean} valid A boolean indicating form validity.
+ * @param None
+ * @return {Boolean} valid A boolean indicating form validity.
  */
 function validateFields() {
 	var valid = true;
@@ -474,8 +474,8 @@ function validateFields() {
 /**
  * Validates the user selected environment and robot files.
  *
- * @param 	None
- * @return 	{Boolean} valid A boolean indicating the validity of the files.
+ * @param None
+ * @return {Boolean} A boolean indicating the validity of the files.
  */
 function validateFiles() {
 	env_file = $('#env_path')[0].files[0];
@@ -502,8 +502,8 @@ function validateFiles() {
  * Gathers and formats problem data and submits the problem to the server for solving.
  * On successful solve, saves solution data and loads solution visualization.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function solve(){
 	// Check that all fields are filled in
@@ -595,6 +595,13 @@ function solve(){
 	}
 }
 
+/**
+ * Polls the server at an interval to check for problem solution. Continues
+ * polling until a solution has been found or an error has been returned.
+ *
+ * @param {string} taskID The ID of the celery task which is solving the problem.
+ * @return None
+ */
 function waitForSolution(taskID) {
 	var completed = false;
 	var pollURL = '/omplapp/poll/' + taskID;
@@ -626,6 +633,12 @@ function waitForSolution(taskID) {
 }
 
 
+/**
+ * Parses solution JSON from server and displays solution data.
+ *
+ * @param {string} data The solution data from the server as a JSON string
+ * @return None
+ */
 function displaySolution(data) {
 	solutionData = JSON.parse(data);
 	console.log(solutionData);
@@ -638,10 +651,8 @@ function displaySolution(data) {
 		animationSpeed = 1000 - $('#animationSpeed').val();
 		$('#pathButtons').collapse('show');
 		showAlert("configuration", "success", "Solution found!");
-		// html += "<br><h4><font color='#329B71'>Found solution.</font></h4>";
 	} else {
 		showAlert("configuration", "info", "No solution found. Try solving again.");
-		// html += "<font color='#cd535a'>No solution found. To try again, click the solve button.</font><br><br>";
 	}
 
 	html += "<br><br><pre>"
@@ -667,8 +678,8 @@ function displaySolution(data) {
 /**
  * Toggles the animation of robot along solution path.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function animateToggle() {
 	if ($('#animateToggleBtn').hasClass('active')) {
@@ -690,8 +701,8 @@ function animateToggle() {
 /**
  * Toggles the display of static robots at each point along solution path.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function toggleRobotPath() {
 	if ($('#toggleRobotPathBtn').hasClass('active')) {
@@ -709,8 +720,8 @@ function toggleRobotPath() {
 /**
  * If a solution has been found, allows the user to download the path.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function downloadPath() {
 
@@ -726,38 +737,4 @@ function downloadPath() {
 }
 
 
-/* Helper Functions */
 
-/**
- * Prompts the user to download a file.
- *
- * @param 	{Blog} blob The file blob to download
- * @param 	{String} name The filename
- * @return 	None
- */
-function downloadFile(blob, name) {
-	var url = window.URL.createObjectURL(blob);
-	var a = document.createElement("a");
-	document.body.appendChild(a);
-	a.style = "display: none";
-	a.href = url;
-	a.download = name;
-	a.click();
-	window.URL.revokeObjectURL(url);
-}
-
-
-function getConfiguredPlanner() {
-	var planner = {};
-	planner['name'] = $("[name='planners']").val();
-
-	// Get the params for the specific planner
-	paramData = {};
-	$('.planner_param').each(function () {
-		paramData[$(this).attr('name')] = $(this).val();
-	});
-
-	planner['parameters'] = paramData;
-
-	return planner;
-}

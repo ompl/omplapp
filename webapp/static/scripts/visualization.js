@@ -30,8 +30,8 @@ var staticPathRobots = [];
 /**
  * Sets up the initial scene and loads the lights, camera, and axis helper.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function initViz() {
 
@@ -84,10 +84,10 @@ function initViz() {
 
 
 /**
- * Draws the scene. Only needs to be called once (by 'initViz()').
+ * Draws the scene. Only needs to be called once, by 'initViz()'.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function render() {
 
@@ -102,9 +102,9 @@ function render() {
  * Creates environment, bounding box, and start/goal robot objects and draws
  * them to the screen.
  *
- * @param 	{String} e_loc The URL of the environment file
- * @param 	{String} r_loc The URL of the robot file
- * @return 	None
+ * @param {String} e_loc The URL of the environment file
+ * @param {String} r_loc The URL of the robot file
+ * @return None
  */
 function drawModels(e_loc, r_loc) {
 
@@ -166,12 +166,11 @@ function drawModels(e_loc, r_loc) {
 }
 
 
-
 /**
  * Clears everything from the scene.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function clearScene() {
 
@@ -193,8 +192,8 @@ function clearScene() {
 /**
  * Clears solution information such as path and static path robots.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function clearOldSolution() {
 
@@ -211,8 +210,8 @@ function clearOldSolution() {
 /**
  * Refreshes the visualization to reflect changes in position and rotation.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function updatePose() {
 
@@ -252,8 +251,8 @@ function updatePose() {
 /**
  * Refreshes the visualization to reflect changes to the bounding box.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function updateBounds() {
 
@@ -290,8 +289,8 @@ function updateBounds() {
 /**
  * Estimates upper and lower bounds from the environment and updates the bounding box.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function estimateBounds() {
 	var estimated = new THREE.BoundingBoxHelper(env, 0x000000);
@@ -311,11 +310,11 @@ function estimateBounds() {
 
 /**
  * Extracts the path from the data and draws a spline to show the path.
- * Also creates a path robot which can later be animated by the user.
+ * Also creates a path robot which can be animated by the user.
  *
- * @param 	{Object} solutionData An object containing information from the
- * 			server about the solution and path.
- * @return 	None
+ * @param {Object} solutionData An object containing information from the
+ * server about the solution and path.
+ * @return None
  */
 function visualizePath(solutionData) {
 
@@ -371,8 +370,8 @@ function visualizePath(solutionData) {
  * Moves the path robot along the path by one step. This function is called on
  * an interval to create the animation of the robot traveling along the path.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function moveRobot() {
 
@@ -397,8 +396,8 @@ function moveRobot() {
 /**
  * Statically displays a robot at each point along the entire path.
  *
- * @param 	None
- * @return  None
+ * @param None
+ * @return None
  */
 function showRobotPath() {
 
@@ -440,8 +439,8 @@ function showRobotPath() {
  * Takes the static robots out of the environment and stores them
  * for easy reloading later.
  *
- * @param 	None
- * @return 	None
+ * @param None
+ * @return None
  */
 function hideRobotPath() {
 
@@ -458,6 +457,7 @@ function hideRobotPath() {
  *
  * @param {float} xyz The unit vector to rotate around.
  * @param {float} theta The number of radians to rotate.
+ * @return {THREE.Quaternion} The resulting quaternion
  */
 function axisAngleToQuaternion(x, y, z, theta) {
 
@@ -472,9 +472,9 @@ function axisAngleToQuaternion(x, y, z, theta) {
 /**
  * Translates a quaternion into degrees around each axis.
  *
- * @param 	{THREE.Quaternion} q A quaternion to be converted
- * @return 	{Object} rot An object describing the number of degrees of rotation
- * 			around each axis
+ * @param {THREE.Quaternion} q A quaternion to be converted
+ * @return {Object} An object describing the number of degrees of rotation
+ * around each axis
  */
 function quaternionToAxisDegrees(q) {
 
@@ -485,4 +485,5 @@ function quaternionToAxisDegrees(q) {
 
 	return rot;
 }
+
 
