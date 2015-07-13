@@ -1,0 +1,245 @@
+a.remove {
+	color: #FB9F76;
+}
+a.remove:hover {
+	color: #F97A6F;
+	cursor: pointer;
+}
+a.remove:active {
+	color: #F96E6C;
+	cursor: pointer;
+}
+a.tablink {
+	color: #ddd;
+	font-weight: 200;
+}
+a.tablink:hover {
+	color: #fff;
+}
+a.iconlink {
+	color: #4bb467;
+	padding: 2px 5px;
+	text-decoration: none;
+}
+a.iconlink:hover {
+	border-radius: 3px;
+	background-color: #eee;
+	color: #63BE7B;
+	cursor: pointer;
+}
+a.iconlink:active {
+	border-radius: 3px;
+	background-color: #ccc;
+}
+
+.glyphicon-remove {
+	padding-top: 2px;
+}
+
+body {
+	font-size: 16px;
+}
+
+h1, h2, h3 {
+	font-weight: 200;
+}
+h4 {
+	font-weight: 400;
+}
+hr {
+	border-width: 1.5px;
+	border-color: black;
+	width: 80%;
+}
+
+.active_nav_item {
+/*	border-bottom: 2px solid #fff;*/
+	background-color: #080808;
+}
+
+button.normal {
+	border: 2px solid #022037;
+	border-radius: 4px;
+	background-color: #fff;
+	cursor: pointer;
+	font-size: 14px;
+	margin: 10px;
+	padding: 6px 12px;
+	text-align: center;
+	vertical-align: middle;
+	min-width: 140px;
+}
+button.normal:hover {
+	background-color: #e4f3fe;
+}
+button.normal:focus {
+}
+button.normal:disabled {
+	border: 2px solid #ddd;
+	background-color: #eee;
+}
+button.normal:active {
+	background-color: #c3e4fd;
+}
+button.normal.active {
+	background-color: #e4f3fe;
+}
+
+p {
+	line-height: 1.5;
+}
+
+pre {
+	max-height: 300px;
+}
+
+
+.benchmarking-options {
+	border: 2px solid #080808;
+	padding: 10px 15px;
+}
+
+.options-header{
+	background-color: #022037;
+	color: #ddd;
+	padding: 10px 15px;
+	width: 100%;
+}
+
+.dropdown-menu {
+	height: 350px;
+	overflow: auto;
+}
+.dropdown-link{
+	color: #022037 !important;
+}
+.dropdown-link:hover {
+	color: #022037 !important;
+	cursor: pointer;
+}
+.dropdown-link:active {
+	color: #ddd !important;
+}
+.footer {
+	background-color: #022037;
+/*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
+	color: #fff;
+	font-size: 14px;
+	margin-top: 20px;
+	padding: 10px;
+	text-align: center;
+	width: 100%;
+}
+
+.form-control {
+	display: inline;
+/*	width: 30%;*/
+
+
+}
+
+.main-nav {
+	background-color: #022037;
+	width: 100%;
+}
+.main-content {
+	margin-top: 50px;
+}
+.main-tabs {
+	float: right;
+	line-height: 2;
+}
+
+.navbar {
+	background-color: #022037;
+/*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
+}
+.logo{
+	color: #ddd;
+	font-size: 35px;
+	font-weight: 100;
+}
+.navbar-toggle {
+	color: #fff;
+	border-color: #fff;
+	min-width: 0px;
+}
+
+.pane-title {
+	font-size: 30px;
+	font-weight: 200;
+	padding-top: 10px;
+	padding-bottom: 20px;
+	text-align: center;
+}
+
+.planner-tables{
+	padding-left: 15px;
+}
+
+.icon-bar {
+	background-color: #fff;
+}
+
+#settingsIcon{
+	font-size: 22px;
+}
+
+.small-button {
+	border: 0px;
+	margin: 0px;
+	min-width: 10px;
+	padding: 0px;
+}
+
+.tabs {
+	background-color: #022037;
+
+}
+.tabs>li {
+	float: left;
+}
+
+.tabs>li>a:hover {
+	background-color: #080808;
+}
+.tabs>li.active>a {
+	background-color: #080808;
+}
+
+.tab-container {
+	outline: 2px solid #022037;
+	min-height: 75%;
+}
+
+.tab-content {
+	padding: 10px;
+}
+
+.planner-table tr, .planner-table th, .planner-table td {
+	border: none !important;
+}
+table.planner-table {
+	border-bottom: 1px solid grey;
+}
+
+td.planner-param {
+	width: 40%;
+}
+td.param-value {
+	text-align: right;
+}
+
+.visualization {
+	outline: 2px solid #080808;
+	height: 75%;
+	margin-left: 15px;
+	margin-right: 2px;
+}
+
+.col-md-4 {
+	padding: 0 !important;
+}
+.col-md-8 {
+	padding: 0 !important;
+}

@@ -1,0 +1,273 @@
+<div class="container container-fluid" id="inner-content">
+	<h2>Configure Problem</h2>
+	<br><br>
+
+	<div id="configure-alerts"></div>
+
+	<div class="col-md-4 tab-container" role="tabpanel">
+			<!-- Nav tabs -->
+			<ul class="nav tabs" role="tablist">
+				<li role="presentation"><a class="tablink" href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
+				<li role="presentation"><a class="tablink" href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab" id="bounds-tab">Bounds</a></li>
+				<li role="presentation"><a class="tablink" href="#planner" aria-controls="planner" role="tab" data-toggle="tab" id="planner-tab">Planner</a></li>
+				<li role="presentation"><a class="tablink" href="#solve" aria-controls="solve" role="tab" data-toggle="tab" id="solve-tab">Solve</a></li>
+				<li role="presentation"><a class="tablink" href="#settings" aria-controls="settings" role="tab" data-toggle="tab" id="settings-tab"><div id="settingsIcon"><span class="glyphicon glyphicon-cog"></span></div></a></li>
+			</ul>
+
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<!-- Begin Problem Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="problem">
+					<!-- Problem Selection -->
+					<div class="">
+						<!-- Problem Selection -->
+						<div class="form-group">
+							<label>Problem</label>
+							<select name="problems" id="problems" class="required-field form-control input-sm">
+								<option value="abstract">Abstract</option>
+								<option value="cubicles">Cubicles</option>
+								<option value="easy">Easy</option>
+								<option value="home" selected="selected">Home</option>
+								<option value="custom" selected="selected">Custom</option>
+							</select>
+						</div> <!-- Close Problem -->
+
+						<!-- Custom problem upload -->
+						<div class="collapse in" id="customProblem">
+							<form enctype="multipart/form-data">
+								<div class="form-group">
+									<label>Environment</label>
+									<input type="file" name="env" id="env_path" class="form-field-custom form-control input-sm">
+								</div>
+								<div class="form-group">
+									<label>Robot</label>
+									<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
+								</div>
+							</form>
+							<center><button class="btn btn-default" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
+							<br>
+							<div class="form-group" id="customProblem">
+								<label>Configuration File</label>
+								<input type="file" name="config" id="config" class="form-control">
+							</div>
+
+						</div> <!-- Close collapsible options -->
+					</div>
+
+					<!-- Start Pose -->
+					<div class="">
+						<table class="table">
+							<caption>Start Pose</caption>
+							<thead>
+								<tr>
+								<th>Axis</th>
+								<th>Position</th>
+								<th>Rotation Degrees</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>X</th>
+									<td><input type="number" step="any" name="start.x" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.axis.x" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Y</th>
+									<td><input type="number" step="any" name="start.y" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.axis.y" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Z</th>
+									<td><input type="number" step="any" name="start.z" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.axis.z" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<!-- <tr> -->
+									<!-- <th>&theta;</th> -->
+									<!-- <td></td> -->
+									<!-- <td><input type="number" step="any" name="start.theta" class="pose form-field form-control input-sm"></td> -->
+								<!-- </tr> -->
+							</tbody>
+						</table>
+					</div>
+					<!-- Goal Pose -->
+					<div class="">
+						<table class="table">
+							<caption>Goal Pose</caption>
+							<thead>
+								<tr>
+								<th>Axis</th>
+								<th>Position</th>
+								<th>Rotation Degrees</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>X</th>
+									<td><input type="number" step="any" name="goal.x" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.axis.x" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Y</th>
+									<td><input type="number" step="any" name="goal.y" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.axis.y" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<tr>
+									<th>Z</th>
+									<td><input type="number" step="any" name="goal.z" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.axis.z" class="pose form-field form-control input-sm"></td>
+								</tr>
+								<!-- <tr> -->
+									<!-- <th>&theta;</th> -->
+									<!-- <td></td> -->
+									<!-- <td><input type="number" step="any" name="goal.theta" class="pose form-field form-control input-sm"></td> -->
+								<!-- </tr> -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!-- End Problem Tab -->
+
+				<!-- Begin Bounds Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="bounds">
+					<table class="table">
+						<caption>Bounding Box</caption>
+						<thead>
+							<tr>
+							<th>Axis</th>
+							<th>Lower</th>
+							<th>Upper</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>X</th>
+								<td><input type="number" step="any" name="volume.min.x" class="bounds form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="volume.max.x" class="bounds form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Y</th>
+								<td><input type="number" step="any" name="volume.min.y" class="bounds form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="volume.max.y" class="bounds form-field form-control input-sm"></td>
+							</tr>
+							<tr>
+								<th>Z</th>
+								<td><input type="number" step="any" name="volume.min.z" class="bounds form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="volume.max.z" class="bounds form-field form-control input-sm"></td>
+							</tr>
+						</tbody>
+					</table>
+					<center>
+						<button class="button btn btn-default" onclick="estimateBounds()">Estimate Bounding Box</button>
+					</center>
+				</div>
+				<!-- End Bounds Tab -->
+
+				<!-- Begin Planner Configuration Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="planner">
+					<div class="form-group">
+						<label>Planner</label>
+						<select name="planners" id="planners" class="required-field form-control input-sm">
+							<option value="ompl.geometric.BKPIECE1">BKPIECE1</option>
+							<option value="ompl.geometric.EST">EST</option>
+							<option value="ompl.geometric.FMT">FMT</option>
+							<option value="ompl.geometric.KPIECE1" selected="selected">KPIECE1</option>
+							<option value="ompl.geometric.LBKPIECE1">LBKPIECE1</option>
+							<option value="ompl.geometric.LBTRRT">LBTRRT</option>
+							<option value="ompl.geometric.LazyPRM">LazyPRM</option>
+							<option value="ompl.geometric.LazyPRMstar">LazyPRMstar</option>
+							<option value="ompl.geometric.LazyRRT">LazyRRT</option>
+							<option value="ompl.geometric.PDST">PDST</option>
+							<option value="ompl.geometric.PRM">PRM</option>
+							<option value="ompl.geometric.PRMstar">PRMstar</option>
+							<option value="ompl.geometric.RRT">RRT</option>
+							<option value="ompl.geometric.RRTConnect">RRTConnect</option>
+							<option value="ompl.geometric.RRTstar">RRTstar</option>
+							<option value="ompl.geometric.SBL">SBL</option>
+							<option value="ompl.geometric.SPARS">SPARS</option>
+							<option value="ompl.geometric.SPARStwo">SPARStwo</option>
+							<option value="ompl.geometric.STRIDE">STRIDE</option>
+							<option value="ompl.geometric.TRRT">TRRT</option>
+						</select>
+					</div>
+					<div id="plannerPane">
+						Planner specific settings are displayed here when a
+						planner is selected.
+					</div>
+				</div>
+				<!-- End Planner Configuration Tab -->
+
+				<!-- Begin Solve Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="solve">
+					<div class="">
+						<table class="table">
+							<caption>Solve Problem</caption>
+							<tbody>
+								<tr>
+									<td>Name</td>
+									<td><input type="text" name="name" class="form-field form-control form-control input-sm"></td>
+								</tr>
+								<tr>
+									<td>Time Limit (sec)</td>
+									<td><input type="number" name="solve_time" step="any" class="form-field form-control input-sm" value="10"></td>
+								</tr>
+							</tbody>
+						</table>
+						<center>
+							<button class="btn btn-default" type="button" onclick="solve()" id="solve-button">Solve</button>
+							<button class="btn btn-default" type="button" onclick="clearAllFields()">Clear</button>
+						</center>
+						<br>
+						<div class="collapse" id="pathButtons">
+							<center>
+								<button class="btn btn-default" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
+								<button class="btn btn-default" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
+							</center>
+							<br>
+							<label for="animationSpeed">Animation Speed</label>
+							<input type="range" min=700 max =999 id="animationSpeed"></input>
+						</div>
+					</div>
+					<div class="">
+						<div id="results"></div>
+					</div>
+				</div>
+				<!-- End Solve Tab -->
+
+				<!-- Begin Settings Tab -->
+				<div role="tabpanel" class="tab-pane fade" id="settings">
+					<table class="table">
+						<caption>Settings</caption>
+						<tbody>
+							<tr>
+								<td>Show Axis Helper</td>
+								<td><input type='checkbox' id='showAxisHelper' checked></input></td>
+							</tr>
+							<tr>
+								<td>Show Bounding Box</td>
+								<td><input type='checkbox' id='showBoundingBox' checked></input></td>
+							</tr>
+							<tr>
+								<td>Download Configuration File</td>
+								<td colspan="2"><a class="iconlink" onclick="downloadConfig()" id="downloadConfigButton">&#11015;</a></td>
+							</tr>
+							<tr>
+								<td>Download Solution Path</td>
+								<td colspan="2"><a class="iconlink" onclick="downloadPath()" id="downloadConfigButton">&#11015;</a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- End Settings Tab -->
+			</div>
+			<!-- End Tab panes -->
+
+		</form>
+		<!-- Close form -->
+
+	</div> <!-- End tab panel -->
+
+	<div class="col-md-8">
+		<div class="visualization" id="viewer"></div>
+	</div>
+
+</div> <!-- Close fluid container -->
