@@ -269,8 +269,23 @@ def solve(problem, flask_request_form):
 	solution['name'] = str(problem['name'])
 	solution['planner'] = ompl_setup.getPlanner().getName()
 
-	return json.dumps(solution)
+	return solution
 
+@celery.task()
+def solve_multiple(runs, problem, flask_request_form):
+	"""
+	"""
+	result = {}
+	result['multiple'] = "true"
+	solutions = []
+
+	for i in range(0, runs):
+		print("Solving run number: {}".format(i))
+		solutions.append(solve(problem, flask_request_form))
+
+	result['solutions'] = solutions
+
+	return result
 
 @celery.task()
 def benchmark(name, cfg_loc, user_email):
@@ -377,10 +392,15 @@ def upload():
 
 	problem = flask.request.get_json(True, False, True)
 
-	solve_task = solve.delay(problem, flask.request.form)
-	log.debug("Started solving task with id: " + solve_task.task_id)
-
-	return str(solve_task.task_id)
+	runs = int(problem['runs'])
+	if runs > 1:
+		solve_task = solve_multiple.delay(runs, problem, flask.request.form)
+		log.debug("Started solving multiple runs with task id: " + solve_task.task_id)
+		return str(solve_task.task_id)
+	else:
+		solve_task = solve.delay(problem, flask.request.form)
+		log.debug("Started solving task with id: " + solve_task.task_id)
+		return str(solve_task.task_id)
 
 @app.route('/omplapp/poll/<task_id>', methods=['POST'])
 def poll(task_id):
@@ -394,7 +414,7 @@ def poll(task_id):
 	result = solve.AsyncResult(task_id)
 
 	if result.ready():
-		return str(result.get()), 200
+		return json.dumps(result.get()), 200
 	else :
 		return "Result for task id: " + task_id + " isn't ready yet.", 202
 

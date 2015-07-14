@@ -19,7 +19,7 @@ var start_robot;
 var goal_robot;
 var bbox;
 var path_robot;
-var path_line;
+var pathLines = [];
 
 /* Animation Information */
 var path;
@@ -179,8 +179,10 @@ function clearScene() {
 	scene.remove(goal_robot);
 	scene.remove(path_robot);
 	scene.remove(bbox);
-	scene.remove(path_line);
 
+	pathLines.forEach(function (element, index) {
+		scene.remove(element);
+	});
 	staticPathRobots.forEach(function (element, index) {
 		scene.remove(element);
 	});
@@ -198,11 +200,14 @@ function clearScene() {
 function clearOldSolution() {
 
 	scene.remove(path_robot);
+	pathLines.forEach(function (element, index) {
+		scene.remove(element);
+	});
+	pathLines = [];
 	staticPathRobots.forEach(function (element, index) {
 		scene.remove(element);
 	});
 	staticPathRobots = [];
-	scene.remove(path_line);
 
 }
 
@@ -316,33 +321,11 @@ function estimateBounds() {
  * server about the solution and path.
  * @return None
  */
-function visualizePath(solutionData) {
+function visualizeSolution(solutionData) {
 
 	// Store the path globally
 	path = solutionData.path;
-	pathVectorsArray = [];
-
-	// Parse the path string into an array of position vectors
-	for (var i = 0; i < path.length; i++) {
-		pathVectorsArray.push(new THREE.Vector3(
-			parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
-		));
-	}
-
-	// Create the spline
-	var spline = new THREE.SplineCurve3(pathVectorsArray);
-	var material = new THREE.LineBasicMaterial({
-		color: 0x329B71,
-	});
-	var geometry = new THREE.Geometry();
-	var splinePoints = spline.getPoints(pathVectorsArray.length);
-	for (var i = 0; i < splinePoints.length; i++) {
-		geometry.vertices.push(splinePoints[i]);
-	}
-
-	path_line = new THREE.Line(geometry, material);
-	path_line.parent = env;
-	scene.add(path_line);
+	drawSolutionPath(path);
 
 	// Create the path robot
 	var path_robot_loader = new THREE.ColladaLoader();
@@ -363,6 +346,38 @@ function visualizePath(solutionData) {
 		scene.add(path_robot);
 	});
 
+}
+
+
+/**
+ * description
+ *
+ */
+function drawSolutionPath(path) {
+	pathVectorsArray = [];
+
+	// Parse the path string into an array of position vectors
+	for (var i = 0; i < path.length; i++) {
+		pathVectorsArray.push(new THREE.Vector3(
+			parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
+		));
+	}
+
+	// Create the spline
+	var spline = new THREE.SplineCurve3(pathVectorsArray);
+	var material = new THREE.LineBasicMaterial({
+		color: 0x329B71,
+	});
+	var geometry = new THREE.Geometry();
+	var splinePoints = spline.getPoints(pathVectorsArray.length);
+	for (var i = 0; i < splinePoints.length; i++) {
+		geometry.vertices.push(splinePoints[i]);
+	}
+
+	var path_line = new THREE.Line(geometry, material);
+	path_line.parent = env;
+	pathLines.push(path_line);
+	scene.add(path_line);
 }
 
 

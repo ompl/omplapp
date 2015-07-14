@@ -212,24 +212,35 @@
 								</tr>
 							</tbody>
 						</table>
-						<center>
-							<button class="btn btn-default" type="button" onclick="solve()" id="solve-button">Solve</button>
-							<button class="btn btn-default" type="button" onclick="clearAllFields()">Clear</button>
-						</center>
-						<br>
-						<div class="collapse" id="pathButtons">
-							<center>
-								<button class="btn btn-default" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
-								<button class="btn btn-default" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Robot Path</button>
-							</center>
-							<br>
-							<label for="animationSpeed">Animation Speed</label>
+
+						<a class="collapsable-link" role="button" data-toggle="collapse" href="#advancedOptions">Advanced Options</a>
+						<div class="collapse" id="advancedOptions">
+							<table class="table" class="advanced-options-table">
+								<tbody>
+									<tr>
+										<td>Runs</td>
+										<td><input type="number" name="runs" class="form-field form-control form-control input-sm" value="1"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<br><br>
+						<button class="btn btn-default" type="button" onclick="solve()" id="solve-button">Solve</button>
+						<button class="btn btn-default" type="button" onclick="clearAllFields()">Clear</button>
+
+						<div class="hidden" id='pathButtons'>
+							<button class="btn btn-default" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
+							<button class="btn btn-default" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Path</button>
+							<br><br>
+							<label for="animationSpeed" id="animationSpeedLabel">Animation Speed</label>
 							<input type="range" min=700 max =999 id="animationSpeed"></input>
 						</div>
 					</div>
 					<div class="">
 						<div id="results"></div>
 					</div>
+					</center>
 				</div>
 				<!-- End Solve Tab -->
 

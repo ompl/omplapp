@@ -16,6 +16,12 @@ a.tablink {
 a.tablink:hover {
 	color: #fff;
 }
+a.collapsable-link{
+	color: #777777;
+}
+a.collapsable-link:hover {
+	color: #555;
+}
 a.iconlink {
 	color: #4bb467;
 	padding: 2px 5px;
@@ -171,6 +177,13 @@ pre {
 	padding-top: 10px;
 	padding-bottom: 20px;
 	text-align: center;
+}
+
+#advancedOptions table {
+	margin-bottom: 0px;
+}
+#pathButtons {
+	display: inline;
 }
 
 .planner-tables{

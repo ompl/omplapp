@@ -440,7 +440,7 @@ function clearAllFields() {
 	});
 	$('#config').val('');
 	$('#results').html('');
-	$('#pathButtons').collapse('hide');
+	$('#pathButtons').addClass('hidden');
 	results = "";
 	solutionData = null;
 	clearScene();
@@ -525,8 +525,8 @@ function solve(){
 		var startQ = start_robot.quaternion;
 		var goalQ = goal_robot.quaternion;
 
+		// Read the input fields
 		{
-			// Read the input fields
 			var problemData = {}
 			problemData['name'] = $("[name='name']").val();
 			problemData['start.x'] = $("[name='start.x']").val();
@@ -551,7 +551,7 @@ function solve(){
 			problemData['volume.max.z'] = $("[name='volume.max.z']").val();
 			problemData['solve_time'] = $("[name='solve_time']").val();
 			problemData['planner'] = $("[name='planners']").val();
-
+			problemData['runs'] = $("[name='runs']").val();
 			problemData['env_path'] = env_path;
 			problemData['robot_path'] = robot_path;
 		}
@@ -641,28 +641,48 @@ function waitForSolution(taskID) {
  */
 function displaySolution(data) {
 	solutionData = JSON.parse(data);
-	console.log(solutionData);
 
-	var html = "";
+	var html = "<br><br><pre>"
 
-	if (solutionData.solved == "true") {
-		// Draw the solution path
-		visualizePath(solutionData);
-		animationSpeed = 1000 - $('#animationSpeed').val();
-		$('#pathButtons').collapse('show');
-		showAlert("configuration", "success", "Solution found!");
+	if (solutionData.multiple === "true") {
+		var numSolved = 0;
+
+		$.each(solutionData.solutions, function(index, solution) {
+			if (solution.solved === "true") {
+				drawSolutionPath(solution.path);
+				numSolved += 1;
+			}
+			html += "########## Run " + numSolved + " of " + solutionData.solutions.length + " ##########<br>"
+			html += solution.name;
+			html += "<br>";
+			html += solution.messages;
+			html += "<br><br>";
+
+		});
+
+		var msg = "Solutions found for " + numSolved + " of " + solutionData.solutions.length + " runs.";
+		showAlert("configuration", "success", msg);
+
 	} else {
-		showAlert("configuration", "info", "No solution found. Try solving again.");
+		if (solutionData.solved == "true") {
+			// Draw the solution path
+			visualizeSolution(solutionData);
+
+			animationSpeed = 1000 - $('#animationSpeed').val();
+
+			$('#pathButtons').removeClass('hidden');
+
+			showAlert("configuration", "success", "Solution found!");
+		} else {
+			showAlert("configuration", "info", "No solution found. Try solving again.");
+		}
+
+		html += solutionData.name;
+		html += "<br>";
+		html += solutionData.messages;
+		html += "<br><br>"
+
 	}
-
-	html += "<br><br><pre>"
-	html += solutionData.name;
-	html += "<br>";
-	html += solutionData.messages;
-	html += "<br><br>"
-
-	// Uncomment to display list of path states
-	// html += solutionData.path;
 
 	html += "</pre>";
 
@@ -735,6 +755,4 @@ function downloadPath() {
 		showAlert("configuration", "warning", "There is no valid solution path to download.");
 	}
 }
-
-
 
