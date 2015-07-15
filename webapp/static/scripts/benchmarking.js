@@ -151,6 +151,28 @@ function getBenchmarkingPlanners() {
 
 
 /**
+ * Checks that the benchmark settings are complete and within limits.
+ *
+ * @param None
+ * @return {Boolean} Whether the settings are valid or not
+ */
+function validateBenchmarkSettings() {
+	var time = $("[name='time_limit']").val();
+	var mem = $("[name='mem_limit']").val();
+	var runs = $("[name='run_count']").val();
+
+	if (time != null && mem != null && runs != null) {
+		if (time > 0 && mem > 0 && runs > 0) {
+			if (time * mem * runs < 1000000) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+/**
  * Sends configuration data to the server for benchmarking.
  *
  * @param None
@@ -158,40 +180,43 @@ function getBenchmarkingPlanners() {
  */
 function startBenchmarking() {
 
-	var cfgText = getConfigText();
+	if (validateBenchmarkSettings() == true) {
+		var cfgText = getConfigText();
 
-	if (getBenchmarkingPlanners() == "") {
-		showAlert("benchmark", "warning", "Please add one or more planners to benchmark.");
-	} else if (cfgText == null){
-		showAlert("benchmark", "danger", "Problem was not properly configured. Ensure all fields are completed and try again.");
+		if (getBenchmarkingPlanners() == "") {
+			showAlert("benchmark", "warning", "Please add one or more planners to benchmark.");
+		} else if (cfgText == null){
+			showAlert("benchmark", "danger", "Problem was not properly configured. Ensure all fields are completed and try again.");
+		} else {
+			var form = new FormData();
+			form.append('cfg', cfgText);
+			form.append('filename', $("[name='name']").val());
+			// form.append('email', $("#notificationEmail").val());
+
+			$.ajax({
+				url: "/omplapp/benchmark",
+				type: "POST",
+				data: form,
+				success: function(data){
+					console.log(data);
+					var url = "http://127.0.0.1:4407/?job=" + data
+					var msg = "The benchmark job was submitted successfully. ";
+					msg += "The results will be available at: <a target='none' href='" + url + "'>" + url +  "</a>";
+					showAlert("benchmark", "success", msg);
+				},
+				error: function(data) {
+					console.log(data);
+
+					showAlert("benchmark", "danger", "There was a problem submitting the benchmark job. Try again.");
+				},
+				cache: false,
+				contentType: false,
+				processData: false
+			});
+		}
 	} else {
-		var form = new FormData();
-		form.append('cfg', cfgText);
-		form.append('filename', $("[name='name']").val());
-		// form.append('email', $("#notificationEmail").val());
-
-		$.ajax({
-			url: "/omplapp/benchmark",
-			type: "POST",
-			data: form,
-			success: function(data){
-				console.log(data);
-				var url = "http://127.0.0.1:4407/?job=" + data
-				var msg = "The benchmark job was submitted successfully. ";
-				msg += "The results will be available at: <a target='none' href='" + url + "'>" + url +  "</a>";
-				showAlert("benchmark", "success", msg);
-			},
-			error: function(data) {
-				console.log(data);
-
-				showAlert("benchmark", "error", "There was a problem submitting the benchmark job. Try again.");
-			},
-			cache: false,
-			contentType: false,
-			processData: false
-		});
+		showAlert("benchmark", "warning", "Please check the benchmarking settings and try again. Time Limit * Memory Limit * Run Count cannot exceed 1,000,000.");
 	}
-
 }
 
 
