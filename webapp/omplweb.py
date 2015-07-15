@@ -1,15 +1,15 @@
 import os
 import json
 import sys
-from os.path import dirname
-from os.path import abspath
-from os.path import join
+from os.path import dirname, abspath, join, basename
 
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
 	import ConfigParser
 except:
 	import configparser as ConfigParser
+
+import tempfile
 
 import smtplib
 from email.mime.application import MIMEApplication
@@ -111,7 +111,7 @@ def save_cfg_file(name, text):
 	"""
 
 	file_loc = os.path.join(app.config['PROBLEM_FILES'], name);
-
+	print("Wring cfg text: " + text)
 	f = open(file_loc + ".cfg", 'w')
 	f.write(text)
 	f.close()
@@ -291,7 +291,7 @@ def solve_multiple(runs, problem, flask_request_form):
 	return result
 
 @celery.task()
-def benchmark(name, cfg_loc, user_email):
+def benchmark(name, cfg_loc, db_filename):
 	"""
 	Runs ompl_benchmark on cfg_loc and converts the resulting log file to a
 	database with ompl_benchmark_statistics.
@@ -299,18 +299,15 @@ def benchmark(name, cfg_loc, user_email):
 	cfg_loc - the location of the .cfg file to be benchmarked
 	"""
 
-	# Create a random id for this benchmark job
-	db_id = helpers.rand_num_as_str(10)
-
 	# Run the benchmark, produces .log file
 	os.system("ompl_benchmark " + cfg_loc + ".cfg")
 
 	# Convert .log into database
-	os.system("python ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + db_id + ".db")
+	os.system("python ../ompl/scripts/ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + db_filename)
 
 	# Notify the user that the benchmarking job is complete
-	db = open("static/problem_files/" + db_id + ".db", 'r')
-	send_email(name, db, db_id, user_email)
+	# db = open("static/problem_files/" + db_id + ".db", 'r')
+	# send_email(name, db, db_id, user_email)
 
 
 def send_email(name, db, db_id, user_email):
@@ -474,21 +471,26 @@ def request_models(problem_name):
 	return json.dumps(cfg_data)
 
 
-
 # Benchmarking
 @app.route('/omplapp/benchmark', methods=['POST'])
 def init_benchmark():
 	print("Called benchmark.")
 
-	cfg_name = flask.request.form['filename']
 	cfg = flask.request.form['cfg']
-	user_email = flask.request.form['email']
-
+	cfg_name = flask.request.form['filename']
 	cfg_loc = save_cfg_file(cfg_name, cfg)
 
-	result = benchmark.delay(cfg_name, cfg_loc, user_email)
+	db_file, db_filepath = tempfile.mkstemp(suffix=".db", prefix="benchmark_", dir="static/problem_files")
 
-	return "Saved file at: " + cfg_loc
+	# Close the db_file, since we don't need it right now
+	os.close(db_file)
+
+	db_filename = basename(db_filepath)
+	print("Created a placeholder db file: %s" % db_filename)
+
+	result = benchmark.delay(cfg_name, cfg_loc, db_filename)
+
+	return db_filename
 
 
 if __name__ == "__main__":

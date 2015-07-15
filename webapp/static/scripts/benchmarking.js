@@ -158,20 +158,28 @@ function getBenchmarkingPlanners() {
  */
 function startBenchmarking() {
 
+	var cfgText = getConfigText();
+
 	if (getBenchmarkingPlanners() == "") {
 		showAlert("benchmark", "warning", "Please add one or more planners to benchmark.");
+	} else if (cfgText == null){
+		showAlert("benchmark", "danger", "Problem was not properly configured. Ensure all fields are completed and try again.");
 	} else {
 		var form = new FormData();
-		form.append('cfg', getConfigText());
+		form.append('cfg', cfgText);
 		form.append('filename', $("[name='name']").val());
-		form.append('email', $("#notificationEmail").val());
+		// form.append('email', $("#notificationEmail").val());
 
 		$.ajax({
 			url: "/omplapp/benchmark",
 			type: "POST",
 			data: form,
 			success: function(data){
-				showAlert("benchmark", "success", "The benchmark job was submitted successfully. The results will be sent to the provided email address once the job is complete.");
+				console.log(data);
+				var url = "http://127.0.0.1:4407/?job=" + data
+				var msg = "The benchmark job was submitted successfully. ";
+				msg += "The results will be available at: <a target='none' href='" + url + "'>" + url +  "</a>";
+				showAlert("benchmark", "success", msg);
 			},
 			error: function(data) {
 				console.log(data);
