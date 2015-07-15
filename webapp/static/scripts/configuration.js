@@ -5,8 +5,8 @@ var intervalID;
 var solutionData;
 var animateRobot;
 var animationSpeed;
-var env_path;
-var robot_path;
+var env_loc;
+var robot_loc;
 
 
 /* Load the configuration page */
@@ -35,6 +35,7 @@ function initialize() {
 			planners = JSON.parse(data);
 			// Set the default planner
 			load_planner_params("ompl.geometric.KPIECE1");
+
 		});
 
 		// When user picks planner, load the planner params
@@ -53,14 +54,18 @@ function initialize() {
 
 
 			if ($("#problems").val() == 'custom'){
-				$("#customProblem").collapse('show');
-				clearScene();
 				clearAllFields();
+
+				$("#customProblem").collapse('show');
+				load_planner_params("ompl.geometric.KPIECE1");
 			} else {
 				$("#customProblem").collapse('hide');
 
+				clearAllFields();
+
 				// Retrieve config data for this problem
 				loadRemoteProblem($("#problems").val());
+				load_planner_params("ompl.geometric.KPIECE1");
 
 			}
 		});
@@ -158,8 +163,8 @@ function loadRemoteProblem(problem_name) {
 	var url = "omplapp/problem/" + problem_name;
 	$.get(url, function(data) {
 		var data = JSON.parse(data);
-		env_path = data['env_path'];
-		robot_path = data['robot_path'];
+		env_loc = data['env_loc'];
+		robot_loc = data['robot_loc'];
 
 		var startQ = axisAngleToQuaternion(data['start.axis.x'],
 			data['start.axis.y'], data['start.axis.z'], data['start.theta']);
@@ -230,8 +235,8 @@ function uploadModels() {
 			data: formData,
 			success: function(data){
 				data = JSON.parse(data);
-				env_path = data['env_path'];
-				robot_path = data['robot_path'];
+				env_loc = data['env_loc'];
+				robot_loc = data['robot_loc'];
 
 				drawModels(data['env_loc'], data['robot_loc']);
 
@@ -551,9 +556,15 @@ function solve(){
 			problemData['volume.max.z'] = $("[name='volume.max.z']").val();
 			problemData['solve_time'] = $("[name='solve_time']").val();
 			problemData['planner'] = $("[name='planners']").val();
-			problemData['runs'] = $("[name='runs']").val();
-			problemData['env_path'] = env_path;
-			problemData['robot_path'] = robot_path;
+			problemData['env_loc'] = env_loc;
+			problemData['robot_loc'] = robot_loc;
+
+
+			if ($("[name='runs']").val() >= 1) {
+				problemData['runs'] = $("[name='runs']").val();
+			} else {
+				problemData['runs'] = 1;
+			}
 		}
 
 		// Get the params for the specific planner

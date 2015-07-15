@@ -1,10 +1,9 @@
 import os
 import json
 import sys
-import StringIO
-
-from math import cos, sin, pi
-from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
+from os.path import dirname
+from os.path import abspath
+from os.path import join
 
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
@@ -13,7 +12,6 @@ except:
 	import configparser as ConfigParser
 
 import smtplib
-from os.path import basename
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -27,18 +25,29 @@ from werkzeug import secure_filename
 from celery import Celery
 from celery.result import AsyncResult
 
-import ompl
-from ompl import base as ob
-from ompl import geometric as og
-from ompl import control as oc
-from ompl import app as oa
+ompl_app_root = dirname(dirname(abspath(__file__)))
+ompl_resources_dir = join(ompl_app_root, 'resources/3D')
+try:
+	import ompl
+	from ompl import base as ob
+	from ompl import geometric as og
+	from ompl import control as oc
+	from ompl import app as oa
+	from ompl import tools as ot
+except:
+	sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
+	import ompl
+	from ompl import base as ob
+	from ompl import geometric as og
+	from ompl import control as oc
+	from ompl import app as oa
+	from ompl import tools as ot
 
 # Helper functions from helpers.py
 import helpers
 
 # Location of .dae files
-UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/uploads'
-PROBLEMS_FOLDER = os.path.dirname(os.path.abspath(__file__)) + '/static/problem_files'
+PROBLEM_FILES = join(dirname(abspath(__file__)), 'static/problem_files')
 
 # Configure Flask and Celery
 app = flask.Flask(__name__)
@@ -49,12 +58,11 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
-
-########## OMPL ##########
-
 # Create logger
 log = helpers.LogOutputHandler(3)
 
+
+########## OMPL ##########
 
 def create_planners():
 	"""
@@ -65,11 +73,6 @@ def create_planners():
 	# Create the geometric planners
 	planners = ompl.PlanningAlgorithms(og)
 	params_dict = planners.getPlanners()
-
-	# TODO: Por que? Is this accidentally left over from testing?
-	retval = "{'param name' : ('display name', 'range type', 'range suggestion', 'default value')}\n"
-	retval += "For KPIECE1: \n"
-	retval += str(params_dict['ompl.geometric.KPIECE1'])
 
 	return params_dict
 
@@ -107,7 +110,7 @@ def save_cfg_file(name, text):
 	Saves a .cfg file intended for benchmarking
 	"""
 
-	file_loc = os.path.join(app.config['PROBLEMS_FOLDER'], name);
+	file_loc = os.path.join(app.config['PROBLEM_FILES'], name);
 
 	f = open(file_loc + ".cfg", 'w')
 	f.write(text)
@@ -179,8 +182,8 @@ def solve(problem, flask_request_form):
 	ompl_setup = oa.SE3RigidBodyPlanning()
 	ompl_setup.getGeometricComponentStateSpace().setBounds(bounds)
 
-	ompl_setup.setEnvironmentMesh(str(problem['env_path']))
-	ompl_setup.setRobotMesh(str(problem['robot_path']))
+	ompl_setup.setEnvironmentMesh(str(problem['env_loc']))
+	ompl_setup.setRobotMesh(str(problem['robot_loc']))
 
 	# Set the start state
 	start = ob.State(space)
@@ -429,7 +432,7 @@ def upload_models():
 	robotFile = flask.request.files['robot']
 	envFile = flask.request.files['env']
 
-	filepaths = {}
+	file_locs = {}
 
 	# Check that the uploaded files are valid
 	if robotFile and envFile:
@@ -437,23 +440,19 @@ def upload_models():
 
 			# If valid files, save them to the server
 			robot_filename = secure_filename(robotFile.filename)
-			robotFile.save(os.path.join(app.config['UPLOAD_FOLDER'], robot_filename))
-
-			filepaths['robot_path'] = os.path.join(app.config['UPLOAD_FOLDER'], robot_filename)
-			filepaths['robot_loc'] = "static/uploads/" + robot_filename
+			robotFile.save(os.path.join(app.config['PROBLEM_FILES'], robot_filename))
+			file_locs['robot_loc'] = join("static/problem_files", robot_filename)
 
 			env_filename = secure_filename(envFile.filename)
-			envFile.save(os.path.join(app.config['UPLOAD_FOLDER'], env_filename))
-
-			filepaths['env_path'] = os.path.join(app.config['UPLOAD_FOLDER'], env_filename)
-			filepaths['env_loc'] = "static/uploads/" + env_filename
+			envFile.save(os.path.join(app.config['PROBLEM_FILES'], env_filename))
+			file_locs['env_loc'] = join("static/problem_files", env_filename)
 
 		else:
 			return "Error: Wrong file format. Robot and environment files must be .dae"
 	else:
 		return "Error: Didn't upload any files! Please choose both a robot and environment file in the .dae format."
 
-	return json.dumps(filepaths)
+	return json.dumps(file_locs)
 
 @app.route("/omplapp/problem/<problem_name>", methods=['GET'])
 def request_models(problem_name):
@@ -465,14 +464,12 @@ def request_models(problem_name):
 	env_filename = problem_name + "_env.dae"
 	cfg_filename = problem_name + ".cfg"
 
-
-	cfg_file = os.path.join(app.config['PROBLEMS_FOLDER'], cfg_filename)
+	cfg_file = join(app.config['PROBLEM_FILES'], cfg_filename)
 	cfg_data = parse_cfg(cfg_file)
+
+	# Store the location of the robot and env models
 	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
 	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
-
-	cfg_data['robot_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], robot_filename)
-	cfg_data['env_path'] = os.path.join(app.config['PROBLEMS_FOLDER'], env_filename)
 
 	return json.dumps(cfg_data)
 
