@@ -131,22 +131,30 @@ function removePlanner (planner) {
  */
 function getBenchmarkingPlanners() {
 	var benchPlanners = "";
-	var currentPlanner = "";
 	var modifiedPlannerName = "";
+	var currentPlanner = "";
 
-	var inputs = $('#planner-tables input');
-	for (var i = 0; i < inputs.length; i++) {
-		modifiedPlannerName = inputs[i].name.toLowerCase().replace("1", "").replace("two", "2");
+	var plannerTables = $('.planner-table');
+	// Iterates for each planner
+	$.each(plannerTables, function(idx, table) {
+		currentPlanner = table.id;
+		console.log(currentPlanner);
+		var params = $(this).find('input');
 
-		if (currentPlanner != inputs[i].name) {
-			benchPlanners +=  modifiedPlannerName + "=\n";
-		}
-		currentPlanner = inputs[i].name;
+		// Set the planner and name
+		modifiedPlannerName = params[0].name.toLowerCase().replace("1", "").replace("two", "2");
+		benchPlanners += modifiedPlannerName + "=\n";
+		benchPlanners += modifiedPlannerName + ".name=" + currentPlanner + "_" + modifiedPlannerName +  "\n";
 
-		benchPlanners += modifiedPlannerName + "." + inputs[i].id + "=" + inputs[i].value + "\n";
-	}
+		// Iterates for each planner parameter
+		$.each(params, function(index, param) {
+			benchPlanners += modifiedPlannerName + "." + params[index].id + "=" + params[index].value + "\n";
+		});
+
+	});
 
 	return benchPlanners;
+
 }
 
 
