@@ -23,8 +23,10 @@ a.collapsable-link:hover {
 	color: #555;
 }
 a.iconlink {
+	border: 1px solid #ddd;
+	border-radius: 4px;
 	color: #4bb467;
-	padding: 2px 5px;
+	padding: 2px 22px;
 	text-decoration: none;
 }
 a.iconlink:hover {
@@ -44,6 +46,14 @@ a.iconlink:active {
 
 body {
 	font-size: 16px;
+}
+.wrap {
+	min-height: 100%;
+	height: auto !important;
+	margin: 0 auto -40px;
+}
+.push {
+	height: 40px;
 }
 
 h1, h2, h3 {
@@ -127,11 +137,11 @@ pre {
 	color: #ddd !important;
 }
 .footer {
-	background-color: #022037;
-/*	background-image: -webkit-linear-gradient(top, #034170, #000);*/
-	color: #fff;
+	background-color: #f0f0f0;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
 	font-size: 14px;
-	margin-top: 20px;
+	height: 40px;
 	padding: 10px;
 	text-align: center;
 	width: 100%;

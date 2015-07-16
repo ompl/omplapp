@@ -86,6 +86,17 @@ function initialize() {
 			updateBounds();
 		});
 
+		// Select Visualization Theme
+		$('#vizTheme').change(function() {
+			var color = $('#vizTheme').val();
+			if (color == "light") {
+				renderer.setClearColor(0xfafafa);
+			} else {
+				// renderer.setClearColor(0x222222);
+				renderer.setClearColor(0x1a1a1a);
+			}
+		})
+
 		// Toggle display of bounding box
 		$('#showBoundingBox').change(function() {
 			if ($('#showBoundingBox').prop('checked') == true) {
@@ -109,7 +120,7 @@ function initialize() {
 			animationSpeed = 1000 - $('#animationSpeed').val();
 			$('#animateToggleBtn').click();
 			$('#animateToggleBtn').click();
-			console.log(animationSpeed);
+			// console.log(animationSpeed);
 		});
 
 		initializeBenchmarking();

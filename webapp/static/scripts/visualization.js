@@ -436,7 +436,7 @@ function showRobotPath() {
 				staticPathRobots.push(temp_robot);
 				scene.add(temp_robot);
 			}
-			console.log(staticPathRobots);
+			// console.log(staticPathRobots);
 
 		});
 
@@ -500,5 +500,4 @@ function quaternionToAxisDegrees(q) {
 
 	return rot;
 }
-
 

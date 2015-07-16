@@ -194,7 +194,7 @@ function startBenchmarking() {
 		if (getBenchmarkingPlanners() == "") {
 			showAlert("benchmark", "warning", "Please add one or more planners to benchmark.");
 		} else if (cfgText == null){
-			showAlert("benchmark", "danger", "Problem was not properly configured. Ensure all fields are completed and try again.");
+			showAlert("benchmark", "warning", "Problem was not properly configured. Ensure all fields are completed and try again.");
 		} else {
 			var form = new FormData();
 			form.append('cfg', cfgText);
@@ -207,7 +207,7 @@ function startBenchmarking() {
 				data: form,
 				success: function(data){
 					console.log(data);
-					var url = "http://127.0.0.1:4407/?job=" + data
+					var url = "http://127.0.0.1:5001/?job=" + data
 					var msg = "The benchmark job was submitted successfully. ";
 					msg += "The results will be available at: <a target='none' href='" + url + "'>" + url +  "</a>";
 					showAlert("benchmark", "success", msg);
@@ -223,7 +223,7 @@ function startBenchmarking() {
 			});
 		}
 	} else {
-		showAlert("benchmark", "warning", "Please check the benchmarking settings and try again. Time Limit * Memory Limit * Run Count cannot exceed 1,000,000.");
+		showAlert("benchmark", "warning", "Please check the benchmarking settings and try again. Time &times; Memory &times;  Runs cannot exceed 1,000,000.");
 	}
 }
 
