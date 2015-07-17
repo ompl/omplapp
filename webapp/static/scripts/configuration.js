@@ -588,12 +588,14 @@ function solve(){
 			problemData['env_loc'] = env_loc;
 			problemData['robot_loc'] = robot_loc;
 
+			problemData['session_id'] = sessionID;
 
 			if ($("[name='runs']").val() >= 1) {
 				problemData['runs'] = $("[name='runs']").val();
 			} else {
 				problemData['runs'] = 1;
 			}
+
 		}
 
 		// Get the params for the specific planner

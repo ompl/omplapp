@@ -80,3 +80,11 @@ Mousetrap.bind('ctrl+o', function(e) {
 		$("#config").click();
 	}
 });
+
+Mousetrap.bind('ctrl+u', function(e) {
+	if ($("#problems").val() == "custom") {
+		$("#configuration-page").click();
+		$("#problem-tab").click();
+		$("#uploadModelsButton").click();
+	}
+});

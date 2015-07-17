@@ -13,13 +13,6 @@ except:
 
 import tempfile
 
-import smtplib
-from email.mime.application import MIMEApplication
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email.mime.text import MIMEText
-from email.utils import COMMASPACE, formatdate
-
 import flask
 from flask import Flask
 from werkzeug import secure_filename
@@ -107,13 +100,12 @@ def parse_cfg(cfg_path):
 	return config._sections['problem']
 
 
-def save_cfg_file(name, text):
+def save_cfg_file(name, session_id, text):
 	"""
 	Saves a .cfg file intended for benchmarking
 	"""
 
-	file_loc = os.path.join(app.config['PROBLEM_FILES'], name);
-	print("Wring cfg text: " + text)
+	file_loc = join('static/sessions', session_id, name);
 	f = open(file_loc + ".cfg", 'w')
 	f.write(text)
 	f.close()
@@ -293,7 +285,7 @@ def solve_multiple(runs, problem, flask_request_form):
 	return result
 
 @celery.task()
-def benchmark(name, cfg_loc, db_filename):
+def benchmark(name, session_id, cfg_loc, db_filename):
 	"""
 	Runs ompl_benchmark on cfg_loc and converts the resulting log file to a
 	database with ompl_benchmark_statistics.
@@ -305,50 +297,7 @@ def benchmark(name, cfg_loc, db_filename):
 	os.system("ompl_benchmark " + cfg_loc + ".cfg")
 
 	# Convert .log into database
-	os.system("python ../ompl/scripts/ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/problem_files/" + db_filename)
-
-	# Notify the user that the benchmarking job is complete
-	# db = open("static/problem_files/" + db_id + ".db", 'r')
-	# send_email(name, db, db_id, user_email)
-
-
-def send_email(name, db, db_id, user_email):
-	"""
-	Notifies the user via email that their benchmark job is complete. Provides
-	a link to Planner Arena with results as well as an attached database file.
-	"""
-
-	# TEMPORARY: Get email password from file
-	passfile = open("pass", "r")
-	username = "prrb02@gmail.com"
-	password = passfile.read();
-
-	# Construct notification email
-	db_name = name + ".db"
-	subject = "OMPL Benchmarking Results"
-
-	msg = MIMEMultipart()
-	msg['Subject'] = subject
-	msg['From'] = username
-	msg['To'] = user_email
-
-	msg_body = "OMPL Web\n\n"
-	msg_body += "Benchmarking for problem '" + name + "' is complete.\n\n"
-	msg_body += "View the results at: http://127.0.0.1:4290/?id=" + db_id + "\n\n"
-	msg_body += "The results database has also been attached to this email."
-	msg.attach(MIMEText(msg_body))
-
-	# Attach the database
-	attachment = MIMEApplication(db.read())
-	attachment.add_header('Content-Disposition', 'attachment', filename=db_name)
-	msg.attach(attachment)
-
-	# Send email
-	s = smtplib.SMTP('smtp.gmail.com:25')
-	s.starttls()
-	s.login(username, password)
-	s.sendmail(username, [user_email], msg.as_string())
-	s.quit()
+	os.system("python ../ompl/scripts/ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/sessions/" + session_id + "/" + db_filename)
 
 
 ########## Flask ##########
@@ -382,7 +331,7 @@ def create_session():
 	"""
 	"""
 
-	session_path = tempfile.mkdtemp(prefix="user_", dir="static/sessions")
+	session_path = tempfile.mkdtemp(prefix="", dir="static/sessions")
 	session_name = basename(session_path)
 
 	return session_name
@@ -492,11 +441,13 @@ def request_models(problem_name):
 def init_benchmark():
 	print("Called benchmark.")
 
+	session_id = flask.request.form['session_id']
+	session_dir = join("static/sessions", session_id)
 	cfg = flask.request.form['cfg']
 	cfg_name = flask.request.form['filename']
-	cfg_loc = save_cfg_file(cfg_name, cfg)
+	cfg_loc = save_cfg_file(cfg_name, session_id, cfg)
 
-	db_file, db_filepath = tempfile.mkstemp(suffix=".db", prefix="benchmark_", dir="static/problem_files")
+	db_file, db_filepath = tempfile.mkstemp(suffix=".db", prefix="", dir=session_dir)
 
 	# Close the db_file, since we don't need it right now
 	os.close(db_file)
@@ -504,7 +455,7 @@ def init_benchmark():
 	db_filename = basename(db_filepath)
 	print("Created a placeholder db file: %s" % db_filename)
 
-	result = benchmark.delay(cfg_name, cfg_loc, db_filename)
+	result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename)
 
 	return db_filename
 
