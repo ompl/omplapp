@@ -5,14 +5,15 @@ var intervalID;
 var solutionData;
 var animateRobot;
 var animationSpeed;
+var sessionID;
 var env_loc;
 var robot_loc;
-
 
 /* Load the configuration page */
 $(document).ready(function() {
 	$('#configuration-page').click();
 	initialize();
+	getSessionID();
 });
 
 
@@ -133,6 +134,22 @@ function initialize() {
 
 /* Set and Get Server Data */
 
+function getSessionID(){
+	$.ajax({
+		url: 'omplapp/session',
+		type: 'GET',
+		success: function (data, textStatus, jqXHR) {
+			// console.log("Got session id: " + data);
+			sessionID = data;
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			console.log("Error getting session id.");
+			console.log(jqXHR, textStatus, errorThrown);
+		}
+	});
+}
+
+
 /**
  * Given that the planners have been retrieved from the server, creates the
  * parameter fields for a specific planner and adds them to the page.
@@ -235,6 +252,7 @@ function loadRemoteProblem(problem_name) {
 function uploadModels() {
 	// Read the input fields
 	var formData = new FormData($('form')[0]);
+	formData.append('session_id', sessionID);
 
 	var valid = validateFiles();
 

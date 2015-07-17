@@ -377,6 +377,17 @@ def load_benchmarking():
 def load_about():
 	return flask.render_template("components/about.html")
 
+@app.route('/omplapp/session')
+def create_session():
+	"""
+	"""
+
+	session_path = tempfile.mkdtemp(prefix="user_", dir="static/sessions")
+	session_name = basename(session_path)
+
+	return session_name
+
+
 # Problem Configuration
 @app.route('/omplapp/planners')
 def planners():
@@ -428,23 +439,26 @@ def upload_models():
 	to visualize.
 	"""
 
-	robotFile = flask.request.files['robot']
-	envFile = flask.request.files['env']
+	robot = flask.request.files['robot']
+	env = flask.request.files['env']
+
+	session_id = flask.request.form['session_id']
+	session_dir = join("static/sessions", session_id)
 
 	file_locs = {}
 
 	# Check that the uploaded files are valid
-	if robotFile and envFile:
-		if allowed_file(robotFile.filename) and allowed_file(envFile.filename):
+	if robot and env:
+		if allowed_file(robot.filename) and allowed_file(env.filename):
 
 			# If valid files, save them to the server
-			robot_filename = secure_filename(robotFile.filename)
-			robotFile.save(os.path.join(app.config['PROBLEM_FILES'], robot_filename))
-			file_locs['robot_loc'] = join("static/problem_files", robot_filename)
+			robot_file = join(session_dir, secure_filename(robot.filename))
+			robot.save(robot_file)
+			file_locs['robot_loc'] = robot_file
 
-			env_filename = secure_filename(envFile.filename)
-			envFile.save(os.path.join(app.config['PROBLEM_FILES'], env_filename))
-			file_locs['env_loc'] = join("static/problem_files", env_filename)
+			env_file = join(session_dir, secure_filename(env.filename))
+			env.save(env_file)
+			file_locs['env_loc'] = env_file
 
 		else:
 			return "Error: Wrong file format. Robot and environment files must be .dae"
