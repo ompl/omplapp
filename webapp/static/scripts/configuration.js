@@ -651,7 +651,7 @@ function waitForSolution(taskID) {
 			}
 		});
 
-	}, 1000);
+	}, 2000);
 }
 
 

@@ -154,10 +154,14 @@
 								<td><input type="number" step="any" name="volume.min.z" class="bounds form-field form-control input-sm"></td>
 								<td><input type="number" step="any" name="volume.max.z" class="bounds form-field form-control input-sm"></td>
 							</tr>
+							<tr>
+								<td colspan=2>Show Bounding Box</td>
+								<td><input type='checkbox' id='showBoundingBox' checked></input></td>
+							</tr>
 						</tbody>
 					</table>
 					<center>
-						<button class="button btn btn-default" onclick="estimateBounds()">Estimate Bounding Box</button>
+						<button class="button btn btn-default" onclick="calculateBounds()">Calculate Bounding Box</button>
 					</center>
 				</div>
 				<!-- End Bounds Tab -->
@@ -251,11 +255,7 @@
 						<tbody>
 							<tr>
 								<td>Show Axis Helper</td>
-								<td><input type='checkbox' id='showAxisHelper' checked></input></td>
-							</tr>
-							<tr>
-								<td>Show Bounding Box</td>
-								<td><input type='checkbox' id='showBoundingBox' checked></input></td>
+								<td><input type='checkbox' id='showAxisHelper'></input></td>
 							</tr>
 							<tr>
 								<td>Visualization Theme</td>

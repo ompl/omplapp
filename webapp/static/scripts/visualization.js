@@ -68,8 +68,9 @@ function initViz() {
 	controls = new THREE.TrackballControls(camera, renderer.domElement);
 	controls.zoomSpeed = 0.5;
 
-	// Create the axis helper
+	// Create the axis helper, hidden by default, can be turned on
 	axisHelper = new THREE.AxisHelper( 500 );
+	axisHelper.visible = false;
 	scene.add( axisHelper );
 
 	// Create a light and attach it to the camera
@@ -297,7 +298,7 @@ function updateBounds() {
  * @param None
  * @return None
  */
-function estimateBounds() {
+function calculateBounds() {
 	var estimated = new THREE.BoundingBoxHelper(env, 0x000000);
 	estimated.update();
 
