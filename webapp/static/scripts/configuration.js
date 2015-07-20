@@ -8,6 +8,7 @@ var animationSpeed;
 var sessionID;
 var env_loc;
 var robot_loc;
+var MAX_UPLOAD_SIZE = 5000000; // In bytes, sets limit to 5MB
 
 /* Load the configuration page */
 $(document).ready(function() {
@@ -190,7 +191,7 @@ function loadRemoteProblem(problemName) {
 	var form = new FormData();
 	form.append('session_id', sessionID);
 	form.append('problem_name', problemName);
-	
+
 	var temp = {'session_id':sessionID, 'problem_name':problemName}
 
 	// Retrieve problem configuration:
@@ -313,47 +314,52 @@ function loadConfig() {
 		reader.readAsText(cfgFile);
 
 		reader.onload = function () {
-			var data = parseConfig(reader.result);
+			try {
+				var data = parseConfig(reader.result);
 
-			var startQ = axisAngleToQuaternion(data['start.axis.x'],
-				data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-			var startRot = quaternionToAxisDegrees(startQ);
+				var startQ = axisAngleToQuaternion(data['start.axis.x'],
+					data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+				var startRot = quaternionToAxisDegrees(startQ);
 
-			var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-				data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-			var goalRot = quaternionToAxisDegrees(goalQ);
+				var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+					data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+				var goalRot = quaternionToAxisDegrees(goalQ);
 
-			// Load the data
-			$("[name='name']").val(data['name']);
-			$("[name='start.x']").val(data['start.x']);
-			$("[name='start.y']").val(data['start.y']);
-			$("[name='start.z']").val(data['start.z']);
-			$("[name='start.axis.x']").val(startRot.x);
-			$("[name='start.axis.y']").val(startRot.y);
-			$("[name='start.axis.z']").val(startRot.z);
-			// $("[name='start.theta']").val(data['start.theta']);
-			$("[name='goal.x']").val(data['goal.x']);
-			$("[name='goal.y']").val(data['goal.y']);
-			$("[name='goal.z']").val(data['goal.z']);
-			$("[name='goal.axis.x']").val(goalRot.x);
-			$("[name='goal.axis.y']").val(goalRot.y);
-			$("[name='goal.axis.z']").val(goalRot.z);
-			// $("[name='goal.theta']").val(data['goal.theta']);
-			$("[name='volume.min.x']").val(data['volume.min.x']);
-			$("[name='volume.min.y']").val(data['volume.min.y']);
-			$("[name='volume.min.z']").val(data['volume.min.z']);
-			$("[name='volume.max.x']").val(data['volume.max.x']);
-			$("[name='volume.max.y']").val(data['volume.max.y']);
-			$("[name='volume.max.z']").val(data['volume.max.z']);
+				// Load the data
+				$("[name='name']").val(data['name']);
+				$("[name='start.x']").val(data['start.x']);
+				$("[name='start.y']").val(data['start.y']);
+				$("[name='start.z']").val(data['start.z']);
+				$("[name='start.axis.x']").val(startRot.x);
+				$("[name='start.axis.y']").val(startRot.y);
+				$("[name='start.axis.z']").val(startRot.z);
+				// $("[name='start.theta']").val(data['start.theta']);
+				$("[name='goal.x']").val(data['goal.x']);
+				$("[name='goal.y']").val(data['goal.y']);
+				$("[name='goal.z']").val(data['goal.z']);
+				$("[name='goal.axis.x']").val(goalRot.x);
+				$("[name='goal.axis.y']").val(goalRot.y);
+				$("[name='goal.axis.z']").val(goalRot.z);
+				// $("[name='goal.theta']").val(data['goal.theta']);
+				$("[name='volume.min.x']").val(data['volume.min.x']);
+				$("[name='volume.min.y']").val(data['volume.min.y']);
+				$("[name='volume.min.z']").val(data['volume.min.z']);
+				$("[name='volume.max.x']").val(data['volume.max.x']);
+				$("[name='volume.max.y']").val(data['volume.max.y']);
+				$("[name='volume.max.z']").val(data['volume.max.z']);
 
-			$("[name='time_limit']").val(data['time_limit']);
-			$("[name='mem_limit']").val(data['mem_limit']);
-			$("[name='run_count']").val(data['run_count']);
+				$("[name='time_limit']").val(data['time_limit']);
+				$("[name='mem_limit']").val(data['mem_limit']);
+				$("[name='run_count']").val(data['run_count']);
 
-			setTimeout(function() {
-				updatePose();
-				updateBounds();
-			}, 100);
+				setTimeout(function() {
+					updatePose();
+					updateBounds();
+				}, 100);
+			} catch (e) {
+				showAlert("configuration", "danger", "There was a problem parsing the configuration file.")
+				console.log(e);
+			}
 		}
 	} else {
 		showAlert("configuration", "warning" , "Please select a valid configuration file.");
@@ -374,16 +380,23 @@ function parseConfig(cfgText) {
 	var cfgLines = cfgText.split("\n");
 
 	for (var i=0; i < cfgLines.length; i++) {
-		if(cfgLines[i][0] != "[") {
-			// Remove all extra spacing
-			var line = cfgLines[i].replace(/\s+/g, '');
-
-			// Split into (key, value) pairs
-			var items = line.split("=");
-			cfgData[items[0]]= items[1];
+		// Remove all extra spacing
+		var line = cfgLines[i].replace(/\s+/g, '');
+		if(line == ""){
+			continue;
 		} else {
-			// This config line isn't used
-			// console.log("Ignored: ", cfgLines[i]);
+			if(line[0] != "[") {
+				// Split into (key, value) pairs
+				var items = line.split("=");
+				if (items[1] == null){
+					throw "Invalid configuration on line containing: " + items[0];
+				} else {
+					cfgData[items[0]]= items[1];
+				}
+			} else {
+				// This config line isn't used
+				// console.log("Ignored: ", cfgLines[i]);
+			}
 		}
 	}
 
@@ -529,9 +542,14 @@ function validateFiles() {
 
 	if (env_file != null && robot_file != null) {
 		if (env_file.name.indexOf(".dae") > 0 && robot_file.name.indexOf(".dae") > 0) {
-			return true;
+			if (env_file.size < MAX_UPLOAD_SIZE && robot_file.size < MAX_UPLOAD_SIZE) {
+				return true;
+			} else {
+				var max_size = MAX_UPLOAD_SIZE / 1000000;
+				var msg = "Robot and environment files must be smaller than " + max_size + " MB each."
+				showAlert("configuration", "warning", msg);
+			}
 		} else {
-			alert('error;');
 			showAlert("configuration", "warning", "Robot and environment files must be in the .dae format.");
 		}
 	} else {
