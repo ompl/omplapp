@@ -22,6 +22,8 @@ from celery.result import AsyncResult
 
 ompl_app_root = dirname(dirname(abspath(__file__)))
 ompl_resources_dir = join(ompl_app_root, 'resources/3D')
+problem_files = 'static/problem_files'
+
 try:
 	import ompl
 	from ompl import base as ob
@@ -41,8 +43,6 @@ except:
 # Helper functions from helpers.py
 import helpers
 
-# Location of .dae files
-PROBLEM_FILES = join(dirname(abspath(__file__)), 'static/problem_files')
 
 # Configure Flask and Celery
 app = flask.Flask(__name__)
@@ -416,22 +416,23 @@ def upload_models():
 
 	return json.dumps(file_locs)
 
-@app.route("/omplapp/problem/<problem_name>", methods=['GET'])
-def request_models(problem_name):
+@app.route("/omplapp/request_problem", methods=['POST'])
+def request_problem():
 	"""
 	Sends the user the user the location of the requested problem's model files
 	and the problem configuration settings
 	"""
+	problem_name = flask.request.form['problem_name']
+
 	robot_filename = problem_name + "_robot.dae"
 	env_filename = problem_name + "_env.dae"
 	cfg_filename = problem_name + ".cfg"
 
-	cfg_file = join(app.config['PROBLEM_FILES'], cfg_filename)
+	cfg_file = join(problem_files, cfg_filename)
 	cfg_data = parse_cfg(cfg_file)
 
-	# Store the location of the robot and env models
-	cfg_data['robot_loc'] = os.path.join("static/problem_files", robot_filename)
-	cfg_data['env_loc'] = os.path.join("static/problem_files", env_filename)
+	cfg_data['robot_loc'] = join(problem_files, robot_filename)
+	cfg_data['env_loc'] = join(problem_files, env_filename)
 
 	return json.dumps(cfg_data)
 

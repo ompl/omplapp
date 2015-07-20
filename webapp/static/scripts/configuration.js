@@ -186,59 +186,71 @@ function load_planner_params(planner_name) {
  * @param {string} problem_name The name of problem to load.
  * @return None
  */
-function loadRemoteProblem(problem_name) {
+function loadRemoteProblem(problemName) {
+	var form = new FormData();
+	form.append('session_id', sessionID);
+	form.append('problem_name', problemName);
+	
+	var temp = {'session_id':sessionID, 'problem_name':problemName}
+
 	// Retrieve problem configuration:
-	var url = "omplapp/problem/" + problem_name;
-	$.get(url, function(data) {
-		var data = JSON.parse(data);
-		env_loc = data['env_loc'];
-		robot_loc = data['robot_loc'];
+	$.ajax({
+		url: "omplapp/request_problem",
+		type: 'POST',
+		data: temp,
+		success: function (data, textStatus, jqXHR) {
+			var data = JSON.parse(data);
+			env_loc = data['env_loc'];
+			robot_loc = data['robot_loc'];
 
-		var startQ = axisAngleToQuaternion(data['start.axis.x'],
-			data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-		var startRot = quaternionToAxisDegrees(startQ);
+			var startQ = axisAngleToQuaternion(data['start.axis.x'],
+				data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+			var startRot = quaternionToAxisDegrees(startQ);
 
-		var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-			data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-		var goalRot = quaternionToAxisDegrees(goalQ);
+			var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+				data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+			var goalRot = quaternionToAxisDegrees(goalQ);
 
-		// Load the data
-		$("[name='name']").val(data['name']);
-		$("[name='start.x']").val(data['start.x']);
-		$("[name='start.y']").val(data['start.y']);
-		$("[name='start.z']").val(data['start.z']);
-		$("[name='start.axis.x']").val(startRot.x);
-		$("[name='start.axis.y']").val(startRot.y);
-		$("[name='start.axis.z']").val(startRot.z);
-		// $("[name='start.theta']").val(data['start.theta']);
-		$("[name='goal.x']").val(data['goal.x']);
-		$("[name='goal.y']").val(data['goal.y']);
-		$("[name='goal.z']").val(data['goal.z']);
-		$("[name='goal.axis.x']").val(goalRot.x);
-		$("[name='goal.axis.y']").val(goalRot.y);
-		$("[name='goal.axis.z']").val(goalRot.z);
-		// $("[name='goal.theta']").val(data['goal.theta']);
-		$("[name='volume.min.x']").val(data['volume.min.x']);
-		$("[name='volume.min.y']").val(data['volume.min.y']);
-		$("[name='volume.min.z']").val(data['volume.min.z']);
-		$("[name='volume.max.x']").val(data['volume.max.x']);
-		$("[name='volume.max.y']").val(data['volume.max.y']);
-		$("[name='volume.max.z']").val(data['volume.max.z']);
+			// Load the data
+			$("[name='name']").val(data['name']);
+			$("[name='start.x']").val(data['start.x']);
+			$("[name='start.y']").val(data['start.y']);
+			$("[name='start.z']").val(data['start.z']);
+			$("[name='start.axis.x']").val(startRot.x);
+			$("[name='start.axis.y']").val(startRot.y);
+			$("[name='start.axis.z']").val(startRot.z);
+			// $("[name='start.theta']").val(data['start.theta']);
+			$("[name='goal.x']").val(data['goal.x']);
+			$("[name='goal.y']").val(data['goal.y']);
+			$("[name='goal.z']").val(data['goal.z']);
+			$("[name='goal.axis.x']").val(goalRot.x);
+			$("[name='goal.axis.y']").val(goalRot.y);
+			$("[name='goal.axis.z']").val(goalRot.z);
+			// $("[name='goal.theta']").val(data['goal.theta']);
+			$("[name='volume.min.x']").val(data['volume.min.x']);
+			$("[name='volume.min.y']").val(data['volume.min.y']);
+			$("[name='volume.min.z']").val(data['volume.min.z']);
+			$("[name='volume.max.x']").val(data['volume.max.x']);
+			$("[name='volume.max.y']").val(data['volume.max.y']);
+			$("[name='volume.max.z']").val(data['volume.max.z']);
 
-		$("[name='time_limit']").val(data['time_limit']);
-		$("[name='mem_limit']").val(data['mem_limit']);
-		$("[name='run_count']").val(data['run_count']);
+			$("[name='time_limit']").val(data['time_limit']);
+			$("[name='mem_limit']").val(data['mem_limit']);
+			$("[name='run_count']").val(data['run_count']);
 
-		// Load the robot and env models
-		drawModels(data['env_loc'], data['robot_loc']);
+			// Load the robot and env models
+			drawModels(data['env_loc'], data['robot_loc']);
 
-		// Give the models time to load, then update the positions and rotations
-		setTimeout(function() {
-			updatePose();
-			updateBounds();
-		}, 500);
-
-
+			// Give the models time to load, then update the positions and rotations
+			setTimeout(function() {
+				updatePose();
+				updateBounds();
+			}, 500);
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			console.log("Error requesting problem.");
+			console.log(jqXHR, textStatus, errorThrown);
+		}
 	});
 }
 
