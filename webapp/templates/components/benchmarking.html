@@ -42,28 +42,8 @@
 					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Add Planner &nbsp; <span class='caret'></span>
 					</button>
-					<ul class="dropdown-menu">
-						<!-- TODO: poplulate this dynamically when planners are retrieved -->
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.BKPIECE1')">BKPIECE1</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.EST')">EST</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.FMT')">FMT</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.KPIECE1')">KPIECE1</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.LBKPIECE1')">LBKPIECE1</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.LBTRRT')">LBTRRT</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.LazyPRM')">LazyPRM</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.LazyPRMstar')">LazyPRMstar</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.LazyRRT')">LazyRRT</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.PDST')">PDST</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.PRM')">PRM</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.PRMstar')">PRMstar</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.RRT')">RRT</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.RRTConnect')">RRTConnect</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.RRTstar')">RRTstar</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.SBL')">SBL</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.SPARS')">SPARS</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.SPARStwo')">SPARStwo</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.STRIDE')">STRIDE</a></li>
-						<li><a class="dropdown-link" onclick="addPlanner('ompl.geometric.TRRT')">TRRT</a></li>
+					<ul class="dropdown-menu" id="addingPlanners">
+						<!-- Poplulated by loadPlanners() in configuration.js -->
 					</ul>
 				</div>
 

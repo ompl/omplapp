@@ -32,13 +32,10 @@ function initialize() {
 		// Get the visualization ready
 		initViz();
 
-		// Retrieve the planners:
-		$.get( "omplapp/planners", function( data ) {
-			planners = JSON.parse(data);
-			// Set the default planner
-			load_planner_params("ompl.geometric.KPIECE1");
+		initializeBenchmarking();
 
-		});
+		// Retrieve the planners:
+		loadPlanners();
 
 		// When user picks planner, load the planner params
 		$("#planners").change(function() {
@@ -125,7 +122,6 @@ function initialize() {
 			// console.log(animationSpeed);
 		});
 
-		initializeBenchmarking();
 
 		// Load the about page
 		$("#about").load("omplapp/components/about");
@@ -135,6 +131,14 @@ function initialize() {
 
 /* Set and Get Server Data */
 
+/**
+ * Gets the unique identifier for this session from the server and stores
+ * it globally. This ID accompanies all future requests to the server
+ * to ensure that the necessary files are available.
+ *
+ * @param None
+ * @return None
+ */
 function getSessionID(){
 	$.ajax({
 		url: 'omplapp/session',
@@ -147,6 +151,44 @@ function getSessionID(){
 			console.log("Error getting session id.");
 			console.log(jqXHR, textStatus, errorThrown);
 		}
+	});
+}
+
+
+/**
+ * Retrieves planners from the server and loads up the available planners on both
+ * the configure problem page and benchmarking page
+ *
+ * @param None
+ * @return None
+ */
+function loadPlanners() {
+	$.get( "omplapp/planners", function( data ) {
+		planners = JSON.parse(data);
+
+		$.each(planners, function(fullName, data){
+			var shortName = fullName.split(".")[2];
+
+			// Configure problem page planners
+			$('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
+
+			// Benchmarking page add planners
+			$('#addingPlanners').append(
+				$('<li></li>').append(
+					$('<a></li>')
+						.attr("class", "dropdown-link")
+						.text(shortName)
+						.on("click", function() {
+							addPlanner(fullName);
+						})
+				)
+			);
+
+		});
+
+		// Set the default planner
+		load_planner_params("ompl.geometric.KPIECE1");
+		$('#planners').val("ompl.geometric.KPIECE1")
 	});
 }
 
