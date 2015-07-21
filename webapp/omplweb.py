@@ -30,7 +30,7 @@ try:
 	from ompl import geometric as og
 	from ompl import control as oc
 	from ompl import app as oa
-	from ompl import tools as ot
+	from ompl.util import LogLevel
 except:
 	sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
 	import ompl
@@ -38,11 +38,10 @@ except:
 	from ompl import geometric as og
 	from ompl import control as oc
 	from ompl import app as oa
-	from ompl import tools as ot
+	from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
 
 # Helper functions from helpers.py
 import helpers
-
 
 # Configure Flask and Celery
 app = flask.Flask(__name__)
@@ -53,8 +52,23 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
-# Create logger
-log = helpers.LogOutputHandler(3)
+
+class Logger(OutputHandler):
+	"""
+	Handles logging at different levels, extends OutputHandlerSTD.
+	"""
+
+	def __init__(self):
+		self.out = getOutputHandler()
+		setLogLevel(LogLevel.LOG_ERROR)
+
+
+	def log(self, text, level, filename, line):
+		if level >= getLogLevel():
+			self.out.log(text, level, filename, line)
+
+oh = Logger()
+oh.log("Log level is set to: %d" % getLogLevel(), LogLevel.LOG_INFO, "omplweb.py", 70)
 
 
 ########## OMPL ##########
@@ -142,11 +156,6 @@ def format_solution(path, solved):
 	else:
 		solution['solved'] = 'false'
 
-	# Grab the messages to send to the user
-	solution['messages'] = log.getMessages()
-	# Clear messages in preparation for next request
-	log.clearMessages()
-
 	return solution
 
 @celery.task()
@@ -207,7 +216,6 @@ def solve(problem, flask_request_form):
 
 	planner = eval("%s(space_info)" % problem['planner'])
 	ompl_setup.setPlanner(planner)
-	log.info("Using planner: %s\n" % ompl_setup.getPlanner().getName())
 
 	# TODO: This is not that good...find a better way to get planner params
 	params = str(planner.params()).split("\n")
@@ -223,44 +231,31 @@ def solve(problem, flask_request_form):
 	solution = {}
 	solved = ompl_setup.solve(float(problem['solve_time']))
 
-	log.info(str(ompl_setup))
-	log.info("\n\n")
-
 	## Check for validity
 	if solved:
 		path = ompl_setup.getSolutionPath()
 		initialValid = path.check()
 
 		if initialValid:
-			log.info("Initial path length: %d\n" % path.length())
-
 			# If if initially valid, attempt to simplify
 			ompl_setup.simplifySolution()
 			# Get the simplified path
 			simple_path = ompl_setup.getSolutionPath()
 			simplifyValid = simple_path.check()
 			if simplifyValid:
-				log.info("Simplified path was found.\n")
-				log.info("Simplified path length: %d\n" % path.length())
 				path = simple_path;
-			else:
-				log.info("Simplified path was invalid. Returned non-simplified path.\n")
-				log.info("Path length: %d\n" % path.length())
 
 			# Interpolate path
 			ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
-			log.info("Interpolating solution path to " + str(ns) + " states")
 			path.interpolate(ns)
 			if len(path.getStates()) != ns:
-				log.info("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.")
+				oh.log("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.", LogLevel.LOG_WARN, "omplweb.py", 256)
 
 			solution = format_solution(path, True)
 
 		else :
-			log.info("Path reported by planner seems to be invalid.\n")
 			solution = format_solution(path, False)
 	else:
-		log.info("No valid path was found with the provided configuration.\n")
 		solution = format_solution(None, False)
 
 	solution['name'] = str(problem['name'])
@@ -357,11 +352,11 @@ def upload():
 	runs = int(problem['runs'])
 	if runs > 1:
 		solve_task = solve_multiple.delay(runs, problem, flask.request.form)
-		log.debug("Started solving multiple runs with task id: " + solve_task.task_id)
+		oh.log("Started solving multiple runs with task id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
 		return str(solve_task.task_id)
 	else:
 		solve_task = solve.delay(problem, flask.request.form)
-		log.debug("Started solving task with id: " + solve_task.task_id)
+		oh.log("Started solving task with id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
 		return str(solve_task.task_id)
 
 @app.route('/omplapp/poll/<task_id>', methods=['POST'])
@@ -370,8 +365,6 @@ def poll(task_id):
 	Checks if the task corresponding to the input ID has completed. If the
 	task is done solving, the solution is returned.
 	"""
-
-	log.info("Recieved poll for task: " + task_id)
 
 	result = solve.AsyncResult(task_id)
 
