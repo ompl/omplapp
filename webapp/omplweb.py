@@ -12,6 +12,7 @@ except:
 	import configparser as ConfigParser
 
 import tempfile
+import webbrowser
 
 import flask
 from flask import Flask
@@ -20,6 +21,8 @@ from werkzeug import secure_filename
 from celery import Celery
 from celery.result import AsyncResult
 
+# Constants
+show_results = False
 ompl_app_root = dirname(dirname(abspath(__file__)))
 ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 problem_files = 'static/problem_files'
@@ -39,6 +42,7 @@ except:
 	from ompl import control as oc
 	from ompl import app as oa
 	from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
+
 
 # Configure Flask and Celery
 app = flask.Flask(__name__)
@@ -291,6 +295,10 @@ def benchmark(name, session_id, cfg_loc, db_filename):
 	# Convert .log into database
 	os.system("python ../ompl/scripts/ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/sessions/" + session_id + "/" + db_filename)
 
+	# Open the planner arena page when benchmarking is done
+	if show_results:
+		url = "http://127.0.0.1:8888/?user=" + session_id + "&job=" + db_filename
+		webbrowser.open(url)
 
 ########## Flask ##########
 
