@@ -166,12 +166,11 @@ function getBenchmarkingPlanners() {
  */
 function validateBenchmarkSettings() {
 	var time = $("[name='time_limit']").val();
-	var mem = $("[name='mem_limit']").val();
 	var runs = $("[name='run_count']").val();
 
-	if (time != null && mem != null && runs != null) {
-		if (time > 0 && mem > 0 && runs > 0) {
-			if (time * mem * runs < 1000000) {
+	if (time != null && runs != null) {
+		if (time > 0 && runs > 0) {
+			if (time * runs < 10000) {
 				return true;
 			}
 		}
@@ -223,7 +222,7 @@ function startBenchmarking() {
 			});
 		}
 	} else {
-		showAlert("benchmark", "warning", "Please check the benchmarking settings and try again. Time &times; Memory &times;  Runs cannot exceed 1,000,000.");
+		showAlert("benchmark", "warning", "Please check the benchmarking settings and try again. Time &times; Runs cannot exceed 10,000.");
 	}
 }
 

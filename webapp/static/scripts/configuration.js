@@ -493,7 +493,8 @@ function getConfigText() {
 		cfg += "\n";
 		cfg += "[benchmark]\n";
 		cfg += "time_limit = " + $("[name='time_limit']").val() + "\n";
-		cfg += "mem_limit = " + $("[name='mem_limit']").val() + "\n";
+		// Set arbitrary, large mem limit
+		cfg += "mem_limit = " + "10000\n"
 		cfg += "run_count = " + $("[name='run_count']").val() + "\n";
 
 		cfg += "\n";
