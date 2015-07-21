@@ -40,9 +40,6 @@ except:
 	from ompl import app as oa
 	from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
 
-# Helper functions from helpers.py
-import helpers
-
 # Configure Flask and Celery
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
