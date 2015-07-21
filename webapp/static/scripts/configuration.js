@@ -14,7 +14,6 @@ var MAX_UPLOAD_SIZE = 5000000; // In bytes, sets limit to 5MB
 $(document).ready(function() {
 	$('#configuration-page').click();
 	initialize();
-	getSessionID();
 });
 
 
@@ -231,16 +230,13 @@ function load_planner_params(planner_name) {
  */
 function loadRemoteProblem(problemName) {
 	var form = new FormData();
-	form.append('session_id', sessionID);
 	form.append('problem_name', problemName);
-
-	var temp = {'session_id':sessionID, 'problem_name':problemName}
 
 	// Retrieve problem configuration:
 	$.ajax({
 		url: "omplapp/request_problem",
 		type: 'POST',
-		data: temp,
+		data: form,
 		success: function (data, textStatus, jqXHR) {
 			var data = JSON.parse(data);
 			env_loc = data['env_loc'];
@@ -307,6 +303,9 @@ function loadRemoteProblem(problemName) {
 function uploadModels() {
 	// Read the input fields
 	var formData = new FormData($('form')[0]);
+	if (sessionID == null) {
+		getSessionID();
+	}
 	formData.append('session_id', sessionID);
 
 	var valid = validateFiles();
@@ -661,7 +660,6 @@ function solve(){
 			problemData['env_loc'] = env_loc;
 			problemData['robot_loc'] = robot_loc;
 
-			problemData['session_id'] = sessionID;
 
 			if ($("[name='runs']").val() >= 1) {
 				problemData['runs'] = $("[name='runs']").val();
