@@ -229,8 +229,7 @@ function load_planner_params(planner_name) {
  * @return None
  */
 function loadRemoteProblem(problemName) {
-	var form = new FormData();
-	form.append('problem_name', problemName);
+	var form = {'problem_name' : problemName};
 
 	// Retrieve problem configuration:
 	$.ajax({
