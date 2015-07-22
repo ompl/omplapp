@@ -17,7 +17,7 @@ from os.path import abspath, dirname, join
 import sys
 sys.path.insert(0, join(dirname(dirname(abspath(__file__))),'ompl/py-bindings'))
 from ompl.bindings_generator import code_generator_t, default_replacement
-from pyplusplus import function_transformers
+
 
 class ompl_app_generator_t(code_generator_t):
     def __init__(self):
@@ -32,8 +32,6 @@ class ompl_app_generator_t(code_generator_t):
         self.mb.class_('::ompl::app::AppBase<(ompl::app::AppType)1>').rename('AppBaseControl')
         self.mb.class_('::ompl::app::AppTypeSelector<(ompl::app::AppType)0>').rename('AppTypeGeometric')
         self.mb.class_('::ompl::app::AppTypeSelector<(ompl::app::AppType)1>').rename('AppTypeControl')
-        self.ompl_ns.class_('::ompl::app::RigidBodyGeometry').mem_fun('getCenter').add_transformation(
-            function_transformers.output_static_array(1, 3))
 
         # The virtual functions "solve" and "clear" from SimpleSetup are not redefined
         # in these derived classes, and for some reason Py++ doesn't export them

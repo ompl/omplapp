@@ -152,17 +152,6 @@ namespace ompl
                 3D. */
             base::RealVectorBounds inferEnvironmentBounds(void) const;
 
-            /** \brief Return the geometric center of robot part i.
-
-                Helper function for the webapp. */
-            void getCenter(unsigned int index, double center[3]) const
-            {
-                const aiVector3D &c = geom_.robotShift[index];
-                center[0] = c.x;
-                center[1] = c.y;
-                center[2] = c.z;
-            }
-
         protected:
 
             void computeGeometrySpecification(void);
