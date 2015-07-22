@@ -273,7 +273,7 @@ def solve_multiple(runs, problem, flask_request_form):
 	solutions = []
 
 	for i in range(0, runs):
-		print("Solving run number: {}".format(i))
+		oh.log("Solving run number: {}".format(i), LogLevel.LOG_INFO, "omplweb.py", 276)
 		solutions.append(solve(problem, flask_request_form))
 
 	result['solutions'] = solutions
@@ -438,7 +438,6 @@ def request_problem():
 # Benchmarking
 @app.route('/omplapp/benchmark', methods=['POST'])
 def init_benchmark():
-	print("Called benchmark.")
 
 	session_id = flask.request.form['session_id']
 	session_dir = join("static/sessions", session_id)
@@ -452,7 +451,6 @@ def init_benchmark():
 	os.close(db_file)
 
 	db_filename = basename(db_filepath)
-	print("Created a placeholder db file: %s" % db_filename)
 
 	result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename)
 
