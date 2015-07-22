@@ -138,7 +138,6 @@ function getBenchmarkingPlanners() {
 	// Iterates for each planner
 	$.each(plannerTables, function(idx, table) {
 		currentPlanner = table.id;
-		console.log(currentPlanner);
 		var params = $(this).find('input');
 
 		// Set the planner and name
@@ -198,10 +197,12 @@ function startBenchmarking() {
 			var form = new FormData();
 			form.append('cfg', cfgText);
 			form.append('filename', $("[name='name']").val());
-			if (sessionID == null) {
+			if (!sessionStorage.getItem("session_id")){
 				getSessionID();
+				form.append('session_id', sessionStorage.getItem("session_id"));
+			} else {
+				form.append('session_id', sessionStorage.getItem("session_id"));
 			}
-			form.append('session_id', sessionID);
 
 			$.ajax({
 				url: "/omplapp/benchmark",
@@ -209,7 +210,7 @@ function startBenchmarking() {
 				data: form,
 				success: function(data){
 					console.log(data);
-					var url = "http://127.0.0.1:8888/?" + "user=" + sessionID + "&job=" + data
+					var url = "http://127.0.0.1:8888/?" + "user=" + sessionStorage.getItem("session_id") + "&job=" + data
 					var msg = "The benchmark job was submitted successfully. ";
 					msg += "The results will be available at: <a target='none' href='" + url + "'>" + url +  "</a>";
 					showAlert("benchmark", "success", msg);

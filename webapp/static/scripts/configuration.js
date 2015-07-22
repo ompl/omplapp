@@ -5,10 +5,9 @@ var intervalID;
 var solutionData;
 var animateRobot;
 var animationSpeed;
-var sessionID;
 var env_loc;
 var robot_loc;
-var MAX_UPLOAD_SIZE = 5000000; // In bytes, sets limit to 5MB
+var MAX_UPLOAD_SIZE = 50000000; // In bytes, sets limit to 50MB
 
 /* Load the configuration page */
 $(document).ready(function() {
@@ -70,9 +69,6 @@ function initialize() {
 
 		// Open the problem config tab
 		$('#problem-tab').click()
-
-		// If user previously solved a problem, reload those results
-		$('#results').html(results);
 
 		// Refresh the viz if pose fields are changed
 		$('.pose').change(function () {
@@ -143,13 +139,14 @@ function getSessionID(){
 		url: 'omplapp/session',
 		type: 'GET',
 		success: function (data, textStatus, jqXHR) {
-			// console.log("Got session id: " + data);
-			sessionID = data;
+			console.log("Got session id: " + data);
+			sessionStorage.setItem("session_id", data);
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			console.log("Error getting session id.");
 			console.log(jqXHR, textStatus, errorThrown);
-		}
+		},
+		async: false
 	});
 }
 
@@ -302,10 +299,12 @@ function loadRemoteProblem(problemName) {
 function uploadModels() {
 	// Read the input fields
 	var formData = new FormData($('form')[0]);
-	if (sessionID == null) {
+	if (!sessionStorage.getItem("session_id")){
 		getSessionID();
+		formData.append('session_id', sessionStorage.getItem("session_id"));
+	} else {
+		formData.append('session_id', sessionStorage.getItem("session_id"));
 	}
-	formData.append('session_id', sessionID);
 
 	var valid = validateFiles();
 
@@ -614,8 +613,6 @@ function solve(){
 	// Check that all fields are filled in
 	var validConfig = validateFields();
 	if (validConfig == true) {
-		var html = "";
-
 		// Bring up the loading screen
 		$.blockUI({
 			css: {
@@ -692,8 +689,7 @@ function solve(){
 			},
 			error: function(data) {
 				$.unblockUI();
-				html += "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
-				$('#results').html(html);
+				showAlert("configuration", "danger", "Server responded with an error. Check the problem configuration and try again.");
 
 				console.log('Solve failed, server responded with an error.', data);
 			},
@@ -754,8 +750,6 @@ function waitForSolution(taskID) {
 function displaySolution(data) {
 	solutionData = JSON.parse(data);
 
-	var html = "<br><br><pre>"
-
 	if (solutionData.multiple === "true") {
 		var numSolved = 0;
 
@@ -764,12 +758,6 @@ function displaySolution(data) {
 				drawSolutionPath(solution.path);
 				numSolved += 1;
 			}
-			html += "########## Run " + numSolved + " of " + solutionData.solutions.length + " ##########<br>"
-			html += solution.name;
-			html += "<br>";
-			html += solution.messages;
-			html += "<br><br>";
-
 		});
 
 		var msg = "Solutions found for " + numSolved + " of " + solutionData.solutions.length + " runs.";
@@ -788,19 +776,7 @@ function displaySolution(data) {
 		} else {
 			showAlert("configuration", "info", "No solution found. Try solving again.");
 		}
-
-		html += solutionData.name;
-		html += "<br>";
-		html += solutionData.messages;
-		html += "<br><br>"
-
 	}
-
-	html += "</pre>";
-
-	results = html;
-
-	$('#results').html(html);
 
 	$.unblockUI();
 
