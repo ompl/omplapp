@@ -15,6 +15,7 @@ var axisHelper;
 
 /* Problem Objects */
 var env;
+var robot_model;
 var start_robot;
 var goal_robot;
 var bbox;
@@ -108,7 +109,6 @@ function render() {
  * @return None
  */
 function drawModels(e_loc, r_loc) {
-
 	// Store locations globally
 	env_loc = e_loc;
 	robot_loc = r_loc;
@@ -130,30 +130,26 @@ function drawModels(e_loc, r_loc) {
 	});
 
 	// Load the robot file
-	var start_robot_loader = new THREE.ColladaLoader();
-	start_robot_loader.options.convertUpAxis = true;
-	start_robot_loader.load(robot_loc, function(collada){
+	var robot_loader = new THREE.ColladaLoader();
+	robot_loader.options.convertUpAxis = true;
+	robot_loader.load(robot_loc, function(collada){
 
 		// Add the start robot to the scene
-		start_robot = collada.scene.children[0];
+		robot_model = collada.scene.children[0];
+		robot_model.position.set(0,0,0);
+		robot_model.scale.set(1,1,1);
+
+		start_robot = robot_model.clone();
 		start_robot.name = "start_robot";
-		start_robot.position.set(0,0,0);
-		start_robot.scale.set(1,1,1);
 		scene.add(start_robot);
-	});
 
-	// Load the robot file, again
-	var goal_robot_loader = new THREE.ColladaLoader();
-	goal_robot_loader.options.convertUpAxis = true;
-	goal_robot_loader.load(robot_loc, function(collada){
-
-		// Add the goal robot to the scene
-		goal_robot = collada.scene.children[0];
-		goal_robot.name = "goal_robot"
-		goal_robot.position.set(0,0,0);
-		goal_robot.scale.set(1,1,1);
+		goal_robot = robot_model.clone();
+		goal_robot.name = "goal_robot";
 		scene.add(goal_robot);
 	});
+
+
+	applyOffset(env_loc, robot_loc);
 
 	// Create the bounding box
 	var geometry = new THREE.BoxGeometry(1,1,1);
@@ -164,6 +160,44 @@ function drawModels(e_loc, r_loc) {
 	bbox = new THREE.Mesh(geometry, material);
 	scene.add(bbox);
 
+}
+
+
+/**
+ * description
+ *
+ */
+function applyOffset(env, robot) {
+	var form = {}
+	form['env_loc'] = env;
+	form['robot_loc'] = robot;
+	$.ajax({
+		url: '/omplapp/offset',
+		type: 'POST',
+		data: form,
+		success: function (data, textStatus, jqXHR) {
+			// success callback
+			offset = JSON.parse(data);
+			console.log("Offset: ", offset);
+
+			robot_model.children[0].position.x -= offset.x;
+			robot_model.children[0].position.y -= offset.y;
+			robot_model.children[0].position.z -= offset.z;
+
+			start_robot.children[0].position.x -= offset.x;
+			start_robot.children[0].position.y -= offset.y;
+			start_robot.children[0].position.z -= offset.z;
+
+			goal_robot.children[0].position.x -= offset.x;
+			goal_robot.children[0].position.y -= offset.y;
+			goal_robot.children[0].position.z -= offset.z;
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			// error callback
+			console.log(jqXHR);
+			showAlert("configuration", "danger", "Error loading robot model. Refresh the page and try again.");
+		}
+	});
 }
 
 
@@ -227,7 +261,7 @@ function updatePose() {
 	start.y = $("[name='start.y']").val()
 	start.z = $("[name='start.z']").val()
 	// TODO: Try catch here in case not loaded yet, to avoid error msg
-	start_robot.position.set(start.x, start.y, start.z)
+	start_robot.position.set(start.x, start.y,  start.z)
 
 	// Update start rotation
 	var startRot = {};
@@ -329,24 +363,12 @@ function visualizeSolution(solutionData) {
 	drawSolutionPath(path);
 
 	// Create the path robot
-	var path_robot_loader = new THREE.ColladaLoader();
-	path_robot_loader.options.convertUpAxis = true;
-	path_robot_loader.load(robot_loc, function(collada){
-		path_robot = collada.scene.children[0];
-		path_robot.scale.set(1,1,1);
-
-		// Initially place the path robot at the start state
-		path_robot.position.x = start_robot.position.x;
-		path_robot.position.y = start_robot.position.y;
-		path_robot.position.z = start_robot.position.z;
-
-		path_robot.rotation.x = start_robot.rotation.x;
-		path_robot.rotation.y = start_robot.rotation.y;
-		path_robot.rotation.z = start_robot.rotation.z;
-
-		scene.add(path_robot);
-	});
-
+	path_robot = robot_model.clone();
+	path_robot.position.x = start_robot.position.x;
+	path_robot.position.y = start_robot.position.y;
+	path_robot.position.z = start_robot.position.z;
+	path_robot.visible = false;
+	scene.add(path_robot);
 }
 
 
@@ -363,6 +385,7 @@ function drawSolutionPath(path) {
 			parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
 		));
 	}
+
 
 	// Create the spline
 	var spline = new THREE.SplineCurve3(pathVectorsArray);
@@ -394,8 +417,8 @@ function moveRobot() {
 	// If the robot is not at the end of the path, step forward
 	if (step < path.length) {
 		// Set the new position
-		path_robot.position.set(path[step][0], path[step][1], path[step][2]);
-
+		path_robot.position.set(parseFloat(path[step][0]), parseFloat(path[step][1]),
+			parseFloat(path[step][2]));
 		// Set the new rotation
 		path_robot.quaternion.set(parseFloat(path[step][3]), parseFloat(path[step][4]),
 			parseFloat(path[step][5]), parseFloat(path[step][6]));
@@ -420,26 +443,17 @@ function showRobotPath() {
 	// If the path robots do not already exist, create them
 	if (staticPathRobots.length == 0) {
 
-		// Load the robot file
-		var path_robot_loader = new THREE.ColladaLoader();
-		path_robot_loader.options.convertUpAxis = true;
-		path_robot_loader.load(robot_loc, function(collada){
-			var path_robot = collada.scene;
-			var skin = collada.skins[0];
-
-			// Clone the path robot and place it along each point in the path
-			for (var i = 0; i < path.length; i++){
-				var temp_robot = path_robot.clone();
-				temp_robot.scale.set(1,1,1);
-				temp_robot.position.set(path[i][0], path[i][1], path[i][2]);
-				temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]),
-					parseFloat(path[i][5]), parseFloat(path[i][6]));
-				staticPathRobots.push(temp_robot);
-				scene.add(temp_robot);
-			}
-			// console.log(staticPathRobots);
-
-		});
+		// Clone the path robot and place it along each point in the path
+		for (var i = 0; i < path.length; i++){
+			var temp_robot = robot_model.clone();
+			temp_robot.scale.set(1,1,1);
+			temp_robot.position.set(parseFloat(path[i][0]), parseFloat(path[i][1]),
+				parseFloat(path[i][2]));
+			temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]),
+				parseFloat(path[i][5]), parseFloat(path[i][6]));
+			staticPathRobots.push(temp_robot);
+			scene.add(temp_robot);
+		}
 
 	} else {
 		// Since the static robots have already been created, just reload them
