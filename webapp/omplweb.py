@@ -47,11 +47,7 @@ except:
 # Configure Flask and Celery
 app = flask.Flask(__name__)
 app.config.from_object(__name__)
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379'
-
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+celery = Celery(app.name, broker='amqp://', backend='rpc://')
 
 
 class Logger(OutputHandler):
@@ -148,7 +144,7 @@ def format_solution(path, solved):
 
 		for line in path_matrix:
 			# print "\t " + line
-			path_list.append(line.split(" "))
+			path_list.append(line.strip().split(" "))
 
 		# print path_list
 		solution['path'] = path_list;
@@ -158,6 +154,24 @@ def format_solution(path, solved):
 		solution['solved'] = 'false'
 
 	return solution
+
+
+def get_offset(env_mesh, robot_mesh):
+	ompl_setup = oa.SE3RigidBodyPlanning()
+	ompl_setup.setEnvironmentMesh(str(env_mesh))
+	ompl_setup.setRobotMesh(str(robot_mesh))
+
+	# full state
+	start = ompl_setup.getDefaultStartState()
+	# just the first geometric component
+	start = ompl_setup.getGeometricComponentState(start,0)
+	# extract x,y,z coords
+	print start
+	offset = {}
+	offset['x'] = start[0]
+	offset['y'] = start[1]
+	offset['z'] = start[2]
+	return offset
 
 @celery.task()
 def solve(problem, flask_request_form):
@@ -188,6 +202,7 @@ def solve(problem, flask_request_form):
 
 	ompl_setup.setEnvironmentMesh(str(problem['env_loc']))
 	ompl_setup.setRobotMesh(str(problem['robot_loc']))
+
 
 	# Set the start state
 	start = ob.State(space)
@@ -342,6 +357,14 @@ def create_session():
 def planners():
 	planners = create_planners()
 	return json.dumps(planners)
+
+@app.route('/omplapp/offset', methods=["POST"])
+def find_offset():
+	env_mesh = flask.request.form['env_loc']
+	robot_mesh = flask.request.form['robot_loc']
+
+	offset = get_offset(env_mesh, robot_mesh)
+	return json.dumps(offset)
 
 @app.route('/omplapp/upload', methods=['POST'])
 def upload():
