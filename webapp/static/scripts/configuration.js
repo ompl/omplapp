@@ -86,7 +86,6 @@ function initialize() {
 			if (color == "light") {
 				renderer.setClearColor(0xfafafa);
 			} else {
-				// renderer.setClearColor(0x222222);
 				renderer.setClearColor(0x1a1a1a);
 			}
 		})
@@ -114,7 +113,6 @@ function initialize() {
 			animationSpeed = 1000 - $('#animationSpeed').val();
 			$('#animateToggleBtn').click();
 			$('#animateToggleBtn').click();
-			// console.log(animationSpeed);
 		});
 
 
@@ -232,6 +230,7 @@ function loadRemoteProblem(problemName) {
 	$.ajax({
 		url: "omplapp/request_problem",
 		type: 'POST',
+		async: false,
 		data: form,
 		success: function (data, textStatus, jqXHR) {
 			var data = JSON.parse(data);
@@ -254,14 +253,12 @@ function loadRemoteProblem(problemName) {
 			$("[name='start.axis.x']").val(startRot.x);
 			$("[name='start.axis.y']").val(startRot.y);
 			$("[name='start.axis.z']").val(startRot.z);
-			// $("[name='start.theta']").val(data['start.theta']);
 			$("[name='goal.x']").val(data['goal.x']);
 			$("[name='goal.y']").val(data['goal.y']);
 			$("[name='goal.z']").val(data['goal.z']);
 			$("[name='goal.axis.x']").val(goalRot.x);
 			$("[name='goal.axis.y']").val(goalRot.y);
 			$("[name='goal.axis.z']").val(goalRot.z);
-			// $("[name='goal.theta']").val(data['goal.theta']);
 			$("[name='volume.min.x']").val(data['volume.min.x']);
 			$("[name='volume.min.y']").val(data['volume.min.y']);
 			$("[name='volume.min.z']").val(data['volume.min.z']);
@@ -318,7 +315,6 @@ function uploadModels() {
 				data = JSON.parse(data);
 				env_loc = data['env_loc'];
 				robot_loc = data['robot_loc'];
-
 				drawModels(data['env_loc'], data['robot_loc']);
 
 				$('#uploadModelsButton').addClass('disabled');
@@ -372,14 +368,12 @@ function loadConfig() {
 				$("[name='start.axis.x']").val(startRot.x);
 				$("[name='start.axis.y']").val(startRot.y);
 				$("[name='start.axis.z']").val(startRot.z);
-				// $("[name='start.theta']").val(data['start.theta']);
 				$("[name='goal.x']").val(data['goal.x']);
 				$("[name='goal.y']").val(data['goal.y']);
 				$("[name='goal.z']").val(data['goal.z']);
 				$("[name='goal.axis.x']").val(goalRot.x);
 				$("[name='goal.axis.y']").val(goalRot.y);
 				$("[name='goal.axis.z']").val(goalRot.z);
-				// $("[name='goal.theta']").val(data['goal.theta']);
 				$("[name='volume.min.x']").val(data['volume.min.x']);
 				$("[name='volume.min.y']").val(data['volume.min.y']);
 				$("[name='volume.min.z']").val(data['volume.min.z']);
@@ -837,7 +831,6 @@ function downloadPath() {
 		var blob = new Blob([solutionData.pathAsMatrix], {type: "octet/stream"});
 		var pathName = $("[name='name']").val() + "_path.txt";
 
-		// TODO: Check that solution exists first
 		downloadFile(blob, pathName);
 	} else {
 		showAlert("configuration", "warning", "There is no valid solution path to download.");

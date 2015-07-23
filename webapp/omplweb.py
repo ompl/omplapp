@@ -22,7 +22,7 @@ from celery import Celery
 from celery.result import AsyncResult
 
 # Constants
-show_results = False
+show_results = True
 ompl_app_root = dirname(dirname(abspath(__file__)))
 ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 problem_files = 'static/problem_files'
