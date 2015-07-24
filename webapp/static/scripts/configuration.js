@@ -453,8 +453,14 @@ function getConfigText() {
 		cfg += "[problem]\n";
 
 		cfg += "name = " + $("[name='name']").val() + "\n";
-		cfg += "robot = " + $("[name='name']").val() + "_robot.dae\n";
-		cfg += "world = " + $("[name='name']").val() + "_env.dae\n";
+		
+		if ($('#problems').val() == "custom"){
+			cfg += "robot = " + $("input[name='robot']")[0].files[0].name + "\n";
+			cfg += "world = " + $("input[name='env']")[0].files[0].name + "\n";
+		} else {
+			cfg += "robot = " + $("#problems").val() + "_robot.dae\n";
+			cfg += "world = " + $("#problems").val() + "_env.dae\n";
+		}
 
 		cfg += "start.x = " + $("[name='start.x']").val() + "\n";
 		cfg += "start.y = " + $("[name='start.y']").val() + "\n";

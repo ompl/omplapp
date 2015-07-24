@@ -197,6 +197,8 @@ function startBenchmarking() {
 			var form = new FormData();
 			form.append('cfg', cfgText);
 			form.append('filename', $("[name='name']").val());
+			form.append('problem', $("#problems").val());
+
 			if (!sessionStorage.getItem("session_id")){
 				getSessionID();
 				form.append('session_id', sessionStorage.getItem("session_id"));

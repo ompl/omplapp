@@ -3,6 +3,7 @@
 import os
 import json
 import sys
+import shutil
 from os.path import dirname, abspath, join, basename
 
 # The ConfigParser module has been renamed to configparser in Python 3.0
@@ -22,7 +23,7 @@ from celery import Celery
 from celery.result import AsyncResult
 
 # Constants
-show_results = True
+show_results = False
 ompl_app_root = dirname(dirname(abspath(__file__)))
 ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 problem_files = 'static/problem_files'
@@ -166,7 +167,7 @@ def get_offset(env_mesh, robot_mesh):
 	# just the first geometric component
 	start = ompl_setup.getGeometricComponentState(start,0)
 	# extract x,y,z coords
-	print start
+	# print start
 	offset = {}
 	offset['x'] = start[0]
 	offset['y'] = start[1]
@@ -296,13 +297,18 @@ def solve_multiple(runs, problem, flask_request_form):
 	return result
 
 @celery.task()
-def benchmark(name, session_id, cfg_loc, db_filename):
+def benchmark(name, session_id, cfg_loc, db_filename, problem_name):
 	"""
 	Runs ompl_benchmark on cfg_loc and converts the resulting log file to a
 	database with ompl_benchmark_statistics.
 
 	cfg_loc - the location of the .cfg file to be benchmarked
 	"""
+
+	if problem_name != "custom":
+		# Copy over the needed mesh files to perform benchmarking
+		shutil.copy("../resources/3D/" + problem_name + "_env.dae", "static/sessions/" + session_id)
+		shutil.copy("../resources/3D/" + problem_name + "_robot.dae", "static/sessions/" + session_id)
 
 	# Run the benchmark, produces .log file
 	os.system("ompl_benchmark " + cfg_loc + ".cfg")
@@ -466,6 +472,7 @@ def init_benchmark():
 	session_dir = join("static/sessions", session_id)
 	cfg = flask.request.form['cfg']
 	cfg_name = flask.request.form['filename']
+	problem_name = flask.request.form['problem']
 	cfg_loc = save_cfg_file(cfg_name, session_id, cfg)
 
 	db_file, db_filepath = tempfile.mkstemp(suffix=".db", prefix="", dir=session_dir)
@@ -475,7 +482,7 @@ def init_benchmark():
 
 	db_filename = basename(db_filepath)
 
-	result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename)
+	result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename, problem_name)
 
 	return db_filename
 
