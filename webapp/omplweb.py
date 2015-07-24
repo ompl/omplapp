@@ -3,24 +3,17 @@
 import os
 import json
 import sys
-import shutil
 from os.path import dirname, abspath, join, basename
+import tempfile
+import webbrowser
+
+import shutil
 
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
 	import ConfigParser
 except:
 	import configparser as ConfigParser
-
-import tempfile
-import webbrowser
-
-import flask
-from flask import Flask
-from werkzeug import secure_filename
-
-from celery import Celery
-from celery.result import AsyncResult
 
 # Constants
 show_results = False
@@ -44,6 +37,12 @@ except:
 	from ompl import app as oa
 	from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
 
+import flask
+from flask import Flask
+from werkzeug import secure_filename
+
+from celery import Celery
+from celery.result import AsyncResult
 
 # Configure Flask and Celery
 app = flask.Flask(__name__)
@@ -204,7 +203,6 @@ def solve(problem, flask_request_form):
 	ompl_setup.setEnvironmentMesh(str(problem['env_loc']))
 	ompl_setup.setRobotMesh(str(problem['robot_loc']))
 
-
 	# Set the start state
 	start = ob.State(space)
 	start().setXYZ(float(problem['start.x']), float(problem['start.y']), float(problem['start.z']))
@@ -233,6 +231,11 @@ def solve(problem, flask_request_form):
 
 	planner = eval("%s(space_info)" % problem['planner'])
 	ompl_setup.setPlanner(planner)
+
+	# Set the optimization objective
+	obj = eval('ob.%s(space_info)' % problem['opt_objective'])
+	cost = ob.Cost(float(problem['cost_threshold']))
+	obj.setCostThreshold(cost)
 
 	# TODO: This is not that good...find a better way to get planner params
 	params = str(planner.params()).split("\n")

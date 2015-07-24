@@ -178,7 +178,6 @@ function applyOffset(env, robot) {
 		success: function (data, textStatus, jqXHR) {
 			// success callback
 			offset = JSON.parse(data);
-			console.log("Offset: ", offset);
 
 			robot_model.children[0].position.x -= offset.x;
 			robot_model.children[0].position.y -= offset.y;

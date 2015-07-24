@@ -57,12 +57,11 @@
 								<label>Configuration File</label>
 								<input type="file" name="config" id="config" class="form-control">
 							</div>
-
 						</div> <!-- Close collapsible options -->
 					</div>
 
 					<!-- Start Pose -->
-					<div class="">
+					<div>
 						<table class="table">
 							<caption>Start Pose</caption>
 							<thead>
@@ -88,16 +87,11 @@
 									<td><input type="number" step="any" name="start.z" class="pose form-field form-control input-sm"></td>
 									<td><input type="number" step="any" name="start.axis.z" class="pose form-field form-control input-sm"></td>
 								</tr>
-								<!-- <tr> -->
-									<!-- <th>&theta;</th> -->
-									<!-- <td></td> -->
-									<!-- <td><input type="number" step="any" name="start.theta" class="pose form-field form-control input-sm"></td> -->
-								<!-- </tr> -->
 							</tbody>
 						</table>
 					</div>
 					<!-- Goal Pose -->
-					<div class="">
+					<div>
 						<table class="table">
 							<caption>Goal Pose</caption>
 							<thead>
@@ -123,13 +117,22 @@
 									<td><input type="number" step="any" name="goal.z" class="pose form-field form-control input-sm"></td>
 									<td><input type="number" step="any" name="goal.axis.z" class="pose form-field form-control input-sm"></td>
 								</tr>
-								<!-- <tr> -->
-									<!-- <th>&theta;</th> -->
-									<!-- <td></td> -->
-									<!-- <td><input type="number" step="any" name="goal.theta" class="pose form-field form-control input-sm"></td> -->
-								<!-- </tr> -->
 							</tbody>
 						</table>
+					</div>
+
+					<!-- Optimization -->
+					<div class="form-group">
+						<label>Optimization Objective</label>
+						<select name="optObjective" id="optObjective" class="required-field form-control input-sm">
+							<option value="PathLengthOptimizationObjective" selected>Length</option>
+							<option value="MaximizeMinClearanceObjective">Maximize Min Clearance</option>
+							<option value="MechanicalWorkOptimizationObjective">Mechanical Work</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Cost Threshold</label>
+						<input type='number' name='costThreshold' id='costThreshold' value='10000' class="required-field form-control input-sm"></input>
 					</div>
 				</div>
 				<!-- End Problem Tab -->

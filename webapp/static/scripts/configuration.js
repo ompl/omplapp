@@ -453,7 +453,7 @@ function getConfigText() {
 		cfg += "[problem]\n";
 
 		cfg += "name = " + $("[name='name']").val() + "\n";
-		
+
 		if ($('#problems').val() == "custom"){
 			cfg += "robot = " + $("input[name='robot']")[0].files[0].name + "\n";
 			cfg += "world = " + $("input[name='env']")[0].files[0].name + "\n";
@@ -653,6 +653,8 @@ function solve(){
 			problemData['volume.max.z'] = $("[name='volume.max.z']").val();
 			problemData['solve_time'] = $("[name='solve_time']").val();
 			problemData['planner'] = $("[name='planners']").val();
+			problemData['opt_objective'] = $("[name='optObjective']").val();
+			problemData['cost_threshold'] = $("[name='costThreshold']").val();
 			problemData['env_loc'] = env_loc;
 			problemData['robot_loc'] = robot_loc;
 
