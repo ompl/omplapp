@@ -1,441 +1,171 @@
+/* Primary objects */
+var problem;
+var solution;
+var visualization;
+var benchmark;
+
 /* Global Variables */
-var planners = null;
-var results = "";
-var intervalID;
-var solutionData;
-var animateRobot;
-var animationSpeed;
-var env_loc;
-var robot_loc;
+var pollingInterval;
+var robotAnimationInterval;
 var MAX_UPLOAD_SIZE = 50000000; // In bytes, sets limit to 50MB
 
-/* Load the configuration page */
-$(document).ready(function() {
-	$('#configuration-page').click();
-	initialize();
-});
 
+// Define the Problem class
+var Problem = function () {
+	// Problem constructor
+	this.config = {};
 
-/* Problem Configuration */
+	// Initialize all problem values to 0 or empty
+	this.config["name"] = "";
+	this.config["robot"] = "";
+	this.config["world"] = "";
+	this.config["start.x"] = null;
+	this.config["start.y"] = null;
+	this.config["start.z"] = null;
+	this.config["start.q.w"] = null;
+	this.config["start.q.x"] = null;
+	this.config["start.q.y"] = null;
+	this.config["start.q.z"] = null;
+	this.config["goal.x"] = null;
+	this.config["goal.y"] = null;
+	this.config["goal.z"] = null;
+	this.config["goal.q.w"] = null;
+	this.config["goal.q.x"] = null;
+	this.config["goal.q.y"] = null;
+	this.config["goal.q.z"] = null;
+	this.config["volume.min.x"] = null;
+	this.config["volume.min.y"] = null;
+	this.config["volume.min.z"] = null;
+	this.config["volume.max.x"] = null;
+	this.config["volume.max.y"] = null;
+	this.config["volume.max.z"] = null;
 
-/**
- * Loads the components of the configuration page and sets up listeners
- * that make the page interactive.
- *
- * @param None
- * @return None
- */
-function initialize() {
-	$("#configuration").load("omplapp/components/configuration", function () {
-		// Get the visualization ready
-		initViz();
+	this.config["optimization.objective"] = "";
+	this.config["cost.threshold"] = null;
 
-		initializeBenchmarking();
+	this.config["solve_time"] = 10;
+	this.config["runs"] = 1;
 
-		// Retrieve the planners:
-		loadPlanners();
+	// The URI of the robot and env models on the server, for use by ColladaLoader
+	this.config["robot_loc"] = "";
+	this.config["env_loc"] = "";
 
-		// When user picks planner, load the planner params
-		$("#planners").change(function() {
-			planner_name = $("#planners").val();
-			load_planner_params(planner_name);
-		});
-
-		// Load config data when .cfg file is selected
-		$("#config").change(function (){
-			loadConfig();
-		});
-
-		// Show upload buttons if user selects 'Custom' problem
-		$("#problems").change(function() {
-
-
-			if ($("#problems").val() == 'custom'){
-				clearAllFields();
-
-				$("#customProblem").collapse('show');
-				load_planner_params("ompl.geometric.KPIECE1");
-			} else {
-				$("#customProblem").collapse('hide');
-
-				clearAllFields();
-
-				// Retrieve config data for this problem
-				loadRemoteProblem($("#problems").val());
-				load_planner_params("ompl.geometric.KPIECE1");
-
-			}
-		});
-
-		// Open the problem config tab
-		$('#problem-tab').click()
-
-		// Refresh the viz if pose fields are changed
-		$('.pose').change(function () {
-			updatePose();
-		});
-
-		// Refresh the viz if the bounds are changed
-		$('.bounds').change(function () {
-			updateBounds();
-		});
-
-		// Select Visualization Theme
-		$('#vizTheme').change(function() {
-			var color = $('#vizTheme').val();
-			if (color == "light") {
-				renderer.setClearColor(0xfafafa);
-			} else {
-				renderer.setClearColor(0x1a1a1a);
-			}
-		})
-
-		// Toggle display of bounding box
-		$('#showBoundingBox').change(function() {
-			if ($('#showBoundingBox').prop('checked') == true) {
-				bbox.visible = true;
-			} else {
-				bbox.visible = false;
-			}
-		});
-
-		// Toggle display of axis helper
-		$('#showAxisHelper').change(function() {
-			if ($('#showAxisHelper').prop('checked') == true) {
-				axisHelper.visible = true;
-			} else {
-				axisHelper.visible = false;
-			}
-		});
-
-		// Adjust animation speed
-		$('#animationSpeed').change(function() {
-			animationSpeed = 1000 - $('#animationSpeed').val();
-			$('#animateToggleBtn').click();
-			$('#animateToggleBtn').click();
-		});
-
-
-		// Load the about page
-		$("#about").load("omplapp/components/about");
-	});
 }
 
+Problem.prototype.update = function() {
+	// Read all of the input files and update the internal values
+	this.config["name"] = $("[name='name']").val();
+	this.config["start.x"] = $("[name='start.x']").val();
+	this.config["start.y"] = $("[name='start.y']").val();
+	this.config["start.z"] = $("[name='start.z']").val();
+	this.config["start.q.w"] = start_robot.quaternion.w;
+	this.config["start.q.x"] = start_robot.quaternion.x;
+	this.config["start.q.y"] = start_robot.quaternion.y;
+	this.config["start.q.z"] = start_robot.quaternion.z;
+	this.config["goal.x"] = $("[name='goal.x']").val();
+	this.config["goal.y"] = $("[name='goal.y']").val();
+	this.config["goal.z"] = $("[name='goal.z']").val();
+	this.config["goal.q.w"] = goal_robot.quaternion.w;
+	this.config["goal.q.x"] = goal_robot.quaternion.x;
+	this.config["goal.q.y"] = goal_robot.quaternion.y;
+	this.config["goal.q.z"] = goal_robot.quaternion.z;
+	this.config["volume.min.x"] = $("[name='volume.min.x']").val();
+	this.config["volume.min.y"] = $("[name='volume.min.y']").val();
+	this.config["volume.min.z"] = $("[name='volume.min.z']").val();
+	this.config["volume.max.x"] = $("[name='volume.max.x']").val();
+	this.config["volume.max.y"] = $("[name='volume.max.y']").val();
+	this.config["volume.max.z"] = $("[name='volume.max.z']").val();
 
-/* Set and Get Server Data */
+	this.config["planner"]= $("[name='planners']").val();
+	this.config["optimization.objective"] = $("[name='optimization.objective']").val();
+	this.config["cost.threshold"] = $("[name='cost.threshold']").val();
 
-/**
- * Gets the unique identifier for this session from the server and stores
- * it globally. This ID accompanies all future requests to the server
- * to ensure that the necessary files are available.
- *
- * @param None
- * @return None
- */
-function getSessionID(){
-	$.ajax({
-		url: 'omplapp/session',
-		type: 'GET',
-		success: function (data, textStatus, jqXHR) {
-			console.log("Got session id: " + data);
-			sessionStorage.setItem("session_id", data);
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			console.log("Error getting session id.");
-			console.log(jqXHR, textStatus, errorThrown);
-		},
-		async: false
+	this.config["solve_time"] = $("[name='solve_time']").val();
+	this.config["runs"] = $("[name='runs']").val();
+
+	// Get the params for the selected planner
+	var paramData = {};
+	$('.planner_param').each(function () {
+		paramData[$(this).attr('name')] = $(this).val();
 	});
-}
+	this.config["planner_params"] = paramData;
+};
 
+Problem.prototype.get = function(field) {
+	return this.config[field]
+};
 
-/**
- * Retrieves planners from the server and loads up the available planners on both
- * the configure problem page and benchmarking page
- *
- * @param None
- * @return None
- */
-function loadPlanners() {
-	$.get( "omplapp/planners", function( data ) {
-		planners = JSON.parse(data);
+Problem.prototype.asJSON = function() {
+	return JSON.stringify(this.config);
+};
 
-		$.each(planners, function(fullName, data){
-			var shortName = fullName.split(".")[2];
-
-			// Configure problem page planners
-			$('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
-
-			// Benchmarking page add planners
-			$('#addingPlanners').append(
-				$('<li></li>').append(
-					$('<a></li>')
-						.attr("class", "dropdown-link")
-						.text(shortName)
-						.on("click", function() {
-							addPlanner(fullName);
-						})
-				)
-			);
-
-		});
-
-		// Set the default planner
-		load_planner_params("ompl.geometric.KPIECE1");
-		$('#planners').val("ompl.geometric.KPIECE1")
-	});
-}
-
-
-/**
- * Given that the planners have been retrieved from the server, creates the
- * parameter fields for a specific planner and adds them to the page.
- *
- * @param {string} planner_name The planner to setup parameters for.
- * @return None
- */
-function load_planner_params(planner_name) {
-	if (planners != null) {
-		var plannerConfigHTML = "";
-		plannerConfigHTML += "<form name='param_form'><table class='table'><caption>";
-		plannerConfigHTML += planner_name.split(".")[2];
-		plannerConfigHTML += " Options</caption><tbody>";
-		params = planners[planner_name]
-		for (var key in params) {
-			if (params.hasOwnProperty(key)) {
-				plannerConfigHTML += "<tr><td>";
-				plannerConfigHTML += params[key][0];
-				plannerConfigHTML += "</td><td><input type='text' name='" + key + "' class='planner_param form-field form-control input-sm' value='" + params[key][3] + "'></td></tr>";
-			}
+Problem.prototype.isValid = function() {
+	this.update();
+	for (var item in this.config) {
+		if (this.config[item] == null || this.config[item] === "") {
+			console.log(item, this.config[item]);
+			return false;
 		}
-		plannerConfigHTML += "</tbody></table></form>"
-		$("#plannerPane").html(plannerConfigHTML);
-	} else {
-		showAlert("configuration", "danger", "Planners are not loaded yet. Please wait and try again.");
 	}
-}
-
-
-/**
- * Loads a pre-defined problem from the server by drawing the models and
- * filling in configuration information.
- *
- * @param {string} problem_name The name of problem to load.
- * @return None
- */
-function loadRemoteProblem(problemName) {
-	var form = {'problem_name' : problemName};
-
-	// Retrieve problem configuration:
-	$.ajax({
-		url: "omplapp/request_problem",
-		type: 'POST',
-		async: false,
-		data: form,
-		success: function (data, textStatus, jqXHR) {
-			var data = JSON.parse(data);
-			env_loc = data['env_loc'];
-			robot_loc = data['robot_loc'];
-
-			var startQ = axisAngleToQuaternion(data['start.axis.x'],
-				data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-			var startRot = quaternionToAxisDegrees(startQ);
-
-			var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-				data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-			var goalRot = quaternionToAxisDegrees(goalQ);
-
-			// Load the data
-			$("[name='name']").val(data['name']);
-			$("[name='start.x']").val(data['start.x']);
-			$("[name='start.y']").val(data['start.y']);
-			$("[name='start.z']").val(data['start.z']);
-			$("[name='start.axis.x']").val(startRot.x);
-			$("[name='start.axis.y']").val(startRot.y);
-			$("[name='start.axis.z']").val(startRot.z);
-			$("[name='goal.x']").val(data['goal.x']);
-			$("[name='goal.y']").val(data['goal.y']);
-			$("[name='goal.z']").val(data['goal.z']);
-			$("[name='goal.axis.x']").val(goalRot.x);
-			$("[name='goal.axis.y']").val(goalRot.y);
-			$("[name='goal.axis.z']").val(goalRot.z);
-			$("[name='volume.min.x']").val(data['volume.min.x']);
-			$("[name='volume.min.y']").val(data['volume.min.y']);
-			$("[name='volume.min.z']").val(data['volume.min.z']);
-			$("[name='volume.max.x']").val(data['volume.max.x']);
-			$("[name='volume.max.y']").val(data['volume.max.y']);
-			$("[name='volume.max.z']").val(data['volume.max.z']);
-
-			$("[name='time_limit']").val(data['time_limit']);
-			$("[name='mem_limit']").val(data['mem_limit']);
-			$("[name='run_count']").val(data['run_count']);
-
-			// Load the robot and env models
-			drawModels(data['env_loc'], data['robot_loc']);
-
-			// Give the models time to load, then update the positions and rotations
-			setTimeout(function() {
-				updatePose();
-				updateBounds();
-			}, 500);
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			console.log("Error requesting problem.");
-			console.log(jqXHR, textStatus, errorThrown);
-		}
-	});
-}
-
+	return true;
+};
 
 /**
- * Uploads the user's models to the server and then draws them to the scene.
+ * Gathers and formats problem data and submits the problem to the server for solving.
+ * On successful solve, saves solution data and loads solution visualization.
  *
  * @param None
  * @return None
  */
-function uploadModels() {
-	// Read the input fields
-	var formData = new FormData($('form')[0]);
-	if (!sessionStorage.getItem("session_id")){
-		getSessionID();
-		formData.append('session_id', sessionStorage.getItem("session_id"));
-	} else {
-		formData.append('session_id', sessionStorage.getItem("session_id"));
-	}
+Problem.prototype.solve = function() {
+	// Ensure that we have the latest data from the user
+	problem.update();
 
-	var valid = validateFiles();
+	if (problem.isValid()) {
+		// Bring up the loading screen
+		$.blockUI({
+			css: {
+				border: 'none',
+				padding: '30px',
+				backgroundColor: '#000',
+				opacity: '0.7',
+				color: '#fff',
+			}
+		});
 
-	if (valid) {
+
 		// Send the request
 		$.ajax({
-			url: "omplapp/upload_models",
+			url: "omplapp/upload",
 			type: "POST",
-			data: formData,
+			data: problem.asJSON(),
 			success: function(data){
-				data = JSON.parse(data);
-				env_loc = data['env_loc'];
-				robot_loc = data['robot_loc'];
-				drawModels(data['env_loc'], data['robot_loc']);
-
-				$('#uploadModelsButton').addClass('disabled');
+				var taskID = String(data);
+				console.log("Server successfully recieved solve request. Given task ID: " + taskID);
+				solution.poll(taskID);
 			},
 			error: function(data) {
-				console.log(data);
+				$.unblockUI();
+				showAlert("configuration", "danger", "Server responded with an error. Check the problem configuration and try again.");
 
-				showAlert("configuration", "danger", "Unable to upload files.");
+				console.log('Solve failed, server responded with an error.', data);
 			},
 			cache: false,
-			contentType: false,
+			contentType: 'application/json',
 			processData: false
 		});
-	}
-}
-
-
-/* Configuration */
-
-/**
- * Reads the user selected config file and loads values into config fields.
- *
- * @param None
- * @return None
- */
-function loadConfig() {
-	var cfgFile = $("#config")[0].files[0];
-
-	if (cfgFile != null) {
-		var reader = new FileReader();
-
-		reader.readAsText(cfgFile);
-
-		reader.onload = function () {
-			try {
-				var data = parseConfig(reader.result);
-
-				var startQ = axisAngleToQuaternion(data['start.axis.x'],
-					data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-				var startRot = quaternionToAxisDegrees(startQ);
-
-				var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-					data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-				var goalRot = quaternionToAxisDegrees(goalQ);
-
-				// Load the data
-				$("[name='name']").val(data['name']);
-				$("[name='start.x']").val(data['start.x']);
-				$("[name='start.y']").val(data['start.y']);
-				$("[name='start.z']").val(data['start.z']);
-				$("[name='start.axis.x']").val(startRot.x);
-				$("[name='start.axis.y']").val(startRot.y);
-				$("[name='start.axis.z']").val(startRot.z);
-				$("[name='goal.x']").val(data['goal.x']);
-				$("[name='goal.y']").val(data['goal.y']);
-				$("[name='goal.z']").val(data['goal.z']);
-				$("[name='goal.axis.x']").val(goalRot.x);
-				$("[name='goal.axis.y']").val(goalRot.y);
-				$("[name='goal.axis.z']").val(goalRot.z);
-				$("[name='volume.min.x']").val(data['volume.min.x']);
-				$("[name='volume.min.y']").val(data['volume.min.y']);
-				$("[name='volume.min.z']").val(data['volume.min.z']);
-				$("[name='volume.max.x']").val(data['volume.max.x']);
-				$("[name='volume.max.y']").val(data['volume.max.y']);
-				$("[name='volume.max.z']").val(data['volume.max.z']);
-
-				$("[name='time_limit']").val(data['time_limit']);
-				$("[name='mem_limit']").val(data['mem_limit']);
-				$("[name='run_count']").val(data['run_count']);
-
-				setTimeout(function() {
-					updatePose();
-					updateBounds();
-				}, 100);
-			} catch (e) {
-				showAlert("configuration", "danger", "There was a problem parsing the configuration file.")
-				console.log(e);
-			}
-		}
 	} else {
-		showAlert("configuration", "warning" , "Please select a valid configuration file.");
+		// Invalid fields have been highlighted by 'validateField()'.
+		showAlert("configuration", "warning", "Please enter values for the indicated fields.");
 	}
-}
+};
 
-
-/**
- * Parses a configuration text file into a mapping.
- *
- * @param {string} cfgText A configuration file in string form.
- * @return {Object} An object mapping configuration fields to values.
- */
-function parseConfig(cfgText) {
-	var cfgData = {};
-
-	// Separate into lines
-	var cfgLines = cfgText.split("\n");
-
-	for (var i=0; i < cfgLines.length; i++) {
-		// Remove all extra spacing
-		var line = cfgLines[i].replace(/\s+/g, '');
-		if(line == ""){
-			continue;
-		} else {
-			if(line[0] != "[") {
-				// Split into (key, value) pairs
-				var items = line.split("=");
-				if (items[1] == null){
-					throw "Invalid configuration on line containing: " + items[0];
-				} else {
-					cfgData[items[0]]= items[1];
-				}
-			} else {
-				// This config line isn't used
-				// console.log("Ignored: ", cfgLines[i]);
-			}
-		}
+Problem.prototype.hasMultipleRuns = function() {
+	if (self.config["runs"] > 1) {
+		return true;
 	}
-
-	return cfgData;
-}
-
+	return false;
+};
 
 /**
  * Formats configuration fields into a .cfg text file
@@ -443,9 +173,8 @@ function parseConfig(cfgText) {
  * @param None
  * @return {string} All the configuration inforamtion in text.
  */
-function getConfigText() {
-
-	if (validateFields()) {
+Problem.prototype.getConfigText = function() {
+	if (problem.isValid()) {
 		var startQ = start_robot.quaternion;
 		var goalQ = goal_robot.quaternion;
 
@@ -496,7 +225,7 @@ function getConfigText() {
 
 		cfg += "\n";
 		cfg += "[planner]\n";
-		cfg += getBenchmarkingPlanners();
+		cfg += benchmark.getBenchmarkingPlanners();
 
 		return cfg;
 	} else {
@@ -505,6 +234,90 @@ function getConfigText() {
 	}
 }
 
+Problem.prototype.parseConfigFile = function() {
+	var cfgFile = $("#cfg-file")[0].files[0];
+
+	if (cfgFile != null) {
+		var reader = new FileReader();
+		reader.readAsText(cfgFile);
+		reader.onload = function () {
+			var cfgData = {};
+			// Separate into lines
+			var cfgLines = reader.result.split("\n");
+			for (var i=0; i < cfgLines.length; i++) {
+				// Remove all extra spacing
+				var line = cfgLines[i].replace(/\s+/g, '');
+				if(line == ""){
+					continue;
+				} else {
+					if(line[0] != "[") {
+						// Split into (key, value) pairs
+						var items = line.split("=");
+						if (items[1] == null){
+							throw "Invalid configuration on line containing: " + items[0];
+						} else {
+							cfgData[items[0]]= items[1];
+						}
+					} else {
+						// This config line isn't used
+						// console.log("Ignored: ", cfgLines[i]);
+					}
+				}
+			}
+			problem.loadConfigFile(cfgData);
+		}
+	} else {
+		showAlert("configuration", "danger", "Error parsing the configuration file, try again");
+	}
+
+}
+
+Problem.prototype.loadConfigFile = function(data) {
+
+	console.log(data);
+	// Convert the rotation to degrees around each axis
+	var startQ = axisAngleToQuaternion(data['start.axis.x'],
+		data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+	var startRot = quaternionToAxisDegrees(startQ);
+
+	var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+		data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+	var goalRot = quaternionToAxisDegrees(goalQ);
+
+	// Update the input fields with the loaded data
+	$("[name='name']").val(data['name']);
+	$("[name='start.x']").val(data['start.x']);
+	$("[name='start.y']").val(data['start.y']);
+	$("[name='start.z']").val(data['start.z']);
+	$("[name='start.deg.x']").val(startRot.x);
+	$("[name='start.deg.y']").val(startRot.y);
+	$("[name='start.deg.z']").val(startRot.z);
+	$("[name='goal.x']").val(data['goal.x']);
+	$("[name='goal.y']").val(data['goal.y']);
+	$("[name='goal.z']").val(data['goal.z']);
+	$("[name='goal.deg.x']").val(goalRot.x);
+	$("[name='goal.deg.y']").val(goalRot.y);
+	$("[name='goal.deg.z']").val(goalRot.z);
+	$("[name='volume.min.x']").val(data['volume.min.x']);
+	$("[name='volume.min.y']").val(data['volume.min.y']);
+	$("[name='volume.min.z']").val(data['volume.min.z']);
+	$("[name='volume.max.x']").val(data['volume.max.x']);
+	$("[name='volume.max.y']").val(data['volume.max.y']);
+	$("[name='volume.max.z']").val(data['volume.max.z']);
+
+	// Benchmarking
+	$("[name='time_limit']").val(data['time_limit']);
+	$("[name='mem_limit']").val(data['mem_limit']);
+	$("[name='run_count']").val(data['run_count']);
+
+	problem.config["robot"] = data["robot"];
+	problem.config["world"] = data["world"];
+
+	setTimeout(function() {
+		visualization.updatePose();
+		visualization.updateBounds();
+	}, 100);
+}
 
 /**
  * Gets the config data and prompts the user to download it.
@@ -512,61 +325,451 @@ function getConfigText() {
  * @param None
  * @return None
  */
-function downloadConfig() {
-
-	var cfg = getConfigText();
+Problem.prototype.downloadConfig = function(field) {
+	var cfg = this.getConfigText();
 	if (cfg != null) {
 		var blob = new Blob([cfg], {type: "octet/stream"});
 		var cfgName = $("[name='name']").val() + ".cfg";
 		downloadFile(blob, cfgName);
 	}
+};
+
+
+// Define the Solution class
+var Solution = function() {
+	// Parse the solution data data
 }
 
+/**
+ * Polls the server at an interval to check for problem solution. Continues
+ * polling until a solution has been found or an error has been returned.
+ *
+ * @param {string} taskID The ID of the celery task which is solving the problem.
+ * @return None
+ */
+Solution.prototype.poll = function(taskID) {
+	var completed = false;
+	var pollURL = '/omplapp/poll/' + taskID;
 
-/* Data Validation */
+	pollingInterval = window.setInterval(function() {
+
+		$.ajax({
+			url: pollURL,
+			type: 'POST',
+			data: taskID,
+			success: function (data, textStatus, jqXHR) {
+				if (jqXHR.status == 200) {
+					// Stop polling
+					clearInterval(pollingInterval);
+					solution.store(data);
+					solution.visualize();
+				} else {
+					console.log(data, textStatus, jqXHR);
+				}
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				$.unblockUI();
+				html = "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
+				$('#results').html(html);
+
+				console.log('Solve failed, server responded with an error.', errorThrown);
+			}
+		});
+
+	}, 2000);
+};
+
+Solution.prototype.store = function(solutionData) {
+	this.data = JSON.parse(solutionData);
+};
+
+Solution.prototype.clear = function() {
+	this.data = null;
+	clearInterval(robotAnimationInterval);
+	visualization.clearSolution();
+	$('#pathButtons').addClass('hidden');
+}
 
 /**
- * Clears all configuration fields and removes all objects from the scene by
- * calling 'clearScene()'.
+ * Parses solution JSON from server and displays solution data.
+ *
+ * @param {string} data The solution data from the server as a JSON string
+ * @return None
+ */
+Solution.prototype.visualize = function() {
+	// Hide the bounding box
+	$('#showBoundingBox').prop('checked') == false;
+	bbox.visible = false;
+
+	// Clear the old solution visualization, if it existed
+	visualization.clearSolution();
+
+	if (this.data.multiple === "true") {
+		var numSolved = 0;
+
+		// Path animation options are not shown for multiple runs
+		$('#pathButtons').addClass('hidden');
+
+		$.each(this.data.solutions, function(index, run) {
+			if (run.solved === "true") {
+				visualization.drawSolutionPath(run.path);
+				numSolved += 1;
+			}
+		});
+
+		var msg = "Solutions found for " + numSolved + " of " + this.data.solutions.length + " runs.";
+		showAlert("configuration", "success", msg);
+
+	} else {
+		if (this.data.solved == "true") {
+			// Draw the solution path
+			visualization.visualizeSolution(this.data);
+
+			visualization.animationSpeed = 1000 - $('#animationSpeed').val();
+
+			$('#pathButtons').removeClass('hidden');
+
+			showAlert("configuration", "success", "Solution found!");
+		} else {
+			showAlert("configuration", "info", "No solution found. Try solving again.");
+		}
+	}
+
+	$.unblockUI();
+};
+
+/**
+ * If a solution has been found, allows the user to download the path.
  *
  * @param None
  * @return None
  */
-function clearAllFields() {
-	$('.form-field').each(function () {
-		$(this).val('');
-		$(this).css("background-color", "white");
+Solution.prototype.downloadSolutionPath = function() {
+	if (this.data.pathAsMatrix != null) {
+		var blob = new Blob([this.data.pathAsMatrix], {type: "octet/stream"});
+		var pathName = this.data.name + "_path.txt";
+
+		downloadFile(blob, pathName);
+	} else {
+		showAlert("configuration", "warning", "There is no valid solution path to download.");
+	}
+};
+
+
+$(document).ready(function() {
+	// Load the configuration page by default
+	problem = new Problem();
+	solution = new Solution();
+	visualization = new Visualization();
+	benchmark = new Benchmark();
+
+	initialize();
+	$('#configuration-page').click();
+});
+
+
+/**
+ * Loads the components of the configuration page and sets up listeners
+ * that make the page interactive.
+ *
+ * @param None
+ * @return None
+ */
+function initialize() {
+	$("#configuration").load("omplapp/components/configuration", function () {
+
+		visualization.initialize();
+		benchmark.initialize();
+
+		// Retrieve the planners:
+		getPlannerData();
+
+		// If this is a new session, get the session id
+		if (!sessionStorage.getItem("session_id")){
+			getSessionID();
+		}
+
+		// When user picks a planner, load the planner params
+		$("#planners").change(function() {
+			planner_name = $("#planners").val();
+			loadPlannerParams(planner_name);
+		});
+
+		// Load config data when .cfg file is selected
+		$("#cfg-file").change(function (){
+			problem.parseConfigFile();
+		});
+
+		// Show upload buttons if user selects 'Custom' problem
+		$("#problems").change(function() {
+			visualization.clearScene();
+			if ($("#problems").val() == 'custom'){
+				$("#customProblem").collapse('show');
+				loadPlannerParams("ompl.geometric.KPIECE1");
+			} else {
+				$("#customProblem").collapse('hide');
+
+				// Retrieve config data for this problem
+				loadRemoteProblem($("#problems").val());
+
+				// Set KPIECE1 as the default planner
+				loadPlannerParams("ompl.geometric.KPIECE1");
+			}
+		});
+
+		// Open the problem config tab
+		$('#problem-tab').click()
+
+		// Refresh the viz if pose fields are changed
+		$('.pose').change(function () {
+			visualization.updatePose();
+		});
+
+		// Refresh the viz if the bounds are changed
+		$('.bounds').change(function () {
+			visualization.updateBounds();
+		});
+
+		// Select Visualization Theme
+		$('#vizTheme').change(function() {
+			var color = $('#vizTheme').val();
+			if (color == "light") {
+				renderer.setClearColor(0xfafafa);
+			} else {
+				renderer.setClearColor(0x1a1a1a);
+			}
+		})
+
+		// Toggle display of bounding box
+		$('#showBoundingBox').change(function() {
+			if ($('#showBoundingBox').prop('checked') == true) {
+				bbox.visible = true;
+			} else {
+				bbox.visible = false;
+			}
+		});
+
+		// Toggle display of axis helper
+		$('#showAxisHelper').change(function() {
+			if ($('#showAxisHelper').prop('checked') == true) {
+				axisHelper.visible = true;
+			} else {
+				axisHelper.visible = false;
+			}
+		});
+
+		// Adjust animation speed
+		$('#animationSpeed').change(function() {
+			visualization.animationSpeed = 1000 - $("#animationSpeed").val();
+			$('#animateToggleBtn').click();
+			$('#animateToggleBtn').click();
+		});
+
+		// Load the about page
+		$("#about").load("omplapp/components/about");
 	});
-	$('#config').val('');
-	$('#results').html('');
-	$('#pathButtons').addClass('hidden');
-	results = "";
-	solutionData = null;
-	clearScene();
 }
 
 
 /**
- * Validates all required fields.
+ * Retrieves planners from the server and loads up the available planners on both
+ * the configure problem page and benchmarking page
  *
  * @param None
- * @return {Boolean} valid A boolean indicating form validity.
+ * @return None
  */
-function validateFields() {
-	var valid = true;
+function getPlannerData() {
+	$.get( "omplapp/planners", function( data ) {
+		problem.availablePlanners = JSON.parse(data);
 
-	// Ensure that the all the needed fields for a problem have values
-	$('.form-field').each(function () {
-		if ($(this).val() === '') {
-			valid = false;
+		$.each(problem.availablePlanners, function(fullName, data){
+			var shortName = fullName.split(".")[2];
 
-			// Highlight the incorrect field
-			$(this).css("background-color", "#fec7c1");
-		} else {
-			$(this).css("background-color", "white");
+			// Configure problem page planners
+			$('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
+
+			// Benchmarking page available planners
+			$('#addingPlanners').append(
+				$('<li></li>').append(
+					$('<a></li>')
+						.attr("class", "dropdown-link")
+						.text(shortName)
+						.on("click", function() {
+							benchmark.addPlanner(fullName);
+						})
+				)
+			);
+
+		});
+
+		// Set the default planner
+		loadPlannerParams("ompl.geometric.KPIECE1");
+		$('#planners').val("ompl.geometric.KPIECE1");
+
+	});
+}
+
+
+/**
+ * Gets the unique identifier for this session from the server and stores
+ * it globally. This ID accompanies all future requests to the server
+ * to ensure that the necessary files are available.
+ *
+ * @param None
+ * @return None
+ */
+function getSessionID(){
+	$.ajax({
+		url: 'omplapp/session',
+		type: 'GET',
+		success: function (data, textStatus, jqXHR) {
+			console.log("Got session id: " + data);
+			sessionStorage.setItem("session_id", data);
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			console.log("Error getting session id. Please reload the page before continuing.");
+			console.log(jqXHR, textStatus, errorThrown);
+		},
+	});
+}
+
+
+/**
+ * Given that the planners have been retrieved from the server, creates the
+ * parameter fields for a specific planner and adds them to the page.
+ *
+ * @param {string} planner_name The planner to setup parameters for.
+ * @return None
+ */
+function loadPlannerParams(planner_name) {
+	if (problem.availablePlanners != null) {
+		var plannerConfigHTML = "";
+		plannerConfigHTML += "<form name='param_form'><table class='table'><caption>";
+		plannerConfigHTML += planner_name.split(".")[2];
+		plannerConfigHTML += " Options</caption><tbody>";
+		params = problem.availablePlanners[planner_name]
+		for (var key in params) {
+			if (params.hasOwnProperty(key)) {
+				plannerConfigHTML += "<tr><td>";
+				plannerConfigHTML += params[key][0];
+				plannerConfigHTML += "</td><td><input type='text' name='" + key + "' class='planner_param form-control input-sm' value='" + params[key][3] + "'></td></tr>";
+			}
+		}
+		plannerConfigHTML += "</tbody></table></form>"
+		$("#plannerPane").html(plannerConfigHTML);
+	} else {
+		showAlert("configuration", "danger", "Planners are not loaded yet. Please refresh the page and try again.");
+	}
+}
+
+
+/**
+ * Loads a pre-defined problem from the server by drawing the models and
+ * filling in configuration information.
+ *
+ * @param {string} problem_name The name of problem to load.
+ * @return None
+ */
+function loadRemoteProblem(problemName) {
+	var form = {'problem_name' : problemName};
+
+	// Retrieve problem configuration:
+	$.ajax({
+		url: "omplapp/request_problem",
+		type: 'POST',
+		data: form,
+		success: function (data, textStatus, jqXHR) {
+			var data = JSON.parse(data);
+			env_loc = data['env_loc'];
+			robot_loc = data['robot_loc'];
+
+			// Load the robot and env models
+			visualization.drawModels(data['env_loc'], data['robot_loc']);
+
+			var startQ = axisAngleToQuaternion(data['start.axis.x'],
+				data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+			var startRot = quaternionToAxisDegrees(startQ);
+
+			var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+				data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+			var goalRot = quaternionToAxisDegrees(goalQ);
+
+			// Load the data
+			$("[name='name']").val(data['name']);
+			$("[name='start.x']").val(data['start.x']);
+			$("[name='start.y']").val(data['start.y']);
+			$("[name='start.z']").val(data['start.z']);
+			$("[name='start.deg.x']").val(startRot.x);
+			$("[name='start.deg.y']").val(startRot.y);
+			$("[name='start.deg.z']").val(startRot.z);
+			$("[name='goal.x']").val(data['goal.x']);
+			$("[name='goal.y']").val(data['goal.y']);
+			$("[name='goal.z']").val(data['goal.z']);
+			$("[name='goal.deg.x']").val(goalRot.x);
+			$("[name='goal.deg.y']").val(goalRot.y);
+			$("[name='goal.deg.z']").val(goalRot.z);
+			$("[name='volume.min.x']").val(data['volume.min.x']);
+			$("[name='volume.min.y']").val(data['volume.min.y']);
+			$("[name='volume.min.z']").val(data['volume.min.z']);
+			$("[name='volume.max.x']").val(data['volume.max.x']);
+			$("[name='volume.max.y']").val(data['volume.max.y']);
+			$("[name='volume.max.z']").val(data['volume.max.z']);
+
+			// Benchmarking
+			$("[name='time_limit']").val(data['time_limit']);
+			$("[name='mem_limit']").val(data['mem_limit']);
+			$("[name='run_count']").val(data['run_count']);
+
+			problem.config["robot"] = data["robot"];
+			problem.config["world"] = data["world"];
+			problem.config["robot_loc"] = data["robot_loc"];
+			problem.config["env_loc"] = data["env_loc"];
+
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			console.log("Error requesting problem.");
+			console.log(jqXHR, textStatus, errorThrown);
 		}
 	});
-	return valid;
+}
+
+
+/**
+ * Uploads the user's models to the server and then draws them to the scene.
+ *
+ * @param None
+ * @return None
+ */
+function uploadModels() {
+	// Read the input fields
+	var formData = new FormData($('form')[0]); //TODO: Improve this, more robust selection
+	formData.append('session_id', sessionStorage.getItem("session_id"));
+
+	var valid = validateModels();
+
+	if (valid) {
+		// Send the request
+		$.ajax({
+			url: "omplapp/upload_models",
+			type: "POST",
+			data: formData,
+			success: function(data){
+				data = JSON.parse(data);
+				problem.config["env_loc"]= data['env_loc'];
+				problem.config["robot_loc"] = data['robot_loc'];
+				visualization.drawModels(data['env_loc'], data['robot_loc']);
+
+			},
+			error: function(data) {
+				console.log(data);
+
+				showAlert("configuration", "danger", "Unable to upload files.");
+			},
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+	}
 }
 
 
@@ -576,7 +779,7 @@ function validateFields() {
  * @param None
  * @return {Boolean} A boolean indicating the validity of the files.
  */
-function validateFiles() {
+function validateModels() {
 	env_file = $('#env_path')[0].files[0];
 	robot_file = $('#robot_path')[0].files[0];
 
@@ -599,249 +802,4 @@ function validateFiles() {
 	return false;
 }
 
-
-/* Solve and Results */
-
-/**
- * Gathers and formats problem data and submits the problem to the server for solving.
- * On successful solve, saves solution data and loads solution visualization.
- *
- * @param None
- * @return None
- */
-function solve(){
-	// Check that all fields are filled in
-	var validConfig = validateFields();
-	if (validConfig == true) {
-		// Bring up the loading screen
-		$.blockUI({
-			css: {
-				border: 'none',
-				padding: '30px',
-				backgroundColor: '#000',
-				opacity: '0.7',
-				color: '#fff',
-			}
-		});
-
-		var startQ = start_robot.quaternion;
-		var goalQ = goal_robot.quaternion;
-
-		// Read the input fields
-		{
-			var problemData = {}
-			problemData['name'] = $("[name='name']").val();
-			problemData['start.x'] = $("[name='start.x']").val();
-			problemData['start.y'] = $("[name='start.y']").val();
-			problemData['start.z'] = $("[name='start.z']").val();
-			problemData['start.q.x'] = startQ.x;
-			problemData['start.q.y'] = startQ.y;
-			problemData['start.q.z'] = startQ.z;
-			problemData['start.q.w'] = startQ.w;
-			problemData['goal.x'] = $("[name='goal.x']").val();
-			problemData['goal.y'] = $("[name='goal.y']").val();
-			problemData['goal.z'] = $("[name='goal.z']").val();
-			problemData['goal.q.x'] = goalQ.x;
-			problemData['goal.q.y'] = goalQ.y;
-			problemData['goal.q.z'] = goalQ.z;
-			problemData['goal.q.w'] = goalQ.w;
-			problemData['volume.min.x'] = $("[name='volume.min.x']").val();
-			problemData['volume.min.y'] = $("[name='volume.min.y']").val();
-			problemData['volume.min.z'] = $("[name='volume.min.z']").val();
-			problemData['volume.max.x'] = $("[name='volume.max.x']").val();
-			problemData['volume.max.y'] = $("[name='volume.max.y']").val();
-			problemData['volume.max.z'] = $("[name='volume.max.z']").val();
-			problemData['solve_time'] = $("[name='solve_time']").val();
-			problemData['planner'] = $("[name='planners']").val();
-			problemData['opt_objective'] = $("[name='optObjective']").val();
-			problemData['cost_threshold'] = $("[name='costThreshold']").val();
-			problemData['env_loc'] = env_loc;
-			problemData['robot_loc'] = robot_loc;
-
-
-			if ($("[name='runs']").val() >= 1) {
-				problemData['runs'] = $("[name='runs']").val();
-			} else {
-				problemData['runs'] = 1;
-			}
-
-		}
-
-		// Get the params for the specific planner
-		paramData = {};
-		$('.planner_param').each(function () {
-			paramData[$(this).attr('name')] = $(this).val();
-		});
-
-		problemData['planner_params'] = paramData;
-		problemJSON = JSON.stringify(problemData);
-
-		// Clear the old solution information, if there was one
-		clearOldSolution();
-
-		// Send the request
-		$.ajax({
-			url: "omplapp/upload",
-			type: "POST",
-			data: problemJSON,
-			success: function(data){
-				var taskID = String(data);
-				console.log("Server successfully recieved solve request. Given task ID: " + taskID);
-				waitForSolution(data);
-			},
-			error: function(data) {
-				$.unblockUI();
-				showAlert("configuration", "danger", "Server responded with an error. Check the problem configuration and try again.");
-
-				console.log('Solve failed, server responded with an error.', data);
-			},
-			cache: false,
-			contentType: 'application/json',
-			processData: false
-		});
-	} else {
-		// Invalid fields have been highlighted by 'validateField()'.
-		showAlert("configuration", "warning", "Please enter values for the indicated fields.");
-	}
-}
-
-/**
- * Polls the server at an interval to check for problem solution. Continues
- * polling until a solution has been found or an error has been returned.
- *
- * @param {string} taskID The ID of the celery task which is solving the problem.
- * @return None
- */
-function waitForSolution(taskID) {
-	var completed = false;
-	var pollURL = '/omplapp/poll/' + taskID;
-
-	intervalID = window.setInterval(function() {
-
-		$.ajax({
-			url: pollURL,
-			type: 'POST',
-			data: taskID,
-			success: function (data, textStatus, jqXHR) {
-				if (jqXHR.status == 200) {
-					clearInterval(intervalID);
-					displaySolution(data);
-				} else {
-					console.log(data, textStatus);
-				}
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				$.unblockUI();
-				html = "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
-				$('#results').html(html);
-
-				console.log('Solve failed, server responded with an error.', errorThrown);
-			}
-		});
-
-	}, 2000);
-}
-
-
-/**
- * Parses solution JSON from server and displays solution data.
- *
- * @param {string} data The solution data from the server as a JSON string
- * @return None
- */
-function displaySolution(data) {
-	solutionData = JSON.parse(data);
-
-	if (solutionData.multiple === "true") {
-		var numSolved = 0;
-
-		$.each(solutionData.solutions, function(index, solution) {
-			if (solution.solved === "true") {
-				drawSolutionPath(solution.path);
-				numSolved += 1;
-			}
-		});
-
-		var msg = "Solutions found for " + numSolved + " of " + solutionData.solutions.length + " runs.";
-		showAlert("configuration", "success", msg);
-
-	} else {
-		if (solutionData.solved == "true") {
-			// Draw the solution path
-			visualizeSolution(solutionData);
-
-			animationSpeed = 1000 - $('#animationSpeed').val();
-
-			$('#pathButtons').removeClass('hidden');
-
-			showAlert("configuration", "success", "Solution found!");
-		} else {
-			showAlert("configuration", "info", "No solution found. Try solving again.");
-		}
-	}
-
-	$.unblockUI();
-
-}
-
-
-/**
- * Toggles the animation of robot along solution path.
- *
- * @param None
- * @return None
- */
-function animateToggle() {
-	if ($('#animateToggleBtn').hasClass('active')) {
-		$('#animateToggleBtn').removeClass('active');
-
-		clearInterval(animateRobot);
-		path_robot.visible = false;
-	} else {
-		path_robot.visible = true;
-		$('#animateToggleBtn').addClass('active');
-
-		animateRobot = setInterval(function() {
-			moveRobot(path);
-		}, animationSpeed);
-	}
-}
-
-
-/**
- * Toggles the display of static robots at each point along solution path.
- *
- * @param None
- * @return None
- */
-function toggleRobotPath() {
-	if ($('#toggleRobotPathBtn').hasClass('active')) {
-		$('#toggleRobotPathBtn').removeClass('active');
-
-		hideRobotPath();
-	} else {
-		$('#toggleRobotPathBtn').addClass('active');
-
-		showRobotPath();
-	}
-}
-
-
-/**
- * If a solution has been found, allows the user to download the path.
- *
- * @param None
- * @return None
- */
-function downloadPath() {
-
-	if (solutionData != null) {
-		var blob = new Blob([solutionData.pathAsMatrix], {type: "octet/stream"});
-		var pathName = $("[name='name']").val() + "_path.txt";
-
-		downloadFile(blob, pathName);
-	} else {
-		showAlert("configuration", "warning", "There is no valid solution path to download.");
-	}
-}
 

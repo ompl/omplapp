@@ -1,7 +1,3 @@
-/* Mathematic Constants */
-var DEG_TO_RAD = Math.PI/180;
-var RAD_TO_DEG = 180/Math.PI;
-
 /* Globally Needed Information */
 var env_loc;
 var robot_loc;
@@ -29,13 +25,31 @@ var staticPathRobots = [];
 
 
 /**
+ * Draws the scene. Only needs to be called once, by 'initViz()'.
+ *
+ * @param None
+ * @return None
+ */
+render = function() {
+	requestAnimationFrame(render);
+	renderer.render(scene, camera);
+	controls.update();
+}
+
+
+// Define the Visualization class
+var Visualization = function() {
+	this.animationSpeed = 1000 - $('#animationSpeed').val();
+}
+
+
+/**
  * Sets up the initial scene and loads the lights, camera, and axis helper.
  *
  * @param None
  * @return None
  */
-function initViz() {
-
+Visualization.prototype.initialize = function() {
 	// Create a new scene
 	scene = new THREE.Scene();
 
@@ -81,23 +95,7 @@ function initViz() {
 
 	// Render everything to the screen
 	render();
-
-}
-
-
-/**
- * Draws the scene. Only needs to be called once, by 'initViz()'.
- *
- * @param None
- * @return None
- */
-function render() {
-
-	requestAnimationFrame(render);
-	renderer.render(scene, camera);
-	controls.update();
-
-}
+};
 
 
 /**
@@ -108,13 +106,13 @@ function render() {
  * @param {String} r_loc The URL of the robot file
  * @return None
  */
-function drawModels(e_loc, r_loc) {
+Visualization.prototype.drawModels = function(e_loc, r_loc) {
 	// Store locations globally
 	env_loc = e_loc;
 	robot_loc = r_loc;
 
 	// Clear the scene in case there are robots/env left from a previous draw
-	clearScene()
+	this.clearScene()
 
 	// Load the environment file
 	var env_loader = new THREE.ColladaLoader();
@@ -128,6 +126,15 @@ function drawModels(e_loc, r_loc) {
 		env.scale.set(1,1,1);
 		scene.add(env);
 	});
+
+	// Create the bounding box
+	var geometry = new THREE.BoxGeometry(1,1,1);
+	var material = new THREE.MeshBasicMaterial({
+		color: 0xf15c40,
+		wireframe: true
+	});
+	bbox = new THREE.Mesh(geometry, material);
+	scene.add(bbox);
 
 	// Load the robot file
 	var robot_loader = new THREE.ColladaLoader();
@@ -146,19 +153,13 @@ function drawModels(e_loc, r_loc) {
 		goal_robot = robot_model.clone();
 		goal_robot.name = "goal_robot";
 		scene.add(goal_robot);
+	
+		visualization.updatePose();
+		visualization.updateBounds();
 	});
+	
 
-
-	applyOffset(env_loc, robot_loc);
-
-	// Create the bounding box
-	var geometry = new THREE.BoxGeometry(1,1,1);
-	var material = new THREE.MeshBasicMaterial({
-		color: 0xf15c40,
-		wireframe: true
-	});
-	bbox = new THREE.Mesh(geometry, material);
-	scene.add(bbox);
+	this.applyOffset(env_loc, robot_loc);
 
 }
 
@@ -167,7 +168,7 @@ function drawModels(e_loc, r_loc) {
  * description
  *
  */
-function applyOffset(env, robot) {
+Visualization.prototype.applyOffset = function(env, robot) {
 	var form = {}
 	form['env_loc'] = env;
 	form['robot_loc'] = robot;
@@ -197,7 +198,111 @@ function applyOffset(env, robot) {
 			showAlert("configuration", "danger", "Error loading robot model. Refresh the page and try again.");
 		}
 	});
+
 }
+
+
+Visualization.prototype.updatePose = function() {
+	// Update the start position
+	var start = {};
+	start.x = $("[name='start.x']").val()
+	start.y = $("[name='start.y']").val()
+	start.z = $("[name='start.z']").val()
+	start_robot.position.set(start.x, start.y,  start.z)
+
+	// Update start rotation
+	var startRot = {};
+	startRot.x = $("[name='start.deg.x']").val()
+	startRot.y = $("[name='start.deg.y']").val()
+	startRot.z = $("[name='start.deg.z']").val()
+	start_robot.rotation.set(DEG_TO_RAD*startRot.x, DEG_TO_RAD*startRot.y, DEG_TO_RAD*startRot.z);
+
+	// Update the goal position
+	var goal = {};
+	goal.x = $("[name='goal.x']").val()
+	goal.y = $("[name='goal.y']").val()
+	goal.z = $("[name='goal.z']").val()
+	goal_robot.position.set(goal.x, goal.y, goal.z)
+
+	// Update start rotation
+	var goalRot = {};
+	goalRot.x = $("[name='goal.deg.x']").val()
+	goalRot.y = $("[name='goal.deg.y']").val()
+	goalRot.z = $("[name='goal.deg.z']").val()
+	goal_robot.rotation.set(DEG_TO_RAD*goalRot.x, DEG_TO_RAD*goalRot.y, DEG_TO_RAD*goalRot.z);
+
+};
+
+
+Visualization.prototype.updateBounds = function() {
+	// Update bounds
+	var min = {};
+	min.x = $("[name='volume.min.x']").val();
+	min.y = $("[name='volume.min.y']").val();
+	min.z = $("[name='volume.min.z']").val();
+
+	var max = {};
+	max.x = $("[name='volume.max.x']").val();
+	max.y = $("[name='volume.max.y']").val();
+	max.z = $("[name='volume.max.z']").val();
+
+	// From the lower and upper bounds, get the 8 points of the box (order matters).
+	var vertices = [];
+	vertices.push(new THREE.Vector3(max.x, max.y, max.z));
+	vertices.push(new THREE.Vector3(max.x, max.y, min.z));
+	vertices.push(new THREE.Vector3(max.x, min.y, max.z));
+	vertices.push(new THREE.Vector3(max.x, min.y, min.z));
+	vertices.push(new THREE.Vector3(min.x, max.y, min.z));
+	vertices.push(new THREE.Vector3(min.x, max.y, max.z));
+	vertices.push(new THREE.Vector3(min.x, min.y, min.z));
+	vertices.push(new THREE.Vector3(min.x, min.y, max.z));
+
+	// Update the bounding box with the new vertices
+	bbox.geometry.vertices = vertices;
+	bbox.geometry.verticesNeedUpdate = true;
+};
+
+
+/**
+ * Toggles the animation of robot along solution path.
+ *
+ * @param None
+ * @return None
+ */
+Visualization.prototype.toggleAnimation = function() {
+	if ($('#animateToggleBtn').hasClass('active')) {
+		$('#animateToggleBtn').removeClass('active');
+
+		clearInterval(robotAnimationInterval);
+		path_robot.visible = false;
+	} else {
+		path_robot.visible = true;
+		$('#animateToggleBtn').addClass('active');
+
+		robotAnimationInterval = setInterval(function() {
+			visualization.moveRobot(path);
+		}, this.animationSpeed);
+	}
+};
+
+
+/**
+ * Toggles the display of static robots at each point along solution path.
+ *
+ * @param None
+ * @return None
+ */
+Visualization.prototype.toggleRobotPath = function() {
+	if ($('#toggleRobotPathBtn').hasClass('active')) {
+		$('#toggleRobotPathBtn').removeClass('active');
+
+		this.hideRobotPath();
+	} else {
+		$('#toggleRobotPathBtn').addClass('active');
+
+		this.showRobotPath();
+	}
+};
 
 
 /**
@@ -206,7 +311,7 @@ function applyOffset(env, robot) {
  * @param None
  * @return None
  */
-function clearScene() {
+Visualization.prototype.clearScene = function() {
 
 	scene.remove(env);
 	scene.remove(start_robot);
@@ -231,7 +336,7 @@ function clearScene() {
  * @param None
  * @return None
  */
-function clearOldSolution() {
+Visualization.prototype.clearSolution = function() {
 
 	scene.remove(path_robot);
 	pathLines.forEach(function (element, index) {
@@ -247,103 +352,24 @@ function clearOldSolution() {
 
 
 /**
- * Refreshes the visualization to reflect changes in position and rotation.
- *
- * @param None
- * @return None
- */
-function updatePose() {
-
-	// Update the start position
-	var start = {};
-	start.x = $("[name='start.x']").val()
-	start.y = $("[name='start.y']").val()
-	start.z = $("[name='start.z']").val()
-	// TODO: Try catch here in case not loaded yet, to avoid error msg
-	start_robot.position.set(start.x, start.y,  start.z)
-
-	// Update start rotation
-	var startRot = {};
-	startRot.x = $("[name='start.axis.x']").val()
-	startRot.y = $("[name='start.axis.y']").val()
-	startRot.z = $("[name='start.axis.z']").val()
-	start_robot.rotation.set(DEG_TO_RAD*startRot.x, DEG_TO_RAD*startRot.y, DEG_TO_RAD*startRot.z);
-
-	// Update the goal position
-	var goal = {};
-	goal.x = $("[name='goal.x']").val()
-	goal.y = $("[name='goal.y']").val()
-	goal.z = $("[name='goal.z']").val()
-	// TODO: Try catch here in case not loaded yet, to avoid error msg
-	goal_robot.position.set(goal.x, goal.y, goal.z)
-
-	// Update start rotation
-	var goalRot = {};
-	goalRot.x = $("[name='goal.axis.x']").val()
-	goalRot.y = $("[name='goal.axis.y']").val()
-	goalRot.z = $("[name='goal.axis.z']").val()
-	goal_robot.rotation.set(DEG_TO_RAD*goalRot.x, DEG_TO_RAD*goalRot.y, DEG_TO_RAD*goalRot.z);
-
-}
-
-
-/**
- * Refreshes the visualization to reflect changes to the bounding box.
- *
- * @param None
- * @return None
- */
-function updateBounds() {
-
-	// Update bounds
-	var min = {};
-	min.x = $("[name='volume.min.x']").val();
-	min.y = $("[name='volume.min.y']").val();
-	min.z = $("[name='volume.min.z']").val();
-
-
-	var max = {};
-	max.x = $("[name='volume.max.x']").val();
-	max.y = $("[name='volume.max.y']").val();
-	max.z = $("[name='volume.max.z']").val();
-
-	// From the lower and upper bounds, get the 8 points of the box (order matters).
-	var vertices = [];
-	vertices.push(new THREE.Vector3(max.x, max.y, max.z));
-	vertices.push(new THREE.Vector3(max.x, max.y, min.z));
-	vertices.push(new THREE.Vector3(max.x, min.y, max.z));
-	vertices.push(new THREE.Vector3(max.x, min.y, min.z));
-	vertices.push(new THREE.Vector3(min.x, max.y, min.z));
-	vertices.push(new THREE.Vector3(min.x, max.y, max.z));
-	vertices.push(new THREE.Vector3(min.x, min.y, min.z));
-	vertices.push(new THREE.Vector3(min.x, min.y, max.z));
-
-	// Update the bounding box with the new vertices
-	bbox.geometry.vertices = vertices;
-	bbox.geometry.verticesNeedUpdate = true;
-
-}
-
-
-/**
  * Estimates upper and lower bounds from the environment and updates the bounding box.
  *
  * @param None
  * @return None
  */
-function calculateBounds() {
-	var estimated = new THREE.BoundingBoxHelper(env, 0x000000);
-	estimated.update();
+Visualization.prototype.calculateBounds = function() {
+	var calculated = new THREE.BoundingBoxHelper(env, 0x000000);
+	calculated.update();
 
-	$("[name='volume.min.x']").val(estimated.box.min.x);
-	$("[name='volume.min.y']").val(estimated.box.min.y);
-	$("[name='volume.min.z']").val(estimated.box.min.z);
+	$("[name='volume.min.x']").val(calculated.box.min.x);
+	$("[name='volume.min.y']").val(calculated.box.min.y);
+	$("[name='volume.min.z']").val(calculated.box.min.z);
 
-	$("[name='volume.max.x']").val(estimated.box.max.x);
-	$("[name='volume.max.y']").val(estimated.box.max.y);
-	$("[name='volume.max.z']").val(estimated.box.max.z);
+	$("[name='volume.max.x']").val(calculated.box.max.x);
+	$("[name='volume.max.y']").val(calculated.box.max.y);
+	$("[name='volume.max.z']").val(calculated.box.max.z);
 
-	updateBounds();
+	this.updateBounds();
 }
 
 
@@ -355,11 +381,11 @@ function calculateBounds() {
  * server about the solution and path.
  * @return None
  */
-function visualizeSolution(solutionData) {
+Visualization.prototype.visualizeSolution = function(solutionData) {
 
 	// Store the path globally
 	path = solutionData.path;
-	drawSolutionPath(path);
+	this.drawSolutionPath(path);
 
 	// Create the path robot
 	path_robot = robot_model.clone();
@@ -375,7 +401,7 @@ function visualizeSolution(solutionData) {
  * description
  *
  */
-function drawSolutionPath(path) {
+Visualization.prototype.drawSolutionPath = function(path) {
 	pathVectorsArray = [];
 
 	// Parse the path string into an array of position vectors
@@ -411,7 +437,7 @@ function drawSolutionPath(path) {
  * @param None
  * @return None
  */
-function moveRobot() {
+Visualization.prototype.moveRobot = function() {
 
 	// If the robot is not at the end of the path, step forward
 	if (step < path.length) {
@@ -437,7 +463,7 @@ function moveRobot() {
  * @param None
  * @return None
  */
-function showRobotPath() {
+Visualization.prototype.showRobotPath = function() {
 
 	// If the path robots do not already exist, create them
 	if (staticPathRobots.length == 0) {
@@ -471,47 +497,12 @@ function showRobotPath() {
  * @param None
  * @return None
  */
-function hideRobotPath() {
+Visualization.prototype.hideRobotPath = function() {
 
 	// Hide each static path robot from the scene
 	staticPathRobots.forEach(function (element, index) {
 		element.visible = false;
 	});
 
-}
-
-
-/**
- * Converts a rotation from axis-angle representation into a quaternion.
- *
- * @param {float} xyz The unit vector to rotate around.
- * @param {float} theta The number of radians to rotate.
- * @return {THREE.Quaternion} The resulting quaternion
- */
-function axisAngleToQuaternion(x, y, z, theta) {
-
-	var q = new THREE.Quaternion();
-	q.setFromAxisAngle(new THREE.Vector3(x, y, z), theta);
-
-	return q;
-
-}
-
-
-/**
- * Translates a quaternion into degrees around each axis.
- *
- * @param {THREE.Quaternion} q A quaternion to be converted
- * @return {Object} An object describing the number of degrees of rotation
- * around each axis
- */
-function quaternionToAxisDegrees(q) {
-
-	var rot = {};
-	rot.x = RAD_TO_DEG * Math.atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y));
-	rot.y = RAD_TO_DEG * Math.asin(Math.max(Math.min(2.*(q.w*q.y-q.z*q.x),1.),-1.));
-	rot.z = RAD_TO_DEG * Math.atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z));
-
-	return rot;
 }
 

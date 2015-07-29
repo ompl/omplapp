@@ -1,3 +1,8 @@
+/* Mathematic Constants */
+var DEG_TO_RAD = Math.PI/180;
+var RAD_TO_DEG = 180/Math.PI;
+
+
 /**
  * Displays dismissable alerts to the page.
  *
@@ -21,6 +26,7 @@ function showAlert(page, type, msg) {
 	$(area).html(alert);
 }
 
+
 /**
  * Prompts the user to download a file.
  *
@@ -40,6 +46,39 @@ function downloadFile(blob, name) {
 }
 
 
+/**
+ * Converts a rotation from axis-angle representation into a quaternion.
+ *
+ * @param {float} xyz The unit vector to rotate around.
+ * @param {float} theta The number of radians to rotate.
+ * @return {THREE.Quaternion} The resulting quaternion
+ */
+function axisAngleToQuaternion(x, y, z, theta) {
+
+	var q = new THREE.Quaternion();
+	q.setFromAxisAngle(new THREE.Vector3(x, y, z), theta);
+
+	return q;
+
+}
+
+
+/**
+ * Translates a quaternion into degrees around each axis.
+ *
+ * @param {THREE.Quaternion} q A quaternion to be converted
+ * @return {Object} An object describing the number of degrees of rotation
+ * around each axis
+ */
+function quaternionToAxisDegrees(q) {
+
+	var rot = {};
+	rot.x = RAD_TO_DEG * Math.atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y));
+	rot.y = RAD_TO_DEG * Math.asin(Math.max(Math.min(2.*(q.w*q.y-q.z*q.x),1.),-1.));
+	rot.z = RAD_TO_DEG * Math.atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z));
+
+	return rot;
+}
 
 /* Keyboard Shortcuts */
 

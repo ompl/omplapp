@@ -23,7 +23,7 @@
 						<!-- Problem Selection -->
 						<div class="form-group">
 							<label>Problem</label>
-							<select name="problems" id="problems" class="required-field form-control input-sm">
+							<select name="problems" id="problems" class="form-control problem-cfg input-sm">
 								<option value="custom" selected="selected">Custom</option>
 								<option value="abstract">Abstract</option>
 								<option value="apartment">Apartment</option>
@@ -44,18 +44,18 @@
 							<form enctype="multipart/form-data">
 								<div class="form-group">
 									<label>Environment</label>
-									<input type="file" name="env" id="env_path" class="form-field-custom form-control input-sm">
+									<input type="file" name="env" id="env_path" class="form-control input-sm">
 								</div>
 								<div class="form-group">
 									<label>Robot</label>
-									<input type="file" name="robot" id="robot_path" class="form-field-custom form-control input-sm">
+									<input type="file" name="robot" id="robot_path" class="form-control input-sm">
 								</div>
 							</form>
 							<center><button class="btn btn-default" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
 							<br>
 							<div class="form-group" id="customProblem">
 								<label>Configuration File</label>
-								<input type="file" name="config" id="config" class="form-control">
+								<input type="file" name="cfg-file" id="cfg-file" class="form-control input-sm">
 							</div>
 						</div> <!-- Close collapsible options -->
 					</div>
@@ -74,18 +74,18 @@
 							<tbody>
 								<tr>
 									<th>X</th>
-									<td><input type="number" step="any" name="start.x" class="pose form-field form-control input-sm"></td>
-									<td><input type="number" step="any" name="start.axis.x" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.x" class="pose form-control problem-cfg input-sm"></td>
+									<td><input type="number" step="any" name="start.deg.x" class="pose form-control problem-cfg input-sm"></td>
 								</tr>
 								<tr>
 									<th>Y</th>
-									<td><input type="number" step="any" name="start.y" class="pose form-field form-control input-sm"></td>
-									<td><input type="number" step="any" name="start.axis.y" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.y" class="pose form-control problem-cfg input-sm"></td>
+									<td><input type="number" step="any" name="start.deg.y" class="pose form-control problem-cfg input-sm"></td>
 								</tr>
 								<tr>
 									<th>Z</th>
-									<td><input type="number" step="any" name="start.z" class="pose form-field form-control input-sm"></td>
-									<td><input type="number" step="any" name="start.axis.z" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="start.z" class="pose form-control problem-cfg input-sm"></td>
+									<td><input type="number" step="any" name="start.deg.z" class="pose form-control problem-cfg input-sm"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -104,18 +104,18 @@
 							<tbody>
 								<tr>
 									<th>X</th>
-									<td><input type="number" step="any" name="goal.x" class="pose form-field form-control input-sm"></td>
-									<td><input type="number" step="any" name="goal.axis.x" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.x" class="pose form-control problem-cfg input-sm"></td>
+									<td><input type="number" step="any" name="goal.deg.x" class="pose form-control problem-cfg input-sm"></td>
 								</tr>
 								<tr>
 									<th>Y</th>
-									<td><input type="number" step="any" name="goal.y" class="pose form-field form-control input-sm"></td>
-									<td><input type="number" step="any" name="goal.axis.y" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.y" class="pose form-control problem-cfg input-sm"></td>
+									<td><input type="number" step="any" name="goal.deg.y" class="pose form-control problem-cfg input-sm"></td>
 								</tr>
 								<tr>
 									<th>Z</th>
-									<td><input type="number" step="any" name="goal.z" class="pose form-field form-control input-sm"></td>
-									<td><input type="number" step="any" name="goal.axis.z" class="pose form-field form-control input-sm"></td>
+									<td><input type="number" step="any" name="goal.z" class="pose form-control problem-cfg input-sm"></td>
+									<td><input type="number" step="any" name="goal.deg.z" class="pose form-control problem-cfg input-sm"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -124,7 +124,7 @@
 					<!-- Optimization -->
 					<div class="form-group">
 						<label>Optimization Objective</label>
-						<select name="optObjective" id="optObjective" class="required-field form-control input-sm">
+						<select name="optimization.objective" id="optimization.objective" class="form-control problem-cfg input-sm">
 							<option value="PathLengthOptimizationObjective" selected>Length</option>
 							<option value="MaximizeMinClearanceObjective">Maximize Min Clearance</option>
 							<option value="MechanicalWorkOptimizationObjective">Mechanical Work</option>
@@ -132,7 +132,7 @@
 					</div>
 					<div class="form-group">
 						<label>Cost Threshold</label>
-						<input type='number' name='costThreshold' id='costThreshold' value='10000' class="required-field form-control input-sm"></input>
+						<input type='number' name='cost.threshold' id='cost.threshold' value='10000' class="form-control problem-cfg input-sm"></input>
 					</div>
 				</div>
 				<!-- End Problem Tab -->
@@ -151,18 +151,18 @@
 						<tbody>
 							<tr>
 								<th>X</th>
-								<td><input type="number" step="any" name="volume.min.x" class="bounds form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="volume.max.x" class="bounds form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="volume.min.x" class="bounds form-control problem-cfg input-sm"></td>
+								<td><input type="number" step="any" name="volume.max.x" class="bounds form-control problem-cfg input-sm"></td>
 							</tr>
 							<tr>
 								<th>Y</th>
-								<td><input type="number" step="any" name="volume.min.y" class="bounds form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="volume.max.y" class="bounds form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="volume.min.y" class="bounds form-control problem-cfg input-sm"></td>
+								<td><input type="number" step="any" name="volume.max.y" class="bounds form-control problem-cfg input-sm"></td>
 							</tr>
 							<tr>
 								<th>Z</th>
-								<td><input type="number" step="any" name="volume.min.z" class="bounds form-field form-control input-sm"></td>
-								<td><input type="number" step="any" name="volume.max.z" class="bounds form-field form-control input-sm"></td>
+								<td><input type="number" step="any" name="volume.min.z" class="bounds form-control problem-cfg input-sm"></td>
+								<td><input type="number" step="any" name="volume.max.z" class="bounds form-control problem-cfg input-sm"></td>
 							</tr>
 							<tr>
 								<td colspan=2>Show Bounding Box</td>
@@ -180,7 +180,7 @@
 				<div role="tabpanel" class="tab-pane fade" id="planner">
 					<div class="form-group">
 						<label>Planner</label>
-						<select name="planners" id="planners" class="required-field form-control input-sm">
+						<select name="planners" id="planners" class="form-control problem-cfg input-sm">
 							<!-- These options are filled in by loadPlanners() in configuration.js -->
 						</select>
 					</div>
@@ -199,11 +199,11 @@
 							<tbody>
 								<tr>
 									<td>Name</td>
-									<td><input type="text" name="name" class="form-field form-control form-control input-sm"></td>
+									<td><input type="text" name="name" class="form-control problem-cfg input-sm"></td>
 								</tr>
 								<tr>
 									<td>Time Limit (sec)</td>
-									<td><input type="number" name="solve_time" step="any" class="form-field form-control input-sm" value="10"></td>
+									<td><input type="number" name="solve_time" step="any" class="form-control problem-cfg input-sm" value="10"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -214,19 +214,19 @@
 								<tbody>
 									<tr>
 										<td>Runs</td>
-										<td><input type="number" name="runs" class="form-control form-control input-sm" value="1"></td>
+										<td><input type="number" name="runs" class="form-control problem-cfg input-sm" value="1"></td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
 
 						<br><br>
-						<button class="btn btn-default" type="button" onclick="solve()" id="solve-button">Solve</button>
-						<button class="btn btn-default" type="button" onclick="clearAllFields()">Clear</button>
+						<button class="btn btn-default" type="button" onclick="problem.solve()" id="solve-button">Solve</button>
+						<button class="btn btn-default" type="button" onclick="solution.clear()">Clear</button>
 
 						<div class="hidden" id='pathButtons'>
-							<button class="btn btn-default" type='button' onclick='animateToggle()' id='animateToggleBtn'>Animate</button>
-							<button class="btn btn-default" type='button' onclick='toggleRobotPath()' id='toggleRobotPathBtn'>Show Path</button>
+							<button class="btn btn-default" type='button' onclick='visualization.toggleAnimation()' id='animateToggleBtn'>Animate</button>
+							<button class="btn btn-default" type='button' onclick='visualization.toggleRobotPath()' id='toggleRobotPathBtn'>Show Path</button>
 							<br><br>
 							<label for="animationSpeed" id="animationSpeedLabel">Animation Speed</label>
 							<input type="range" min=700 max =999 id="animationSpeed"></input>
@@ -260,11 +260,11 @@
 							</tr>
 							<tr>
 								<td>Download Configuration File</td>
-								<td colspan="2"><a class="iconlink" onclick="downloadConfig()" id="downloadConfigButton">&#11015;</a></td>
+								<td colspan="2"><a class="iconlink" onclick="problem.downloadConfig()" id="downloadConfigButton">&#11015;</a></td>
 							</tr>
 							<tr>
 								<td>Download Solution Path</td>
-								<td colspan="2"><a class="iconlink" onclick="downloadPath()" id="downloadConfigButton">&#11015;</a></td>
+								<td colspan="2"><a class="iconlink" onclick="solution.downloadSolutionPath()" id="downloadConfigButton">&#11015;</a></td>
 							</tr>
 						</tbody>
 					</table>

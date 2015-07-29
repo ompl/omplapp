@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import os
+from os.path import dirname, abspath, join, basename
 import json
 import sys
-from os.path import dirname, abspath, join, basename
 import tempfile
 import webbrowser
 
-import shutil
 
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
@@ -18,8 +17,11 @@ except:
 # Constants
 show_results = False
 ompl_app_root = dirname(dirname(abspath(__file__)))
-ompl_resources_dir = join(ompl_app_root, 'resources/3D')
-problem_files = 'static/problem_files'
+ompl_web_root = join(dirname(dirname(abspath(__file__))), "webapp")
+ompl_sessions_dir = join(ompl_app_root, 'webapp/static/sessions')
+problem_files_3D = join(ompl_app_root, 'webapp/static/problem_files/3D')
+problem_files_2D = join(ompl_app_root, 'webapp/static/problem_files/2D')
+
 
 try:
 	import ompl
@@ -27,7 +29,9 @@ try:
 	from ompl import geometric as og
 	from ompl import control as oc
 	from ompl import app as oa
-	from ompl.util import LogLevel
+	from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
+	sys.path.insert(0, join(ompl_app_root, 'ompl/scripts'))
+	from ompl_benchmark_statistics import readBenchmarkLog
 except:
 	sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
 	import ompl
@@ -36,6 +40,8 @@ except:
 	from ompl import control as oc
 	from ompl import app as oa
 	from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
+	sys.path.insert(0, join(ompl_app_root, 'ompl/scripts'))
+	from ompl_benchmark_statistics import readBenchmarkLog
 
 import flask
 from flask import Flask
@@ -57,31 +63,20 @@ class Logger(OutputHandler):
 
 	def __init__(self):
 		self.out = getOutputHandler()
-		setLogLevel(LogLevel.LOG_ERROR)
+		setLogLevel(LogLevel.LOG_DEBUG)
 
 
 	def log(self, text, level, filename, line):
 		if level >= getLogLevel():
 			self.out.log(text, level, filename, line)
 
+
+ompl.initializePlannerLists()
 oh = Logger()
 oh.log("Log level is set to: %d" % getLogLevel(), LogLevel.LOG_INFO, "omplweb.py", 70)
 
 
 ########## OMPL ##########
-
-def create_planners():
-	"""
-	Initializes the planner lists and formats each planner's parameters to be
-	sent to the client.
-	"""
-	ompl.initializePlannerLists()
-	# Create the geometric planners
-	planners = ompl.PlanningAlgorithms(og)
-	params_dict = planners.getPlanners()
-
-	return params_dict
-
 
 def allowed_file(filename):
 	"""
@@ -115,8 +110,7 @@ def save_cfg_file(name, session_id, text):
 	"""
 	Saves a .cfg file intended for benchmarking
 	"""
-
-	file_loc = join('static/sessions', session_id, name);
+	file_loc = join(ompl_sessions_dir, session_id, name);
 	f = open(file_loc + ".cfg", 'w')
 	f.write(text)
 	f.close()
@@ -174,7 +168,7 @@ def get_offset(env_mesh, robot_mesh):
 	return offset
 
 @celery.task()
-def solve(problem, flask_request_form):
+def solve(problem):
 	"""
 	Given an instance of the Problem class, containing the problem configuration
 	data, solves the motion planning problem and returns either the solution
@@ -233,19 +227,13 @@ def solve(problem, flask_request_form):
 	ompl_setup.setPlanner(planner)
 
 	# Set the optimization objective
-	obj = eval('ob.%s(space_info)' % problem['opt_objective'])
-	cost = ob.Cost(float(problem['cost_threshold']))
+	obj = eval('ob.%s(space_info)' % problem['optimization.objective'])
+	cost = ob.Cost(float(problem['cost.threshold']))
 	obj.setCostThreshold(cost)
 
-	# TODO: This is not that good...find a better way to get planner params
-	params = str(planner.params()).split("\n")
-	# For each parameter that this planner has
-	for param in params:
-		param = param.split(" ")[0]
-		# See if a value for this param is provided by the client
-		if param in flask_request_form:
-			# If value exists, set the param to the value:w
-			planner.params().setParam(param, str(problem['planner_params'][param]))
+	# Set each parameter that was configured by the user
+	for param in problem['planner_params']:
+		planner.params().setParam(str(param), str(problem['planner_params'][param]))
 
 	## Solve the problem
 	solution = {}
@@ -284,7 +272,7 @@ def solve(problem, flask_request_form):
 	return solution
 
 @celery.task()
-def solve_multiple(runs, problem, flask_request_form):
+def solve_multiple(runs, problem):
 	"""
 	"""
 	result = {}
@@ -293,14 +281,14 @@ def solve_multiple(runs, problem, flask_request_form):
 
 	for i in range(0, runs):
 		oh.log("Solving run number: {}".format(i), LogLevel.LOG_INFO, "omplweb.py", 276)
-		solutions.append(solve(problem, flask_request_form))
+		solutions.append(solve(problem))
 
 	result['solutions'] = solutions
 
 	return result
 
 @celery.task()
-def benchmark(name, session_id, cfg_loc, db_filename, problem_name):
+def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, env_loc):
 	"""
 	Runs ompl_benchmark on cfg_loc and converts the resulting log file to a
 	database with ompl_benchmark_statistics.
@@ -309,20 +297,27 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name):
 	"""
 
 	if problem_name != "custom":
-		# Copy over the needed mesh files to perform benchmarking
-		shutil.copy("../resources/3D/" + problem_name + "_env.dae", "static/sessions/" + session_id)
-		shutil.copy("../resources/3D/" + problem_name + "_robot.dae", "static/sessions/" + session_id)
+		robot_file = join(ompl_sessions_dir, session_id, basename(robot_loc));
+		env_file = join(ompl_sessions_dir, session_id, basename(env_loc));
+		if not os.path.isfile(robot_file) and not os.path.isfile(env_file):
+			# Copy over the needed mesh files to perform benchmarking, if they don't exist
+			os.symlink(join(ompl_web_root, robot_loc), robot_file)
+			os.symlink(join(ompl_web_root, env_loc), env_file)
 
 	# Run the benchmark, produces .log file
 	os.system("ompl_benchmark " + cfg_loc + ".cfg")
 
 	# Convert .log into database
-	os.system("python ../ompl/scripts/ompl_benchmark_statistics.py " + cfg_loc + ".log -d static/sessions/" + session_id + "/" + db_filename)
+	dbfile = join(ompl_sessions_dir, session_id, db_filename)
+	logfile = []
+	logfile.append(join(ompl_sessions_dir, session_id, name + ".log"))
+	readBenchmarkLog(dbfile, logfile, "")
 
 	# Open the planner arena page when benchmarking is done
 	if show_results:
 		url = "http://127.0.0.1:8888/?user=" + session_id + "&job=" + db_filename
 		webbrowser.open(url)
+
 
 ########## Flask ##########
 
@@ -353,9 +348,12 @@ def load_about():
 @app.route('/omplapp/session')
 def create_session():
 	"""
+	Creates a session folder and returns its name
 	"""
+	if not os.path.isdir(ompl_sessions_dir):
+		os.mkdir(ompl_sessions_dir)
 
-	session_path = tempfile.mkdtemp(prefix="", dir="static/sessions")
+	session_path = tempfile.mkdtemp(prefix="", dir=ompl_sessions_dir)
 	session_name = basename(session_path)
 
 	return session_name
@@ -364,15 +362,14 @@ def create_session():
 # Problem Configuration
 @app.route('/omplapp/planners')
 def planners():
-	planners = create_planners()
-	return json.dumps(planners)
+	return json.dumps(og.planners.plannerMap)
 
 @app.route('/omplapp/offset', methods=["POST"])
 def find_offset():
 	env_mesh = flask.request.form['env_loc']
 	robot_mesh = flask.request.form['robot_loc']
 
-	offset = get_offset(env_mesh, robot_mesh)
+	offset = get_offset(join(ompl_web_root, env_mesh), join(ompl_web_root, robot_mesh))
 	return json.dumps(offset)
 
 @app.route('/omplapp/upload', methods=['POST'])
@@ -388,11 +385,11 @@ def upload():
 
 	runs = int(problem['runs'])
 	if runs > 1:
-		solve_task = solve_multiple.delay(runs, problem, flask.request.form)
+		solve_task = solve_multiple.delay(runs, problem)
 		oh.log("Started solving multiple runs with task id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
 		return str(solve_task.task_id)
 	else:
-		solve_task = solve.delay(problem, flask.request.form)
+		solve_task = solve.delay(problem)
 		oh.log("Started solving task with id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
 		return str(solve_task.task_id)
 
@@ -422,7 +419,7 @@ def upload_models():
 	env = flask.request.files['env']
 
 	session_id = flask.request.form['session_id']
-	session_dir = join("static/sessions", session_id)
+	session_dir = join(ompl_sessions_dir, session_id)
 
 	file_locs = {}
 
@@ -433,11 +430,11 @@ def upload_models():
 			# If valid files, save them to the server
 			robot_file = join(session_dir, secure_filename(robot.filename))
 			robot.save(robot_file)
-			file_locs['robot_loc'] = robot_file
+			file_locs['robot_loc'] = join("static/sessions", session_id, basename(robot_file))
 
 			env_file = join(session_dir, secure_filename(env.filename))
 			env.save(env_file)
-			file_locs['env_loc'] = env_file
+			file_locs['env_loc'] = join("static/sessions", session_id, basename(env_file))
 
 		else:
 			return "Error: Wrong file format. Robot and environment files must be .dae"
@@ -458,11 +455,11 @@ def request_problem():
 	env_filename = problem_name + "_env.dae"
 	cfg_filename = problem_name + ".cfg"
 
-	cfg_file = join(problem_files, cfg_filename)
+	cfg_file = join(problem_files_3D, cfg_filename)
 	cfg_data = parse_cfg(cfg_file)
 
-	cfg_data['robot_loc'] = join(problem_files, robot_filename)
-	cfg_data['env_loc'] = join(problem_files, env_filename)
+	cfg_data['robot_loc'] = join("static/problem_files/3D", robot_filename)
+	cfg_data['env_loc'] = join("static/problem_files/3D", env_filename)
 
 	return json.dumps(cfg_data)
 
@@ -472,10 +469,12 @@ def request_problem():
 def init_benchmark():
 
 	session_id = flask.request.form['session_id']
-	session_dir = join("static/sessions", session_id)
+	session_dir = join(ompl_sessions_dir, session_id)
 	cfg = flask.request.form['cfg']
 	cfg_name = flask.request.form['filename']
 	problem_name = flask.request.form['problem']
+	env_loc = flask.request.form["env_loc"]
+	robot_loc = flask.request.form["robot_loc"]
 	cfg_loc = save_cfg_file(cfg_name, session_id, cfg)
 
 	db_file, db_filepath = tempfile.mkstemp(suffix=".db", prefix="", dir=session_dir)
@@ -485,7 +484,7 @@ def init_benchmark():
 
 	db_filename = basename(db_filepath)
 
-	result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename, problem_name)
+	result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename, problem_name, env_loc, robot_loc)
 
 	return db_filename
 
