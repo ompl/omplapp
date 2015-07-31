@@ -218,6 +218,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     robotType = [t[0] for t in self.robotTypes].index('GSE2RigidBodyPlanning')
                 self.mainWidget.problemWidget.robotTypeSelect.setCurrentIndex(robotType)
             cfg_dir = dirname(fname)
+            self.setRobotType(robotType)
             self.environmentFile = join(cfg_dir, config.get("problem", "world"))
             self.robotFile = join(cfg_dir, config.get("problem", "robot"))
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
