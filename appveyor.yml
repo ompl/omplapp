@@ -20,6 +20,7 @@ environment:
 configuration: Release
 
 before_build:
+  - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
   - cmd: set
   - cmd: mkdir build
   - cmd: cd build
