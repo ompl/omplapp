@@ -1,86 +1,86 @@
 <html>
-	<head>
-		<!-- Styles -->
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
+    <head>
+        <!-- Styles -->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
 
-		<!-- Libraries -->
-		<script src="{{ url_for('static', filename='scripts/libs/jquery-2.1.4.min.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/libs/jquery.blockUI.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/libs/bootstrap.min.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/libs/three.min.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/libs/TrackballControls.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/libs/ColladaLoader.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/libs/mousetrap.min.js') }}"></script>
+        <!-- Libraries -->
+        <script src="{{ url_for('static', filename='scripts/libs/jquery-2.1.4.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libs/jquery.blockUI.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libs/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libs/three.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libs/TrackballControls.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libs/ColladaLoader.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/libs/mousetrap.min.js') }}"></script>
 
-		<!-- Application Scripts -->
-		<script src="{{ url_for('static', filename='scripts/configuration.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/benchmarking.js') }}"></script>
-		<script src="{{ url_for('static', filename='scripts/helpers.js') }}"></script>
+        <!-- Application Scripts -->
+        <script src="{{ url_for('static', filename='scripts/configuration.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/visualization.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/benchmarking.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/helpers.js') }}"></script>
 
-	</head>
+    </head>
 
-	<body><div class="wrap">
-		<div role="tab-panel">
-			<!-- Navigation -->
-			<div class="main-nav container navbar-fixed-top">
-				<div class="container">
-					<div class="navbar-header">
-						<button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="true" aria-controls="navbar">
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
+    <body><div class="wrap">
+        <div role="tab-panel">
+            <!-- Navigation -->
+            <div class="main-nav container navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="true" aria-controls="navbar">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
 
-						<div class="logo">OMPL Web</div>
-					</div>
-					<div class="collapse navbar-collapse" id="navbar-collapse">
-						<ul class="nav tabs main-tabs" role="tablist">
-							<li role="presentation"><a class="tablink" href="#configuration" aria-controls="configuration" role="tab" data-toggle="tab" id="configuration-page">Configure Problem</a></li>
-							<li role="presentation"><a class="tablink" href="#benchmarking" aria-controls="benchmarking" role="tab" data-toggle="tab" id="benchmarking-page">Benchmarking</a></li>
-							<li role="presentation"><a class="tablink" href="#about" aria-controls="about" role="tab" data-toggle="tab" id="about-page">About</a></li>
-						</ul>
-					</div>
-				</div>
-			</div> <!-- End tabs nav -->
+                        <div class="logo">OMPL Web</div>
+                    </div>
+                    <div class="collapse navbar-collapse" id="navbar-collapse">
+                        <ul class="nav tabs main-tabs" role="tablist">
+                            <li role="presentation"><a class="tablink" href="#configuration" aria-controls="configuration" role="tab" data-toggle="tab" id="configuration-page">Configure Problem</a></li>
+                            <li role="presentation"><a class="tablink" href="#benchmarking" aria-controls="benchmarking" role="tab" data-toggle="tab" id="benchmarking-page">Benchmarking</a></li>
+                            <li role="presentation"><a class="tablink" href="#about" aria-controls="about" role="tab" data-toggle="tab" id="about-page">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div> <!-- End tabs nav -->
 
-			<div class="main-content tab-content">
+            <div class="main-content tab-content">
 
-				<!-- Configure Problem Page -->
-				<div role="tabpanel" class="tab-pane fade" id="configuration">
-					<!-- This gets filled in by initialize() -->
-				</div>
-
-
-				<!-- Benchmarking Page -->
-				<div role="tabpanel" class="tab-pane fade" id="benchmarking">
-					<!-- This gets filled in by initialize() -->
-				</div>
+                <!-- Configure Problem Page -->
+                <div role="tabpanel" class="tab-pane fade" id="configuration">
+                    <!-- This gets filled in by initialize() -->
+                </div>
 
 
-				<!-- About Page -->
-				<div role="tabpanel" class="tab-pane fade" id="about">
-					<!-- This gets filled in by initialize() -->
-				</div>
-
-			</div> <!-- End tab content -->
-
-		</div> <!-- End tab panel -->
+                <!-- Benchmarking Page -->
+                <div role="tabpanel" class="tab-pane fade" id="benchmarking">
+                    <!-- This gets filled in by initialize() -->
+                </div>
 
 
-		<div class="push"></div>
-	</div></body>
-	<!-- Footer -->
-	<div class="footer">
-		<div class="container">
-			<a target="none" href="http://ompl.kavrakilab.org">Open Motion Planning Library</a>
-			•
-			<a target="none" href="http://www.kavrakilab.org">Physical and Biological Computing Group</a>
-			•
-			<a target="none" href="http://www.cs.rice.edu">Department of Computer Science</a>
-			•
-			<a target="none" href="http://www.rice.edu">Rice University</a><br>
-		</div>
-	</div>
+                <!-- About Page -->
+                <div role="tabpanel" class="tab-pane fade" id="about">
+                    <!-- This gets filled in by initialize() -->
+                </div>
+
+            </div> <!-- End tab content -->
+
+        </div> <!-- End tab panel -->
+
+
+        <div class="push"></div>
+    </div></body>
+    <!-- Footer -->
+    <div class="footer">
+        <div class="container">
+            <a target="none" href="http://ompl.kavrakilab.org">Open Motion Planning Library</a>
+            •
+            <a target="none" href="http://www.kavrakilab.org">Physical and Biological Computing Group</a>
+            •
+            <a target="none" href="http://www.cs.rice.edu">Department of Computer Science</a>
+            •
+            <a target="none" href="http://www.rice.edu">Rice University</a><br>
+        </div>
+    </div>
 </html>

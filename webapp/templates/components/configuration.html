@@ -1,285 +1,296 @@
 <div class="container container-fluid" id="inner-content">
-	<h2>Configure Problem</h2>
-	<br><br>
+    <h2>Configure Problem</h2>
+    <br><br>
 
-	<div id="configuration-alerts"></div>
+    <div id="configuration-alerts"></div>
 
-	<div class="col-md-4 tab-container" role="tabpanel">
-			<!-- Nav tabs -->
-			<ul class="nav tabs" role="tablist">
-				<li role="presentation"><a class="tablink" href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
-				<li role="presentation"><a class="tablink" href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab" id="bounds-tab">Bounds</a></li>
-				<li role="presentation"><a class="tablink" href="#planner" aria-controls="planner" role="tab" data-toggle="tab" id="planner-tab">Planner</a></li>
-				<li role="presentation"><a class="tablink" href="#solve" aria-controls="solve" role="tab" data-toggle="tab" id="solve-tab">Solve</a></li>
-				<li role="presentation"><a class="tablink" href="#settings" aria-controls="settings" role="tab" data-toggle="tab" id="settings-tab"><div id="settingsIcon"><span class="glyphicon glyphicon-cog"></span></div></a></li>
-			</ul>
+    <div class="col-md-4 tab-container" role="tabpanel">
+            <!-- Nav tabs -->
+            <ul class="nav tabs" role="tablist">
+                <li role="presentation"><a class="tablink" href="#problem" aria-controls="problem" role="tab" data-toggle="tab" id="problem-tab">Problem</a></li>
+                <li role="presentation"><a class="tablink" href="#bounds" aria-controls="bounds" role="tab" data-toggle="tab" id="bounds-tab">Bounds</a></li>
+                <li role="presentation"><a class="tablink" href="#planner" aria-controls="planner" role="tab" data-toggle="tab" id="planner-tab">Planner</a></li>
+                <li role="presentation"><a class="tablink" href="#solve" aria-controls="solve" role="tab" data-toggle="tab" id="solve-tab">Solve</a></li>
+                <li role="presentation"><a class="tablink" href="#settings" aria-controls="settings" role="tab" data-toggle="tab" id="settings-tab"><div id="settingsIcon"><span class="glyphicon glyphicon-cog"></span></div></a></li>
+            </ul>
 
-			<!-- Tab panes -->
-			<div class="tab-content">
-				<!-- Begin Problem Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="problem">
-					<!-- Problem Selection -->
-					<div class="">
-						<!-- Problem Selection -->
-						<div class="form-group">
-							<label>Problem</label>
-							<select name="problems" id="problems" class="form-control problem-cfg input-sm">
-								<option value="custom" selected="selected">Custom</option>
-								<option value="abstract">Abstract</option>
-								<option value="apartment">Apartment</option>
-								<option value="bugtrap">Bugtrap</option>
-								<option value="cubicles">Cubicles</option>
-								<option value="easy">Easy</option>
-								<option value="escape">Escape</option>
-								<option value="home">Home</option>
-								<option value="pipedream">Pipe Dream</option>
-								<option value="spirelli">Spirelli</option>
-								<option value="twistycool">Twisty Cool</option>
-								<option value="twistycooler">Twisty Cooler</option>
-							</select>
-						</div> <!-- Close Problem -->
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- Begin Problem Tab -->
+                <div role="tabpanel" class="tab-pane fade" id="problem">
+                    <!-- Problem Selection -->
+                    <div class="">
+                        <!-- Problem Selection -->
+                        <div class="form-group">
+                            <label>Problem</label>
+                            <select name="problems" id="problems" class="form-control problem-cfg input-sm">
+                                <option value="custom" selected="selected">Custom</option>
+                                <option value="abstract">Abstract</option>
+                                <option value="apartment">Apartment</option>
+                                <option value="bugtrap">Bugtrap</option>
+                                <option value="cubicles">Cubicles</option>
+                                <option value="easy">Easy</option>
+                                <option value="escape">Escape</option>
+                                <option value="home">Home</option>
+                                <option value="pipedream">Pipe Dream</option>
+                                <option value="spirelli">Spirelli</option>
+                                <option value="twistycool">Twisty Cool</option>
+                                <option value="twistycooler">Twisty Cooler</option>
+                            </select>
+                        </div> <!-- Close Problem -->
 
-						<!-- Custom problem upload -->
-						<div class="collapse in" id="customProblem">
-							<form enctype="multipart/form-data">
-								<div class="form-group">
-									<label>Environment</label>
-									<input type="file" name="env" id="env_path" class="form-control input-sm">
-								</div>
-								<div class="form-group">
-									<label>Robot</label>
-									<input type="file" name="robot" id="robot_path" class="form-control input-sm">
-								</div>
-							</form>
-							<center><button class="btn btn-default" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
-							<br>
-							<div class="form-group" id="customProblem">
-								<label>Configuration File</label>
-								<input type="file" name="cfg-file" id="cfg-file" class="form-control input-sm">
-							</div>
-						</div> <!-- Close collapsible options -->
-					</div>
+                        <div class="form-group">
+                            <label>Robot Type</label>
+                            <select name="robot.type" id="robot_type" class="form-control problem-cfg input-sm">
+                                <!-- <option value="pipedream">Blimp</option> -->
+                                <!-- <option value="spirelli">Dynamic Car</option> -->
+                                <!-- <option value="spirelli">Kinematic Car</option> -->
+                                <!-- <option value="twistycool">Quadrotor</option> -->
+                                <!-- <option value="SE2RigidBodyPlanning">Rigid Body Planning (2D)</option> -->
+                                <!-- <option value="SE3RigidBodyPlanning" selected>Rigid Body Planning (3D)</option> -->
+                            </select>
+                        </div> <!-- Close Problem -->
+                        <!-- Custom problem upload -->
+                        <div class="collapse in" id="customProblem">
+                            <form enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label>Environment</label>
+                                    <input type="file" name="env" id="env_path" class="form-control input-sm">
+                                </div>
+                                <div class="form-group">
+                                    <label>Robot</label>
+                                    <input type="file" name="robot" id="robot_path" class="form-control input-sm">
+                                </div>
+                            </form>
+                            <center><button class="btn btn-default" onclick="uploadModels()" id="uploadModelsButton">Upload Models</a></center>
+                            <br>
+                            <div class="form-group" id="customProblem">
+                                <label>Configuration File</label>
+                                <input type="file" name="cfg-file" id="cfg-file" class="form-control input-sm">
+                            </div>
+                        </div> <!-- Close collapsible options -->
+                    </div>
 
-					<!-- Start Pose -->
-					<div>
-						<table class="table">
-							<caption>Start Pose</caption>
-							<thead>
-								<tr>
-								<th>Axis</th>
-								<th>Position</th>
-								<th>Rotation Degrees</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<th>X</th>
-									<td><input type="number" step="any" name="start.x" class="pose form-control problem-cfg input-sm"></td>
-									<td><input type="number" step="any" name="start.deg.x" class="pose form-control problem-cfg input-sm"></td>
-								</tr>
-								<tr>
-									<th>Y</th>
-									<td><input type="number" step="any" name="start.y" class="pose form-control problem-cfg input-sm"></td>
-									<td><input type="number" step="any" name="start.deg.y" class="pose form-control problem-cfg input-sm"></td>
-								</tr>
-								<tr>
-									<th>Z</th>
-									<td><input type="number" step="any" name="start.z" class="pose form-control problem-cfg input-sm"></td>
-									<td><input type="number" step="any" name="start.deg.z" class="pose form-control problem-cfg input-sm"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<!-- Goal Pose -->
-					<div>
-						<table class="table">
-							<caption>Goal Pose</caption>
-							<thead>
-								<tr>
-								<th>Axis</th>
-								<th>Position</th>
-								<th>Rotation Degrees</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<th>X</th>
-									<td><input type="number" step="any" name="goal.x" class="pose form-control problem-cfg input-sm"></td>
-									<td><input type="number" step="any" name="goal.deg.x" class="pose form-control problem-cfg input-sm"></td>
-								</tr>
-								<tr>
-									<th>Y</th>
-									<td><input type="number" step="any" name="goal.y" class="pose form-control problem-cfg input-sm"></td>
-									<td><input type="number" step="any" name="goal.deg.y" class="pose form-control problem-cfg input-sm"></td>
-								</tr>
-								<tr>
-									<th>Z</th>
-									<td><input type="number" step="any" name="goal.z" class="pose form-control problem-cfg input-sm"></td>
-									<td><input type="number" step="any" name="goal.deg.z" class="pose form-control problem-cfg input-sm"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+                    <!-- Start Pose -->
+                    <div>
+                        <table class="table">
+                            <caption>Start Pose</caption>
+                            <thead>
+                                <tr>
+                                <th>Axis</th>
+                                <th>Position</th>
+                                <th>Rotation Degrees</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>X</th>
+                                    <td><input type="number" step="any" name="start.x" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="start.deg.x" class="pose form-control problem-cfg input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th>Y</th>
+                                    <td><input type="number" step="any" name="start.y" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="start.deg.y" class="pose form-control problem-cfg input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th>Z</th>
+                                    <td><input type="number" step="any" name="start.z" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="start.deg.z" class="pose form-control problem-cfg input-sm"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Goal Pose -->
+                    <div>
+                        <table class="table">
+                            <caption>Goal Pose</caption>
+                            <thead>
+                                <tr>
+                                <th>Axis</th>
+                                <th>Position</th>
+                                <th>Rotation Degrees</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>X</th>
+                                    <td><input type="number" step="any" name="goal.x" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="goal.deg.x" class="pose form-control problem-cfg input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th>Y</th>
+                                    <td><input type="number" step="any" name="goal.y" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="goal.deg.y" class="pose form-control problem-cfg input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <th>Z</th>
+                                    <td><input type="number" step="any" name="goal.z" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="goal.deg.z" class="pose form-control problem-cfg input-sm"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-					<!-- Optimization -->
-					<div class="form-group">
-						<label>Optimization Objective</label>
-						<select name="optimization.objective" id="optimization.objective" class="form-control problem-cfg input-sm">
-							<option value="PathLengthOptimizationObjective" selected>Length</option>
-							<option value="MaximizeMinClearanceObjective">Maximize Min Clearance</option>
-							<option value="MechanicalWorkOptimizationObjective">Mechanical Work</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label>Cost Threshold</label>
-						<input type='number' name='cost.threshold' id='cost.threshold' value='10000' class="form-control problem-cfg input-sm"></input>
-					</div>
-				</div>
-				<!-- End Problem Tab -->
+                    <!-- Optimization -->
+                    <div class="form-group">
+                        <label>Optimization Objective</label>
+                        <select name="optimization.objective" id="optimization.objective" class="form-control problem-cfg input-sm">
+                            <option value="PathLengthOptimizationObjective" selected>Length</option>
+                            <option value="MaximizeMinClearanceObjective">Maximize Min Clearance</option>
+                            <option value="MechanicalWorkOptimizationObjective">Mechanical Work</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cost Threshold</label>
+                        <input type='number' name='cost.threshold' id='cost.threshold' value='10000' class="form-control problem-cfg input-sm"></input>
+                    </div>
+                </div>
+                <!-- End Problem Tab -->
 
-				<!-- Begin Bounds Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="bounds">
-					<table class="table">
-						<caption>Bounding Box</caption>
-						<thead>
-							<tr>
-							<th>Axis</th>
-							<th>Lower</th>
-							<th>Upper</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>X</th>
-								<td><input type="number" step="any" name="volume.min.x" class="bounds form-control problem-cfg input-sm"></td>
-								<td><input type="number" step="any" name="volume.max.x" class="bounds form-control problem-cfg input-sm"></td>
-							</tr>
-							<tr>
-								<th>Y</th>
-								<td><input type="number" step="any" name="volume.min.y" class="bounds form-control problem-cfg input-sm"></td>
-								<td><input type="number" step="any" name="volume.max.y" class="bounds form-control problem-cfg input-sm"></td>
-							</tr>
-							<tr>
-								<th>Z</th>
-								<td><input type="number" step="any" name="volume.min.z" class="bounds form-control problem-cfg input-sm"></td>
-								<td><input type="number" step="any" name="volume.max.z" class="bounds form-control problem-cfg input-sm"></td>
-							</tr>
-							<tr>
-								<td colspan=2>Show Bounding Box</td>
-								<td><input type='checkbox' id='showBoundingBox' checked></input></td>
-							</tr>
-						</tbody>
-					</table>
-					<center>
-						<button class="button btn btn-default" onclick="calculateBounds()">Calculate Bounding Box</button>
-					</center>
-				</div>
-				<!-- End Bounds Tab -->
+                <!-- Begin Bounds Tab -->
+                <div role="tabpanel" class="tab-pane fade" id="bounds">
+                    <table class="table">
+                        <caption>Bounding Box</caption>
+                        <thead>
+                            <tr>
+                            <th>Axis</th>
+                            <th>Lower</th>
+                            <th>Upper</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>X</th>
+                                <td><input type="number" step="any" name="volume.min.x" class="bounds form-control problem-cfg input-sm"></td>
+                                <td><input type="number" step="any" name="volume.max.x" class="bounds form-control problem-cfg input-sm"></td>
+                            </tr>
+                            <tr>
+                                <th>Y</th>
+                                <td><input type="number" step="any" name="volume.min.y" class="bounds form-control problem-cfg input-sm"></td>
+                                <td><input type="number" step="any" name="volume.max.y" class="bounds form-control problem-cfg input-sm"></td>
+                            </tr>
+                            <tr>
+                                <th>Z</th>
+                                <td><input type="number" step="any" name="volume.min.z" class="bounds form-control problem-cfg input-sm"></td>
+                                <td><input type="number" step="any" name="volume.max.z" class="bounds form-control problem-cfg input-sm"></td>
+                            </tr>
+                            <tr>
+                                <td colspan=2>Show Bounding Box</td>
+                                <td><input type='checkbox' id='showBoundingBox' checked></input></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <center>
+                        <button class="button btn btn-default" onclick="visualization.calculateBounds()">Calculate Bounding Box</button>
+                    </center>
+                </div>
+                <!-- End Bounds Tab -->
 
-				<!-- Begin Planner Configuration Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="planner">
-					<div class="form-group">
-						<label>Planner</label>
-						<select name="planners" id="planners" class="form-control problem-cfg input-sm">
-							<!-- These options are filled in by loadPlanners() in configuration.js -->
-						</select>
-					</div>
-					<div id="plannerPane">
-						Planner specific settings are displayed here when a
-						planner is selected.
-					</div>
-				</div>
-				<!-- End Planner Configuration Tab -->
+                <!-- Begin Planner Configuration Tab -->
+                <div role="tabpanel" class="tab-pane fade" id="planner">
+                    <div class="form-group">
+                        <label>Planner</label>
+                        <select name="planners" id="planners" class="form-control problem-cfg input-sm">
+                            <!-- These options are filled in by loadPlanners() in configuration.js -->
+                        </select>
+                    </div>
+                    <div id="plannerPane">
+                        Planner specific settings are displayed here when a
+                        planner is selected.
+                    </div>
+                </div>
+                <!-- End Planner Configuration Tab -->
 
-				<!-- Begin Solve Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="solve">
-					<div class="">
-						<table class="table">
-							<caption>Solve Problem</caption>
-							<tbody>
-								<tr>
-									<td>Name</td>
-									<td><input type="text" name="name" class="form-control problem-cfg input-sm"></td>
-								</tr>
-								<tr>
-									<td>Time Limit (sec)</td>
-									<td><input type="number" name="solve_time" step="any" class="form-control problem-cfg input-sm" value="10"></td>
-								</tr>
-							</tbody>
-						</table>
+                <!-- Begin Solve Tab -->
+                <div role="tabpanel" class="tab-pane fade" id="solve">
+                    <div class="">
+                        <table class="table">
+                            <caption>Solve Problem</caption>
+                            <tbody>
+                                <tr>
+                                    <td>Name</td>
+                                    <td><input type="text" name="name" class="form-control problem-cfg input-sm"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time Limit (sec)</td>
+                                    <td><input type="number" name="solve_time" step="any" class="form-control problem-cfg input-sm" value="10"></td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-						<a class="collapsable-link" role="button" data-toggle="collapse" href="#advancedOptions">Advanced Options</a>
-						<div class="collapse" id="advancedOptions">
-							<table class="table" class="advanced-options-table">
-								<tbody>
-									<tr>
-										<td>Runs</td>
-										<td><input type="number" name="runs" class="form-control problem-cfg input-sm" value="1"></td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
+                        <a class="collapsable-link" role="button" data-toggle="collapse" href="#advancedOptions">Advanced Options</a>
+                        <div class="collapse" id="advancedOptions">
+                            <table class="table" class="advanced-options-table">
+                                <tbody>
+                                    <tr>
+                                        <td>Runs</td>
+                                        <td><input type="number" name="runs" class="form-control problem-cfg input-sm" value="1"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-						<br><br>
-						<button class="btn btn-default" type="button" onclick="problem.solve()" id="solve-button">Solve</button>
-						<button class="btn btn-default" type="button" onclick="solution.clear()">Clear</button>
+                        <br><br>
+                        <button class="btn btn-default" type="button" onclick="problem.solve()" id="solve-button">Solve</button>
+                        <button class="btn btn-default" type="button" onclick="solution.clear()">Clear</button>
 
-						<div class="hidden" id='pathButtons'>
-							<button class="btn btn-default" type='button' onclick='visualization.toggleAnimation()' id='animateToggleBtn'>Animate</button>
-							<button class="btn btn-default" type='button' onclick='visualization.toggleRobotPath()' id='toggleRobotPathBtn'>Show Path</button>
-							<br><br>
-							<label for="animationSpeed" id="animationSpeedLabel">Animation Speed</label>
-							<input type="range" min=700 max =999 id="animationSpeed"></input>
-						</div>
-					</div>
-					<div class="">
-						<div id="results"></div>
-					</div>
-					</center>
-				</div>
-				<!-- End Solve Tab -->
+                        <div class="hidden" id='pathButtons'>
+                            <button class="btn btn-default" type='button' onclick='visualization.toggleAnimation()' id='animateToggleBtn'>Animate</button>
+                            <button class="btn btn-default" type='button' onclick='visualization.toggleRobotPath()' id='toggleRobotPathBtn'>Show Path</button>
+                            <br><br>
+                            <label for="animationSpeed" id="animationSpeedLabel">Animation Speed</label>
+                            <input type="range" min=700 max =999 id="animationSpeed"></input>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div id="results"></div>
+                    </div>
+                    </center>
+                </div>
+                <!-- End Solve Tab -->
 
-				<!-- Begin Settings Tab -->
-				<div role="tabpanel" class="tab-pane fade" id="settings">
-					<table class="table">
-						<caption>Settings</caption>
-						<tbody>
-							<tr>
-								<td>Show Axis Helper</td>
-								<td><input type='checkbox' id='showAxisHelper'></input></td>
-							</tr>
-							<tr>
-								<td>Visualization Theme</td>
-								<td colspan="2">
-									<select id="vizTheme">
-										<option value="light">Light</option>
-										<option value="dark">Dark</option>
-									</select>
+                <!-- Begin Settings Tab -->
+                <div role="tabpanel" class="tab-pane fade" id="settings">
+                    <table class="table">
+                        <caption>Settings</caption>
+                        <tbody>
+                            <tr>
+                                <td>Show Axis Helper</td>
+                                <td><input type='checkbox' id='showAxisHelper'></input></td>
+                            </tr>
+                            <tr>
+                                <td>Visualization Theme</td>
+                                <td colspan="2">
+                                    <select id="vizTheme">
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                    </select>
 
-								</td>
-							</tr>
-							<tr>
-								<td>Download Configuration File</td>
-								<td colspan="2"><a class="iconlink" onclick="problem.downloadConfig()" id="downloadConfigButton">&#11015;</a></td>
-							</tr>
-							<tr>
-								<td>Download Solution Path</td>
-								<td colspan="2"><a class="iconlink" onclick="solution.downloadSolutionPath()" id="downloadConfigButton">&#11015;</a></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<!-- End Settings Tab -->
-			</div>
-			<!-- End Tab panes -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Download Configuration File</td>
+                                <td colspan="2"><a class="iconlink" onclick="problem.downloadConfig()" id="downloadConfigButton">&#11015;</a></td>
+                            </tr>
+                            <tr>
+                                <td>Download Solution Path</td>
+                                <td colspan="2"><a class="iconlink" onclick="solution.downloadSolutionPath()" id="downloadConfigButton">&#11015;</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- End Settings Tab -->
+            </div>
+            <!-- End Tab panes -->
 
-		</form>
-		<!-- Close form -->
+        </form>
+        <!-- Close form -->
 
-	</div> <!-- End tab panel -->
+    </div> <!-- End tab panel -->
 
-	<div class="col-md-8">
-		<div class="visualization" id="viewer"></div>
-	</div>
+    <div class="col-md-8">
+        <div class="visualization" id="viewer"></div>
+    </div>
 
 </div> <!-- Close fluid container -->

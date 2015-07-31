@@ -1,60 +1,60 @@
 <div class="container container-fluid" id="content">
 
-	<h2>Planner Benchmarking</h2>
-	<br><br>
+    <h2>Planner Benchmarking</h2>
+    <br><br>
 
-	<div id="benchmark-alerts"></div>
+    <div id="benchmark-alerts"></div>
 
-	<div class="col-md-4">
-		<div class="options-header">
-			Benchmarking
-		</div>
+    <div class="col-md-4">
+        <div class="options-header">
+            Benchmarking
+        </div>
 
-		<div class="benchmarking-options">
-			<table class="table">
-				<caption>Settings</caption>
-				<tbody>
-					<tr>
-						<td>Time Limit (sec)</td>
-						<td><input type='number' name="time_limit" class="form-control input-sm" value="10"></input></td>
-					</tr>
-					<tr>
-						<td>Run Count</td>
-						<td><input type='number' name="run_count" class="form-control input-sm" value="2"></input></td>
-					</tr>
-					<!-- <tr> -->
-						<!-- <td>Notification Email</td> -->
-						<!-- <td><input type="email" id="notificationEmail" class="form-control input-sm" value="prb2@rice.edu"></input></td> -->
-					<!-- </tr> -->
-				</tbody>
-			</table>
+        <div class="benchmarking-options">
+            <table class="table">
+                <caption>Settings</caption>
+                <tbody>
+                    <tr>
+                        <td>Time Limit (sec)</td>
+                        <td><input type='number' name="time_limit" class="form-control input-sm" value="10"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Run Count</td>
+                        <td><input type='number' name="run_count" class="form-control input-sm" value="2"></input></td>
+                    </tr>
+                    <!-- <tr> -->
+                        <!-- <td>Notification Email</td> -->
+                        <!-- <td><input type="email" id="notificationEmail" class="form-control input-sm" value="prb2@rice.edu"></input></td> -->
+                    <!-- </tr> -->
+                </tbody>
+            </table>
 
-			<center>
+            <center>
 
-				<button class="btn btn-default" onclick="solution.downloadConfig()">Export Configuration</button>
+                <button class="btn btn-default" onclick="solution.downloadConfig()">Export Configuration</button>
 
-				<!-- Add Planners button -->
-				<div class="btn-group">
-					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						Add Planner &nbsp; <span class='caret'></span>
-					</button>
-					<ul class="dropdown-menu" id="addingPlanners">
-						<!-- Poplulated by loadPlanners() in configuration.js -->
-					</ul>
-				</div>
+                <!-- Add Planners button -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Add Planner &nbsp; <span class='caret'></span>
+                    </button>
+                    <ul class="dropdown-menu" id="addingPlanners">
+                        <!-- Poplulated by loadPlanners() in configuration.js -->
+                    </ul>
+                </div>
 
-				<br><br>
+                <br><br>
 
-				<button class="btn btn-default" onclick="benchmark.startBenchmarking()">Benchmark</button>
+                <button class="btn btn-default" onclick="benchmark.startBenchmarking()">Benchmark</button>
 
-			</center>
-		</div>
-	</div>
+            </center>
+        </div>
+    </div>
 
-	<div class="col-md-8">
-		<div class="planner-tables" id="planner-tables">
+    <div class="col-md-8">
+        <div class="planner-tables" id="planner-tables">
 
-		</div>
-	</div>
+        </div>
+    </div>
 
 </div>
