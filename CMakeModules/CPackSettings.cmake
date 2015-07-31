@@ -35,9 +35,6 @@ set(CPACK_SOURCE_IGNORE_FILES
     ".orig$"
     ".log$"
     ".DS_Store"
-    ".tmproj$"
-    ".tm_properties"
-    "mkwebdocs.sh"
     "/html/"
     "/bindings/"
     "TODO"
@@ -57,9 +54,7 @@ set(CPACK_SOURCE_IGNORE_FILES
     ".zip$"
     "download.md$"
     "mainpage.md$"
-    "binding_generator.py$"
-    "gen_validatorv31.js"
-    "/php/")
+    "binding_generator.py$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 

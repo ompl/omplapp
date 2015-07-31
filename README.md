@@ -1,7 +1,8 @@
 The Open Motion Planning Library (OMPL)
 =======================================
 
-[![Build Status](https://travis-ci.org/ompl/omplapp.svg?branch=master)](https://travis-ci.org/ompl/omplapp)
+Linux [![Build Status](https://travis-ci.org/ompl/omplapp.svg?branch=master)](https://travis-ci.org/ompl/omplapp)
+Windows [![Build status](https://ci.appveyor.com/api/projects/status/dyu0y627hkp8tp6h/branch/master?svg=true)](https://ci.appveyor.com/project/mamoll/omplapp/branch/master)
 
 This is OMPL.app, an extended version of OMPL that adds support for mesh
 loading and collision checking as well as a simple GUI.
