@@ -42,12 +42,6 @@
                         <div class="form-group">
                             <label>Robot Type</label>
                             <select name="robot.type" id="robot_type" class="form-control problem-cfg input-sm">
-                                <!-- <option value="pipedream">Blimp</option> -->
-                                <!-- <option value="spirelli">Dynamic Car</option> -->
-                                <!-- <option value="spirelli">Kinematic Car</option> -->
-                                <!-- <option value="twistycool">Quadrotor</option> -->
-                                <!-- <option value="SE2RigidBodyPlanning">Rigid Body Planning (2D)</option> -->
-                                <!-- <option value="SE3RigidBodyPlanning" selected>Rigid Body Planning (3D)</option> -->
                             </select>
                         </div> <!-- Close Problem -->
                         <!-- Custom problem upload -->
@@ -75,28 +69,32 @@
                     <div>
                         <table class="table">
                             <caption>Start Pose</caption>
-                            <thead>
+                            <thead class="3D">
                                 <tr>
                                 <th>Axis</th>
                                 <th>Position</th>
-                                <th>Rotation Degrees</th>
+                                <th>Rotation</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <th>X</th>
                                     <td><input type="number" step="any" name="start.x" class="pose form-control problem-cfg input-sm"></td>
-                                    <td><input type="number" step="any" name="start.deg.x" class="pose form-control problem-cfg input-sm"></td>
+                                    <td class="3D"><input type="number" step="any" name="start.deg.x" class="pose form-control problem-cfg input-sm" placeholder="degrees"></td>
                                 </tr>
                                 <tr>
                                     <th>Y</th>
                                     <td><input type="number" step="any" name="start.y" class="pose form-control problem-cfg input-sm"></td>
-                                    <td><input type="number" step="any" name="start.deg.y" class="pose form-control problem-cfg input-sm"></td>
+                                    <td class="3D"><input type="number" step="any" name="start.deg.y" class="pose form-control problem-cfg input-sm" placeholder="degrees"></td>
                                 </tr>
-                                <tr>
+                                <tr class="3D">
                                     <th>Z</th>
                                     <td><input type="number" step="any" name="start.z" class="pose form-control problem-cfg input-sm"></td>
-                                    <td><input type="number" step="any" name="start.deg.z" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="start.deg.z" class="pose form-control problem-cfg input-sm" placeholder="degrees"></td>
+                                </tr>
+                                <tr class="2D" hidden="true">
+                                    <th>Rotation</th>
+                                    <td><input type="number" step="any" name="2D.start.deg" class="pose form-control problem-cfg input-sm" placeholder="degrees"></input>
                                 </tr>
                             </tbody>
                         </table>
@@ -105,45 +103,35 @@
                     <div>
                         <table class="table">
                             <caption>Goal Pose</caption>
-                            <thead>
+                            <thead class="3D">
                                 <tr>
                                 <th>Axis</th>
                                 <th>Position</th>
-                                <th>Rotation Degrees</th>
+                                <th>Rotation</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <th>X</th>
                                     <td><input type="number" step="any" name="goal.x" class="pose form-control problem-cfg input-sm"></td>
-                                    <td><input type="number" step="any" name="goal.deg.x" class="pose form-control problem-cfg input-sm"></td>
+                                    <td class="3D"><input type="number" step="any" name="goal.deg.x" class="pose form-control problem-cfg input-sm" placeholder="degrees"></td>
                                 </tr>
                                 <tr>
                                     <th>Y</th>
                                     <td><input type="number" step="any" name="goal.y" class="pose form-control problem-cfg input-sm"></td>
-                                    <td><input type="number" step="any" name="goal.deg.y" class="pose form-control problem-cfg input-sm"></td>
+                                    <td class="3D"><input type="number" step="any" name="goal.deg.y" class="pose form-control problem-cfg input-sm" placeholder="degrees"></td>
                                 </tr>
-                                <tr>
+                                <tr class="3D">
                                     <th>Z</th>
                                     <td><input type="number" step="any" name="goal.z" class="pose form-control problem-cfg input-sm"></td>
-                                    <td><input type="number" step="any" name="goal.deg.z" class="pose form-control problem-cfg input-sm"></td>
+                                    <td><input type="number" step="any" name="goal.deg.z" class="pose form-control problem-cfg input-sm" placeholder="degrees"></td>
+                                </tr>
+                                <tr class="2D" hidden="true">
+                                    <th>Rotation</th>
+                                    <td><input type="number" step="any" name="2D.goal.deg" class="pose form-control problem-cfg input-sm" placeholder="degrees"></input>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- Optimization -->
-                    <div class="form-group">
-                        <label>Optimization Objective</label>
-                        <select name="optimization.objective" id="optimization.objective" class="form-control problem-cfg input-sm">
-                            <option value="PathLengthOptimizationObjective" selected>Length</option>
-                            <option value="MaximizeMinClearanceObjective">Maximize Min Clearance</option>
-                            <option value="MechanicalWorkOptimizationObjective">Mechanical Work</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Cost Threshold</label>
-                        <input type='number' name='cost.threshold' id='cost.threshold' value='10000' class="form-control problem-cfg input-sm"></input>
                     </div>
                 </div>
                 <!-- End Problem Tab -->
@@ -170,7 +158,7 @@
                                 <td><input type="number" step="any" name="volume.min.y" class="bounds form-control problem-cfg input-sm"></td>
                                 <td><input type="number" step="any" name="volume.max.y" class="bounds form-control problem-cfg input-sm"></td>
                             </tr>
-                            <tr>
+                            <tr class="3D">
                                 <th>Z</th>
                                 <td><input type="number" step="any" name="volume.min.z" class="bounds form-control problem-cfg input-sm"></td>
                                 <td><input type="number" step="any" name="volume.max.z" class="bounds form-control problem-cfg input-sm"></td>
@@ -198,6 +186,20 @@
                     <div id="plannerPane">
                         Planner specific settings are displayed here when a
                         planner is selected.
+                    </div>
+
+                    <!-- Optimization -->
+                    <div class="form-group">
+                        <label>Optimization Objective</label>
+                        <select name="objective" id="objective" class="form-control problem-cfg input-sm">
+                            <option value="length" selected>Length</option>
+                            <option value="max_min_clearance">Maximize Min Clearance</option>
+                            <option value="mechanical_work">Mechanical Work</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cost Threshold</label>
+                        <input type='number' name='objective.threshold' id='objective.threshold' value='10000' class="form-control problem-cfg input-sm"></input>
                     </div>
                 </div>
                 <!-- End Planner Configuration Tab -->

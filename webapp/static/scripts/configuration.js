@@ -44,8 +44,8 @@ var Problem = function () {
     this.config["volume.max.y"] = null;
     this.config["volume.max.z"] = null;
 
-    this.config["optimization.objective"] = "";
-    this.config["cost.threshold"] = null;
+    this.config["objective"] = "";
+    this.config["objective.threshold"] = null;
 
     this.config["robot.type"] = "SE3RigidBodyPlanning";
     this.config["solve_time"] = 10;
@@ -54,6 +54,14 @@ var Problem = function () {
     // The URI of the robot and env models on the server, for use by ColladaLoader
     this.config["robot_loc"] = "";
     this.config["env_loc"] = "";
+
+    this.control = {};
+    this.control["dynamic_car"] = "GDynamicCarPlanning";
+    this.control["kinematic_car"] = "GKinematicCarPlanning";
+    this.control["blimp"] = "GBlimpPlanning";
+    this.control["quadrotor"] = "GQuadrotorPlanning";
+
+    this.robots2D = ["GDynamicCarPlanning", "GKinematicCarPlanning", "GSE2RigidBodyPlanning"]
 
 }
 
@@ -82,8 +90,8 @@ Problem.prototype.update = function() {
     this.config["volume.max.z"] = $("[name='volume.max.z']").val();
 
     this.config["planner"]= $("[name='planners']").val();
-    this.config["optimization.objective"] = $("[name='optimization.objective']").val();
-    this.config["cost.threshold"] = $("[name='cost.threshold']").val();
+    this.config["objective"] = $("[name='objective']").val();
+    this.config["objective.threshold"] = $("[name='objective.threshold']").val();
 
     this.config["robot.type"] = $("[name='robot.type']").val();
     this.config["solve_time"] = $("[name='solve_time']").val();
@@ -286,35 +294,58 @@ Problem.prototype.parseConfigFile = function() {
 Problem.prototype.loadConfigFile = function(data) {
 
     console.log(data);
-    // Convert the rotation to degrees around each axis
-    var startQ = axisAngleToQuaternion(data['start.axis.x'],
-        data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-    var startRot = quaternionToAxisDegrees(startQ);
 
-    var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-        data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-    var goalRot = quaternionToAxisDegrees(goalQ);
+    if (data['start.z'] != null) {
+        show3DOptions();
+
+        // Convert the rotation to degrees around each axis
+        var startQ = axisAngleToQuaternion(data['start.axis.x'],
+            data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+        var startRot = quaternionToAxisDegrees(startQ);
+
+        var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+            data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+        var goalRot = quaternionToAxisDegrees(goalQ);
+
+        $("[name='start.z']").val(data['start.z']);
+        $("[name='start.deg.x']").val(startRot.x);
+        $("[name='start.deg.y']").val(startRot.y);
+        $("[name='start.deg.z']").val(startRot.z);
+        $("[name='goal.z']").val(data['goal.z']);
+        $("[name='goal.deg.x']").val(goalRot.x);
+        $("[name='goal.deg.y']").val(goalRot.y);
+        $("[name='goal.deg.z']").val(goalRot.z);
+        $("[name='volume.min.z']").val(data['volume.min.z']);
+        $("[name='volume.max.z']").val(data['volume.max.z']);
+    } else {
+        show2DOptions();
+        // $("[name='2D.start.deg']") =
+        // $("[name='2D.goal.deg']") =
+    }
 
     // Update the input fields with the loaded data
     $("[name='name']").val(data['name']);
     $("[name='start.x']").val(data['start.x']);
     $("[name='start.y']").val(data['start.y']);
-    $("[name='start.z']").val(data['start.z']);
-    $("[name='start.deg.x']").val(startRot.x);
-    $("[name='start.deg.y']").val(startRot.y);
-    $("[name='start.deg.z']").val(startRot.z);
     $("[name='goal.x']").val(data['goal.x']);
     $("[name='goal.y']").val(data['goal.y']);
-    $("[name='goal.z']").val(data['goal.z']);
-    $("[name='goal.deg.x']").val(goalRot.x);
-    $("[name='goal.deg.y']").val(goalRot.y);
-    $("[name='goal.deg.z']").val(goalRot.z);
     $("[name='volume.min.x']").val(data['volume.min.x']);
     $("[name='volume.min.y']").val(data['volume.min.y']);
-    $("[name='volume.min.z']").val(data['volume.min.z']);
     $("[name='volume.max.x']").val(data['volume.max.x']);
     $("[name='volume.max.y']").val(data['volume.max.y']);
-    $("[name='volume.max.z']").val(data['volume.max.z']);
+
+    if (data['objective'] != null) {
+        $("[name='objective']").val(data['objective']);
+    }
+    if (data['objective.threshold'] != null) {
+        $("[name='objective.threshold']").val(data['objective.threshold']);
+    }
+    if (data['control'] != null) {
+        var robotType = problem.control[data['control']];
+        if (robotType != null) {
+            $("[name='robot.type']").val(robotType);
+        }
+    }
 
     // Benchmarking
     $("[name='time_limit']").val(data['time_limit']);
@@ -545,6 +576,15 @@ function initialize() {
             }
         });
 
+        // Show 3D or 2D options, depending on the robot type
+        $("#robot_type").change(function() {
+            if (problem.robots2D.indexOf($("#robot_type").val()) > -1){
+                show2DOptions();
+            } else {
+                show3DOptions();
+            }
+        });
+
         // Open the problem config tab
         $('#problem-tab').click()
 
@@ -763,34 +803,55 @@ function loadRemoteProblem(problemName) {
             // Load the robot and env models
             visualization.drawModels(data['env_loc'], data['robot_loc']);
 
-            var startQ = axisAngleToQuaternion(data['start.axis.x'],
-                data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-            var startRot = quaternionToAxisDegrees(startQ);
+            if (data['start.z'] != null) {
+                var startQ = axisAngleToQuaternion(data['start.axis.x'],
+                    data['start.axis.y'], data['start.axis.z'], data['start.theta']);
+                var startRot = quaternionToAxisDegrees(startQ);
 
-            var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-                data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-            var goalRot = quaternionToAxisDegrees(goalQ);
+                var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
+                    data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
+                var goalRot = quaternionToAxisDegrees(goalQ);
+
+                $("[name='start.z']").val(data['start.z']);
+                $("[name='start.deg.x']").val(startRot.x);
+                $("[name='start.deg.y']").val(startRot.y);
+                $("[name='start.deg.z']").val(startRot.z);
+                $("[name='goal.z']").val(data['goal.z']);
+                $("[name='goal.deg.x']").val(goalRot.x);
+                $("[name='goal.deg.y']").val(goalRot.y);
+                $("[name='goal.deg.z']").val(goalRot.z);
+                $("[name='volume.min.z']").val(data['volume.min.z']);
+                $("[name='volume.max.z']").val(data['volume.max.z']);
+            } else {
+                hide3DOptions();
+                show2DOptions();
+                // $("[name='2D.start.deg']") =
+                // $("[name='2D.goal.deg']") =
+            }
 
             // Load the data
             $("[name='name']").val(data['name']);
             $("[name='start.x']").val(data['start.x']);
             $("[name='start.y']").val(data['start.y']);
-            $("[name='start.z']").val(data['start.z']);
-            $("[name='start.deg.x']").val(startRot.x);
-            $("[name='start.deg.y']").val(startRot.y);
-            $("[name='start.deg.z']").val(startRot.z);
             $("[name='goal.x']").val(data['goal.x']);
             $("[name='goal.y']").val(data['goal.y']);
-            $("[name='goal.z']").val(data['goal.z']);
-            $("[name='goal.deg.x']").val(goalRot.x);
-            $("[name='goal.deg.y']").val(goalRot.y);
-            $("[name='goal.deg.z']").val(goalRot.z);
             $("[name='volume.min.x']").val(data['volume.min.x']);
             $("[name='volume.min.y']").val(data['volume.min.y']);
-            $("[name='volume.min.z']").val(data['volume.min.z']);
             $("[name='volume.max.x']").val(data['volume.max.x']);
             $("[name='volume.max.y']").val(data['volume.max.y']);
-            $("[name='volume.max.z']").val(data['volume.max.z']);
+
+            if (data['objective'] != null) {
+                $("[name='objective']").val(data['objective']);
+            }
+            if (data['objective.threshold'] != null) {
+                $("[name='objective.threshold']").val(data['objective.threshold']);
+            }
+            if (data['control'] != null) {
+                var robotType = problem.control[data['control']];
+                if (robotType != null) {
+                    $("[name='robot.type']").val(robotType);
+                }
+            }
 
             // Benchmarking
             $("[name='time_limit']").val(data['time_limit']);
@@ -810,6 +871,27 @@ function loadRemoteProblem(problemName) {
     });
 }
 
+
+function show2DOptions() {
+    var options3D = $(".3D");
+    for (var i = 0; i < options3D.length; i++) {
+        options3D[i].hidden = true;
+    }
+    var options2D = $(".2D");
+    for (var i = 0; i < options2D.length; i++) {
+        options2D[i].hidden = false;
+    }
+}
+function show3DOptions() {
+    var options3D = $(".3D");
+    for (var i = 0; i < options3D.length; i++) {
+        options3D[i].hidden = false;
+    }
+    var options2D = $(".2D");
+    for (var i = 0; i < options2D.length; i++) {
+        options2D[i].hidden = true;
+    }
+}
 
 /**
  * Uploads the user's models to the server and then draws them to the scene.
