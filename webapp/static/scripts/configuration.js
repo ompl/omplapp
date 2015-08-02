@@ -297,6 +297,7 @@ Problem.prototype.loadConfig = function(data) {
     console.log(data);
 
     if (data['start.z'] != null) {
+        this.is3D = true;
         show3DOptions();
 
         // Convert the rotation to degrees around each axis
@@ -308,6 +309,7 @@ Problem.prototype.loadConfig = function(data) {
             data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
         var goalRot = quaternionToAxisDegrees(goalQ);
 
+        // Set 3D only options
         $("[name='start.z']").val(data['start.z']);
         $("[name='start.deg.x']").val(startRot.x);
         $("[name='start.deg.y']").val(startRot.y);
@@ -318,13 +320,18 @@ Problem.prototype.loadConfig = function(data) {
         $("[name='goal.deg.z']").val(goalRot.z);
         $("[name='volume.min.z']").val(data['volume.min.z']);
         $("[name='volume.max.z']").val(data['volume.max.z']);
-    } else if (data["control" != null]) {
-        $("#robot_type").val(data['control']);
     } else {
-        $("#robot_type").val("GSE2RigidBodyPlanning");
+        this.is3D = false;
+        show2DOptions();
+
+        var startRot = data['start.theta'] * RAD_TO_DEG;
+        var goalRot = data['goal.theta'] * RAD_TO_DEG;
+
+        $("[name='2D.start.deg']").val(startRot);
+        $("[name='2D.goal.deg']").val(goalRot);
     }
 
-    // Update the input fields with the loaded data
+    // Set common options for 3D and 2D problems
     $("[name='name']").val(data['name']);
     $("[name='start.x']").val(data['start.x']);
     $("[name='start.y']").val(data['start.y']);
@@ -346,6 +353,10 @@ Problem.prototype.loadConfig = function(data) {
         if (robotType != null) {
             $("[name='robot.type']").val(robotType);
         }
+    } else if (problem.is3D == true) {
+        $("[name='robot.type']").val("GSE3RigidBodyPlanning");
+    } else {
+        $("[name='robot.type']").val("GSE2RigidBodyPlanning");
     }
 
     // Benchmarking

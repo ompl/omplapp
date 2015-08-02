@@ -205,32 +205,43 @@ Visualization.prototype.applyOffset = function(env, robot) {
 Visualization.prototype.updatePose = function() {
     // Update the start position
     var start = {};
-    start.x = $("[name='start.x']").val()
-    start.y = $("[name='start.y']").val()
-    start.z = $("[name='start.z']").val()
-    start_robot.position.set(start.x, start.y,  start.z)
+    start.x = $("[name='start.x']").val();
+    start.y = $("[name='start.y']").val();
 
-    // Update start rotation
-    var startRot = {};
-    startRot.x = $("[name='start.deg.x']").val()
-    startRot.y = $("[name='start.deg.y']").val()
-    startRot.z = $("[name='start.deg.z']").val()
-    start_robot.rotation.set(DEG_TO_RAD*startRot.x, DEG_TO_RAD*startRot.y, DEG_TO_RAD*startRot.z);
 
     // Update the goal position
     var goal = {};
-    goal.x = $("[name='goal.x']").val()
-    goal.y = $("[name='goal.y']").val()
-    goal.z = $("[name='goal.z']").val()
-    goal_robot.position.set(goal.x, goal.y, goal.z)
+    goal.x = $("[name='goal.x']").val();
+    goal.y = $("[name='goal.y']").val();
 
-    // Update start rotation
-    var goalRot = {};
-    goalRot.x = $("[name='goal.deg.x']").val()
-    goalRot.y = $("[name='goal.deg.y']").val()
-    goalRot.z = $("[name='goal.deg.z']").val()
-    goal_robot.rotation.set(DEG_TO_RAD*goalRot.x, DEG_TO_RAD*goalRot.y, DEG_TO_RAD*goalRot.z);
 
+    if (problem.is3D == true) {
+        // Update start pose
+        start.z = $("[name='start.z']").val();
+        var startRot = {};
+        startRot.x = $("[name='start.deg.x']").val();
+        startRot.y = $("[name='start.deg.y']").val();
+        startRot.z = $("[name='start.deg.z']").val();
+        start_robot.rotation.set(DEG_TO_RAD*startRot.x, DEG_TO_RAD*startRot.y, DEG_TO_RAD*startRot.z);
+
+        // Update goal pose
+        goal.z = $("[name='goal.z']").val();
+        var goalRot = {};
+        goalRot.x = $("[name='goal.deg.x']").val();
+        goalRot.y = $("[name='goal.deg.y']").val();
+        goalRot.z = $("[name='goal.deg.z']").val();
+        goal_robot.rotation.set(DEG_TO_RAD*goalRot.x, DEG_TO_RAD*goalRot.y, DEG_TO_RAD*goalRot.z);
+    } else {
+        start.z = 0;
+        goal.z = 0;
+
+        var startRot = DEG_TO_RAD * $("[name='2D.start.deg']").val();
+        start_robot.rotation.y = startRot;
+        var goalRot = DEG_TO_RAD * $("[name='2D.goal.deg']").val();
+        goal_robot.rotation.y = goalRot;
+    }
+    start_robot.position.set(start.x, start.y,  start.z);
+    goal_robot.position.set(goal.x, goal.y, goal.z);
 };
 
 
