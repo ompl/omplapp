@@ -63,6 +63,7 @@ var Problem = function () {
 
     this.robots2D = ["GDynamicCarPlanning", "GKinematicCarPlanning", "GSE2RigidBodyPlanning"]
 
+    this.is3D = true;
 }
 
 Problem.prototype.update = function() {
@@ -283,7 +284,7 @@ Problem.prototype.parseConfigFile = function() {
                     }
                 }
             }
-            problem.loadConfigFile(cfgData);
+            problem.loadConfig(cfgData);
         }
     } else {
         showAlert("configuration", "danger", "Error parsing the configuration file, try again");
@@ -291,7 +292,7 @@ Problem.prototype.parseConfigFile = function() {
 
 }
 
-Problem.prototype.loadConfigFile = function(data) {
+Problem.prototype.loadConfig = function(data) {
 
     console.log(data);
 
@@ -317,10 +318,10 @@ Problem.prototype.loadConfigFile = function(data) {
         $("[name='goal.deg.z']").val(goalRot.z);
         $("[name='volume.min.z']").val(data['volume.min.z']);
         $("[name='volume.max.z']").val(data['volume.max.z']);
+    } else if (data["control" != null]) {
+        $("#robot_type").val(data['control']);
     } else {
-        show2DOptions();
-        // $("[name='2D.start.deg']") =
-        // $("[name='2D.goal.deg']") =
+        $("#robot_type").val("GSE2RigidBodyPlanning");
     }
 
     // Update the input fields with the loaded data
@@ -359,6 +360,10 @@ Problem.prototype.loadConfigFile = function(data) {
         visualization.updatePose();
         visualization.updateBounds();
     }, 100);
+}
+
+Problem.prototype.showConfigData = function(data) {
+
 }
 
 /**
@@ -579,8 +584,10 @@ function initialize() {
         // Show 3D or 2D options, depending on the robot type
         $("#robot_type").change(function() {
             if (problem.robots2D.indexOf($("#robot_type").val()) > -1){
+                problem.is3D = false;
                 show2DOptions();
             } else {
+                problem.is3D = true;
                 show3DOptions();
             }
         });
@@ -803,66 +810,7 @@ function loadRemoteProblem(problemName) {
             // Load the robot and env models
             visualization.drawModels(data['env_loc'], data['robot_loc']);
 
-            if (data['start.z'] != null) {
-                var startQ = axisAngleToQuaternion(data['start.axis.x'],
-                    data['start.axis.y'], data['start.axis.z'], data['start.theta']);
-                var startRot = quaternionToAxisDegrees(startQ);
-
-                var goalQ = axisAngleToQuaternion(data['goal.axis.x'],
-                    data['goal.axis.y'], data['goal.axis.z'], data['goal.theta']);
-                var goalRot = quaternionToAxisDegrees(goalQ);
-
-                $("[name='start.z']").val(data['start.z']);
-                $("[name='start.deg.x']").val(startRot.x);
-                $("[name='start.deg.y']").val(startRot.y);
-                $("[name='start.deg.z']").val(startRot.z);
-                $("[name='goal.z']").val(data['goal.z']);
-                $("[name='goal.deg.x']").val(goalRot.x);
-                $("[name='goal.deg.y']").val(goalRot.y);
-                $("[name='goal.deg.z']").val(goalRot.z);
-                $("[name='volume.min.z']").val(data['volume.min.z']);
-                $("[name='volume.max.z']").val(data['volume.max.z']);
-            } else {
-                hide3DOptions();
-                show2DOptions();
-                // $("[name='2D.start.deg']") =
-                // $("[name='2D.goal.deg']") =
-            }
-
-            // Load the data
-            $("[name='name']").val(data['name']);
-            $("[name='start.x']").val(data['start.x']);
-            $("[name='start.y']").val(data['start.y']);
-            $("[name='goal.x']").val(data['goal.x']);
-            $("[name='goal.y']").val(data['goal.y']);
-            $("[name='volume.min.x']").val(data['volume.min.x']);
-            $("[name='volume.min.y']").val(data['volume.min.y']);
-            $("[name='volume.max.x']").val(data['volume.max.x']);
-            $("[name='volume.max.y']").val(data['volume.max.y']);
-
-            if (data['objective'] != null) {
-                $("[name='objective']").val(data['objective']);
-            }
-            if (data['objective.threshold'] != null) {
-                $("[name='objective.threshold']").val(data['objective.threshold']);
-            }
-            if (data['control'] != null) {
-                var robotType = problem.control[data['control']];
-                if (robotType != null) {
-                    $("[name='robot.type']").val(robotType);
-                }
-            }
-
-            // Benchmarking
-            $("[name='time_limit']").val(data['time_limit']);
-            $("[name='mem_limit']").val(data['mem_limit']);
-            $("[name='run_count']").val(data['run_count']);
-
-            problem.config["robot"] = data["robot"];
-            problem.config["world"] = data["world"];
-            problem.config["robot_loc"] = data["robot_loc"];
-            problem.config["env_loc"] = data["env_loc"];
-
+            problem.loadConfig(data);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log("Error requesting problem.");
