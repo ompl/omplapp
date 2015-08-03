@@ -62,6 +62,10 @@ var Problem = function () {
     this.control["kinematic_car"] = "GKinematicCarPlanning";
     this.control["blimp"] = "GBlimpPlanning";
     this.control["quadrotor"] = "GQuadrotorPlanning";
+    this.control["GDynamicCarPlanning"] = "dynamic_car";
+    this.control["GKinematicCarPlanning"] = "kinematic_car";
+    this.control["GBlimpPlanning"] = "blimp";
+    this.control["GQuadrotorPlanning"] = "quadrotor";
 
     this.robots2D = ["GDynamicCarPlanning", "GKinematicCarPlanning", "GSE2RigidBodyPlanning"]
 
@@ -93,7 +97,7 @@ Problem.prototype.update = function() {
     this.config["volume.max.x"] = $("[name='volume.max.x']").val();
     this.config["volume.max.y"] = $("[name='volume.max.y']").val();
     this.config["volume.max.z"] = $("[name='volume.max.z']").val();
-    
+
     this.config["planner"]= $("[name='planners']").val();
     this.config["objective"] = $("[name='objective']").val();
     this.config["objective.threshold"] = $("[name='objective.threshold']").val();
@@ -222,6 +226,14 @@ Problem.prototype.getConfigText = function() {
         } else {
             cfg += "robot = " + $("#problems").val() + "_robot.dae\n";
             cfg += "world = " + $("#problems").val() + "_env.dae\n";
+        }
+
+        cfg += "objective = " + $("[name='objective']").val() + "\n";
+        cfg += "objective.threshold = " + $("[name='objective.threshold']").val() + "\n";
+
+        var control = problem.control[$("[name='robot.type']").val()];
+        if (control != null) {
+            cfg += "control = " + control + "\n";
         }
 
         cfg += "start.x = " + $("[name='start.x']").val() + "\n";
@@ -894,7 +906,6 @@ function uploadModels() {
                 problem.config["env_loc"]= data['env_loc'];
                 problem.config["robot_loc"] = data['robot_loc'];
                 visualization.drawModels(data['env_loc'], data['robot_loc']);
-
             },
             error: function(data) {
                 console.log(data);
