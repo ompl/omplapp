@@ -123,8 +123,17 @@ Problem.prototype.isValid = function() {
     this.update();
     for (var item in this.config) {
         if (this.config[item] == null || this.config[item] === "") {
-            console.log(item, this.config[item]);
-            return false;
+            if (problem.is3D == true) {
+                if ($("[name='" + item + "']").hasClass("3D") == true) {
+                    console.log(item);
+                    return false;
+                }
+            } else {
+                if ($("[name='" + item + "']").hasClass("3D") == false) {
+                    console.log(item);
+                    return false;
+                }
+            }
         }
     }
     return true;
@@ -293,8 +302,6 @@ Problem.prototype.parseConfigFile = function() {
 }
 
 Problem.prototype.loadConfig = function(data) {
-
-    console.log(data);
 
     if (data['start.z'] != null) {
         this.is3D = true;
@@ -529,7 +536,7 @@ $(document).ready(function() {
 function loadPreferences() {
     $.get("omplapp/preferences", function(data) {
         var preferences = JSON.parse(data);
-        console.log(preferences);
+
         BENCHMARKING_LIMIT = parseFloat(preferences["benchmarking_limit"]);
         MAX_UPLOAD_SIZE = parseFloat(preferences["max_upload_size"]);
         PLANNERARENA_PORT = parseFloat(preferences["plannerarena_port"])
@@ -805,8 +812,11 @@ function loadPlannerParams(planner_name) {
  * @param {string} problem_name The name of problem to load.
  * @return None
  */
-function loadRemoteProblem(problemName) {
-    var form = {'problem_name' : problemName};
+function loadRemoteProblem(selectedProblem) {
+    var form = {};
+    form["dimension"] = selectedProblem.split("/")[0];
+    form["problem_name"] = selectedProblem.split("/")[1];
+
 
     // Retrieve problem configuration:
     $.ajax({
@@ -815,8 +825,12 @@ function loadRemoteProblem(problemName) {
         data: form,
         success: function (data, textStatus, jqXHR) {
             var data = JSON.parse(data);
+
             env_loc = data['env_loc'];
             robot_loc = data['robot_loc'];
+
+            problem.config['env_loc']= data['env_loc'];
+            problem.config['robot_loc'] = data['robot_loc'];
 
             // Load the robot and env models
             visualization.drawModels(data['env_loc'], data['robot_loc']);

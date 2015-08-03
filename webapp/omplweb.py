@@ -19,8 +19,7 @@ show_results = False
 ompl_app_root = dirname(dirname(abspath(__file__)))
 ompl_web_root = join(dirname(dirname(abspath(__file__))), "webapp")
 ompl_sessions_dir = join(ompl_app_root, 'webapp/static/sessions')
-problem_files_3D = join(ompl_app_root, 'webapp/static/problem_files/3D')
-problem_files_2D = join(ompl_app_root, 'webapp/static/problem_files/2D')
+problem_files = join(ompl_app_root, 'webapp/static/problem_files')
 
 
 try:
@@ -518,17 +517,20 @@ def request_problem():
     and the problem configuration settings
     """
     problem_name = flask.request.form['problem_name']
-
-    robot_filename = problem_name + "_robot.dae"
-    env_filename = problem_name + "_env.dae"
+    dimension = flask.request.form['dimension']
     cfg_filename = problem_name + ".cfg"
 
-    cfg_file = join(problem_files_3D, cfg_filename)
+    cfg_file = join(problem_files, dimension, cfg_filename)
     cfg_data = parse_cfg(cfg_file)
 
-    cfg_data['robot_loc'] = join("static/problem_files/3D", robot_filename)
-    cfg_data['env_loc'] = join("static/problem_files/3D", env_filename)
+    if (sys.version_info > (3, 0)):
+        config = ConfigParser.ConfigParser(strict = False)
+    else:
+        config = ConfigParser.ConfigParser()
+    config.readfp(open(cfg_file, 'r'))
 
+    cfg_data['robot_loc'] = join("static/problem_files", dimension, config.get("problem", "robot"))
+    cfg_data['env_loc'] = join("static/problem_files", dimension, config.get("problem", "world"))
     return json.dumps(cfg_data)
 
 
