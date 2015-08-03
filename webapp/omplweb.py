@@ -250,7 +250,7 @@ def solve(problem):
     path or a failure message.
     """
 
-# Sets up the robot type related information
+    # Sets up the robot type related information
     ompl_setup = setup(problem);
 
     # Load the planner
@@ -391,13 +391,16 @@ def create_session():
     """
     Creates a session folder and returns its name
     """
-    if not os.path.isdir(ompl_sessions_dir):
-        os.mkdir(ompl_sessions_dir)
+    if not os.path.isdir("/tmp/omplweb_sessions"):
+        # Session folders reside in /tmp, but symlinked into static/sessions
+        os.makedirs("/tmp/omplweb_sessions")
+        os.symlink("/tmp/omplweb_sessions", ompl_sessions_dir)
 
     session_path = tempfile.mkdtemp(prefix="", dir=ompl_sessions_dir)
     session_name = basename(session_path)
 
     return session_name
+
 @app.route('/omplapp/preferences')
 def load_preferences():
     """
