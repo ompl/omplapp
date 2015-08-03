@@ -30,6 +30,7 @@ var Problem = function () {
     this.config["start.q.x"] = null;
     this.config["start.q.y"] = null;
     this.config["start.q.z"] = null;
+    this.config["start.yaw"] = null;
     this.config["goal.x"] = null;
     this.config["goal.y"] = null;
     this.config["goal.z"] = null;
@@ -37,6 +38,7 @@ var Problem = function () {
     this.config["goal.q.x"] = null;
     this.config["goal.q.y"] = null;
     this.config["goal.q.z"] = null;
+    this.config["goal.yaw"] = null;
     this.config["volume.min.x"] = null;
     this.config["volume.min.y"] = null;
     this.config["volume.min.z"] = null;
@@ -76,6 +78,7 @@ Problem.prototype.update = function() {
     this.config["start.q.x"] = start_robot.quaternion.x;
     this.config["start.q.y"] = start_robot.quaternion.y;
     this.config["start.q.z"] = start_robot.quaternion.z;
+    this.config["start.yaw"] = $("[name='start.yaw']").val() * DEG_TO_RAD;
     this.config["goal.x"] = $("[name='goal.x']").val();
     this.config["goal.y"] = $("[name='goal.y']").val();
     this.config["goal.z"] = $("[name='goal.z']").val();
@@ -83,13 +86,14 @@ Problem.prototype.update = function() {
     this.config["goal.q.x"] = goal_robot.quaternion.x;
     this.config["goal.q.y"] = goal_robot.quaternion.y;
     this.config["goal.q.z"] = goal_robot.quaternion.z;
+    this.config["goal.yaw"] = $("[name='goal.yaw']").val() * DEG_TO_RAD;
     this.config["volume.min.x"] = $("[name='volume.min.x']").val();
     this.config["volume.min.y"] = $("[name='volume.min.y']").val();
     this.config["volume.min.z"] = $("[name='volume.min.z']").val();
     this.config["volume.max.x"] = $("[name='volume.max.x']").val();
     this.config["volume.max.y"] = $("[name='volume.max.y']").val();
     this.config["volume.max.z"] = $("[name='volume.max.z']").val();
-
+    
     this.config["planner"]= $("[name='planners']").val();
     this.config["objective"] = $("[name='objective']").val();
     this.config["objective.threshold"] = $("[name='objective.threshold']").val();
@@ -334,8 +338,8 @@ Problem.prototype.loadConfig = function(data) {
         var startRot = data['start.theta'] * RAD_TO_DEG;
         var goalRot = data['goal.theta'] * RAD_TO_DEG;
 
-        $("[name='2D.start.deg']").val(startRot);
-        $("[name='2D.goal.deg']").val(goalRot);
+        $("[name='start.yaw']").val(startRot);
+        $("[name='goal.yaw']").val(goalRot);
     }
 
     // Set common options for 3D and 2D problems

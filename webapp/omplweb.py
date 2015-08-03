@@ -230,12 +230,12 @@ def setup(problem):
         start = ob.State(space)
         start().setX(float(problem['start.x']))
         start().setY(float(problem['start.y']))
-        # start().setYaw(self.rot.value() * pi / 180)
+        start().setYaw(float(problem['start.yaw']))
 
         goal = ob.State(space)
         goal().setX(float(problem['goal.x']))
         goal().setY(float(problem['goal.y']))
-        # goal().setYaw(self.rot.value() * pi / 180)
+        goal().setYaw(float(problem['goal.yaw']))
 
         ompl_setup.setStartAndGoalStates(start, goal)
 
@@ -250,7 +250,7 @@ def solve(problem):
     path or a failure message.
     """
 
-    # Sets up the robot type related information
+# Sets up the robot type related information
     ompl_setup = setup(problem);
 
     # Load the planner
@@ -259,8 +259,13 @@ def solve(problem):
     ompl_setup.setPlanner(planner)
 
     # Set the optimization objective
-    obj = eval('ob.%s(space_info)' % problem['optimization.objective'])
-    cost = ob.Cost(float(problem['cost.threshold']))
+    objectives = {'length': 'PathLengthOptimizationObjective',
+        'max_min_clearance': 'MaximizeMinClearanceObjective',
+        'mechanical_work': 'MechanicalWorkOptimizationObjective'
+    }
+    objective = objectives[problem['objective']]
+    obj = eval('ob.%s(space_info)' % objective)
+    cost = ob.Cost(float(problem['objective.threshold']))
     obj.setCostThreshold(cost)
     ompl_setup.setOptimizationObjective(obj)
 
@@ -399,7 +404,7 @@ def load_preferences():
     Reads the webapp's configuration file and sends the preferences to the client.
     """
     if (sys.version_info > (3, 0)):
-        config = ConfigParser.ConfigParser(strict = False)
+        v class="row-fluid">config = ConfigParser.ConfigParser(strict = False)
     else:
         config = ConfigParser.ConfigParser()
 

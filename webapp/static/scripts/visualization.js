@@ -235,9 +235,9 @@ Visualization.prototype.updatePose = function() {
         start.z = 0;
         goal.z = 0;
 
-        var startRot = DEG_TO_RAD * $("[name='2D.start.deg']").val();
+        var startRot = DEG_TO_RAD * $("[name='start.yaw']").val();
         start_robot.rotation.y = startRot;
-        var goalRot = DEG_TO_RAD * $("[name='2D.goal.deg']").val();
+        var goalRot = DEG_TO_RAD * $("[name='goal.yaw']").val();
         goal_robot.rotation.y = goalRot;
     }
     start_robot.position.set(start.x, start.y,  start.z);
