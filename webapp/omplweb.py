@@ -404,7 +404,7 @@ def load_preferences():
     Reads the webapp's configuration file and sends the preferences to the client.
     """
     if (sys.version_info > (3, 0)):
-        v class="row-fluid">config = ConfigParser.ConfigParser(strict = False)
+        config = ConfigParser.ConfigParser(strict = False)
     else:
         config = ConfigParser.ConfigParser()
 
