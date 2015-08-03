@@ -236,9 +236,9 @@ Visualization.prototype.updatePose = function() {
         goal.z = 0;
 
         var startRot = DEG_TO_RAD * $("[name='start.yaw']").val();
-        start_robot.rotation.y = startRot;
+        start_robot.rotation.z = startRot;
         var goalRot = DEG_TO_RAD * $("[name='goal.yaw']").val();
-        goal_robot.rotation.y = goalRot;
+        goal_robot.rotation.z = goalRot;
     }
     start_robot.position.set(start.x, start.y,  start.z);
     goal_robot.position.set(goal.x, goal.y, goal.z);
@@ -402,7 +402,9 @@ Visualization.prototype.visualizeSolution = function(solutionData) {
     path_robot = robot_model.clone();
     path_robot.position.x = start_robot.position.x;
     path_robot.position.y = start_robot.position.y;
-    path_robot.position.z = start_robot.position.z;
+    if (problem.is3D == true) {
+        path_robot.position.z = start_robot.position.z;
+    }
     path_robot.visible = false;
     scene.add(path_robot);
 }
@@ -414,12 +416,20 @@ Visualization.prototype.visualizeSolution = function(solutionData) {
  */
 Visualization.prototype.drawSolutionPath = function(path) {
     pathVectorsArray = [];
-
+    console.log("path", path);
     // Parse the path string into an array of position vectors
-    for (var i = 0; i < path.length; i++) {
-        pathVectorsArray.push(new THREE.Vector3(
-            parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
-        ));
+    if (problem.is3D == true) {
+        for (var i = 0; i < path.length; i++) {
+            pathVectorsArray.push(new THREE.Vector3(
+                parseFloat(path[i][0]), parseFloat(path[i][1]), parseFloat(path[i][2])
+            ));
+        }
+    } else {
+        for (var i = 0; i < path.length; i++) {
+            pathVectorsArray.push(new THREE.Vector3(
+                parseFloat(path[i][0]), parseFloat(path[i][1]), 0
+            ));
+        }
     }
 
 
@@ -452,12 +462,16 @@ Visualization.prototype.moveRobot = function() {
 
     // If the robot is not at the end of the path, step forward
     if (step < path.length) {
-        // Set the new position
-        path_robot.position.set(parseFloat(path[step][0]), parseFloat(path[step][1]),
-            parseFloat(path[step][2]));
-        // Set the new rotation
-        path_robot.quaternion.set(parseFloat(path[step][3]), parseFloat(path[step][4]),
-            parseFloat(path[step][5]), parseFloat(path[step][6]));
+        // Set the new position and rotation
+        if (problem.is3D == true) {
+            path_robot.position.set(parseFloat(path[step][0]), parseFloat(path[step][1]),
+                parseFloat(path[step][2]));
+            path_robot.quaternion.set(parseFloat(path[step][3]), parseFloat(path[step][4]),
+                parseFloat(path[step][5]), parseFloat(path[step][6]));
+        } else {
+            path_robot.position.set(parseFloat(path[step][0]), parseFloat(path[step][1]), 0);
+            path_robot.rotation.z = RAD_TO_DEG * parseFloat(path[step][2]);
+        }
 
         step += 1;
     } else {
@@ -483,10 +497,15 @@ Visualization.prototype.showRobotPath = function() {
         for (var i = 0; i < path.length; i++){
             var temp_robot = robot_model.clone();
             temp_robot.scale.set(1,1,1);
-            temp_robot.position.set(parseFloat(path[i][0]), parseFloat(path[i][1]),
-                parseFloat(path[i][2]));
-            temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]),
-                parseFloat(path[i][5]), parseFloat(path[i][6]));
+            if (problem.is3D == true){
+                temp_robot.position.set(parseFloat(path[i][0]), parseFloat(path[i][1]),
+                    parseFloat(path[i][2]));
+                temp_robot.quaternion.set(parseFloat(path[i][3]), parseFloat(path[i][4]),
+                    parseFloat(path[i][5]), parseFloat(path[i][6]));
+            } else {
+                temp_robot.position.set(parseFloat(path[i][0]), parseFloat(path[i][1]), 0);
+                temp_robot.rotation.z = RAD_TO_DEG * parseFloat(path[i][2]);
+            }
             staticPathRobots.push(temp_robot);
             scene.add(temp_robot);
         }
