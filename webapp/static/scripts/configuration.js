@@ -237,48 +237,58 @@ Problem.prototype.getConfigText = function() {
         var cfg = "";
         cfg += "[problem]\n";
 
-        cfg += "name = " + $("[name='name']").val() + "\n";
+        cfg += "name = " + problem.config["name"] + "\n";
 
         if ($('#problems').val() == "custom"){
             cfg += "robot = " + $("input[name='robot']")[0].files[0].name + "\n";
             cfg += "world = " + $("input[name='env']")[0].files[0].name + "\n";
         } else {
-            cfg += "robot = " + $("#problems").val() + "_robot.dae\n";
-            cfg += "world = " + $("#problems").val() + "_env.dae\n";
+            cfg += "robot = " + problem.config["robot"] + "\n";
+            cfg += "world = " + problem.config["world"] + "\n";
+            // cfg += "robot = " + $("#problems").val() + "_robot.dae\n";
+            // cfg += "world = " + $("#problems").val() + "_env.dae\n";
         }
 
-        cfg += "objective = " + $("[name='objective']").val() + "\n";
-        cfg += "objective.threshold = " + $("[name='objective.threshold']").val() + "\n";
+        cfg += "objective = " + problem.config["objective"] + "\n";
+        cfg += "objective.threshold = " + problem.config["objective.threshold"] + "\n";
 
         var control = problem.control[$("[name='robot.type']").val()];
         if (control != null) {
             cfg += "control = " + control + "\n";
         }
 
-        cfg += "start.x = " + $("[name='start.x']").val() + "\n";
-        cfg += "start.y = " + $("[name='start.y']").val() + "\n";
-        cfg += "start.z = " + $("[name='start.z']").val() + "\n";
+        cfg += "start.x = " + problem.config["start.x"] + "\n";
+        cfg += "start.y = " + problem.config["start.y"] + "\n";
+        cfg += "goal.x = " + problem.config["goal.x"] + "\n";
+        cfg += "goal.y = " + problem.config["goal.y"] + "\n";
 
-        cfg += "start.axis.x = " + startQ.x + "\n";
-        cfg += "start.axis.y = " + startQ.y + "\n";
-        cfg += "start.axis.z = " + startQ.z + "\n";
-        cfg += "start.theta = " + startQ.w + "\n";
+        cfg += "volume.min.x = " + problem.config["volume.min.x"] + "\n";
+        cfg += "volume.min.y = " + problem.config["volume.min.y"] + "\n";
+        cfg += "volume.max.x = " + problem.config["volume.max.x"] + "\n";
+        cfg += "volume.max.y = " + problem.config["volume.max.y"] + "\n";
+        
+        if (problem.is3D == true) {
+            cfg += "start.z = " + problem.config["start.z"] + "\n";
+            cfg += "goal.z = " + problem.config["goal.z"] + "\n";
+            
+            cfg += "start.axis.x = " + startQ.x + "\n";
+            cfg += "start.axis.y = " + startQ.y + "\n";
+            cfg += "start.axis.z = " + startQ.z + "\n";
+            cfg += "start.theta = " + startQ.w + "\n";
+            
+            cfg += "goal.axis.x = " + goalQ.x + "\n";
+            cfg += "goal.axis.y = " + goalQ.y + "\n";
+            cfg += "goal.axis.z = " + goalQ.z + "\n";
+            cfg += "goal.theta = " + goalQ.w + "\n";
+            
+            cfg += "volume.min.z = " + problem.config["volume.min.z"] + "\n";
+            cfg += "volume.max.z = " + problem.config["volume.max.z"] + "\n";
+        } else {
+            cfg += "start.theta = " + problem.config["start.yaw"] + "\n";
+            cfg += "goal.theta = " + problem.config["goal.yaw"] + "\n";
+        }
 
-        cfg += "goal.x = " + $("[name='goal.x']").val() + "\n";
-        cfg += "goal.y = " + $("[name='goal.y']").val() + "\n";
-        cfg += "goal.z = " + $("[name='goal.z']").val() + "\n";
 
-        cfg += "goal.axis.x = " + goalQ.x + "\n";
-        cfg += "goal.axis.y = " + goalQ.y + "\n";
-        cfg += "goal.axis.z = " + goalQ.z + "\n";
-        cfg += "goal.theta = " + goalQ.w + "\n";
-
-        cfg += "volume.min.x = " + $("[name='volume.min.x']").val() + "\n";
-        cfg += "volume.min.y = " + $("[name='volume.min.y']").val() + "\n";
-        cfg += "volume.min.z = " + $("[name='volume.min.z']").val() + "\n";
-        cfg += "volume.max.x = " + $("[name='volume.max.x']").val() + "\n";
-        cfg += "volume.max.y = " + $("[name='volume.max.y']").val() + "\n";
-        cfg += "volume.max.z = " + $("[name='volume.max.z']").val() + "\n";
 
         cfg += "\n";
         cfg += "[benchmark]\n";
@@ -699,37 +709,6 @@ function initialize() {
 }
 
 
-function parseIniFile() {
-    var regex = {
-            section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-            param: /^\s*([\w\.\-\_]+)\s*=\s*(.*?)\s*$/,
-            comment: /^\s*;.*$/
-        };
-        var value = {};
-        var lines = data.split(/\r\n|\r|\n/);
-        var section = null;
-        lines.forEach(function(line){
-            if(regex.comment.test(line)){
-                return;
-            }else if(regex.param.test(line)){
-                var match = line.match(regex.param);
-                if(section){
-                    value[section][match[1]] = match[2];
-                }else{
-                    value[match[1]] = match[2];
-                }
-            }else if(regex.section.test(line)){
-                var match = line.match(regex.section);
-                value[match[1]] = {};
-                section = match[1];
-            }else if(line.length == 0 && section){
-                section = null;
-            };
-        });
-        return value;
-}
-
-
 /**
  * Retrieves planners from the server and loads up the available planners on both
  * the configure problem page and benchmarking page
@@ -890,6 +869,7 @@ function show2DOptions() {
         options2D[i].hidden = false;
     }
 }
+
 function show3DOptions() {
     var options3D = $(".3D");
     for (var i = 0; i < options3D.length; i++) {
@@ -900,6 +880,7 @@ function show3DOptions() {
         options2D[i].hidden = true;
     }
 }
+
 
 /**
  * Uploads the user's models to the server and then draws them to the scene.
