@@ -100,8 +100,9 @@ def parse_cfg(cfg_path):
     else:
         config = ConfigParser.ConfigParser()
 
-    config.readfp(open(cfg_path, 'r'))
-
+    cfg_file = open(cfg_path, 'r')
+    config.readfp(cfg_file)
+    cfg_file.close()
     return config._sections['problem']
 
 
@@ -283,17 +284,17 @@ def solve(problem):
         initialValid = path.check()
 
         if initialValid:
-            try:
-                # If initially valid, attempt to simplify
+            print ompl_setup.getStateSpace().getName()
+            if problem["robot.type"] == "GSE3RigidBodyPlanning" or problem["robot.type"] == "GSE2RigidBodyPlanning":
+                # If initially valid and rigid body, attempt to simplify
                 ompl_setup.simplifySolution()
                 # Get the simplified path
                 simple_path = ompl_setup.getSolutionPath()
                 simplifyValid = simple_path.check()
                 if simplifyValid:
                     path = simple_path;
-
-            except:
-                oh.log("Error occurred in trying to simplify solution.", LogLevel.LOG_ERROR, "omplweb.py", 284)
+            else:
+                oh.log("Path simplification skipped due to non rigid body.", LogLevel.LOG_INFO, "omplweb.py", 284)
 
             # Interpolate path
             ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
@@ -411,12 +412,17 @@ def load_preferences():
     else:
         config = ConfigParser.ConfigParser()
 
-    config.readfp(open("webapp.cfg", "r"))
-    preferences = config._sections["preferences"]
+    conf_file_loc = join(ompl_app_root, "ompl.conf")
+    conf_file = open(conf_file_loc, "r")
+    config.readfp(conf_file)
+    preferences = config._sections["webapp"]
 
     if preferences["launch_browser_benchmarking_complete"] == "true":
         show_results = True
 
+    preferences["plannerarena_port"] = config.get("plannerarena", "plannerarena_port")
+
+    conf_file.close()
     return json.dumps(preferences)
 
 
@@ -528,17 +534,21 @@ def request_problem():
     dimension = flask.request.form['dimension']
     cfg_filename = problem_name + ".cfg"
 
-    cfg_file = join(problem_files, dimension, cfg_filename)
-    cfg_data = parse_cfg(cfg_file)
+    cfg_file_loc = join(problem_files, dimension, cfg_filename)
+    cfg_data = parse_cfg(cfg_file_loc)
 
     if (sys.version_info > (3, 0)):
         config = ConfigParser.ConfigParser(strict = False)
     else:
         config = ConfigParser.ConfigParser()
-    config.readfp(open(cfg_file, 'r'))
+
+    cfg_file = open(cfg_file_loc, 'r')
+    config.readfp(cfg_file)
 
     cfg_data['robot_loc'] = join("static/problem_files", dimension, config.get("problem", "robot"))
     cfg_data['env_loc'] = join("static/problem_files", dimension, config.get("problem", "world"))
+
+    cfg_file.close()
     return json.dumps(cfg_data)
 
 
