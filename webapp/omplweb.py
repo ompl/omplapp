@@ -15,7 +15,6 @@ except:
     import configparser as ConfigParser
 
 # Constants
-show_results = False
 ompl_app_root = dirname(dirname(abspath(__file__)))
 ompl_web_root = join(dirname(dirname(abspath(__file__))), "webapp")
 ompl_sessions_dir = join(ompl_app_root, 'webapp/static/sessions')
@@ -71,9 +70,26 @@ class Logger(OutputHandler):
 
 
 oh = Logger()
-oh.log("Log level is set to: %d" % getLogLevel(), LogLevel.LOG_INFO, "omplweb.py", 75)
-ompl.initializePlannerLists()
 
+def initialize():
+    oh.log("Log level is set to: %d" % getLogLevel(), LogLevel.LOG_INFO, "omplweb.py", 75)
+    ompl.initializePlannerLists()
+
+    if (sys.version_info > (3, 0)):
+        config = ConfigParser.ConfigParser(strict = False)
+    else:
+        config = ConfigParser.ConfigParser()
+
+    conf_file_loc = join(ompl_app_root, "ompl.conf")
+    conf_file = open(conf_file_loc, "r")
+    config.readfp(conf_file)
+    preferences = config._sections["webapp"]
+    preferences["plannerarena_port"] = config.get("plannerarena", "plannerarena_port")
+
+    conf_file.close()
+    return preferences
+
+preferences = initialize()
 
 ########## OMPL ##########
 
@@ -356,8 +372,9 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
     readBenchmarkLog(dbfile, logfile, "")
 
     # Open the planner arena page when benchmarking is done
-    if show_results:
-        url = "http://127.0.0.1:8888/?user=" + session_id + "&job=" + db_filename
+    print(preferences)
+    if preferences["show_results"] == "1":
+        url = "http://127.0.0.1:" + preferences["plannerarena_port"] + "/?user=" + session_id + "&job=" + db_filename
         webbrowser.open(url)
 
 
@@ -405,24 +422,8 @@ def create_session():
 @app.route('/omplapp/preferences')
 def load_preferences():
     """
-    Reads the webapp's configuration file and sends the preferences to the client.
+    Sends the preferences read from the conf file to the client.
     """
-    if (sys.version_info > (3, 0)):
-        config = ConfigParser.ConfigParser(strict = False)
-    else:
-        config = ConfigParser.ConfigParser()
-
-    conf_file_loc = join(ompl_app_root, "ompl.conf")
-    conf_file = open(conf_file_loc, "r")
-    config.readfp(conf_file)
-    preferences = config._sections["webapp"]
-
-    if preferences["launch_browser_benchmarking_complete"] == "true":
-        show_results = True
-
-    preferences["plannerarena_port"] = config.get("plannerarena", "plannerarena_port")
-
-    conf_file.close()
     return json.dumps(preferences)
 
 

@@ -70,6 +70,25 @@ var Problem = function () {
     this.robots2D = ["GDynamicCarPlanning", "GKinematicCarPlanning", "GSE2RigidBodyPlanning"]
 
     this.is3D = true;
+
+    this.dimensions = {
+        "abstract" : "3D",
+        "apartment" : "3D",
+        "bugtrap" : "3D",
+        "cubicles" : "3D",
+        "easy" : "3D",
+        "escape" : "3D",
+        "home" : "3D",
+        "pipedream" : "3D",
+        "spirelli" : "3D",
+        "twistycool" : "3D",
+        "twistycooler" : "3D",
+        "barriers" : "2D",
+        "bugtrap_planar" : "2D",
+        "maze_planar" : "2D",
+        "maze_kcar" : "2D",
+        "randompolygons_planar" : "2D",
+    };
 }
 
 Problem.prototype.update = function() {
@@ -828,10 +847,10 @@ function loadPlannerParams(planner_name) {
  * @param {string} problem_name The name of problem to load.
  * @return None
  */
-function loadRemoteProblem(selectedProblem) {
+function loadRemoteProblem(problemName) {
     var form = {};
-    form["dimension"] = selectedProblem.split("/")[0];
-    form["problem_name"] = selectedProblem.split("/")[1];
+    form["problem_name"] = problemName;
+    form["dimension"] = problem.dimensions[problemName]
 
 
     // Retrieve problem configuration:
