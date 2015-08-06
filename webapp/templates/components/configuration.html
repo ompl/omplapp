@@ -240,8 +240,7 @@
                         </div>
 
                         <br><br>
-                        <hr>
-                        <center>
+                        <!-- <hr> -->
                         <button class="btn btn-primary" type="button" onclick="problem.solve()" id="solve-button">Solve</button>
                         <button class="btn btn-danger" type="button" onclick="solution.clear()">Clear</button>
 
@@ -249,17 +248,18 @@
                             <button class="btn btn-success" type='button' onclick='visualization.toggleAnimation()' id='animateToggleBtn'>Animate</button>
                             <button class="btn btn-success" type='button' onclick='visualization.toggleRobotPath()' id='toggleRobotPathBtn'>Show Path</button>
                             <br><br>
-                            <label for="animationSpeed" id="animationSpeedLabel">Animation Speed</label>
-                            <input type="range" min=700 max =999 id="animationSpeed"></input>
-                            <br><br>
-                            Show explored:
-                            <select id="viewExplored">
-                                <option value="none">none</option>
-                                <option value="states">states</option>
-                                <option value="edges">states and edges</option>
-                            </select>
+                            <table class="table">
+                                <tr>
+                                    <td>Animation Speed</td>
+                                    <td><input type="range" min=700 max =999 id="animationSpeed"></input></td>
+                                </tr>
+                                <tr>
+                                    <td>Show explored states</td>
+                                    <td><input type="checkbox" id="showExplored" selected="false"></input></td>
+                                </tr>
+                            </table>
+                            
                         </div>
-                        </center>
                     </div>
                     <div class="">
                         <div id="results"></div>

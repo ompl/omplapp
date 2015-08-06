@@ -479,8 +479,7 @@ Solution.prototype.poll = function(taskID) {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $.unblockUI();
-                html = "<pre>Server responded with an error. Check the problem configuration and try again.</pre>";
-                $('#results').html(html);
+                showAlert("configuration", "danger", "Server responded with an error. Check the problem configuration and try again.");
 
                 console.log('Solve failed, server responded with an error.', errorThrown);
             }
@@ -544,11 +543,9 @@ Solution.prototype.visualize = function() {
             showAlert("configuration", "info", "No solution found. Try solving again.");
         }
 
-        $("#viewExplored").change(function() {
-            if ($(this).val() == "states") {
+        $("#showExplored").change(function() {
+            if ($('#showExplored').prop('checked') == true) {
                 visualization.showExploredStates();
-            } else if ($(this).val() == "edges") {
-                visualization.hideExploredStates();
             } else {
                 visualization.hideExploredStates();
             }
@@ -793,7 +790,7 @@ function getSessionID(){
             sessionStorage.setItem("session_id", data);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.log("Error getting session id. Please reload the page before continuing.");
+            showAlert("configuration", "danger", "Error getting session id. Please reload the page before continuing.");
             console.log(jqXHR, textStatus, errorThrown);
         },
     });
@@ -862,7 +859,7 @@ function loadRemoteProblem(problemName) {
             problem.loadConfig(data);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.log("Error requesting problem.");
+            showAlert("configuration", "danger", "Error requesting problem. Please try again.");
             console.log(jqXHR, textStatus, errorThrown);
         }
     });

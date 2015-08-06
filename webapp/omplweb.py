@@ -327,10 +327,11 @@ def solve(problem):
     # Store the planner data
     pd = ob.PlannerData(ompl_setup.getSpaceInformation())
     ompl_setup.getPlannerData(pd)
-    ss = pd.extractStateStorage()
     explored_states = []
-    for i in range(0, ss.size()):
-        explored_states.insert(i, [ss.getState(i).getX(), ss.getState(i).getY(), ss.getState(i).getZ()])
+    for i in range(0, pd.numVertices()):
+        explored_states.insert(i, [pd.getVertex(i).getState().getX(),
+            pd.getVertex(i).getState().getY(),
+            pd.getVertex(i).getState().getZ()])
 
     solution["explored_states"] = explored_states
     return solution

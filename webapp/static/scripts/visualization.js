@@ -339,7 +339,7 @@ Visualization.prototype.clearScene = function() {
     });
     staticPathRobots = [];
 
-    $("#showExplored").val("none");
+    $("#showExplored").prop("checked", false);
     exploredStates.forEach(function (element, index) {
         scene.remove(element);
     });
@@ -365,7 +365,7 @@ Visualization.prototype.clearSolution = function() {
     });
     staticPathRobots = [];
 
-    $("#viewExplored").val("none");
+    $("#showExplored").prop("checked", false);
     exploredStates.forEach(function (element, index) {
         scene.remove(element);
     });
@@ -468,6 +468,11 @@ Visualization.prototype.drawExploredStates = function() {
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
     var sphere = new THREE.Mesh( geometry, material );
     exploredStates = [];
+
+    if (states.length > 10000) {
+        showAlert("configuration", "warning", "There are a large number of explored states and visualization performance may be affected. Hide the explored states to improve performance.");
+    }
+
     for (var i = 0; i < states.length; i++) {
         var point = sphere.clone();
         point.position.set(states[i][0], states[i][1], states[i][2]);
