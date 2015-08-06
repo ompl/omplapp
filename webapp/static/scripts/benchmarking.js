@@ -17,7 +17,7 @@ var Benchmark = function() {
  */
 Benchmark.prototype.initialize = function() {
     // Load the HTML for the configuration settings
-    $("#benchmarking").load("omplapp/components/benchmarking", function () {
+    $("#benchmarking").load("/components/benchmarking", function () {
         $("#benchmarking-page").click(function() {
             if (benchmark.firstTime) {
                 benchmark.createDefaultPlannerEntry();
@@ -209,7 +209,7 @@ Benchmark.prototype.startBenchmarking = function(){
             form.append('session_id', sessionStorage.getItem("session_id"));
 
             $.ajax({
-                url: "/omplapp/benchmark",
+                url: "/benchmark",
                 type: "POST",
                 data: form,
                 success: function(data){

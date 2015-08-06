@@ -174,7 +174,7 @@ Visualization.prototype.applyOffset = function(env, robot) {
     form['env_loc'] = env;
     form['robot_loc'] = robot;
     $.ajax({
-        url: '/omplapp/offset',
+        url: '/offset',
         type: 'POST',
         data: form,
         success: function (data, textStatus, jqXHR) {

@@ -389,28 +389,25 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
 # Page Loading
 @app.route("/")
 def index():
-    return flask.redirect(flask.url_for('omplapp'))
-
-@app.route("/omplapp", methods=['GET'])
-def omplapp():
     """
     Application starting point, loads everything.
     """
     return flask.render_template("omplweb.html")
 
-@app.route('/omplapp/components/configuration')
+
+@app.route('/components/configuration')
 def load_configuration():
     return flask.render_template("components/configuration.html")
 
-@app.route('/omplapp/components/benchmarking')
+@app.route('/components/benchmarking')
 def load_benchmarking():
     return flask.render_template("components/benchmarking.html")
 
-@app.route('/omplapp/components/about')
+@app.route('/components/about')
 def load_about():
     return flask.render_template("components/about.html")
 
-@app.route('/omplapp/session')
+@app.route('/session')
 def create_session():
     """
     Creates a session folder and returns its name
@@ -425,7 +422,7 @@ def create_session():
 
     return session_name
 
-@app.route('/omplapp/preferences')
+@app.route('/preferences')
 def load_preferences():
     """
     Sends the preferences read from the conf file to the client.
@@ -433,12 +430,14 @@ def load_preferences():
     return json.dumps(preferences)
 
 
+
+
 # Problem Configuration
-@app.route('/omplapp/planners')
+@app.route('/planners')
 def planners():
     return json.dumps(og.planners.plannerMap)
 
-@app.route('/omplapp/offset', methods=["POST"])
+@app.route('/offset', methods=["POST"])
 def find_offset():
     env_mesh = flask.request.form['env_loc']
     robot_mesh = flask.request.form['robot_loc']
@@ -446,7 +445,7 @@ def find_offset():
     offset = get_offset(join(ompl_web_root, env_mesh), join(ompl_web_root, robot_mesh))
     return json.dumps(offset)
 
-@app.route('/omplapp/robot_types')
+@app.route('/robot_types')
 def get_robot_types():
     """
     Finds the available robot types and returns as a list of tuples
@@ -460,7 +459,7 @@ def get_robot_types():
             robot_types[str(c)] = {"name" : str(name), "apptype" : str(apptype)}
     return json.dumps(robot_types)
 
-@app.route('/omplapp/upload', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def upload():
     """
     This function is invoked when the client clicks 'Solve' and submits the
@@ -481,7 +480,7 @@ def upload():
         oh.log("Started solving task with id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
         return str(solve_task.task_id)
 
-@app.route('/omplapp/poll/<task_id>', methods=['POST'])
+@app.route('/poll/<task_id>', methods=['POST'])
 def poll(task_id):
     """
     Checks if the task corresponding to the input ID has completed. If the
@@ -495,7 +494,7 @@ def poll(task_id):
     else :
         return "Result for task id: " + task_id + " isn't ready yet.", 202
 
-@app.route("/omplapp/upload_models", methods=['POST'])
+@app.route("/upload_models", methods=['POST'])
 def upload_models():
     """
     Uploads the user's robot and environment files and saves them to the
@@ -531,7 +530,7 @@ def upload_models():
 
     return json.dumps(file_locs)
 
-@app.route("/omplapp/request_problem", methods=['POST'])
+@app.route("/request_problem", methods=['POST'])
 def request_problem():
     """
     Sends the user the user the location of the requested problem's model files
@@ -560,7 +559,7 @@ def request_problem():
 
 
 # Benchmarking
-@app.route('/omplapp/benchmark', methods=['POST'])
+@app.route('/benchmark', methods=['POST'])
 def init_benchmark():
 
     session_id = flask.request.form['session_id']

@@ -192,7 +192,7 @@ Problem.prototype.solve = function() {
 
         // Send the request
         $.ajax({
-            url: "omplapp/upload",
+            url: "upload",
             type: "POST",
             data: problem.asJSON(),
             success: function(data){
@@ -459,7 +459,7 @@ var Solution = function() {
  */
 Solution.prototype.poll = function(taskID) {
     var completed = false;
-    var pollURL = '/omplapp/poll/' + taskID;
+    var pollURL = '/poll/' + taskID;
 
     pollingInterval = window.setInterval(function() {
 
@@ -586,7 +586,7 @@ $(document).ready(function() {
 
 
 function loadPreferences() {
-    $.get("omplapp/preferences", function(data) {
+    $.get("/preferences", function(data) {
         var preferences = JSON.parse(data);
 
         BENCHMARKING_LIMIT = parseFloat(preferences["benchmarking_limit"]);
@@ -607,7 +607,7 @@ function loadPreferences() {
 function initialize() {
     // Load the configuration page by default
     $('#configuration-page').click();
-    $("#configuration").load("omplapp/components/configuration", function () {
+    $("#configuration").load("components/configuration", function () {
 
         visualization.initialize();
         benchmark.initialize();
@@ -711,7 +711,7 @@ function initialize() {
         });
 
         // Load the about page
-        $("#about").load("omplapp/components/about");
+        $("#about").load("components/about");
     });
 }
 
@@ -724,7 +724,7 @@ function initialize() {
  * @return None
  */
 function getPlannerData() {
-    $.get( "omplapp/planners", function( data ) {
+    $.get( "planners", function( data ) {
         problem.availablePlanners = JSON.parse(data);
 
         $.each(problem.availablePlanners, function(fullName, data){
@@ -762,7 +762,7 @@ function getPlannerData() {
  * @return None
  */
 function getRobotTypes() {
-    $.get( "omplapp/robot_types", function( data ) {
+    $.get( "robot_types", function( data ) {
         problem.robotTypes = JSON.parse(data);
 
         // Populate the list of available robot types
@@ -783,7 +783,7 @@ function getRobotTypes() {
  */
 function getSessionID(){
     $.ajax({
-        url: 'omplapp/session',
+        url: 'session',
         type: 'GET',
         success: function (data, textStatus, jqXHR) {
             console.log("Got session id: " + data);
@@ -841,7 +841,7 @@ function loadRemoteProblem(problemName) {
 
     // Retrieve problem configuration:
     $.ajax({
-        url: "omplapp/request_problem",
+        url: "request_problem",
         type: 'POST',
         data: form,
         success: function (data, textStatus, jqXHR) {
@@ -905,7 +905,7 @@ function uploadModels() {
     if (valid) {
         // Send the request
         $.ajax({
-            url: "omplapp/upload_models",
+            url: "upload_models",
             type: "POST",
             data: formData,
             success: function(data){
