@@ -22,6 +22,7 @@ var pathLines = [];
 var path;
 var step = 0;
 var staticPathRobots = [];
+var exploredStates = [];
 
 
 /**
@@ -338,6 +339,11 @@ Visualization.prototype.clearScene = function() {
     });
     staticPathRobots = [];
 
+    $("#showExplored").val("none");
+    exploredStates.forEach(function (element, index) {
+        scene.remove(element);
+    });
+    exploredStates = []
 }
 
 
@@ -359,6 +365,11 @@ Visualization.prototype.clearSolution = function() {
     });
     staticPathRobots = [];
 
+    $("#viewExplored").val("none");
+    exploredStates.forEach(function (element, index) {
+        scene.remove(element);
+    });
+    exploredStates = []
 }
 
 
@@ -448,6 +459,37 @@ Visualization.prototype.drawSolutionPath = function(path) {
     path_line.parent = env;
     pathLines.push(path_line);
     scene.add(path_line);
+}
+
+
+Visualization.prototype.drawExploredStates = function() {
+    var states = solution.data.explored_states;
+    var geometry = new THREE.SphereGeometry(1, 16, 16);
+    var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+    var sphere = new THREE.Mesh( geometry, material );
+    exploredStates = [];
+    for (var i = 0; i < states.length; i++) {
+        var point = sphere.clone();
+        point.position.set(states[i][0], states[i][1], states[i][2]);
+        exploredStates.push(point);
+        scene.add(point);
+    }
+}
+
+Visualization.prototype.showExploredStates = function() {
+    if (exploredStates.length == 0) {
+        this.drawExploredStates();
+    } else {
+        exploredStates.forEach(function (element, index) {
+            element.visible = true;
+        });
+    }
+}
+
+Visualization.prototype.hideExploredStates = function() {
+    exploredStates.forEach(function (element, index) {
+        element.visible = false;
+    });
 }
 
 

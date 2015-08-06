@@ -230,8 +230,6 @@ def setup(problem):
 
         ompl_setup.setStartAndGoalStates(start, goal)
     else:
-        print("Non 3D robot type.")
-
         # Set the dimensions of the bounding box
         bounds = ob.RealVectorBounds(2)
 
@@ -300,7 +298,6 @@ def solve(problem):
         initialValid = path.check()
 
         if initialValid:
-            print ompl_setup.getStateSpace().getName()
             if problem["robot.type"] == "GSE3RigidBodyPlanning" or problem["robot.type"] == "GSE2RigidBodyPlanning":
                 # If initially valid and rigid body, attempt to simplify
                 ompl_setup.simplifySolution()
@@ -327,6 +324,15 @@ def solve(problem):
     solution['name'] = str(problem['name'])
     solution['planner'] = ompl_setup.getPlanner().getName()
 
+    # Store the planner data
+    pd = ob.PlannerData(ompl_setup.getSpaceInformation())
+    ompl_setup.getPlannerData(pd)
+    ss = pd.extractStateStorage()
+    explored_states = []
+    for i in range(0, ss.size()):
+        explored_states.insert(i, [ss.getState(i).getX(), ss.getState(i).getY(), ss.getState(i).getZ()])
+
+    solution["explored_states"] = explored_states
     return solution
 
 @celery.task()
@@ -372,7 +378,6 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
     readBenchmarkLog(dbfile, logfile, "")
 
     # Open the planner arena page when benchmarking is done
-    print(preferences)
     if preferences["show_results"] == "1":
         url = "http://127.0.0.1:" + preferences["plannerarena_port"] + "/?user=" + session_id + "&job=" + db_filename
         webbrowser.open(url)

@@ -65,7 +65,7 @@ h4 {
 hr {
     border-width: 1.5px;
     border-color: black;
-    width: 80%;
+    width: 90%;
 }
 
 .active_nav_item {
@@ -194,6 +194,10 @@ pre {
 }
 #pathButtons {
     display: inline;
+}
+
+#animationSpeed {
+    width: 75%;
 }
 
 .planner-tables{

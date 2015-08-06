@@ -266,21 +266,21 @@ Problem.prototype.getConfigText = function() {
         cfg += "volume.min.y = " + problem.config["volume.min.y"] + "\n";
         cfg += "volume.max.x = " + problem.config["volume.max.x"] + "\n";
         cfg += "volume.max.y = " + problem.config["volume.max.y"] + "\n";
-        
+
         if (problem.is3D == true) {
             cfg += "start.z = " + problem.config["start.z"] + "\n";
             cfg += "goal.z = " + problem.config["goal.z"] + "\n";
-            
+
             cfg += "start.axis.x = " + startQ.x + "\n";
             cfg += "start.axis.y = " + startQ.y + "\n";
             cfg += "start.axis.z = " + startQ.z + "\n";
             cfg += "start.theta = " + startQ.w + "\n";
-            
+
             cfg += "goal.axis.x = " + goalQ.x + "\n";
             cfg += "goal.axis.y = " + goalQ.y + "\n";
             cfg += "goal.axis.z = " + goalQ.z + "\n";
             cfg += "goal.theta = " + goalQ.w + "\n";
-            
+
             cfg += "volume.min.z = " + problem.config["volume.min.z"] + "\n";
             cfg += "volume.max.z = " + problem.config["volume.max.z"] + "\n";
         } else {
@@ -543,6 +543,16 @@ Solution.prototype.visualize = function() {
         } else {
             showAlert("configuration", "info", "No solution found. Try solving again.");
         }
+
+        $("#viewExplored").change(function() {
+            if ($(this).val() == "states") {
+                visualization.showExploredStates();
+            } else if ($(this).val() == "edges") {
+                visualization.hideExploredStates();
+            } else {
+                visualization.hideExploredStates();
+            }
+        })
     }
 
     $.unblockUI();
