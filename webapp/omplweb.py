@@ -329,9 +329,13 @@ def solve(problem):
     ompl_setup.getPlannerData(pd)
     explored_states = []
     for i in range(0, pd.numVertices()):
-        explored_states.insert(i, [pd.getVertex(i).getState().getX(),
-            pd.getVertex(i).getState().getY(),
-            pd.getVertex(i).getState().getZ()])
+        coords = []
+        coords.append(pd.getVertex(i).getState().getX())
+        coords.append(pd.getVertex(i).getState().getY())
+        if (problem["is3D"] == True):
+            coords.append(pd.getVertex(i).getState().getZ())
+
+        explored_states.insert(i, coords)
 
     solution["explored_states"] = explored_states
     return solution
@@ -394,7 +398,6 @@ def index():
     """
     return flask.render_template("omplweb.html")
 
-
 @app.route('/components/configuration')
 def load_configuration():
     return flask.render_template("components/configuration.html")
@@ -407,6 +410,8 @@ def load_benchmarking():
 def load_about():
     return flask.render_template("components/about.html")
 
+
+# Send client information
 @app.route('/session')
 def create_session():
     """
@@ -429,10 +434,27 @@ def load_preferences():
     """
     return json.dumps(preferences)
 
+@app.route('/problems')
+def send_problems():
+    """
+    Sends a list of the available pre-configured problems to the client.
+    """
+
+    two_d = []
+    three_d = []
+
+    files_2d = os.listdir(join(problem_files, "2D"))
+    for filename in files_2d:
+        if filename.endswith(".cfg"):
+            two_d.append(filename)
+    files_3d = os.listdir(join(problem_files, "3D"))
+    for filename in files_3d:
+        if filename.endswith(".cfg"):
+            three_d.append(filename)
+
+    return json.dumps({"2D" : two_d, "3D" : three_d})
 
 
-
-# Problem Configuration
 @app.route('/planners')
 def planners():
     return json.dumps(og.planners.plannerMap)
@@ -459,6 +481,36 @@ def get_robot_types():
             robot_types[str(c)] = {"name" : str(name), "apptype" : str(apptype)}
     return json.dumps(robot_types)
 
+@app.route("/request_problem", methods=['POST'])
+def request_problem():
+    """
+    Sends the user the user the location of the requested problem's model files
+    and the problem configuration settings
+    """
+    problem_name = flask.request.form['problem_name']
+    dimension = flask.request.form['dimension']
+    cfg_filename = problem_name + ".cfg"
+
+    cfg_file_loc = join(problem_files, dimension, cfg_filename)
+    print cfg_file_loc
+    cfg_data = parse_cfg(cfg_file_loc)
+
+    if (sys.version_info > (3, 0)):
+        config = ConfigParser.ConfigParser(strict = False)
+    else:
+        config = ConfigParser.ConfigParser()
+
+    cfg_file = open(cfg_file_loc, 'r')
+    config.readfp(cfg_file)
+
+    cfg_data['robot_loc'] = join("static/problem_files", dimension, config.get("problem", "robot"))
+    cfg_data['env_loc'] = join("static/problem_files", dimension, config.get("problem", "world"))
+
+    cfg_file.close()
+    return json.dumps(cfg_data)
+
+
+# Get client information
 @app.route('/upload', methods=['POST'])
 def upload():
     """
@@ -529,33 +581,6 @@ def upload_models():
         return "Error: Didn't upload any files! Please choose both a robot and environment file in the .dae format."
 
     return json.dumps(file_locs)
-
-@app.route("/request_problem", methods=['POST'])
-def request_problem():
-    """
-    Sends the user the user the location of the requested problem's model files
-    and the problem configuration settings
-    """
-    problem_name = flask.request.form['problem_name']
-    dimension = flask.request.form['dimension']
-    cfg_filename = problem_name + ".cfg"
-
-    cfg_file_loc = join(problem_files, dimension, cfg_filename)
-    cfg_data = parse_cfg(cfg_file_loc)
-
-    if (sys.version_info > (3, 0)):
-        config = ConfigParser.ConfigParser(strict = False)
-    else:
-        config = ConfigParser.ConfigParser()
-
-    cfg_file = open(cfg_file_loc, 'r')
-    config.readfp(cfg_file)
-
-    cfg_data['robot_loc'] = join("static/problem_files", dimension, config.get("problem", "robot"))
-    cfg_data['env_loc'] = join("static/problem_files", dimension, config.get("problem", "world"))
-
-    cfg_file.close()
-    return json.dumps(cfg_data)
 
 
 # Benchmarking
