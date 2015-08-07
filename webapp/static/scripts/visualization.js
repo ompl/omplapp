@@ -427,7 +427,7 @@ Visualization.prototype.visualizeSolution = function(solutionData) {
  */
 Visualization.prototype.drawSolutionPath = function(path) {
     pathVectorsArray = [];
-    console.log("path", path);
+    
     // Parse the path string into an array of position vectors
     if (problem.is3D == true) {
         for (var i = 0; i < path.length; i++) {

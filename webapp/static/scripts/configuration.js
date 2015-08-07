@@ -457,14 +457,15 @@ Solution.prototype.poll = function(taskID) {
                     solution.store(data);
                     solution.visualize();
                 } else {
-                    console.log(data, textStatus, jqXHR);
+                    console.info(data, textStatus, jqXHR);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
+                // Stop polling
+                clearInterval(pollingInterval);
                 $.unblockUI();
                 showAlert("configuration", "danger", "Server responded with an error. Check the problem configuration and try again.");
-
-                console.log('Solve failed, server responded with an error.', errorThrown);
+                console.log('Solve failed, server responded with an error.', jqXHR, textStatus, errorThrown);
             }
         });
 
@@ -774,7 +775,7 @@ function getProblems() {
         $.each(problems, function(dimension, filenames){
             $('#problems').append($("<option></option>").attr("disabled", true).text(dimension));
             for (var i = 0; i < filenames.length; i++){
-                name = filenames[i].split(".")[0];
+                name = filenames[i].split(".cfg")[0];
                 $('#problems').append($("<option></option>").attr("value", name).text(name));
 
                 problem.dimensions[name] = dimension;
