@@ -71,24 +71,7 @@ var Problem = function () {
 
     this.is3D = true;
 
-    this.dimensions = {
-        "abstract" : "3D",
-        "apartment" : "3D",
-        "bugtrap" : "3D",
-        "cubicles" : "3D",
-        "easy" : "3D",
-        "escape" : "3D",
-        "home" : "3D",
-        "pipedream" : "3D",
-        "spirelli" : "3D",
-        "twistycool" : "3D",
-        "twistycooler" : "3D",
-        "barriers" : "2D",
-        "bugtrap_planar" : "2D",
-        "maze_planar" : "2D",
-        "maze_kcar" : "2D",
-        "randompolygons_planar" : "2D",
-    };
+    this.dimensions = {};
 }
 
 Problem.prototype.update = function() {
@@ -618,6 +601,9 @@ function initialize() {
         // Retrieve robot types
         getRobotTypes();
 
+        // Retrieve the preconfigured problems
+        getProblems();
+
         // If this is a new session, get the session id
         if (!sessionStorage.getItem("session_id")){
             getSessionID();
@@ -774,6 +760,31 @@ function getRobotTypes() {
 }
 
 /**
+ * Retrieves preconfigured problems from the server and adds them to the "Problem"
+ * dropdown menu on the configuration page
+ *
+ * @param None
+ * @return None
+ */
+function getProblems() {
+    $.get( "/problems", function( data ) {
+        var problems = JSON.parse(data);
+
+        // Populate the list of available robot types
+        $.each(problems, function(dimension, filenames){
+            $('#problems').append($("<option></option>").attr("disabled", true).text(dimension));
+            for (var i = 0; i < filenames.length; i++){
+                name = filenames[i].split(".")[0];
+                $('#problems').append($("<option></option>").attr("value", name).text(name));
+
+                problem.dimensions[name] = dimension;
+            }
+        });
+
+    });
+}
+
+/**
  * Gets the unique identifier for this session from the server and stores
  * it globally. This ID accompanies all future requests to the server
  * to ensure that the necessary files are available.
@@ -837,7 +848,6 @@ function loadRemoteProblem(problemName) {
     var form = {};
     form["problem_name"] = problemName;
     form["dimension"] = problem.dimensions[problemName]
-
 
     // Retrieve problem configuration:
     $.ajax({
