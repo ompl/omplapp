@@ -724,6 +724,10 @@ function initialize() {
 
         // Load the about page
         $("#about").load("components/about");
+
+        // Activate popovers and tooltips
+        $('[data-toggle="popover"]').popover()
+        $('[data-toggle="tooltip"]').tooltip();
     });
 }
 

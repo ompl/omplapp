@@ -79,7 +79,6 @@ Benchmark.prototype.createDefaultPlannerEntry = function() {
 
     planner += "</table>";
     $('#planner-tables').append(planner);
-    $('[data-toggle="tooltip"]').tooltip();
 }
 
 

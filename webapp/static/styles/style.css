@@ -261,6 +261,14 @@ td.param-value {
     text-align: right;
 }
 
+span.floating-icon {
+    color: #bbb;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+    position: absolute;
+}
+
 .visualization {
     outline: 2px solid #080808;
     height: 80%;
