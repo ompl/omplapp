@@ -307,19 +307,27 @@ Visualization.prototype.updateBounds = function() {
 Visualization.prototype.toggleAnimation = function() {
     if ($('#animateToggleBtn').hasClass('active')) {
         $('#animateToggleBtn').removeClass('active');
-
-        clearInterval(robotAnimationInterval);
-        path_robot.visible = false;
+        this.hideAnimation();
     } else {
-        path_robot.visible = true;
+        if ($('#toggleRobotPathBtn').hasClass('active')) {
+            $('#toggleRobotPathBtn').click();
+        }
         $('#animateToggleBtn').addClass('active');
-
-        robotAnimationInterval = setInterval(function() {
-            visualization.moveRobot(path);
-        }, this.animationSpeed);
+        this.showAnimation();
     }
 };
 
+Visualization.prototype.showAnimation = function() {
+        path_robot.visible = true;
+        robotAnimationInterval = setInterval(function() {
+            visualization.moveRobot(path);
+        }, this.animationSpeed);
+}
+
+Visualization.prototype.hideAnimation = function() {
+        clearInterval(robotAnimationInterval);
+        path_robot.visible = false;
+}
 
 /**
  * Toggles the display of static robots at each point along solution path.
@@ -334,8 +342,11 @@ Visualization.prototype.toggleRobotPath = function() {
         this.hideRobotPath();
     } else {
         $('#toggleRobotPathBtn').addClass('active');
-
         this.showRobotPath();
+
+        if ($('#animateToggleBtn').hasClass('active')) {
+            $('#animateToggleBtn').click();
+        }
     }
 };
 

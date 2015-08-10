@@ -520,8 +520,15 @@ Solution.prototype.visualize = function() {
 
             visualization.animationSpeed = 1000 - $('#animationSpeed').val();
 
-            $('#pathButtons').removeClass('hidden');
-            $('#animateToggleBtn').click();
+            if ($('#pathButtons').hasClass('hidden')){
+                $('#pathButtons').removeClass('hidden');
+            } else {
+                if ($('#animateToggleBtn').hasClass('active')) {
+                    visualization.showAnimation();
+                } else if ($('#toggleRobotPathBtn').hasClass('active')){
+                    visualization.showRobotPath();
+                }
+            }
 
             var msg = this.data.status + " found."
             showAlert("configuration", "success", msg);
