@@ -270,6 +270,10 @@ Visualization.prototype.updatePose = function() {
 
 
 Visualization.prototype.updateBounds = function() {
+    if (problem.is3D == false) {
+        $("[name='volume.min.z']").val("0");
+        $("[name='volume.max.z']").val("0");
+    }
     // Update bounds
     var min = {};
     min.x = $("[name='volume.min.x']").val();

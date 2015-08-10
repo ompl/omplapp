@@ -456,6 +456,8 @@ Solution.prototype.poll = function(taskID) {
                     clearInterval(pollingInterval);
                     solution.store(data);
                     solution.visualize();
+                } else if (jqXHR.status == 202) {
+                    // console.log("Polled, not ready yet.");
                 } else {
                     console.info(data, textStatus, jqXHR);
                 }
@@ -491,7 +493,7 @@ Solution.prototype.clear = function() {
  */
 Solution.prototype.visualize = function() {
     // Hide the bounding box
-    $('#showBoundingBox').prop('checked') == false;
+    $('#showBoundingBox').click();
     bbox.visible = false;
 
     // Clear the old solution visualization, if it existed
