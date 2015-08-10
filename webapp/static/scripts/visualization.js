@@ -1,6 +1,9 @@
 /* Globally Needed Information */
 var env_loc;
 var robot_loc;
+var LIGHT = "rgb(250, 250, 250)";
+var DARK = "rgb(25, 25, 25)";
+
 
 /* Basic Scene Objects */
 var scene;
@@ -61,7 +64,17 @@ Visualization.prototype.initialize = function() {
     // Create a renderer
     renderer = new THREE.WebGLRenderer({alpha:true, antialias:true});
     renderer.setSize(WIDTH, HEIGHT);
-    renderer.setClearColor(0xfafafa);
+    if (!localStorage.getItem("clear_color")) {
+        // Default to light theme
+        renderer.setClearColor(LIGHT);
+    } else {
+        // Set to user preference
+        if (localStorage.getItem("clear_color") == "light") {
+            renderer.setClearColor(LIGHT);
+        } else {
+            renderer.setClearColor(DARK);
+        }
+    }
     $('#viewer').append(renderer.domElement);
 
     // Create a camera
@@ -86,7 +99,17 @@ Visualization.prototype.initialize = function() {
 
     // Create the axis helper, hidden by default, can be turned on
     axisHelper = new THREE.AxisHelper( 500 );
-    axisHelper.visible = false;
+    if (!localStorage.getItem("show_axis")) {
+        // Hide by default
+        axisHelper.visible = false;
+    } else {
+        // Load user preference
+        if (localStorage.getItem("show_axis") == "true") {
+            axisHelper.visible = true;
+        } else {
+            axisHelper.visible = false;
+        }
+    }
     scene.add( axisHelper );
 
     // Create a light and attach it to the camera
@@ -427,7 +450,7 @@ Visualization.prototype.visualizeSolution = function(solutionData) {
  */
 Visualization.prototype.drawSolutionPath = function(path) {
     pathVectorsArray = [];
-    
+
     // Parse the path string into an array of position vectors
     if (problem.is3D == true) {
         for (var i = 0; i < path.length; i++) {
@@ -464,7 +487,11 @@ Visualization.prototype.drawSolutionPath = function(path) {
 
 Visualization.prototype.drawExploredStates = function() {
     var states = solution.data.explored_states;
-    var geometry = new THREE.SphereGeometry(1, 16, 16);
+
+    // Set the radius of the explored states as a function of the robot size
+    var box = new THREE.Box3().setFromObject(start_robot);
+    var radius = 0.01 * ((box.max.x - box.min.x)+(box.max.y - box.min.y)+(box.max.z - box.min.z));
+    var geometry = new THREE.SphereGeometry(radius, 16, 16);
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
     var sphere = new THREE.Mesh( geometry, material );
     exploredStates = [];

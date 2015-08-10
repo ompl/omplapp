@@ -521,8 +521,10 @@ Solution.prototype.visualize = function() {
             visualization.animationSpeed = 1000 - $('#animationSpeed').val();
 
             $('#pathButtons').removeClass('hidden');
+            $('#animateToggleBtn').click();
 
-            showAlert("configuration", "success", "Solution found!");
+            var msg = this.data.status + " found."
+            showAlert("configuration", "success", msg);
         } else {
             showAlert("configuration", "info", "No solution found. Try solving again.");
         }
@@ -663,12 +665,17 @@ function initialize() {
         });
 
         // Select Visualization Theme
+        if (localStorage.getItem("clear_color") != null) {
+            $('#vizTheme').val(localStorage.getItem("clear_color"));
+        }
         $('#vizTheme').change(function() {
             var color = $('#vizTheme').val();
             if (color == "light") {
-                renderer.setClearColor(0xfafafa);
+                renderer.setClearColor(LIGHT);
+                localStorage.setItem("clear_color", "light");
             } else {
-                renderer.setClearColor(0x1a1a1a);
+                renderer.setClearColor(DARK);
+                localStorage.setItem("clear_color", "dark");
             }
         })
 
@@ -682,11 +689,20 @@ function initialize() {
         });
 
         // Toggle display of axis helper
+        if (localStorage.getItem("show_axis") != null) {
+            if (localStorage.getItem("show_axis") == "true") {
+               $('#showAxisHelper').prop("checked", true);
+            } else {
+               $('#showAxisHelper').prop("checked", false);
+            }
+        }
         $('#showAxisHelper').change(function() {
             if ($('#showAxisHelper').prop('checked') == true) {
                 axisHelper.visible = true;
+                localStorage.setItem("show_axis", true);
             } else {
                 axisHelper.visible = false;
+                localStorage.setItem("show_axis", false);
             }
         });
 
