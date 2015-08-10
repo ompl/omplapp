@@ -8,19 +8,21 @@ A web front end for sample based motion planning and benchmarking using the Open
 
 ### Mac OSX
 
-
 - Acquire OMPL.app and OMPL source code
-  ```
-  git clone https://github.com/ompl/omplapp.git
-  cd omplapp
-  git clone https://github.com/ompl/ompl.git
-  ```
+    ```
+    git clone https://github.com/ompl/omplapp.git
+    cd omplapp
+    git clone https://github.com/ompl/ompl.git
+    //TODO: Install ompl.app dependencies
+    sudo port sync
+    sudo port install boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
+    ```
 
 - Acquire Flask and Celery
-  ```
-  pip install flask
-  pip install celery
-  ```
+    ```
+    pip install flask
+    pip install celery
+    ```
 
 - Acquire and run RabbitMQ
     - MacPorts
@@ -29,26 +31,63 @@ A web front end for sample based motion planning and benchmarking using the Open
       ```
     - Standalone:
       [follow instuctions found here.](http://www.rabbitmq.com/install-standalone-mac.html)
-  ```
-  // Add rabbitmq-server to path
-  ```
+    ```
+    //TODO: Add rabbitmq-server to path
+    ```
 
 - Build OMPL and generate Python bindings
-  ```
-  mkdir -p build/Release
-  cd build/Release
-  cmake ../..
-  make installpyplusplus && cmake .
-  make update_bindings
-  make -j 4
-  ```
+    ```
+    mkdir -p build/Release
+    cd build/Release
+    cmake ../..
+    make installpyplusplus && cmake .
+    make update_bindings
+    make -j 4
+    ```
 
 - Run webapp startup script
-  ```
-  cd webapp
-  ./webapp
-  ```
+    ```
+    cd webapp
+    ./webapp
+    ```
 
+### Debian / Ubuntu
+
+- Acquire OMPL.app and OMPL source code
+    ```
+    git clone https://github.com/ompl/omplapp.git
+    cd omplapp
+    git clone https://github.com/ompl/ompl.git
+    //TODO: Install ompl.app dependencies
+    boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus-devel
+    ```
+
+- Acquire Flask and Celery
+    ```
+    pip install flask
+    pip install celery
+    ```
+
+- Acquire and run RabbitMQ
+    ```
+    //TODO: Add rabbitmq-server to path
+    ```
+
+- Build OMPL and generate Python bindings
+    ```
+    mkdir -p build/Release
+    cd build/Release
+    cmake ../..
+    make installpyplusplus && cmake .
+    make update_bindings
+    make -j 4
+    ```
+
+- Run webapp startup script
+    ```
+    cd webapp
+    ./webapp
+      ```
 
 ## Used Libraries
 
