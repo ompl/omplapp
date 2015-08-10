@@ -323,6 +323,7 @@ def solve(problem):
 
     solution['name'] = str(problem['name'])
     solution['planner'] = ompl_setup.getPlanner().getName()
+    solution['status'] = str(solved)
 
     # Store the planner data
     pd = ob.PlannerData(ompl_setup.getSpaceInformation())
@@ -334,6 +335,8 @@ def solve(problem):
         coords.append(pd.getVertex(i).getState().getY())
         if (problem["is3D"] == True):
             coords.append(pd.getVertex(i).getState().getZ())
+        else:
+            coords.append(0)
 
         explored_states.insert(i, coords)
 

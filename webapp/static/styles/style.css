@@ -9,9 +9,17 @@ a.remove:active {
     color: #F96E6C;
     cursor: pointer;
 }
+a.mainlink{
+    color: #ddd;
+    font-weight: 200;
+}
+a.mainlink:hover {
+    color: #fff;
+}
 a.tablink {
     color: #ddd;
     font-weight: 200;
+    padding: 10px 10px !important;
 }
 a.tablink:hover {
     color: #fff;
@@ -232,7 +240,7 @@ pre {
 
 .tab-container {
     outline: 2px solid #022037;
-    min-height: 75%;
+    min-height: 80%;
 }
 
 .tab-content {
@@ -255,14 +263,14 @@ td.param-value {
 
 .visualization {
     outline: 2px solid #080808;
-    height: 75%;
+    height: 80%;
     margin-left: 15px;
     margin-right: 2px;
 }
 
-.col-md-4 {
+.col-md-3 {
     padding: 0 !important;
 }
-.col-md-8 {
+.col-md-9 {
     padding: 0 !important;
 }
