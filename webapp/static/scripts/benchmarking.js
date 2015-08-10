@@ -213,7 +213,14 @@ Benchmark.prototype.startBenchmarking = function(){
                 type: "POST",
                 data: form,
                 success: function(data){
-                    var url = "http://127.0.0.1:" + PLANNERARENA_PORT + "/?" + "user=" + sessionStorage.getItem("session_id") + "&job=" + data
+                    var base_url = "";
+                    if (window.location.href.indexOf("kavrakilab.org") > 0){
+                        base_url = "http://plannerarena.org";
+                    } else {
+                        var href = window.location.href.split(":");
+                        base_url = href[0] + ":" + href[1] + ":" + PLANNERARENA_PORT;
+                    }
+                    var url =  base_url + "/?" + "user=" + sessionStorage.getItem("session_id") + "&job=" + data;
                     var msg = "The benchmark job was submitted successfully. ";
                     msg += "The results will be available at: <a target='none' href='" + url + "'>" + url +  "</a>";
                     showAlert("benchmark", "success", msg);
