@@ -405,7 +405,7 @@ Problem.prototype.loadConfig = function(data) {
     setTimeout(function() {
         visualization.updatePose();
         visualization.updateBounds();
-    }, 100);
+    }, 500);
 }
 
 Problem.prototype.showConfigData = function(data) {

@@ -180,10 +180,9 @@ Visualization.prototype.drawModels = function(e_loc, r_loc) {
 
         visualization.updatePose();
         visualization.updateBounds();
+        visualization.applyOffset(env_loc, robot_loc);
     });
 
-
-    this.applyOffset(env_loc, robot_loc);
 
 }
 
