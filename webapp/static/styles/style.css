@@ -117,6 +117,9 @@ pre {
     max-height: 300px;
 }
 
+select {
+    width: 100%;
+}
 
 .benchmarking-options {
     border: 2px solid #080808;
@@ -181,7 +184,7 @@ pre {
 .logo{
     color: #ddd;
     font-size: 35px;
-    font-weight: 100;
+    font-weight: 300;
 }
 .navbar-toggle {
     color: #fff;

@@ -21,14 +21,14 @@
                         <!-- Problem Selection -->
                         <div class="form-group">
                             <label>Problem</label>
-                            <select name="problems" id="problems" class="form-control problem-cfg input-sm">
+                            <select name="problems" id="problems" class="problem-cfg">
                                 <option value="custom" selected="selected">Custom</option>
                             </select>
                         </div> <!-- Close Problem -->
 
                         <div class="form-group">
                             <label>Robot Type</label>
-                            <select name="robot.type" id="robot_type" class="form-control problem-cfg input-sm">
+                            <select name="robot.type" id="robot_type" class="problem-cfg">
                             </select>
                         </div> <!-- Close Problem -->
                         <!-- Custom problem upload -->
@@ -166,7 +166,7 @@
                 <div role="tabpanel" class="tab-pane fade" id="planner">
                     <div class="form-group">
                         <label>Planner</label>
-                        <select name="planners" id="planners" class="form-control problem-cfg input-sm">
+                        <select name="planners" id="planners" class="problem-cfg">
                             <!-- These options are filled in by loadPlanners() in configuration.js -->
                         </select>
                     </div>
@@ -178,7 +178,7 @@
                     <!-- Optimization -->
                     <div class="form-group">
                         <label>Optimization Objective</label>
-                        <select name="objective" id="objective" class="form-control problem-cfg input-sm">
+                        <select name="objective" id="objective" class="problem-cfg">
                             <option value="length" selected>Length</option>
                             <option value="max_min_clearance">Maximize Min Clearance</option>
                             <option value="mechanical_work">Mechanical Work</option>
@@ -188,6 +188,8 @@
                         <label>Cost Threshold</label>
                         <input type='number' name='objective.threshold' id='objective.threshold' value='10000' class="form-control problem-cfg input-sm"></input>
                     </div>
+
+                    More information about planners and their parameters can be found <a target="none" href="http://ompl.kavrakilab.org/planners.html">here</a>.
                 </div>
                 <!-- End Planner Configuration Tab -->
 
