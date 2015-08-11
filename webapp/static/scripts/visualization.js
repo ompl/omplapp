@@ -507,7 +507,7 @@ Visualization.prototype.drawExploredStates = function() {
     var box = new THREE.Box3().setFromObject(start_robot);
     var radius = 0.01 * ((box.max.x - box.min.x)+(box.max.y - box.min.y)+(box.max.z - box.min.z));
     var geometry = new THREE.SphereGeometry(radius, 16, 16);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+    var material = new THREE.MeshBasicMaterial( {color: 0xff0000} );
     var sphere = new THREE.Mesh( geometry, material );
     exploredStates = [];
 
