@@ -15,6 +15,7 @@
 import sys
 from os.path import abspath, dirname, join
 from decimal import Decimal
+import inspect
 qt5 = False
 try:
     # try PyQt4 first
@@ -146,13 +147,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # methods for sending messages to the console output window
     def msgDebug(self, text):
-        self.oh.debug(text)
+        c = inspect.currentframe()
+        self.oh.log(text, LogLevel.LOG_DEBUG, c.f_code.co_filename, c.f_lineno)
     def msgInform(self, text):
-        self.oh.inform(text)
+        c = inspect.currentframe()
+        self.oh.log(text, LogLevel.LOG_INFO, c.f_code.co_filename, c.f_lineno)
     def msgWarn(self, text):
-        self.oh.warn(text)
+        c = inspect.currentframe()
+        self.oh.log(text, LogLevel.LOG_WARN, c.f_code.co_filename, c.f_lineno)
     def msgError(self, text):
-        self.oh.error(text)
+        c = inspect.currentframe()
+        self.oh.log(text, LogLevel.LOG_ERROR, c.f_code.co_filename, c.f_lineno)
 
     def openEnvironment(self):
         fname = getOpenFileNameAsAstring(self, "Open Environment")
