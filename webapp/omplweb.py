@@ -48,11 +48,6 @@ from werkzeug import secure_filename
 from celery import Celery
 from celery.result import AsyncResult
 
-# Configure Flask and Celery
-app = flask.Flask(__name__)
-app.config.from_object(__name__)
-celery = Celery(app.name, broker='amqp://', backend='rpc://')
-
 
 class Logger(OutputHandler):
     """
@@ -67,9 +62,6 @@ class Logger(OutputHandler):
     def log(self, text, level, filename, line):
         if level >= getLogLevel():
             self.out.log(text, level, filename, line)
-
-
-oh = Logger()
 
 def initialize():
     oh.log("Log level is set to: %d" % getLogLevel(), LogLevel.LOG_INFO, "omplweb.py", 75)
@@ -89,7 +81,34 @@ def initialize():
     conf_file.close()
     return preferences
 
+def make_celery():
+    conf = {"rabbitmq" : {"broker" : "amqp://localhost", "backend" : "rpc://localhost"},
+            "redis" : {"broker" : "redis://localhost", "backend" : "redis://localhost"}}
+
+    broker_name = preferences["broker"]
+    broker_url = conf[broker_name]["broker"]
+    backend_url = conf[broker_name]["backend"]
+
+    if (preferences.has_key("broker_port")):
+        # If a port is specified, use it. Otherwise the default is automatically used
+        broker_url += ":" + preferences["broker_port"]
+        backend_url += ":" + preferences["broker_port"]
+
+    celery = Celery(app.name, broker=broker_url, backend=backend_url)
+    return celery
+
+# Create logger
+oh = Logger()
+
+# Load preferences
 preferences = initialize()
+
+# Configure Flask
+app = flask.Flask(__name__)
+app.config.from_object(__name__)
+
+# Configure Celery
+celery = make_celery()
 
 ########## OMPL ##########
 
