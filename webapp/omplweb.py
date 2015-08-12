@@ -3,6 +3,7 @@
 import os
 from os.path import dirname, abspath, join, basename
 import json
+import subprocess
 import sys
 import tempfile
 import webbrowser
@@ -28,7 +29,6 @@ try:
     from ompl import control as oc
     from ompl import app as oa
     from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
-    sys.path.insert(0, join(ompl_app_root, 'ompl/scripts'))
     from ompl_benchmark_statistics import readBenchmarkLog
 except:
     sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
@@ -396,7 +396,10 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
             os.symlink(join(ompl_web_root, env_loc), env_file)
 
     # Run the benchmark, produces .log file
-    os.system("ompl_benchmark " + cfg_loc + ".cfg")
+    try:
+        subprocess.call(["ompl_benchmark", cfg_loc + ".cfg"])
+    except:
+        oh.log("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'", LogLevel.LOG_ERROR, "webapp.py", 405)
 
     # Convert .log into database
     dbfile = join(ompl_sessions_dir, session_id, db_filename)
