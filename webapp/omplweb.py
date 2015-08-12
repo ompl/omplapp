@@ -398,19 +398,19 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
     # Run the benchmark, produces .log file
     try:
         subprocess.call(["ompl_benchmark", cfg_loc + ".cfg"])
+        # Convert .log into database
+        dbfile = join(ompl_sessions_dir, session_id, db_filename)
+        logfile = []
+        logfile.append(join(ompl_sessions_dir, session_id, name + ".log"))
+        readBenchmarkLog(dbfile, logfile, "")
+
+        # Open the planner arena page when benchmarking is done
+        if preferences["show_results"] == "1":
+            url = "http://127.0.0.1:" + preferences["plannerarena_port"] + "/?user=" + session_id + "&job=" + db_filename
+            webbrowser.open(url)
     except:
         oh.log("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'", LogLevel.LOG_ERROR, "webapp.py", 405)
 
-    # Convert .log into database
-    dbfile = join(ompl_sessions_dir, session_id, db_filename)
-    logfile = []
-    logfile.append(join(ompl_sessions_dir, session_id, name + ".log"))
-    readBenchmarkLog(dbfile, logfile, "")
-
-    # Open the planner arena page when benchmarking is done
-    if preferences["show_results"] == "1":
-        url = "http://127.0.0.1:" + preferences["plannerarena_port"] + "/?user=" + session_id + "&job=" + db_filename
-        webbrowser.open(url)
 
 
 ########## Flask ##########
