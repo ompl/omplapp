@@ -208,6 +208,10 @@ def setup(problem):
 
     ompl_setup = eval("oa.%s()" % problem["robot.type"])
     problem["is3D"] = isinstance(ompl_setup.getGeometricComponentStateSpace(), ob.SE3StateSpace)
+    if ompl_setup.getAppType() == "GEOMETRIC":
+        problem["isGeometric"] = True
+    else:
+        problem["isGeometric"] = False
 
     ompl_setup.setEnvironmentMesh(str(problem['env_loc']))
     ompl_setup.setRobotMesh(str(problem['robot_loc']))
@@ -334,9 +338,10 @@ def solve(problem):
 
             # Interpolate path
             ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
-            path.interpolate(ns)
-            if len(path.getStates()) != ns:
-                oh.log("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.", LogLevel.LOG_WARN, "omplweb.py", 256)
+            if problem["isGeometric"] and len(path.getStates()) < ns:
+                path.interpolate(ns)
+                if len(path.getStates()) != ns:
+                    oh.log("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.", LogLevel.LOG_WARN, "omplweb.py", 256)
 
             solution = format_solution(path, True)
         else :
