@@ -247,6 +247,8 @@ def setup(problem):
         goal().rotation().z = float(problem['goal.q.z'])
         goal().rotation().w = float(problem['goal.q.w'])
 
+        start = ompl_setup.getFullStateFromGeometricComponent(start)
+        goal = ompl_setup.getFullStateFromGeometricComponent(goal)
         ompl_setup.setStartAndGoalStates(start, goal)
     else:
         # Set the dimensions of the bounding box
@@ -271,6 +273,8 @@ def setup(problem):
         goal().setY(float(problem['goal.y']))
         goal().setYaw(float(problem['goal.yaw']))
 
+        start = ompl_setup.getFullStateFromGeometricComponent(start)
+        goal = ompl_setup.getFullStateFromGeometricComponent(goal)
         ompl_setup.setStartAndGoalStates(start, goal)
 
     return ompl_setup
@@ -350,10 +354,16 @@ def solve(problem):
     explored_states = []
     for i in range(0, pd.numVertices()):
         coords = []
-        coords.append(pd.getVertex(i).getState().getX())
-        coords.append(pd.getVertex(i).getState().getY())
+        state = pd.getVertex(i).getState()
+
+        if type(state) == ob.CompoundStateInternal:
+            state = state[0]
+
+        coords.append(state.getX())
+        coords.append(state.getY())
+
         if (problem["is3D"] == True):
-            coords.append(pd.getVertex(i).getState().getZ())
+            coords.append(state.getZ())
         else:
             coords.append(0)
 
