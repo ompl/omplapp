@@ -406,6 +406,9 @@ Problem.prototype.loadConfig = function(data) {
         visualization.updatePose();
         visualization.updateBounds();
     }, 500);
+
+    // Reload planners
+    getPlannerData();
 }
 
 Problem.prototype.showConfigData = function(data) {
@@ -607,9 +610,6 @@ function initialize() {
         visualization.initialize();
         benchmark.initialize();
 
-        // Retrieve the planners:
-        getPlannerData();
-
         // Retrieve robot types
         getRobotTypes();
 
@@ -637,15 +637,15 @@ function initialize() {
             visualization.clearScene();
             if ($("#problems").val() == 'custom'){
                 $("#customProblem").collapse('show');
-                loadPlannerParams("ompl.geometric.KPIECE1");
+
             } else {
                 $("#customProblem").collapse('hide');
 
                 // Retrieve config data for this problem
                 loadRemoteProblem($("#problems").val());
 
-                // Set KPIECE1 as the default planner
-                loadPlannerParams("ompl.geometric.KPIECE1");
+                // Retrieve the planners
+                getPlannerData();
             }
         });
 
@@ -658,6 +658,8 @@ function initialize() {
                 problem.is3D = true;
                 show3DOptions();
             }
+
+            getPlannerData();
         });
 
         // Open the problem config tab
@@ -740,33 +742,48 @@ function initialize() {
  * @return None
  */
 function getPlannerData() {
-    $.get( "planners", function( data ) {
-        problem.availablePlanners = JSON.parse(data);
+    var kind = "";
+    if (problem.control.hasOwnProperty($("[name='robot.type']").val()) == true) {
+        kind = "control";
+    } else {
+        kind = "geometric";
+    }
+    $.ajax({
+        url: "planners/" + kind,
+        type: 'GET',
+        success: function (data, textStatus, jqXHR) {
+            problem.availablePlanners = JSON.parse(data);
 
-        $.each(problem.availablePlanners, function(fullName, data){
-            var shortName = fullName.split(".")[2];
+            // Clear out the old planners
+            $('#planners').html("");
+            $('#addingPlanners').html("");
 
-            // Configure problem page planners
-            $('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
+            // Add the planners to the page
+            $.each(problem.availablePlanners, function(fullName, data){
+                var shortName = fullName.split(".")[2];
 
-            // Benchmarking page available planners
-            $('#addingPlanners').append(
-                $('<li></li>').append(
-                    $('<a></li>')
-                        .attr("class", "dropdown-link")
-                        .text(shortName)
-                        .on("click", function() {
-                            benchmark.addPlanner(fullName);
-                        })
-                )
-            );
+                // Configure problem page planners
+                $('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
 
-        });
-
-        // Set the default planner
-        loadPlannerParams("ompl.geometric.KPIECE1");
-        $('#planners').val("ompl.geometric.KPIECE1");
-
+                // Benchmarking page available planners
+                $('#addingPlanners').append(
+                    $('<li></li>').append(
+                        $('<a></li>')
+                            .attr("class", "dropdown-link")
+                            .text(shortName)
+                            .on("click", function() {
+                                benchmark.addPlanner(fullName);
+                            })
+                    )
+                );
+            });
+            // Set KPIECE1 as the default planner
+            loadPlannerParams("ompl." + kind + ".KPIECE1");
+            $('#planners').val("ompl." + kind + ".KPIECE1");
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR, textStatus, errorThrown);
+        }
     });
 }
 
@@ -785,7 +802,7 @@ function getRobotTypes() {
         $.each(problem.robotTypes, function(type){
             $('#robot_type').append($("<option></option>").attr("value", type).text(problem.robotTypes[type]["name"]));
         });
-
+        getPlannerData();
     });
 }
 

@@ -175,7 +175,6 @@ def format_solution(path, solved):
             # print "\t " + line
             path_list.append(line.strip().split(" "))
 
-        # print path_list
         solution['path'] = path_list;
 
         solution['pathAsMatrix'] = path.printAsMatrix()
@@ -297,8 +296,13 @@ def solve(problem):
 
     # Load the planner
     space_info = ompl_setup.getSpaceInformation()
-    planner = eval("%s(space_info)" % problem['planner'])
-    ompl_setup.setPlanner(planner)
+    if problem['planner'].startswith('ompl.control.Syclop'):
+        decomposition = ompl_setup.allocDecomposition()
+        planner = eval('%s(space_info, decomposition)' % problem['planner'])
+        ompl_setup.setPlanner(planner)
+    else:
+        planner = eval("%s(space_info)" % problem['planner'])
+        ompl_setup.setPlanner(planner)
 
     # Set the optimization objective
     objectives = {'length': 'PathLengthOptimizationObjective',
@@ -495,9 +499,14 @@ def send_problems():
     return json.dumps({"2D" : two_d, "3D" : three_d})
 
 
-@app.route('/planners')
-def planners():
-    return json.dumps(og.planners.plannerMap)
+@app.route('/planners/<kind>')
+def planners(kind):
+    if kind == "control":
+        # Return the control planners and parameters
+        return json.dumps(oc.planners.plannerMap)
+    else:
+        # Return the geometric planners and parameters
+        return json.dumps(og.planners.plannerMap)
 
 @app.route('/offset', methods=["POST"])
 def find_offset():
