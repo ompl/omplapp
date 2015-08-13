@@ -381,6 +381,8 @@ Visualization.prototype.clearScene = function() {
         scene.remove(element);
     });
     exploredStates = []
+
+    step = 0;
 }
 
 
@@ -558,7 +560,7 @@ Visualization.prototype.moveRobot = function() {
                 parseFloat(path[step][5]), parseFloat(path[step][6]));
         } else {
             path_robot.position.set(parseFloat(path[step][0]), parseFloat(path[step][1]), 0);
-            path_robot.rotation.z = RAD_TO_DEG * parseFloat(path[step][2]);
+            path_robot.rotation.z = parseFloat(path[step][2]);
         }
 
         step += 1;
@@ -592,7 +594,7 @@ Visualization.prototype.showRobotPath = function() {
                     parseFloat(path[i][5]), parseFloat(path[i][6]));
             } else {
                 temp_robot.position.set(parseFloat(path[i][0]), parseFloat(path[i][1]), 0);
-                temp_robot.rotation.z = RAD_TO_DEG * parseFloat(path[i][2]);
+                temp_robot.rotation.z = parseFloat(path[i][2]);
             }
             staticPathRobots.push(temp_robot);
             scene.add(temp_robot);
