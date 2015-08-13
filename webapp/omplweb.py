@@ -207,7 +207,7 @@ def setup(problem):
 
     ompl_setup = eval("oa.%s()" % problem["robot.type"])
     problem["is3D"] = isinstance(ompl_setup.getGeometricComponentStateSpace(), ob.SE3StateSpace)
-    if ompl_setup.getAppType() == "GEOMETRIC":
+    if str(ompl_setup.getAppType()) == "GEOMETRIC":
         problem["isGeometric"] = True
     else:
         problem["isGeometric"] = False
@@ -325,31 +325,33 @@ def solve(problem):
 
     # Check for validity
     if solved:
-        path = ompl_setup.getSolutionPath()
-        initialValid = path.check()
-
-        if initialValid:
-            if problem["robot.type"] == "GSE3RigidBodyPlanning" or problem["robot.type"] == "GSE2RigidBodyPlanning":
-                # If initially valid and rigid body, attempt to simplify
+        if problem['isGeometric']:
+            path = ompl_setup.getSolutionPath()
+            initialValid = path.check()
+            if initialValid:
+                # If initially valid, attempt to simplify
                 ompl_setup.simplifySolution()
                 # Get the simplified path
                 simple_path = ompl_setup.getSolutionPath()
                 simplifyValid = simple_path.check()
                 if simplifyValid:
                     path = simple_path;
+                else:
+                    oh.log("Simplified path was invalid.", LogLevel.LOG_ERROR, "omplweb.py", 331)
             else:
-                oh.log("Path simplification skipped due to non rigid body.", LogLevel.LOG_INFO, "omplweb.py", 284)
+                oh.log("Invalid solution path.", LogLevel.LOG_ERROR, "omplweb.py", 331)
+        else:
+            path = ompl_setup.getSolutionPath().asGeometric();
+            oh.log("Path simplification skipped due to non rigid body.", LogLevel.LOG_INFO, "omplweb.py", 284)
 
-            # Interpolate path
-            ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
-            if problem["isGeometric"] and len(path.getStates()) < ns:
-                path.interpolate(ns)
-                if len(path.getStates()) != ns:
-                    oh.log("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.", LogLevel.LOG_WARN, "omplweb.py", 256)
+        # Interpolate path
+        ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
+        if problem["isGeometric"] and len(path.getStates()) < ns:
+            path.interpolate(ns)
+            if len(path.getStates()) != ns:
+                oh.log("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.", LogLevel.LOG_WARN, "omplweb.py", 256)
 
-            solution = format_solution(path, True)
-        else :
-            solution = format_solution(path, False)
+        solution = format_solution(path, True)
     else:
         solution = format_solution(None, False)
 
