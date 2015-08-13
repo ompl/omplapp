@@ -64,6 +64,7 @@ Benchmark.prototype.createDefaultPlannerEntry = function() {
     var name = defaultPlanner['name'];
     var params = defaultPlanner['parameters'];
     var numParams = Object.keys(params).length + 1;
+    var kind = name.split(".")[1];
 
     var planner = "<table class='table planner-table table-condensed' id='" + this.plannerCounter + "'>";
 
@@ -72,7 +73,7 @@ Benchmark.prototype.createDefaultPlannerEntry = function() {
     this.plannerCounter += 1;
 
     for (var param in params) {
-        planner += "<tr><td class='planner-param'>" + problem.availablePlanners[name][param][0] + "</td>";
+        planner += "<tr><td class='planner-param'>" + problem.availablePlanners[kind][name][param][0] + "</td>";
         planner += "<td class='param-value'><input type='text' name='" + name.split(".")[2] + "' class='form-control input-sm' value='" + params[param] + "' id='" + param + "'></td></tr>";
 
     }
@@ -89,8 +90,8 @@ Benchmark.prototype.createDefaultPlannerEntry = function() {
  * @return None
  */
 Benchmark.prototype.addPlanner = function(name) {
-
-    var params = problem.availablePlanners[name]
+    var kind = name.split(".")[1];
+    var params = problem.availablePlanners[kind][name]
     var numParams = Object.keys(params).length + 1;
     var name = name.split(".")[2];
 

@@ -67,7 +67,7 @@ var Problem = function () {
     this.control["GBlimpPlanning"] = "blimp";
     this.control["GQuadrotorPlanning"] = "quadrotor";
 
-    this.robots2D = ["GDynamicCarPlanning", "GKinematicCarPlanning", "GSE2RigidBodyPlanning"]
+    this.robots2D = ["GDynamicCarPlanning", "GKinematicCarPlanning", "GSE2RigidBodyPlanning"];
 
     this.is3D = true;
 
@@ -407,8 +407,12 @@ Problem.prototype.loadConfig = function(data) {
         visualization.updateBounds();
     }, 500);
 
-    // Reload planners
-    getPlannerData();
+    // Load the correct type of planners
+    if (problem.control.hasOwnProperty($("#robot_type").val()) == true) {
+        loadPlanners("control");
+    } else {
+        loadPlanners("geometric");
+    }
 }
 
 Problem.prototype.showConfigData = function(data) {
@@ -433,7 +437,6 @@ Problem.prototype.downloadConfig = function(field) {
 
 // Define the Solution class
 var Solution = function() {
-    // Parse the solution data data
 }
 
 /**
@@ -610,6 +613,9 @@ function initialize() {
         visualization.initialize();
         benchmark.initialize();
 
+        // Retrieve the planners
+        getPlannerData();
+
         // Retrieve robot types
         getRobotTypes();
 
@@ -644,8 +650,12 @@ function initialize() {
                 // Retrieve config data for this problem
                 loadRemoteProblem($("#problems").val());
 
-                // Retrieve the planners
-                getPlannerData();
+                    // Load the correct type of planners
+                    if (problem.control.hasOwnProperty($("#robot_type").val()) == true) {
+                        loadPlanners("control");
+                    } else {
+                        loadPlanners("geometric");
+                    }
             }
         });
 
@@ -659,7 +669,12 @@ function initialize() {
                 show3DOptions();
             }
 
-            getPlannerData();
+            // Load the correct type of planners
+            if (problem.control.hasOwnProperty($("#robot_type").val()) == true) {
+                loadPlanners("control");
+            } else {
+                loadPlanners("geometric");
+            }
         });
 
         // Open the problem config tab
@@ -735,51 +750,18 @@ function initialize() {
 
 
 /**
- * Retrieves planners from the server and loads up the available planners on both
- * the configure problem page and benchmarking page
+ * Retrieves planners from the server
  *
  * @param None
  * @return None
  */
 function getPlannerData() {
-    var kind = "";
-    if (problem.control.hasOwnProperty($("[name='robot.type']").val()) == true) {
-        kind = "control";
-    } else {
-        kind = "geometric";
-    }
     $.ajax({
-        url: "planners/" + kind,
+        url: "planners",
         type: 'GET',
         success: function (data, textStatus, jqXHR) {
             problem.availablePlanners = JSON.parse(data);
 
-            // Clear out the old planners
-            $('#planners').html("");
-            $('#addingPlanners').html("");
-
-            // Add the planners to the page
-            $.each(problem.availablePlanners, function(fullName, data){
-                var shortName = fullName.split(".")[2];
-
-                // Configure problem page planners
-                $('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
-
-                // Benchmarking page available planners
-                $('#addingPlanners').append(
-                    $('<li></li>').append(
-                        $('<a></li>')
-                            .attr("class", "dropdown-link")
-                            .text(shortName)
-                            .on("click", function() {
-                                benchmark.addPlanner(fullName);
-                            })
-                    )
-                );
-            });
-            // Set KPIECE1 as the default planner
-            loadPlannerParams("ompl." + kind + ".KPIECE1");
-            $('#planners').val("ompl." + kind + ".KPIECE1");
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown);
@@ -802,7 +784,12 @@ function getRobotTypes() {
         $.each(problem.robotTypes, function(type){
             $('#robot_type').append($("<option></option>").attr("value", type).text(problem.robotTypes[type]["name"]));
         });
-        getPlannerData();
+        // Load the correct type of planners
+        if (problem.control.hasOwnProperty($("#robot_type").val()) == true) {
+            loadPlanners("control");
+        } else {
+            loadPlanners("geometric");
+        }
     });
 }
 
@@ -841,7 +828,7 @@ function getProblems() {
  */
 function getSessionID(){
     $.ajax({
-        url: 'session',
+        url: "session",
         type: 'GET',
         success: function (data, textStatus, jqXHR) {
             console.log("Got session id: " + data);
@@ -854,6 +841,42 @@ function getSessionID(){
     });
 }
 
+/**
+ * Loads up the available planners on both the configure problem page and
+ * benchmarking page.
+ *
+ * @param {String} kind Either 'geometric' or 'control', indicating which class of planners to load
+ * @return None
+ */
+function loadPlanners(kind) {
+    // Clear out the old planners
+    $('#planners').html("");
+    $('#addingPlanners').html("");
+
+    // Add the planners to the page
+    $.each(problem.availablePlanners[kind], function(fullName, data){
+        var shortName = fullName.split(".")[2];
+
+        // Configure problem page planners
+        $('#planners').append($("<option></option>").attr("value", fullName).text(shortName));
+
+        // Benchmarking page available planners
+        $('#addingPlanners').append(
+            $('<li></li>').append(
+                $('<a></li>')
+                    .attr("class", "dropdown-link")
+                    .text(shortName)
+                    .on("click", function() {
+                        benchmark.addPlanner(fullName);
+                    })
+            )
+        );
+    });
+    // Set KPIECE1 as the default planner
+    loadPlannerParams("ompl." + kind + ".KPIECE1");
+    $('#planners').val("ompl." + kind + ".KPIECE1");
+}
+
 
 /**
  * Given that the planners have been retrieved from the server, creates the
@@ -862,13 +885,15 @@ function getSessionID(){
  * @param {string} planner_name The planner to setup parameters for.
  * @return None
  */
-function loadPlannerParams(planner_name) {
-    if (problem.availablePlanners != null) {
+function loadPlannerParams(plannerName) {
+    var kind = plannerName.split(".")[1];
+    var currentPlanners = problem.availablePlanners[kind]
+    if (currentPlanners != null) {
         var plannerConfigHTML = "";
         plannerConfigHTML += "<form name='param_form'><table class='table'><caption>";
-        plannerConfigHTML += planner_name.split(".")[2];
+        plannerConfigHTML += plannerName.split(".")[2];
         plannerConfigHTML += " Options</caption><tbody>";
-        params = problem.availablePlanners[planner_name]
+        params = currentPlanners[plannerName]
         for (var key in params) {
             if (params.hasOwnProperty(key)) {
                 plannerConfigHTML += "<tr><td>";

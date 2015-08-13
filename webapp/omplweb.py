@@ -499,14 +499,13 @@ def send_problems():
     return json.dumps({"2D" : two_d, "3D" : three_d})
 
 
-@app.route('/planners/<kind>')
-def planners(kind):
-    if kind == "control":
-        # Return the control planners and parameters
-        return json.dumps(oc.planners.plannerMap)
-    else:
-        # Return the geometric planners and parameters
-        return json.dumps(og.planners.plannerMap)
+@app.route('/planners')
+def planners():
+    # Return the geometric and control based planners
+    planners = {}
+    planners['geometric'] = og.planners.plannerMap
+    planners['control'] = oc.planners.plannerMap
+    return json.dumps(planners)
 
 @app.route('/offset', methods=["POST"])
 def find_offset():
@@ -658,7 +657,6 @@ def init_benchmark():
 
 
 if __name__ == "__main__":
-    app.debug = True
     app.run()
 
 
