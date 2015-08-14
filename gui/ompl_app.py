@@ -44,7 +44,7 @@ except:
     import configparser as ConfigParser
 
 sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
-from ompl.util import OutputHandler, useOutputHandler, LogLevel
+from ompl.util import OutputHandler, useOutputHandler, LogLevel, OMPL_DEBUG, OMPL_INFORM, OMPL_WARN, OMPL_ERROR
 from ompl import base as ob
 from ompl import geometric as og
 from ompl import control as oc
@@ -145,19 +145,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.oh = LogOutputHandler(self.logWindow.logView)
         useOutputHandler(self.oh)
 
-    # methods for sending messages to the console output window
-    def msgDebug(self, text):
-        c = inspect.currentframe()
-        self.oh.log(text, LogLevel.LOG_DEBUG, c.f_code.co_filename, c.f_lineno)
-    def msgInform(self, text):
-        c = inspect.currentframe()
-        self.oh.log(text, LogLevel.LOG_INFO, c.f_code.co_filename, c.f_lineno)
-    def msgWarn(self, text):
-        c = inspect.currentframe()
-        self.oh.log(text, LogLevel.LOG_WARN, c.f_code.co_filename, c.f_lineno)
-    def msgError(self, text):
-        c = inspect.currentframe()
-        self.oh.log(text, LogLevel.LOG_ERROR, c.f_code.co_filename, c.f_lineno)
+    # # methods for sending messages to the console output window
+    # def OMPL_DEBUG(self, text):
+    #     c = inspect.currentframe()
+    #     self.oh.log(text, LogLevel.LOG_DEBUG, c.f_code.co_filename, c.f_lineno)
+    # def OMPL_INFORM(self, text):
+    #     c = inspect.currentframe()
+    #     self.oh.log(text, LogLevel.LOG_INFO, c.f_code.co_filename, c.f_lineno)
+    # def OMPL_WARN(self, text):
+    #     c = inspect.currentframe()
+    #     self.oh.log(text, LogLevel.LOG_WARN, c.f_code.co_filename, c.f_lineno)
+    # def OMPL_Error(self, text):
+    #     c = inspect.currentframe()
+    #     self.oh.log(text, LogLevel.LOG_ERROR, c.f_code.co_filename, c.f_lineno)
 
     def openEnvironment(self):
         fname = getOpenFileNameAsAstring(self, "Open Environment")
@@ -192,7 +192,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def openConfig(self):
         fname = getOpenFileNameAsAstring(self, "Open Problem Configuration", "", "*.cfg")
         if len(fname)>0:
-            self.msgInform("Loading " + fname)
+            OMPL_INFORM("Loading " + fname)
             if (sys.version_info > (3, 0)):
                 config = ConfigParser.ConfigParser(strict = False)
             else:
@@ -364,7 +364,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 config.set("problem", "volume.max.y", str(b.high[1]))
             with open(fname, 'w') as configfile:
                 config.write(configfile)
-            self.msgInform("Saved " + fname)
+            OMPL_INFORM("Saved " + fname)
 
     def _arrayToSE2State(self, a):
         st = ob.State(self.omplSetup.getGeometricComponentStateSpace())
@@ -397,7 +397,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.path = [self._arrayToSE3State(s) for s in path]
             else:
                 # unknown state type
-                self.msgError("Wrong state format")
+                OMPL_Error("Wrong state format")
                 raise ValueError
             self.mainWidget.glViewer.setSolutionPath(self.path)
             # setStart/GoalPose can change bounds, so save and restore them
@@ -439,13 +439,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 pg.interpolate()
                 self.setSolutionPath(pg)
             else:
-                self.msgError("Unable to generate random valid path")
+                OMPL_Error("Unable to generate random valid path")
         else:
             pc = oc.PathControl(self.omplSetup.getSpaceInformation())
             if pc.randomValid(100):
                 self.setSolutionPath(pc.asGeometric())
             else:
-                self.msgError("Unable to generate random valid path")
+                OMPL_Error("Unable to generate random valid path")
 
     def showLogWindow(self):
         if self.logWindow.isHidden():
@@ -508,7 +508,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainWidget.problemWidget.poses.setCurrentIndex(0 if self.is3D else 1)
 
     def setTimeLimit(self, value):
-        self.msgDebug('Changing time limit from %g to %g' % (self.timeLimit, value))
+        OMPL_DEBUG('Changing time limit from %g to %g' % (self.timeLimit, value))
         self.timeLimit = value
 
     def configureApp(self):
@@ -543,7 +543,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def solve(self):
         self.configureApp()
-        self.msgDebug(str(self.omplSetup))
+        OMPL_DEBUG(str(self.omplSetup))
 
         solved = self.omplSetup.solve(self.timeLimit)
 
@@ -559,24 +559,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 path = self.omplSetup.getSolutionPath()
                 initialValid = path.check()
                 if initialValid == False:
-                    self.msgError("Path reported by planner seems to be invalid!")
+                    OMPL_Error("Path reported by planner seems to be invalid!")
                 self.omplSetup.simplifySolution()
                 path = self.omplSetup.getSolutionPath()
                 if initialValid == True and path.check() == False:
-                    self.msgError("Simplified path seems to be invalid!")
+                    OMPL_Error("Simplified path seems to be invalid!")
             else:
                 path = self.omplSetup.getSolutionPath().asGeometric()
                 if path.check() == False:
-                    self.msgError("Path reported by planner seems to be invalid!")
+                    OMPL_Error("Path reported by planner seems to be invalid!")
 
             ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateSpace().getMaximumExtent()))
             if self.isGeometric and len(path.getStates()) < ns:
-                self.msgDebug("Interpolating solution path to " + str(ns) + " states")
+                OMPL_DEBUG("Interpolating solution path to " + str(ns) + " states")
                 path.interpolate(ns)
                 if len(path.getStates()) != ns:
-                    self.msgError("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states!")
+                    OMPL_Error("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states!")
 #            if path.check() == False:
-#                self.msgError("Something wicked happened to the path during interpolation")
+#                OMPL_Error("Something wicked happened to the path during interpolation")
             self.setSolutionPath(path)
 
     def clear(self, deepClean=False):
