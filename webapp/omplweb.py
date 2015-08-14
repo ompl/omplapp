@@ -418,7 +418,11 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
 
     # Run the benchmark, produces .log file
     try:
-        subprocess.call(["ompl_benchmark", cfg_loc + ".cfg"])
+        output = subprocess.check_output(["ompl_benchmark " + cfg_loc + ".cfg",
+            shell=True,
+            stderr=subprocess.STDOUT,
+            env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + os.pathsep + os.environ["PATH"]))
+
         # Convert .log into database
         dbfile = join(ompl_sessions_dir, session_id, db_filename)
         logfile = []
@@ -429,6 +433,9 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
         if preferences["show_results"] == "1":
             url = "http://127.0.0.1:" + preferences["plannerarena_port"] + "/?user=" + session_id + "&job=" + db_filename
             webbrowser.open(url)
+    except subprocess.CalledProcessError as cp:
+        print('returncode=', cp.returncode)
+        print('cmd=', cp.cmd)
     except:
         oh.log("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'", LogLevel.LOG_ERROR, "webapp.py", 405)
 
