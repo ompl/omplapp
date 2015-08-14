@@ -418,10 +418,10 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
 
     # Run the benchmark, produces .log file
     try:
-        output = subprocess.check_output(["ompl_benchmark " + cfg_loc + ".cfg",
+        output = subprocess.check_output("ompl_benchmark " + cfg_loc + ".cfg",
             shell=True,
             stderr=subprocess.STDOUT,
-            env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + os.pathsep + os.environ["PATH"]))
+            env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + os.environ["PATH"]))
 
         # Convert .log into database
         dbfile = join(ompl_sessions_dir, session_id, db_filename)
