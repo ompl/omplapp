@@ -145,20 +145,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.oh = LogOutputHandler(self.logWindow.logView)
         useOutputHandler(self.oh)
 
-    # # methods for sending messages to the console output window
-    # def OMPL_DEBUG(self, text):
-    #     c = inspect.currentframe()
-    #     self.oh.log(text, LogLevel.LOG_DEBUG, c.f_code.co_filename, c.f_lineno)
-    # def OMPL_INFORM(self, text):
-    #     c = inspect.currentframe()
-    #     self.oh.log(text, LogLevel.LOG_INFO, c.f_code.co_filename, c.f_lineno)
-    # def OMPL_WARN(self, text):
-    #     c = inspect.currentframe()
-    #     self.oh.log(text, LogLevel.LOG_WARN, c.f_code.co_filename, c.f_lineno)
-    # def OMPL_Error(self, text):
-    #     c = inspect.currentframe()
-    #     self.oh.log(text, LogLevel.LOG_ERROR, c.f_code.co_filename, c.f_lineno)
-
     def openEnvironment(self):
         fname = getOpenFileNameAsAstring(self, "Open Environment")
         if len(fname)>0 and fname!=self.environmentFile:
