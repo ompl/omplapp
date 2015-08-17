@@ -28,7 +28,7 @@ try:
     from ompl import geometric as og
     from ompl import control as oc
     from ompl import app as oa
-    from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
+    from ompl.util import OMPL_DEBUG, OMPL_INFORM, OMPL_WARN, OMPL_ERROR
     from ompl_benchmark_statistics import readBenchmarkLog
 except:
     sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
@@ -37,7 +37,7 @@ except:
     from ompl import geometric as og
     from ompl import control as oc
     from ompl import app as oa
-    from ompl.util import getLogLevel, setLogLevel, getOutputHandler, LogLevel, OutputHandler
+    from ompl.util import OMPL_DEBUG, OMPL_INFORM, OMPL_WARN, OMPL_ERROR
     sys.path.insert(0, join(ompl_app_root, 'ompl/scripts'))
     from ompl_benchmark_statistics import readBenchmarkLog
 
@@ -49,22 +49,7 @@ from celery import Celery
 from celery.result import AsyncResult
 
 
-class Logger(OutputHandler):
-    """
-    Handles logging at different levels, extends OutputHandlerSTD.
-    """
-
-    def __init__(self):
-        self.out = getOutputHandler()
-        setLogLevel(LogLevel.LOG_DEBUG)
-
-
-    def log(self, text, level, filename, line):
-        if level >= getLogLevel():
-            self.out.log(text, level, filename, line)
-
 def initialize():
-    oh.log("Log level is set to: %d" % getLogLevel(), LogLevel.LOG_INFO, "omplweb.py", 75)
     ompl.initializePlannerLists()
 
     if (sys.version_info > (3, 0)):
@@ -97,8 +82,6 @@ def make_celery():
     celery = Celery(app.name, broker=broker_url, backend=backend_url)
     return celery
 
-# Create logger
-oh = Logger()
 
 # Load preferences
 preferences = initialize()
@@ -203,7 +186,7 @@ def get_offset(env_mesh, robot_mesh):
 
 
 def setup(problem):
-    oh.log("Robot type is: %s" % str(problem["robot.type"]), LogLevel.LOG_INFO, "omplweb.py", 172)
+    OMPL_INFORM("Robot type is: %s" % str(problem["robot.type"]))
 
     ompl_setup = eval("oa.%s()" % problem["robot.type"])
     problem["is3D"] = isinstance(ompl_setup.getGeometricComponentStateSpace(), ob.SE3StateSpace)
@@ -337,19 +320,19 @@ def solve(problem):
                 if simplifyValid:
                     path = simple_path;
                 else:
-                    oh.log("Simplified path was invalid.", LogLevel.LOG_ERROR, "omplweb.py", 331)
+                    OMPL_ERROR("Simplified path was invalid.")
             else:
-                oh.log("Invalid solution path.", LogLevel.LOG_ERROR, "omplweb.py", 331)
+                OMPL_ERROR("Invalid solution path.")
         else:
             path = ompl_setup.getSolutionPath().asGeometric();
-            oh.log("Path simplification skipped due to non rigid body.", LogLevel.LOG_INFO, "omplweb.py", 284)
+            OMPL_INFORM("Path simplification skipped due to non rigid body.")
 
         # Interpolate path
         ns = int(100.0 * float(path.length()) / float(ompl_setup.getStateSpace().getMaximumExtent()))
         if problem["isGeometric"] and len(path.getStates()) < ns:
             path.interpolate(ns)
             if len(path.getStates()) != ns:
-                oh.log("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.", LogLevel.LOG_WARN, "omplweb.py", 256)
+                OMPL_WARN("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states.")
 
         solution = format_solution(path, True)
     else:
@@ -392,7 +375,7 @@ def solve_multiple(runs, problem):
     solutions = []
 
     for i in range(0, runs):
-        oh.log("Solving run number: {}".format(i), LogLevel.LOG_INFO, "omplweb.py", 276)
+        OMPL_INFORM("Solving run number: {}".format(i))
         solutions.append(solve(problem))
 
     result['solutions'] = solutions
@@ -437,7 +420,7 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
         print('returncode=', cp.returncode)
         print('cmd=', cp.cmd)
     except:
-        oh.log("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'", LogLevel.LOG_ERROR, "webapp.py", 405)
+        LOG_ERROR("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'")
 
 
 
@@ -581,11 +564,11 @@ def upload():
     runs = int(problem['runs'])
     if runs > 1:
         solve_task = solve_multiple.delay(runs, problem)
-        oh.log("Started solving multiple runs with task id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
+        OMPL_DEBUG("Started solving multiple runs with task id: " + solve_task.task_id)
         return str(solve_task.task_id)
     else:
         solve_task = solve.delay(problem)
-        oh.log("Started solving task with id: " + solve_task.task_id, LogLevel.LOG_DEBUG, "webapp.py", 354)
+        OMPL_DEBUG("Started solving task with id: " + solve_task.task_id)
         return str(solve_task.task_id)
 
 @app.route('/poll/<task_id>', methods=['POST'])
