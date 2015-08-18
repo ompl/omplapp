@@ -89,7 +89,7 @@ def make_celery():
     broker_url = conf[broker_name]["broker"]
     backend_url = conf[broker_name]["backend"]
 
-    if (preferences.has_key("broker_port")):
+    if ("broker_port" in preferences):
         # If a port is specified, use it. Otherwise the default is automatically used
         broker_url += ":" + preferences["broker_port"]
         backend_url += ":" + preferences["broker_port"]
@@ -549,7 +549,6 @@ def request_problem():
     cfg_filename = problem_name + ".cfg"
 
     cfg_file_loc = join(problem_files, dimension, cfg_filename)
-    print cfg_file_loc
     cfg_data = parse_cfg(cfg_file_loc)
 
     if (sys.version_info > (3, 0)):
