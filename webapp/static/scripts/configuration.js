@@ -814,7 +814,9 @@ function getProblems() {
                 problem.dimensions[name] = dimension;
             }
         });
-
+        // Load up "cubicles" as the default problem
+        $('#problems').val("cubicles");
+        loadRemoteProblem("cubicles");
     });
 }
 
