@@ -391,6 +391,12 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
     cfg_loc - the location of the .cfg file to be benchmarked
     """
 
+    session_path = join(ompl_sessions_dir, session_id)
+    db_filepath = join(ompl_sessions_dir, session_id, db_filename)
+    # Adjust file permissions
+    os.chmod(session_path, 02755)
+    os.chmod(db_filepath, 00664)
+
     if problem_name != "custom":
         robot_file = join(ompl_sessions_dir, session_id, basename(robot_loc));
         env_file = join(ompl_sessions_dir, session_id, basename(env_loc));
@@ -420,7 +426,7 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
         print('returncode=', cp.returncode)
         print('cmd=', cp.cmd)
     except:
-        LOG_ERROR("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'")
+        OMPL_ERROR("Unable to call 'ompl_benchmark'. Please ensure that it is in the PATH, or add it with: 'export PATH=~/omplapp/build/Release/bin:${PATH}'")
 
 
 
