@@ -72,7 +72,7 @@ It is easiest to install OMPL.app through [MacPorts], a package manager for OS X
 
       sudo port sync \; install ompl +app
 
-  This is it. You are done. The GUI is invoked from the command line by \c /opt/local/bin/ompl_app. Demo programs and input files for the GUI can be found in \c /opt/local/share/ompl.
+  This is it. You are done. The GUI is invoked from the command line by `/opt/local/bin/ompl_app`. Demo programs and input files for the GUI can be found in `/opt/local/share/ompl`.
 - If you downloaded the source distribution of OMPL.app, then you need to install the Boost, CMake, and optional dependencies. If you have MacPorts installed, type the following:
 
       sudo port sync
