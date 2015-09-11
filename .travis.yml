@@ -31,7 +31,7 @@ install:
       brew update;
       brew tap homebrew/science;
       for pkg in boost ode eigen libccd assimp; do
-        brew outdated ${pkg} || brew upgrade ${pkg}
+        brew outdated ${pkg} || brew upgrade ${pkg};
       done;
     fi
 
