@@ -28,7 +28,8 @@ addons:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then
-      brew install ode eigen;
+      brew tap homebrew/science;
+      brew install ode eigen libccd assimp;
     fi
 
 script:
