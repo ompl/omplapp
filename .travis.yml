@@ -28,8 +28,11 @@ addons:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then
+      brew update;
       brew tap homebrew/science;
-      brew install ode eigen libccd assimp;
+      for pkg in boost ode eigen libccd assimp; do
+        brew outdated ${pkg} || brew upgrade ${pkg}
+      done;
     fi
 
 script:
