@@ -30,9 +30,8 @@ install:
   - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then
       brew update;
       brew tap homebrew/science;
-      for pkg in boost ode eigen libccd assimp; do
-        brew outdated ${pkg} || brew upgrade ${pkg};
-      done;
+      brew outdated boost || brew upgrade boost;
+      brew install ode eigen libccd assimp;
     fi
 
 script:
