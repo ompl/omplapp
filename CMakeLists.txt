@@ -252,9 +252,10 @@ endif()
 
 
 if (NOT MSVC)
+    target_link_flags(ompl ompl_app_base ompl_app)
     set(PKG_NAME "ompl")
     set(PKG_DESC "The Open Motion Planning Library")
-    set(PKG_OMPL_LIBS "-lompl -lompl_app")
+    set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
     set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
     configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
     install(FILES "${pkg_conf_file}"
