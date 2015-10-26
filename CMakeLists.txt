@@ -215,7 +215,7 @@ if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
 endif()
 
 # extra menu option for OMPLapp documentation:
-set(OMPLAPP_GUI "<li><a href=\"gui.html\">OMPL.app GUI</a></li>")
+set(OMPLAPP_MENU "<li><a href=\"gui.html\">OMPL.app GUI</a></li><li><a href=\"webapp.html\">OMPL web app</a>")
 add_subdirectory(ompl/doc)
 add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/src)
@@ -276,6 +276,10 @@ if (NOT MSVC)
             DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
             COMPONENT ompl)
     endif()
+
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
+      DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+      COMPONENT ompl)
 endif()
 
 # uninstall target
