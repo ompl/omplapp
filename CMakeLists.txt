@@ -234,6 +234,19 @@ install(DIRECTORY resources
     COMPONENT omplapp
     PATTERN ".DS_Store" EXCLUDE)
 
+install(DIRECTORY webapp
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+    COMPONENT omplapp
+    PATTERN ".DS_Store" EXCLUDE)
+find_python_module(flask)
+find_python_module(celery)
+find_program(CELERY celery)
+if(PY_FLASK AND PY_CELERY AND CELERY)
+    install(PROGRAMS webapp/ompl_webapp
+        DESTINATION bin
+        RENAME ompl_webapp${OMPL_INSTALL_SUFFIX})
+endif()
+
 # HACK ALERT: just in case the version of OpenDE used for libdrawstuff is used for libompl
 if(TARGET drawstuff)
     add_dependencies(ompl drawstuff)

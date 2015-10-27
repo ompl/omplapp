@@ -30,8 +30,7 @@ It is possible to run the [OMPL web app](http://omplapp.kavrakilab.org) locally,
 
 4. Run the OMPL web app:
 
-        cd omplapp/webapp
-        celery worker -A omplweb.celery --loglevel=info
+        ompl_webapp
 
 
 # JavaScript Libraries Used by the OMPL Web App {#webapp_licenses}

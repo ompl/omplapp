@@ -1,0 +1,23 @@
+#/bin/sh
+trap kill_celery INT
+
+function kill_celery() {
+	killall celery
+}
+
+
+cd `dirname $0`
+if [[ ! -e omplweb.py && -e ../ompl/webapp ]]; then
+    cd ../ompl/webapp
+else
+	echo "Error: cannot find omplweb.py"
+fi
+
+celerystatus=`celery status -q -C -A omplweb.celery 2>&1 | cut -f2 -d " "`
+if [[ ! ${celerystatus} == "OK" ]]; then
+    celery worker -A omplweb.celery --loglevel=info 2>&1 >& /tmp/omplweb-celery.log &
+    python omplweb.py
+else
+    echo "Celery is already running an omplweb job queue."
+    echo "Type \"killall celery\" and try again."
+fi
