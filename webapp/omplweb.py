@@ -656,8 +656,19 @@ def init_benchmark():
 
     return db_filename
 
+@celery.task
+def test_broker():
+    print("Celery broker is running...")
 
 if __name__ == "__main__":
+    try:
+        result = test_broker.delay()
+    except:
+        broker_url = celery.conf['BROKER_URL']
+        broker = "Redis" if broker_url.startswith('redis') else "RabbitMQ"
+        print("""The omplweb_app is configured to use a %s server for handling
+background jobs, but this server is not running. Exiting...""" % broker)
+        sys.exit(-1)
     app.run()
 
 

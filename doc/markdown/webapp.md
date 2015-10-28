@@ -32,6 +32,12 @@ It is possible to run the [OMPL web app](http://omplapp.kavrakilab.org) locally,
 
         ompl_webapp
 
+On OS X, the following steps get the Web App can be installed and launched using [Macports](http://macPorts.org) with these commands:
+
+    sudo port install ompl +app
+    sudo port load redis
+    ompl_webapp
+
 
 # JavaScript Libraries Used by the OMPL Web App {#webapp_licenses}
 
