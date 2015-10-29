@@ -9,11 +9,12 @@ function kill_celery() {
 
 cd `dirname $0`
 if [[ ! -e omplweb.py ]]; then
-    if [[ -e ../ompl/webapp/omplweb.py ]]; then
+    if [[ -e ../share/ompl/webapp/omplweb.py ]]; then
         # assume we are in ${prefix}/bin, cd to ${prefix}/share/ompl/webapp
         cd ../share/ompl/webapp
     else
         echo "Error: cannot find omplweb.py"
+        exit -1
     fi
 fi
 
@@ -22,7 +23,7 @@ if [[ ! ${celerystatus} == "OK" ]]; then
     echo "If you want to use the benchmarking facilities of ompl_webapp,"
     echo "run the \"plannerarena\" command as well."
     celery worker -A omplweb.celery --loglevel=info 2>&1 >& /tmp/omplweb-celery.log &
-    ./omplweb.py
+    python ./omplweb.py
     kill_celery
 else
     echo "Celery is already running an omplweb job queue."

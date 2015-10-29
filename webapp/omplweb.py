@@ -17,10 +17,13 @@ except:
 
 # Constants
 ompl_app_root = dirname(dirname(abspath(__file__)))
-ompl_web_root = join(dirname(dirname(abspath(__file__))), "webapp")
-ompl_sessions_dir = join(ompl_app_root, 'webapp/static/sessions')
-problem_files = join(ompl_app_root, 'webapp/static/problem_files')
+ompl_web_root = join(ompl_app_root, "webapp")
+ompl_sessions_dir = join(ompl_web_root, 'static/sessions')
+problem_files = join(ompl_web_root, 'static/problem_files')
+prefix = dirname(dirname(ompl_app_root))
 
+if exists(join(prefix, 'bin/ompl_benchmark_statistics.py')):
+    sys.path.insert(0, join(prefix, 'bin'))
 
 try:
     import ompl
@@ -58,7 +61,7 @@ def initialize():
         config = ConfigParser.ConfigParser()
 
     conf_file_loc = None
-    for loc in [join(ompl_app_root, join("ompl", "ompl.conf")), "/usr/share/ompl/ompl.conf"]:
+    for loc in [join(ompl_app_root, join("ompl", "ompl.conf")), join(prefix, "share/ompl/ompl.conf")]:
         if exists(loc):
             conf_file_loc = loc
             break
