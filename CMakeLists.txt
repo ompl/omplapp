@@ -26,7 +26,11 @@ if(MSVC OR MSVC90 OR MSVC10)
     set(MSVC ON)
 endif (MSVC OR MSVC90 OR MSVC10)
 
+# add "${prefix}/share/cmake/Modules", which is where Eigen3's module is in MacPorts.
+get_filename_component(CMAKE_ROOT_DIR "${CMAKE_ROOT}" DIRECTORY)
 set(CMAKE_MODULE_PATH
+    "${CMAKE_MODULE_PATH}"
+    "${CMAKE_ROOT_DIR}/cmake/Modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
     "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
 include(GNUInstallDirs)
@@ -177,7 +181,7 @@ endif()
 
 if (EIGEN3_FOUND)
     set(OMPL_HAVE_EIGEN3 1)
-    include_directories("${EIGEN3_INCLUDE_DIRS}")
+    include_directories("${EIGEN3_INCLUDE_DIR}")
 endif()
 
 if (FLANN_FOUND)
