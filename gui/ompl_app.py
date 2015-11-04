@@ -1166,7 +1166,7 @@ class Pose2DBox(QtWidgets.QGroupBox):
         self.posy.setRange(-1000, 1000)
         self.posy.setSingleStep(1)
         self.rot = QtWidgets.QDoubleSpinBox()
-        self.rot.setRange(-360,360)
+        self.rot.setRange(-180,179) # SO2StateSpace is parameterized from [-pi,pi)
         self.rot.setSingleStep(1)
 
         layout = QtWidgets.QGridLayout()
