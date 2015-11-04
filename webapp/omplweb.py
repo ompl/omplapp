@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from os.path import dirname, abspath, join, basename
+from os.path import dirname, abspath, join, basename, exists
 import json
 import subprocess
 import sys
@@ -17,10 +17,13 @@ except:
 
 # Constants
 ompl_app_root = dirname(dirname(abspath(__file__)))
-ompl_web_root = join(dirname(dirname(abspath(__file__))), "webapp")
-ompl_sessions_dir = join(ompl_app_root, 'webapp/static/sessions')
-problem_files = join(ompl_app_root, 'webapp/static/problem_files')
+ompl_web_root = join(ompl_app_root, "webapp")
+ompl_sessions_dir = join(ompl_web_root, 'static/sessions')
+problem_files = join(ompl_web_root, 'static/problem_files')
+prefix = dirname(dirname(ompl_app_root))
 
+if exists(join(prefix, 'bin/ompl_benchmark_statistics.py')):
+    sys.path.insert(0, join(prefix, 'bin'))
 
 try:
     import ompl
@@ -57,7 +60,11 @@ def initialize():
     else:
         config = ConfigParser.ConfigParser()
 
-    conf_file_loc = join(ompl_app_root, "ompl.conf")
+    conf_file_loc = None
+    for loc in [join(ompl_app_root, join("ompl", "ompl.conf")), join(prefix, "share/ompl/ompl.conf")]:
+        if exists(loc):
+            conf_file_loc = loc
+            break
     conf_file = open(conf_file_loc, "r")
     config.readfp(conf_file)
     preferences = config._sections["webapp"]
@@ -394,8 +401,8 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
     session_path = join(ompl_sessions_dir, session_id)
     db_filepath = join(ompl_sessions_dir, session_id, db_filename)
     # Adjust file permissions
-    os.chmod(session_path, 02755)
-    os.chmod(db_filepath, 00664)
+    os.chmod(session_path, 0o2755)
+    os.chmod(db_filepath, 0o0664)
 
     if problem_name != "custom":
         robot_file = join(ompl_sessions_dir, session_id, basename(robot_loc));
@@ -410,7 +417,7 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
         output = subprocess.check_output("ompl_benchmark " + cfg_loc + ".cfg",
             shell=True,
             stderr=subprocess.STDOUT,
-            env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + os.environ["PATH"]))
+            env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + ":" + os.environ["PATH"]))
 
         # Convert .log into database
         dbfile = join(ompl_sessions_dir, session_id, db_filename)
@@ -652,8 +659,19 @@ def init_benchmark():
 
     return db_filename
 
+@celery.task
+def test_broker():
+    print("Celery broker is running...")
 
 if __name__ == "__main__":
+    try:
+        result = test_broker.delay()
+    except:
+        broker_url = celery.conf['BROKER_URL']
+        broker = "Redis" if broker_url.startswith('redis') else "RabbitMQ"
+        print("""The omplweb_app is configured to use a %s server for handling
+background jobs, but this server is not running. Exiting...""" % broker)
+        sys.exit(-1)
     app.run()
 
 
