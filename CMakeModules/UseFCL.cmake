@@ -4,7 +4,7 @@ find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(CCD ccd>=2.0)
     if(CCD_LIBRARIES AND NOT CCD_INCLUDE_DIRS)
-        set(CCD_INCLUDE_DIRS "/usr")
+        set(CCD_INCLUDE_DIRS "/usr/include")
     endif()
     pkg_check_modules(FCL fcl>=0.3.1)
 endif()
@@ -48,16 +48,14 @@ if(NOT (FCL_FOUND AND FCL_LIBRARIES AND FCL_INCLUDE_DIRS))
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
         URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.3.1.zip"
         URL_MD5 "3b36420e54998c674b8dba3a5bbaf3f6"
-        CMAKE_COMMAND env
         CMAKE_ARGS
-            "PKG_CONFIG_PATH=${CCD_LIBRARY_DIRS}/pkgconfig"
-            "${CMAKE_COMMAND}"
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
             "-DCMAKE_BUILD_TYPE=Release"
             "-DCMAKE_CXX_FLAGS='-fPIC -I${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include'"
             "-DFCL_STATIC_LIBRARY=ON"
             "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIRS}"
-            "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIRS}")
+            "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIRS}"
+            "PKG_CONFIG_PATH=${CCD_LIBRARY_DIRS}/pkgconfig")
 
     # Make sure ccd exists before building fcl.
     add_dependencies(fcl ccd)
