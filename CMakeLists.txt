@@ -272,36 +272,35 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
 endif()
 
 
-if (NOT MSVC)
-    target_link_flags(ompl ompl_app_base ompl_app)
-    set(PKG_NAME "ompl")
-    set(PKG_DESC "The Open Motion Planning Library")
-    set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
-    set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
-    configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
-    install(FILES "${pkg_conf_file}"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
-        COMPONENT ompl
-        RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
+target_link_flags(ompl ompl_app_base ompl_app)
+set(PKG_NAME "ompl")
+set(PKG_DESC "The Open Motion Planning Library")
+set(PKG_EXTERNAL_DEPS "${ompl_PKG_DEPS}")
+set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
+set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
+configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
+install(FILES "${pkg_conf_file}"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+    COMPONENT ompl
+    RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
 
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/markdown/FindOMPL.cmake"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/markdown/FindOMPL.cmake"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+    COMPONENT ompl
+    RENAME ompl-config.cmake)
+if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
+    include(WriteBasicConfigVersionFile)
+    write_basic_config_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
+        VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
-        COMPONENT ompl
-        RENAME ompl-config.cmake)
-    if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
-        include(WriteBasicConfigVersionFile)
-        write_basic_config_version_file(
-            "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
-            VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
-        install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
-            DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
-            COMPONENT ompl)
-    endif()
-
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
-      DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
-      COMPONENT ompl)
+        COMPONENT ompl)
 endif()
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
+  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+  COMPONENT ompl)
 
 # uninstall target
 configure_file(
@@ -316,8 +315,8 @@ if (OMPL_VERSIONED_INSTALL)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh.in"
         "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh" @ONLY)
     execute_process(COMMAND
-      "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh"
-      "omplapp" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh"
+        "omplapp" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/.symlinks/" DESTINATION .)
     # script to uninstall sym links
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh.in"
