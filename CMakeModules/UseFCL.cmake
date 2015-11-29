@@ -51,7 +51,7 @@ if(NOT (FCL_FOUND AND FCL_LIBRARIES AND FCL_INCLUDE_DIRS))
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
             "-DCMAKE_BUILD_TYPE=Release"
-            "-DCMAKE_CXX_FLAGS='-fPIC -I${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include'"
+            "-DCMAKE_CXX_FLAGS='-fPIC -I${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include -DFCL_DEPRECATED_HH -DFCL_DEPRECATED'"
             "-DFCL_STATIC_LIBRARY=ON"
             "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIRS}"
             "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIRS}"
