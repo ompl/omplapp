@@ -46,12 +46,12 @@ if(NOT (FCL_FOUND AND FCL_LIBRARIES AND FCL_INCLUDE_DIRS))
     # download and build FCL
     ExternalProject_Add(fcl
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.3.1.zip"
-        URL_MD5 "3b36420e54998c674b8dba3a5bbaf3f6"
+        URL "http://downloads.sourceforge.net/project/ompl/dependencies/fcl-0.3.2.zip"
+        URL_MD5 "551f5aaf3e9e3c48da523eac36871287"
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/fcl-prefix"
             "-DCMAKE_BUILD_TYPE=Release"
-            "-DCMAKE_CXX_FLAGS='-fPIC -I${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include -DFCL_DEPRECATED_HH -DFCL_DEPRECATED'"
+            "-DCMAKE_CXX_FLAGS='-fPIC -I${CMAKE_BINARY_DIR}/fcl-prefix/src/fcl/include'"
             "-DFCL_STATIC_LIBRARY=ON"
             "-DCCD_INCLUDE_DIRS=${CCD_INCLUDE_DIRS}"
             "-DCCD_LIBRARY_DIRS=${CCD_LIBRARY_DIRS}"
