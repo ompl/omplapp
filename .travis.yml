@@ -1,8 +1,6 @@
 sudo: false
 cache:
   apt: true
-  directories:
-    - /home/travis/build/ompl/omplapp/build/pyplusplus
 language: cpp
 
 os:
@@ -19,6 +17,9 @@ matrix:
 
 addons:
   apt:
+    sources:
+      - libccd-debs
+      - fcl-debs
     packages:
       - libboost-all-dev
       - python-dev
@@ -29,6 +30,8 @@ addons:
       - python-opengl
       - freeglut3-dev
       - libassimp-dev
+      - libccd-dev
+      - libfcl-dev
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx"   ]; then
@@ -36,6 +39,7 @@ install:
       brew tap homebrew/science;
       brew outdated boost || brew upgrade boost;
       brew install ode eigen libccd assimp;
+      brew install https://raw.github.com/dartsim/homebrew-dart/master/fcl.rb;
     fi
 
 script:
