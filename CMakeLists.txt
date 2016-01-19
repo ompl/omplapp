@@ -143,8 +143,11 @@ find_package(MORSE QUIET)
 find_package(OpenDE QUIET)
 # This library is included in the Open Dynamics source distribution and is used in one demo only
 find_package(Drawstuff QUIET)
-include(UseFCL)
-include(UseAssimp)
+# Assimp is need to load meshes
+find_package(Assimp REQUIRED)
+# We need FCL and its dependency CCD for collision checking
+find_package(CCD REQUIRED)
+find_package(FCL REQUIRED)
 
 # pthread is sometimes needed, depending on OS / compiler
 find_package(Threads QUIET)
@@ -171,8 +174,9 @@ set(OMPLAPP_LIBRARIES
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARIES}
-    ${FCL_LIBRARIES})
-link_directories(${FCL_LIBRARY_DIRS} ${CCD_LIBRARY_DIRS})
+    ${FCL_LIBRARIES}
+    ${CCD_LIBRARIES})
+link_directories(${ASSIMP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS} ${CCD_LIBRARY_DIRS})
 
 if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
@@ -213,14 +217,14 @@ if(OMPLAPP_PQP)
     endif()
 endif()
 
-option(OMPL_LOCAL_PYPLUSPLUS_INSTALL "Whether Py++ and dependencies should be installed in the build directory" OFF)
-set(SUDO "sudo")
-set(CMAKE_GCCXML_ARGS "")
-if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
-    set(SUDO "")
-    set(CMAKE_GCCXML_ARGS "-DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}/pyplusplus")
-    set(DISTUTILS_ARGS "--prefix=${PROJECT_BINARY_DIR}/pyplusplus")
-endif()
+# option(OMPL_LOCAL_PYPLUSPLUS_INSTALL "Whether Py++ and dependencies should be installed in the build directory" OFF)
+# set(SUDO "sudo")
+# set(CMAKE_GCCXML_ARGS "")
+# if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
+#     set(SUDO "")
+#     set(CMAKE_GCCXML_ARGS "-DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}/pyplusplus")
+#     set(DISTUTILS_ARGS "--prefix=${PROJECT_BINARY_DIR}/pyplusplus")
+# endif()
 
 # extra menu option for OMPLapp documentation:
 set(OMPLAPP_MENU "<li><a href=\"gui.html\">OMPL.app GUI</a></li><li><a href=\"webapp.html\">OMPL web app</a></li>")
