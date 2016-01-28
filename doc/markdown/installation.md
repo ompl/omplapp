@@ -11,7 +11,7 @@ The build system includes a [number of options](buildOptions.html) that you can 
 
 Finally, to use the GUI the following dependencies are required (in addition to the ones above):
 
-- [PyQt4] or [PySide][] (which, in turn, require [Qt4]) and
+- [PyQt5], [PyQt4] or [PySide][] (which, in turn, require [Qt5]/[Qt4]) and
 - [PyOpenGL].
 
 Below are more detailed installation instructions for [Linux](#install_linux), [OS X](#install_osx), and [Windows](#install_windows).
@@ -34,6 +34,7 @@ Below are more detailed installation instructions for [Linux](#install_linux), [
       sudo apt-get install libboost-all-dev cmake libccd-dev python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev libassimp-dev libeigen3-dev libode-dev doxygen graphviz
 
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install [PyOpenGL-accelerate](http://pypi.python.org/pypi/PyOpenGL-accelerate) to enable OpenGL hardware acceleration.
+- If you want Python bindings or a GUI, [install Py++ and its dependencies](installPyPlusPlus.html).
 - Create a build directory and run cmake:
 
       cd omplapp
@@ -41,11 +42,7 @@ Below are more detailed installation instructions for [Linux](#install_linux), [
       cd build/Release
       cmake ../..
 
-- If you want Python bindings or a GUI, type the following two commands:
-
-      make installpyplusplus && cmake . # download & install Py++
-      make update_bindings
-
+- Optionally, generate the Python bindings with `make -j 4 update_bindings`.
 - Compile OMPL.app by typing `make -j 4`.
 - Optionally, run the test programs by typing `make test`.
 - Optionally, generate documentation by typing `make doc`.
@@ -76,7 +73,7 @@ It is easiest to install OMPL.app through [MacPorts], a package manager for OS X
 - If you downloaded the source distribution of OMPL.app, then you need to install the Boost, CMake, and optional dependencies. If you have MacPorts installed, type the following:
 
       sudo port sync
-      sudo port install boost cmake assimp fcl ode py27-pyqt4 py27-opengl py27-pyplusplus eigen3 graphviz doxygen
+      sudo port install boost cmake assimp fcl ode py27-pyqt5 py27-opengl py27-pyplusplus eigen3 graphviz doxygen
 
 - It is __very__ important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you __must__ use the MacPorts version of python 2.7 (most likely installed in `/opt/local/bin`). To make this version the default python version, make sure `/opt/local/bin` appears before `/usr/bin` in your PATH. You can add a line like this to your `${HOME}/.bash_profile`:
 
@@ -126,8 +123,8 @@ For best performance, the [MinGW] compiler is recommended. Visual Studio can als
 
 - A __32-bit__ version of [Python] 2.7.  Ensure that this is installed __before building Boost__ so that Boost.Python is properly compiled.
 - Ensure that Python is added to the system `PATH`.
-- Py++: To generate the Python bindings, Py++ and its dependencies must be installed. A batch file has been included to automate this process (analogous to the Linux/Mac installation) that can be executed via cmake. Instructions can be found [here](installPyPlusPlus).  Note that this process assumes the MinGW compiler, and installs gccxml to `C:\\gccxml`.  You will need to be in a shell with administrator privileges to execute this batch file.  Once installed, it is recommended that you open a new shell to realize the new environment settings.
-- [PyQt4] and [PyOpenGL] must be installed to run the OMPL.app gui.
+- Py++: To generate the Python bindings, Py++ and its dependencies must be installed. Instructions can be found [here](installPyPlusPlus.html).
+- [PyQt5] (or [PyQt4]) and [PyOpenGL] must be installed to run the OMPL.app gui.
 - [pkg-config](http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/) must be installed for the collision checking library (FCL).
 
 
@@ -169,8 +166,10 @@ The CMAKE_INSTALL_PREFIX variable is set to `C:\\Program Files (x86)\\omplapp` b
 [boost]: http://www.boost.org
 [cmake]: http://www.cmake.org
 [python]: http://www.python.org
-[qt4]: http://qt-project.org
+[qt4]: http://qt.io
+[qt5]: http://qt.io
 [pyqt4]: http://www.riverbankcomputing.co.uk/software/pyqt/download
+[pyqt5]: http://www.riverbankcomputing.co.uk/software/pyqt/download5
 [pyside]: http://www.pyside.org
 [pyopengl]: http://pyopengl.sourceforge.net
 [ros]: http://www.ros.org
