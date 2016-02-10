@@ -18,8 +18,8 @@ if(NOT (CCD_FOUND AND CCD_LIBRARIES AND CCD_INCLUDE_DIRS))
     # download and build ccd
     ExternalProject_Add (ccd
         DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/src/external"
-        URL "http://libccd.danfis.cz/files/libccd-2.0.tar.gz"
-        URL_MD5 "919415277e3baa1d157e713c0b597ab0"
+        URL "https://github.com/danfis/libccd/archive/v2.0.tar.gz"
+        URL_MD5 "ee45fc60980d76f25cad3a0eda8bd9aa"
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/ccd-prefix"
             "-DCMAKE_BUILD_TYPE=Release" "-DCCD_DOUBLE=1" "-DCMAKE_C_FLAGS=-fPIC")
