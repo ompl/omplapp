@@ -208,11 +208,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
     }
 
     boost::filesystem::path path(filename);
-#if BOOST_VERSION < 104600
-    path_ = boost::filesystem::complete(path);
-#else
     path_ = boost::filesystem::absolute(path);
-#endif
     outfile_ = path_.filename();
     path_.remove_filename();
     outfile_.replace_extension(".log");
