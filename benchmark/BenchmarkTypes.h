@@ -80,7 +80,7 @@ protected:
         return setup_se2_->allocDecomposition();
     }
     virtual void configure(void);
-    boost::shared_ptr<ompl::app::SE2RigidBodyPlanning> setup_se2_;
+    std::shared_ptr<ompl::app::SE2RigidBodyPlanning> setup_se2_;
 };
 
 class SE3Benchmark : public SE3BaseBenchmark
@@ -95,7 +95,7 @@ protected:
         return setup_se3_->allocDecomposition();
     }
     virtual void configure(void);
-    boost::shared_ptr<ompl::app::SE3RigidBodyPlanning> setup_se3_;
+    std::shared_ptr<ompl::app::SE3RigidBodyPlanning> setup_se3_;
 };
 
 class KinematicCarBenchmark : public SE2BaseBenchmark
@@ -110,7 +110,7 @@ protected:
         return setup_kinematicCar_->allocDecomposition();
     }
     virtual void configure(void);
-    boost::shared_ptr<ompl::app::KinematicCarPlanning> setup_kinematicCar_;
+    std::shared_ptr<ompl::app::KinematicCarPlanning> setup_kinematicCar_;
 };
 
 class DynamicCarBenchmark : public SE2BaseBenchmark
@@ -125,7 +125,7 @@ protected:
         return setup_dynamicCar_->allocDecomposition();
     }
     virtual void configure(void);
-    boost::shared_ptr<ompl::app::DynamicCarPlanning> setup_dynamicCar_;
+    std::shared_ptr<ompl::app::DynamicCarPlanning> setup_dynamicCar_;
 };
 
 class BlimpBenchmark : public SE3BaseBenchmark
@@ -140,7 +140,7 @@ protected:
         return setup_blimp_->allocDecomposition();
     }
     virtual void configure(void);
-    boost::shared_ptr<ompl::app::BlimpPlanning> setup_blimp_;
+    std::shared_ptr<ompl::app::BlimpPlanning> setup_blimp_;
 };
 
 class QuadrotorBenchmark : public SE3BaseBenchmark
@@ -155,5 +155,5 @@ protected:
         return setup_quadrotor_->allocDecomposition();
     }
     virtual void configure(void);
-    boost::shared_ptr<ompl::app::QuadrotorPlanning> setup_quadrotor_;
+    std::shared_ptr<ompl::app::QuadrotorPlanning> setup_quadrotor_;
 };

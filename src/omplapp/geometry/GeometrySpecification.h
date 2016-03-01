@@ -20,7 +20,7 @@
 #include <assimp/aiScene.h>
 #endif
 #include <vector>
-#include <boost/function.hpp>
+#include <functional>
 #include <ompl/base/State.h>
 
 namespace ompl
@@ -31,7 +31,7 @@ namespace ompl
         /// Specify whether bodies are moving in 2D or bodies moving in 3D
         enum MotionModel { Motion_2D, Motion_3D };
 
-        typedef boost::function<const base::State*(const base::State*, unsigned int)> GeometricStateExtractor;
+        typedef std::function<const base::State*(const base::State*, unsigned int)> GeometricStateExtractor;
 
         class GeometrySpecification
         {

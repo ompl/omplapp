@@ -50,7 +50,9 @@ script:
   # Configure
   - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOMPL_REGISTRATION=OFF -DCMAKE_INSTALL_PREFIX=tmp ..
 
-  # TODO: fix python bindings
+  # TIMES OUT BECAUSE IT DOES NOT PRODUCE OUTPUT FOR MORE THAN 10 MINUTES
+  # generate python bindings
+  #- make -j4 update_bindings
 
   # Build
   - make -j4

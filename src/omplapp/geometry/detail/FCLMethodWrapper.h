@@ -25,9 +25,8 @@
 #include <fcl/traversal/traversal_node_setup.h>
 #include <fcl/continuous_collision.h>
 
-// Boost and STL headers
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
+// STL headers
+#include <memory>
 #include <vector>
 #include <limits>
 #include <cmath>
@@ -45,7 +44,7 @@ namespace ompl
         {
         public:
 
-            typedef boost::function<void(fcl::Vec3f&, fcl::Quaternion3f&, const base::State*)> FCLPoseFromStateCallback;
+            typedef std::function<void(fcl::Vec3f&, fcl::Quaternion3f&, const base::State*)> FCLPoseFromStateCallback;
 
             FCLMethodWrapper (const GeometrySpecification &geom,
                               const GeometricStateExtractor &se,

@@ -21,9 +21,8 @@
 #include "omplapp/geometry/detail/assimpUtil.h"
 
 #include <PQP.h>
-#include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
-#include <boost/thread/mutex.hpp>
+#include <memory>
+#include <functional>
 #include <vector>
 #include <limits>
 #include <cmath>
@@ -138,7 +137,7 @@ namespace ompl
                 static PQP_REAL identityTranslation[3] = { 0.0, 0.0, 0.0 };
                 static PQP_REAL identityRotation[3][3] = { { 1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0} };
 
-                boost::mutex::scoped_lock slock(mutex_);
+                std::lock_guard<std::mutex> slock(mutex_);
 
                 PQP_REAL robTrans[3];
                 PQP_REAL robRot[3][3];
@@ -185,7 +184,7 @@ namespace ompl
                     static PQP_REAL identityTranslation[3] = { 0.0, 0.0, 0.0 };
                     static PQP_REAL identityRotation[3][3] = { { 1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0} };
 
-                    boost::mutex::scoped_lock slock(mutex_);
+                    std::lock_guard<std::mutex> slock(mutex_);
 
                     PQP_REAL robTrans[3];
                     PQP_REAL robRot[3][3];
@@ -206,7 +205,7 @@ namespace ompl
         protected:
 
             /** \brief Shared pointer wrapper for PQP_Model */
-            typedef boost::shared_ptr<PQP_Model>     PQPModelPtr;
+            typedef std::shared_ptr<PQP_Model>     PQPModelPtr;
 
             void configure(const GeometrySpecification &geom)
             {
@@ -352,7 +351,7 @@ namespace ompl
             /** \brief Tolerance passed to PQP for distance calculations */
             double                      distanceTol_;
 
-            mutable boost::mutex        mutex_;
+            mutable std::mutex          mutex_;
 
         };
 

@@ -80,7 +80,7 @@ namespace ompl
 
             GeometricStateExtractor getGeometricStateExtractor(void) const
             {
-                return boost::bind(&AppBase::getGeometricComponentStateInternal, this, _1, _2);
+                return std::bind(&AppBase::getGeometricComponentStateInternal, this, std::placeholders::_1, std::placeholders::_2);
             }
 
             virtual void inferEnvironmentBounds(void)
