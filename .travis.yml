@@ -20,9 +20,6 @@ matrix:
 
 addons:
   apt:
-    sources:
-      - libccd-debs
-      - fcl-debs
     packages:
       - libboost-all-dev
       - python-dev
@@ -30,8 +27,6 @@ addons:
       - libeigen3-dev
       - freeglut3-dev
       - libassimp-dev
-      - libccd-dev
-      - libfcl-dev
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
@@ -42,6 +37,9 @@ install:
         curl https://midas3.kitware.com/midas/download/item/318762/castxml-macosx.tar.gz | tar zxf - -C ${HOME};
       fi;
     else
+      sudo add-apt-repository --yes ppa:libccd-debs/ppa;
+      sudo add-apt-repository --yes ppa:fcl-debs/ppa;
+      sudo apt-get -qq --yes --force-yes install libccd-dev libfcl-dev;
       if [ ! -e ${HOME}/castxml ]; then
         wget -O - https://midas3.kitware.com/midas/download/item/318227/castxml-linux.tar.gz | tar zxf - -C ${HOME};
       fi;
