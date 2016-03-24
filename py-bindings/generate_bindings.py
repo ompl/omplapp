@@ -28,16 +28,10 @@ class ompl_app_generator_t(code_generator_t):
 
     def filter_declarations(self):
         code_generator_t.filter_declarations(self)
-        if self.using_castxml:
-            self.mb.class_('::ompl::app::AppBase< ompl::app::AppType::GEOMETRIC >').rename('AppBaseGeometric')
-            self.mb.class_('::ompl::app::AppBase< ompl::app::AppType::CONTROL>').rename('AppBaseControl')
-            self.mb.class_('::ompl::app::AppTypeSelector< ompl::app::AppType::GEOMETRIC >').rename('AppTypeGeometric')
-            self.mb.class_('::ompl::app::AppTypeSelector< ompl::app::AppType::CONTROL >').rename('AppTypeControl')
-        else:
-            self.mb.class_('::ompl::app::AppBase<(ompl::app::AppType)0>').rename('AppBaseGeometric')
-            self.mb.class_('::ompl::app::AppBase<(ompl::app::AppType)1>').rename('AppBaseControl')
-            self.mb.class_('::ompl::app::AppTypeSelector<(ompl::app::AppType)0>').rename('AppTypeGeometric')
-            self.mb.class_('::ompl::app::AppTypeSelector<(ompl::app::AppType)1>').rename('AppTypeControl')
+        self.mb.class_('::ompl::app::AppBase< ompl::app::AppType::GEOMETRIC >').rename('AppBaseGeometric')
+        self.mb.class_('::ompl::app::AppBase< ompl::app::AppType::CONTROL>').rename('AppBaseControl')
+        self.mb.class_('::ompl::app::AppTypeSelector< ompl::app::AppType::GEOMETRIC >').rename('AppTypeGeometric')
+        self.mb.class_('::ompl::app::AppTypeSelector< ompl::app::AppType::CONTROL >').rename('AppTypeControl')
         # The virtual functions "solve" and "clear" from SimpleSetup are not redefined
         # in these derived classes, and for some reason Py++ doesn't export them
         # (even though it does generate some wrapper code for them)

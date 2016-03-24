@@ -37,7 +37,6 @@
 #include "BenchmarkOptions.h"
 #include "ompl/util/Console.h"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/algorithm/string/case_conv.hpp>

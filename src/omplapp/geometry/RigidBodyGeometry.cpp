@@ -15,7 +15,6 @@
 #include "omplapp/geometry/detail/PQPStateValidityChecker.h"
 #endif
 #include "omplapp/geometry/detail/FCLStateValidityChecker.h"
-#include <boost/lexical_cast.hpp>
 
 bool ompl::app::RigidBodyGeometry::setRobotMesh(const std::string &robot)
 {
@@ -153,7 +152,7 @@ aiVector3D ompl::app::RigidBodyGeometry::getRobotCenter(unsigned int robotIndex)
 {
     aiVector3D s(0.0, 0.0, 0.0);
     if (robotIndex >= importerRobot_.size())
-        throw Exception("Robot " + boost::lexical_cast<std::string>(robotIndex) + " not found.");
+        throw Exception("Robot " + std::to_string(robotIndex) + " not found.");
 
     scene::sceneCenter(importerRobot_[robotIndex]->GetScene(), s);
     return s;

@@ -19,7 +19,7 @@
 
 #include <drawstuff/drawstuff.h>
 
-#include <boost/thread.hpp>
+#include <thread>
 
 #ifdef dDOUBLE
 #define dsDrawBox dsDrawBoxD
@@ -62,7 +62,7 @@ static void simLoop (int /*pause*/)
     }
 
     static ompl::time::duration d = ompl::time::seconds(0.001);
-    boost::this_thread::sleep(d);
+    std::this_thread::sleep_for(d);
 }
 
 static void playPath(oc::OpenDESimpleSetup *ss)
@@ -71,7 +71,7 @@ static void playPath(oc::OpenDESimpleSetup *ss)
     {
         ss->playSolutionPath(0.005);
         static ompl::time::duration d = ompl::time::seconds(1);
-        boost::this_thread::sleep(d);
+        std::this_thread::sleep_for(d);
     }
 }
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
     ss.setup();
     ss.print();
-    boost::thread *th = NULL;
+    std::thread *th = NULL;
 
     std::cout << "Planning for at most 60 seconds ..." << std::endl;
 
@@ -142,14 +142,14 @@ int main(int argc, char **argv)
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
         }
 
-        th = new boost::thread(boost::bind(&playPath, &ss));
+        th = new std::thread(std::bind(&playPath, &ss));
     }
 
     // run simulation
     dsSimulationLoop(argc, argv, 640, 480, &fn);
     if (th)
     {
-        th->interrupt();
+        //th->interrupt();
         th->join();
     }
 

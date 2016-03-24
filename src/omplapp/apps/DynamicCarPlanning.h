@@ -43,12 +43,12 @@ namespace ompl
         {
         public:
             DynamicCarPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.), odeSolver(new control::ODEBasicSolver<>(si_, boost::bind(&DynamicCarPlanning::ode, this, _1, _2, _3)))
+                : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), mass_(1.), odeSolver(new control::ODEBasicSolver<>(si_, std::bind(&DynamicCarPlanning::ode, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)))
             {
                 name_ = std::string("Dynamic car");
                 setDefaultBounds();
 
-                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, boost::bind(&DynamicCarPlanning::postPropagate, this, _1, _2, _3, _4)));
+                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&DynamicCarPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
             }
             ~DynamicCarPlanning()
             {

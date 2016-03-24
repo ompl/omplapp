@@ -17,7 +17,7 @@
 #include "omplapp/geometry/GeometrySpecification.h"
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/RealVectorBounds.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #if OMPL_HAS_ASSIMP3
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
@@ -165,10 +165,10 @@ namespace ompl
             double              add_;
 
             /** \brief Instance of assimp importer used to load environment */
-            std::vector< boost::shared_ptr<Assimp::Importer> > importerEnv_;
+            std::vector< std::shared_ptr<Assimp::Importer> > importerEnv_;
 
             /** \brief Instance of assimp importer used to load robot */
-            std::vector< boost::shared_ptr<Assimp::Importer> > importerRobot_;
+            std::vector< std::shared_ptr<Assimp::Importer> > importerRobot_;
 
             /** \brief Object containing mesh data for robot and environment */
             GeometrySpecification         geom_;

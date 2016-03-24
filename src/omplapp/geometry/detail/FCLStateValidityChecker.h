@@ -24,8 +24,8 @@
 #include "omplapp/geometry/GeometrySpecification.h"
 
 // Boost and STL headers
-#include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
+#include <memory>
+#include <functional>
 
 namespace ob = ompl::base;
 
@@ -74,7 +74,7 @@ namespace ompl
         public:
             FCLStateValidityChecker (const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,
                                      const GeometricStateExtractor &se, bool selfCollision) : ob::StateValidityChecker(si),
-                                                                                              fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision, boost::bind (&OMPL_FCL_StateType<T>::FCLPoseFromState, stateConvertor_, _1, _2, _3)))
+                                                                                              fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision, std::bind (&OMPL_FCL_StateType<T>::FCLPoseFromState, stateConvertor_, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)))
             {
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }

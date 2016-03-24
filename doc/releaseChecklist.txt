@@ -17,7 +17,7 @@ Steps to release a new version:
 * "jekyll build" in the ompl blog repo, copy content in _site/* to ${HOME}/src/ompl.github.io
 * commit and push ${HOME}/src/ompl.github.io
 * tag omplapp, ompl, ompl.github.io with version number x.y.z (including patch level this time)
-* update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org) for ompl, fcl, libccd, flann, ode, gccxml-devel, py-pygccxml, py-pyplusplus and other possible dependencies.
+* update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org) for ompl, fcl, libccd, flann, ode, castxml, py-pygccxml, py-pyplusplus and other possible dependencies.
 * push changes to ompl and omplapp repos on bitbucket:
     - in the folders that contains the private clone of ompl, execute this command:
       hg push -b default ssh://hg@bitbucket.org/ompl/ompl

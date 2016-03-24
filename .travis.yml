@@ -1,17 +1,20 @@
-sudo: false
 cache:
   apt: true
+  directories:
+    - ${HOME}/castxml
+    - /usr/local
 language: cpp
 
-os:
-  - linux
-  - osx
-
-env:
-#  - BUILD_TYPE=Debug
-  - BUILD_TYPE=Release
-
 matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      compiler: gcc
+      env: PYTHONPATH=/usr/local/lib/python2.7/dist-packages
+    - os: osx
+      osx_image: xcode7.2
+      compiler: clang
   allow_failures:
     - os: osx
 
@@ -32,12 +35,18 @@ addons:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew update;
       brew tap homebrew/science;
-      brew outdated boost || brew upgrade boost;
-      brew install ode eigen libccd assimp;
+      brew install boost-python ode eigen python cmake libccd assimp;
       brew install https://raw.github.com/dartsim/homebrew-dart/master/fcl.rb;
+      if [ ! -e ${HOME}/castxml ]; then
+        curl https://midas3.kitware.com/midas/download/item/318762/castxml-macosx.tar.gz | tar zxf - -C ${HOME};
+      fi;
+    else
+      if [ ! -e ${HOME}/castxml ]; then
+        wget -O - https://midas3.kitware.com/midas/download/item/318227/castxml-linux.tar.gz | tar zxf - -C ${HOME};
+      fi;
     fi
+  - sudo -H pip -v install https://github.com/gccxml/pygccxml/archive/v1.7.2.tar.gz https://bitbucket.org/ompl/pyplusplus/get/1.1.tar.gz
 
 script:
   # get OMPL subrepository
@@ -48,9 +57,11 @@ script:
   - cd build
 
   # Configure
-  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOMPL_REGISTRATION=OFF -DCMAKE_INSTALL_PREFIX=tmp ..
+  - cmake -DOMPL_REGISTRATION=OFF -DCMAKE_INSTALL_PREFIX=tmp -DCASTXML:FILEPATH=${HOME}/castxml/bin/castxml ..
 
-  # TODO: fix python bindings
+  # TIMES OUT BECAUSE IT DOES NOT PRODUCE OUTPUT FOR MORE THAN 10 MINUTES
+  # generate python bindings
+  #- make -j4 update_bindings
 
   # Build
   - make -j4

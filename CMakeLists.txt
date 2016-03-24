@@ -70,7 +70,7 @@ else(IS_ICPC)
     add_definitions(-DBOOST_TEST_DYN_LINK)
 endif(IS_ICPC)
 
-find_package(Boost 1.54 COMPONENTS date_time thread serialization filesystem system program_options unit_test_framework chrono REQUIRED)
+find_package(Boost 1.54 COMPONENTS serialization filesystem system program_options unit_test_framework REQUIRED)
 
 # on OS X we need to check whether to use libc++ or libstdc++ with clang++
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -130,9 +130,9 @@ enable_testing()
 include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
+    "${Boost_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIRS}"
     "${CCD_INCLUDE_DIRS}"
-    "${Boost_INCLUDE_DIR}"
     "${ASSIMP_INCLUDE_DIRS}")
 
 set(OMPLAPP_MODULE_LIBRARIES
@@ -140,7 +140,6 @@ set(OMPLAPP_MODULE_LIBRARIES
     ${ASSIMP_LIBRARY}
     ${FCL_LIBRARIES})
 set(OMPLAPP_LIBRARIES
-    ${Boost_DATE_TIME_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${Boost_SERIALIZATION_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
@@ -189,15 +188,6 @@ if(OMPLAPP_PQP)
         set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
     endif()
 endif()
-
-# option(OMPL_LOCAL_PYPLUSPLUS_INSTALL "Whether Py++ and dependencies should be installed in the build directory" OFF)
-# set(SUDO "sudo")
-# set(CMAKE_GCCXML_ARGS "")
-# if(OMPL_LOCAL_PYPLUSPLUS_INSTALL)
-#     set(SUDO "")
-#     set(CMAKE_GCCXML_ARGS "-DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR}/pyplusplus")
-#     set(DISTUTILS_ARGS "--prefix=${PROJECT_BINARY_DIR}/pyplusplus")
-# endif()
 
 # extra menu option for OMPLapp documentation:
 set(OMPLAPP_MENU "<li><a href=\"gui.html\">OMPL.app GUI</a></li><li><a href=\"webapp.html\">OMPL web app</a></li>")

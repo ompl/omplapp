@@ -64,26 +64,11 @@ It is easiest to install OMPL.app through [MacPorts], a package manager for OS X
 
 ## MacPorts {#install_macports}
 
-- Install [MacPorts].
-- If you do not need to modify or see the source code of OMPL.app, then the easiest way to install OMPL.app is with the MacPorts `port` command:
+Install [MacPorts] and type:
 
-      sudo port sync \; install ompl +app
+    sudo port sync \; install ompl +app
 
-  This is it. You are done. The GUI is invoked from the command line by `/opt/local/bin/ompl_app`. Demo programs and input files for the GUI can be found in `/opt/local/share/ompl`.
-- If you downloaded the source distribution of OMPL.app, then you need to install the Boost, CMake, and optional dependencies. If you have MacPorts installed, type the following:
-
-      sudo port sync
-      sudo port install boost cmake assimp fcl ode py27-pyqt5 py27-opengl py27-pyplusplus eigen3 graphviz doxygen
-
-- It is __very__ important that you use the same installed version of Python for all dependencies and OMPL.app. If you are using MacPorts, then you __must__ use the MacPorts version of python 2.7 (most likely installed in `/opt/local/bin`). To make this version the default python version, make sure `/opt/local/bin` appears before `/usr/bin` in your PATH. You can add a line like this to your `${HOME}/.bash_profile`:
-
-      export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-
-  Next, execute the following command:
-
-      sudo port select python python27
-
-- The build steps are the same as for Ubuntu Linux.
+The GUI is invoked from the command line by `/opt/local/bin/ompl_app`. Demo programs and input files for the GUI can be found in `/opt/local/share/ompl`.
 
 
 ## Homebrew {#install_homebrew}
