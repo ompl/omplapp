@@ -101,7 +101,7 @@ For best performance, the [MinGW] compiler is recommended. Visual Studio can als
 
   It is recommended to make a complete Boost compilation from source. If using Visual Studio, this process can be automated using the [BoostPro](http://www.boostpro.com/download) installer. Once complete, set the environment variables `BOOST_ROOT` and `BOOST_LIBRARYDIR` to the locations where Boost and its libraries are installed. The default locations are `C:\\Boost` and `C:\\Boost\\lib`. Ensure that `BOOST_LIBRARYDIR` is also in the system PATH so that any necessary Boost dlls are loaded properly at runtime.
 
-- [Assimp](http://assimp.sourceforge.net) If not already installed, the last release (version 2.0) is downloaded and compiled automatically via CMake. If using Visual Studio 2010, this version will __NOT__ compile. It is recommended to checkout Assimp from their svn repository and install assimp.lib/dll manually if using VS2010. Ensure that Assimp is installed and that the include and lib directories are in the system PATH.
+- [Assimp](http://assimp.org) If not already installed, the last release (version 2.0) is downloaded and compiled automatically via CMake. If using Visual Studio 2010, this version will __NOT__ compile. It is recommended to checkout Assimp from their svn repository and install assimp.lib/dll manually if using VS2010. Ensure that Assimp is installed and that the include and lib directories are in the system PATH.
 
 
 ## Optional Dependencies (for Python bindings and OMPL.app GUI)
