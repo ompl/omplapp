@@ -383,7 +383,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.path = [self._arrayToSE3State(s) for s in path]
             else:
                 # unknown state type
-                OMPL_Error("Wrong state format")
+                OMPL_ERROR("Wrong state format")
                 raise ValueError
             self.mainWidget.glViewer.setSolutionPath(self.path)
             # setStart/GoalPose can change bounds, so save and restore them
@@ -425,13 +425,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 pg.interpolate()
                 self.setSolutionPath(pg)
             else:
-                OMPL_Error("Unable to generate random valid path")
+                OMPL_ERROR("Unable to generate random valid path")
         else:
             pc = oc.PathControl(self.omplSetup.getSpaceInformation())
             if pc.randomValid(100):
                 self.setSolutionPath(pc.asGeometric())
             else:
-                OMPL_Error("Unable to generate random valid path")
+                OMPL_ERROR("Unable to generate random valid path")
 
     def showLogWindow(self):
         if self.logWindow.isHidden():
@@ -545,24 +545,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 path = self.omplSetup.getSolutionPath()
                 initialValid = path.check()
                 if initialValid == False:
-                    OMPL_Error("Path reported by planner seems to be invalid!")
+                    OMPL_ERROR("Path reported by planner seems to be invalid!")
                 self.omplSetup.simplifySolution()
                 path = self.omplSetup.getSolutionPath()
                 if initialValid == True and path.check() == False:
-                    OMPL_Error("Simplified path seems to be invalid!")
+                    OMPL_ERROR("Simplified path seems to be invalid!")
             else:
                 path = self.omplSetup.getSolutionPath().asGeometric()
                 if path.check() == False:
-                    OMPL_Error("Path reported by planner seems to be invalid!")
+                    OMPL_ERROR("Path reported by planner seems to be invalid!")
 
             ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateSpace().getMaximumExtent()))
             if self.isGeometric and len(path.getStates()) < ns:
                 OMPL_DEBUG("Interpolating solution path to " + str(ns) + " states")
                 path.interpolate(ns)
                 if len(path.getStates()) != ns:
-                    OMPL_Error("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states!")
+                    OMPL_ERROR("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states!")
 #            if path.check() == False:
-#                OMPL_Error("Something wicked happened to the path during interpolation")
+#                OMPL_ERROR("Something wicked happened to the path during interpolation")
             self.setSolutionPath(path)
 
     def clear(self, deepClean=False):
