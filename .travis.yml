@@ -48,7 +48,7 @@ install:
         cmake .;
         sudo make install;
         cd ..;
-      fi
+      fi;
       if [ ! -e ${HOME}/castxml ]; then
         wget -O - https://midas3.kitware.com/midas/download/item/318227/castxml-linux.tar.gz | tar zxf - -C ${HOME};
       fi;
