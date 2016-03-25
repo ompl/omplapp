@@ -19,8 +19,8 @@ environment:
 
 cache:
   - assimp.zip
-  - "C:\Program Files\libccd"
-  - "C:\Program Files\fcl"
+  - C:\Program Files\libccd
+  - C:\Program Files\fcl
 
 configuration: Release
 
