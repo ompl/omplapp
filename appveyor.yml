@@ -20,6 +20,18 @@ environment:
 configuration: Release
 
 before_build:
+  - cmd: curl -o libccd-2.0.tgz https://github.com/danfis/libccd/archive/v2.0.tar.gz
+  - cmd: cmake -E tar zxf libccd-2.0.tar.gz
+  - cmd: cd libccd-2.0
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%configuration% .
+  - cmd: cmake --build . --target install --config %configuration%
+  - cmd: cd ..
+  - cmd: curl -o fcl-0.4.0.tgz https://github.com/flexible-collision-library/fcl/archive/0.4.0.tar.gz
+  - cmd: cmake -E tar zxf fcl-0.4.0.tgz
+  - cmd: cd fcl-0.4.0
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%configuration% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" .
+  - cmd: cmake --build . --target install --config %configuration%
+  - cmd: ..
   - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
   - cmd: set
   - cmd: mkdir build
@@ -38,4 +50,4 @@ after_build:
 #  - cmd: ctest -C %configuration%
 
 artifacts:
-  - path: omplapp\*.zip
+  - path: 'build\ompl*.zip'
