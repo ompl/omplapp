@@ -18,17 +18,21 @@ environment:
   BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
 
 cache:
-  - assimp.zip
+  - C:\Program Files\assimp
   - C:\Program Files\libccd
   - C:\Program Files\fcl
 
 configuration: Release
 
 before_build:
-  - cmd: if not exist assimp.zip (
-           curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-full.zip &&
-           cmake -E tar zxf assimp.zip
-         ) else (echo Using cached assimp.zip)
+  - cmd: if not C:\"Program Files"\assimp\lib\assimp.lib (
+            curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-source-only.zip &&
+            cmake -E tar zxf assimp.zip &&
+            cd assimp--3.0.1270-source-only &&
+            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% . &&
+            cmake --build . --target install --config %Configuration% &&
+            cd ..
+         ) else (echo Using cached assimp)
   - cmd: if not exist C:\"Program Files"\libccd\lib\ccd.lib (
             curl -L -o libccd-2.0.tar.gz https://github.com/danfis/libccd/archive/v2.0.tar.gz &&
             cmake -E tar zxf libccd-2.0.tar.gz &&
@@ -49,7 +53,7 @@ before_build:
   - cmd: set
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DOMPL_REGISTRATION=OFF -DOMPL_BUILD_DEMOS=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DASSIMP_INCLUDE_DIRS="C:\projects\omplapp\assimp--3.0.1270-sdk\include" -DASSIMP_LIBRARIES="C:\projects\omplapp\assimp--3.0.1270-sdk\bin\assimp_release-dll_x64\Assimp64.dll" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARIES="C:\Program Files\libccd\lib\ccd.lib" -DFCL_INCLUDE_DIRS="C:\Program Files\fcl\include" -DFCL_LIBRARIES="C:\Program Files\fcl\lib\fcl.lib" ..
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DOMPL_REGISTRATION=OFF -DOMPL_BUILD_DEMOS=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DASSIMP_INCLUDE_DIRS="C:\Program Files\assimp\include" -DASSIMP_LIBRARIES="C:\Program Files\assimp\lib\assimp.lib" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARIES="C:\Program Files\libccd\lib\ccd.lib" -DFCL_INCLUDE_DIRS="C:\Program Files\fcl\include" -DFCL_LIBRARIES="C:\Program Files\fcl\lib\fcl.lib" ..
 
 build:
   project: C:\projects\omplapp\build\omplapp.sln
