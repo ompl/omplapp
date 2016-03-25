@@ -26,23 +26,23 @@ configuration: Release
 
 before_build:
   - cmd: if not exist assimp.zip (
-           curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-full.zip
+           curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-full.zip &&
            cmake -E tar zxf assimp.zip
          ) else (echo Using cached assimp.zip)
   - cmd: if not exist C:\Program Files\libccd\lib\ccd.lib (
-            curl -L -o libccd-2.0.tar.gz https://github.com/danfis/libccd/archive/v2.0.tar.gz
-            cmake -E tar zxf libccd-2.0.tar.gz
-            cd libccd-2.0
-            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% .
-            cmake --build . --target install --config %Configuration%
+            curl -L -o libccd-2.0.tar.gz https://github.com/danfis/libccd/archive/v2.0.tar.gz &&
+            cmake -E tar zxf libccd-2.0.tar.gz &&
+            cd libccd-2.0 &&
+            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% . &&
+            cmake --build . --target install --config %Configuration% &&
             cd ..
          ) else (echo Using cached libccd)
   - cmd: if not exist C:\Program Files\fcl\lib\fcl.lib (
-            curl -L -o fcl.zip https://github.com/flexible-collision-library/fcl/archive/0eeb075a7918ca95b228aeb7d0e6f5bbe63136a0.zip
-            cmake -E tar zxf fcl.zip
-            cd fcl-0eeb075a7918ca95b228aeb7d0e6f5bbe63136a0
-            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARY="C:\Program Files\libccd\lib\ccd.lib" .
-            cmake --build . --target install --config %Configuration%
+            curl -L -o fcl.zip https://github.com/flexible-collision-library/fcl/archive/0eeb075a7918ca95b228aeb7d0e6f5bbe63136a0.zip &&
+            cmake -E tar zxf fcl.zip &&
+            cd fcl-0eeb075a7918ca95b228aeb7d0e6f5bbe63136a0 &&
+            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARY="C:\Program Files\libccd\lib\ccd.lib" . &&
+            cmake --build . --target install --config %Configuration% &&
             cd ..
          ) else (echo Using cached fcl)
   - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
