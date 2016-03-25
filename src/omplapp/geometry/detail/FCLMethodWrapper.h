@@ -19,10 +19,8 @@
 #include "omplapp/geometry/GeometrySpecification.h"
 #include "omplapp/geometry/detail/assimpUtil.h"
 
-#if defined(_MSC_VER)
 // Undefine and min/max macros
 #define NOMINMAX
-#endif
 
 // FCL Headers
 #include <fcl/collision.h>
