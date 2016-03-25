@@ -20,34 +20,36 @@ environment:
 configuration: Release
 
 before_build:
+  - cmd: curl -L -o assimp.exe http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp-sdk-3.0-setup.exe
+  - cmd: .\assimp.exe
   - cmd: curl -L -o libccd-2.0.tar.gz https://github.com/danfis/libccd/archive/v2.0.tar.gz
   - cmd: cmake -E tar zxf libccd-2.0.tar.gz
   - cmd: cd libccd-2.0
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%configuration% .
-  - cmd: cmake --build . --target install --config %configuration%
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% .
+  - cmd: cmake --build . --target install --config %CONFIGURATION%
   - cmd: cd ..
   - cmd: curl -L -o fcl-0.4.0.tar.gz https://github.com/flexible-collision-library/fcl/archive/0.4.0.tar.gz
   - cmd: cmake -E tar zxf fcl-0.4.0.tar.gz
   - cmd: cd fcl-0.4.0
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%configuration% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" .
-  - cmd: cmake --build . --target install --config %configuration%
-  - cmd: ..
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARY_DIRS="C:\Program Files\libccd\lib" .
+  - cmd: cmake --build . --target install --config %CONFIGURATION%
+  - cmd: cd ..
   - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
   - cmd: set
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%configuration% -DOMPL_REGISTRATION=OFF -DOMPL_BUILD_DEMOS=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" ..
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DOMPL_REGISTRATION=OFF -DOMPL_BUILD_DEMOS=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARIES="C:\Program Files\libccd\lib\ccd.lib" -DFCL_INCLUDE_DIRS="C:\Program Files\fcl\include" -DCCD_LIBRARIES="C:\Program Files\fcl\lib\fcl.lib" ..
 
 build:
   project: C:\projects\omplapp\build\omplapp.sln
   parallel: true
 
 after_build:
-  - cmd: cmake --build . --target package --config %configuration%
+  - cmd: cmake --build . --target package --config %CONFIGURATION%
 
 # tests seem to hang
 #test_script:
-#  - cmd: ctest -C %configuration%
+#  - cmd: ctest -C %CONFIGURATION%
 
 artifacts:
   - path: 'build\ompl*.zip'
