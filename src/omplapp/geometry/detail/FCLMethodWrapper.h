@@ -19,9 +19,10 @@
 #include "omplapp/geometry/GeometrySpecification.h"
 #include "omplapp/geometry/detail/assimpUtil.h"
 
-// Define std::min and std::max for MSVC, used in FCL headers
-// (The proper solution would be to add the includes in the FCL headers)
-#include <algorithm>
+#if defined(_MSC_VER)
+// Undefine and min/max macros
+#define NOMINMAX
+#endif
 
 // FCL Headers
 #include <fcl/collision.h>
