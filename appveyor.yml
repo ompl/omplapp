@@ -28,9 +28,9 @@ before_build:
   - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% .
   - cmd: cmake --build . --target install --config %Configuration%
   - cmd: cd ..
-  - cmd: curl -L -o fcl-0.4.0.tar.gz https://github.com/flexible-collision-library/fcl/archive/0.4.0.tar.gz
-  - cmd: cmake -E tar zxf fcl-0.4.0.tar.gz
-  - cmd: cd fcl-0.4.0
+  - cmd: curl -L -o fcl.zip https://github.com/flexible-collision-library/fcl/archive/0eeb075a7918ca95b228aeb7d0e6f5bbe63136a0.zip
+  - cmd: cmake -E tar zxf fcl.zip
+  - cmd: cd fcl-0eeb075a7918ca95b228aeb7d0e6f5bbe63136a0
   - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARY_DIRS="C:\Program Files\libccd\lib" .
   - cmd: cmake --build . --target install --config %Configuration%
   - cmd: cd ..
