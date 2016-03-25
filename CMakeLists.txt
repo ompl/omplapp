@@ -238,18 +238,19 @@ if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
     endif()
 endif()
 
-
-target_link_flags(ompl ompl_app_base ompl_app)
-set(PKG_NAME "ompl")
-set(PKG_DESC "The Open Motion Planning Library")
-set(PKG_EXTERNAL_DEPS "${ompl_PKG_DEPS}")
-set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
-set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
-configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
-install(FILES "${pkg_conf_file}"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
-    COMPONENT ompl
-    RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
+if(NOT MSVC)
+    target_link_flags(ompl ompl_app_base ompl_app)
+    set(PKG_NAME "ompl")
+    set(PKG_DESC "The Open Motion Planning Library")
+    set(PKG_EXTERNAL_DEPS "${ompl_PKG_DEPS}")
+    set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
+    set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
+    configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
+    install(FILES "${pkg_conf_file}"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+        COMPONENT ompl
+        RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
+endif()
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/markdown/FindOMPL.cmake"
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
