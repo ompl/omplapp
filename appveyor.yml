@@ -21,7 +21,7 @@ configuration: Release
 
 before_build:
   - cmd: curl -o libccd-2.0.tgz https://github.com/danfis/libccd/archive/v2.0.tar.gz
-  - cmd: cmake -E tar zxf libccd-2.0.tar.gz
+  - cmd: cmake -E tar zxf libccd-2.0.tgz
   - cmd: cd libccd-2.0
   - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%configuration% .
   - cmd: cmake --build . --target install --config %configuration%
