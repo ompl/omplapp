@@ -5,11 +5,11 @@ version: "{build}"
 os: Visual Studio 2015
 
 clone_folder: C:\projects\omplapp
-clone_depth: 1
+shallow_clone: true
 
-branches:
-  only:
-    - master
+# branches:
+#   only:
+#     - master
 platform: x64
 
 environment:
@@ -25,7 +25,7 @@ cache:
 configuration: Release
 
 before_build:
-  - cmd: if not C:\"Program Files"\assimp\lib\assimp.lib (
+  - cmd: if not exist C:\"Program Files"\assimp\lib\assimp.lib (
             curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-source-only.zip &&
             cmake -E tar zxf assimp.zip &&
             cd assimp--3.0.1270-source-only &&
