@@ -29,7 +29,7 @@ before_build:
             curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-source-only.zip &&
             cmake -E tar zxf assimp.zip &&
             cd assimp--3.0.1270-source-only &&
-            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% . &&
+            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DBUILD_ASSIMP_TOOLS=OFF . &&
             cmake --build . --target install --config %Configuration% &&
             cd ..
          ) else (echo Using cached assimp)
