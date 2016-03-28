@@ -53,7 +53,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
         "stride", "pdst",
         "rrtstar", "prmstar", "lazyprmstar",
         "spars", "spars2", "lbtrrt", "trrt",
-        "fmt",
+        "fmt", "bfmt",
         "syclopest", "sycloprrt",
         "aps", "cforest"
     };

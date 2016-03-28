@@ -57,6 +57,7 @@
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
 #include <ompl/geometric/planners/fmt/FMT.h>
+#include <ompl/geometric/planners/fmt/BFMT.h>
 #include <ompl/geometric/planners/AnytimePathShortening.h>
 #include <ompl/geometric/planners/cforest/CForest.h>
 
@@ -160,6 +161,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = new ompl::geometric::PDST(si);
         else if (name == "fmt")
             p = new ompl::geometric::FMT(si);
+		else if (name == "bfmt")
+            p = new ompl::geometric::BFMT(si);
         else if (name == "aps")
             p = new ompl::geometric::AnytimePathShortening(si);
         else if (name == "cforest")
