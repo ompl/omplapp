@@ -31,7 +31,7 @@ Below are more detailed installation instructions for [Linux](#install_linux), [
 
 - Install Boost, CMake, and optional dependencies:
 
-      sudo apt-get install libboost-all-dev cmake libccd-dev python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev libassimp-dev libeigen3-dev libode-dev doxygen graphviz
+      sudo apt-get install build-essential libboost-all-dev cmake libccd-dev python-dev python-qt4-dev python-qt4-gl python-opengl freeglut3-dev libassimp-dev libeigen3-dev libode-dev doxygen graphviz
 
 - If the rendering in the OMPL.app GUI seems sluggish, you may want to install [PyOpenGL-accelerate](http://pypi.python.org/pypi/PyOpenGL-accelerate) to enable OpenGL hardware acceleration.
 - If you want Python bindings or a GUI, [install Py++ and its dependencies](installPyPlusPlus.html).
