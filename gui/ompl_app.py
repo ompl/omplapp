@@ -18,15 +18,16 @@ from decimal import Decimal
 import inspect
 qt5 = False
 try:
-    # try PyQt4 first
-    from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
-    from PyQt4.QtCore import pyqtSignal as Signal
-    QtWidgets = QtGui
+    # try PyQt5 first
+    from PyQt5 import QtWidgets, QtCore, QtGui, QtOpenGL
+    from PyQt5.QtCore import pyqtSignal as Signal
+    qt5 = True
 except:
+    # deprecated, will be removed at some point
     try:
-        from PyQt5 import QtWidgets, QtCore, QtGui, QtOpenGL
-        from PyQt5.QtCore import pyqtSignal as Signal
-        qt5 = True
+        from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
+        from PyQt4.QtCore import pyqtSignal as Signal
+        QtWidgets = QtGui
     except:
         # if PyQt* wasn't found, try PySide
         from PySide import QtCore, QtGui, QtOpenGL
