@@ -227,17 +227,6 @@ if(TARGET drawstuff)
     add_dependencies(ompl drawstuff)
 endif()
 
-if(OMPL_BUILD_PYBINDINGS AND PY_OMPL_GENERATE)
-    # need assimp header files to generate python bindings
-    if(TARGET assimp)
-        add_dependencies(update_app_bindings assimp)
-    endif()
-    # need fcl header files to generate python bindings
-    if(TARGET fcl)
-        add_dependencies(update_app_bindings fcl)
-    endif()
-endif()
-
 if(NOT MSVC)
     target_link_flags(ompl ompl_app_base ompl_app)
     set(PKG_NAME "ompl")
@@ -269,6 +258,10 @@ endif()
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
   COMPONENT ompl)
+
+# script to install ompl on Ubuntu
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/install-ompl-ubuntu.sh" @ONLY)
 
 # uninstall target
 configure_file(

@@ -31,4 +31,5 @@ doc/images/threadscforest.png
 doc/js
 doc/latex/OMPL_Primer.pdf
 doc/markdown/download.md$
+install-ompl-ubuntu.sh$
 src/omplapp/config.h$
