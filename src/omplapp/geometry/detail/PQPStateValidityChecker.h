@@ -26,6 +26,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <mutex>
 
 namespace ompl
 {
