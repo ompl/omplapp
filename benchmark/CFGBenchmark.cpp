@@ -48,6 +48,8 @@
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/geometric/planners/sbl/SBL.h>
 #include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/est/BiEST.h>
+#include <ompl/geometric/planners/est/ProjEST.h>
 #include <ompl/geometric/planners/prm/PRM.h>
 #include <ompl/geometric/planners/prm/LazyPRM.h>
 #include <ompl/geometric/planners/prm/LazyPRMstar.h>
@@ -135,6 +137,10 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = new ompl::geometric::TRRT(si);
         else if (name == "est")
             p = new ompl::geometric::EST(si);
+        else if (name == "biest")
+            p = new ompl::geometric::BiEST(si);
+        else if (name == "projest")
+            p = new ompl::geometric::ProjEST(si);
         else if (name == "sbl")
             p = new ompl::geometric::SBL(si);
         else if (name == "kpiece")
