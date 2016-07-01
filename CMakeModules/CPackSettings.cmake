@@ -38,23 +38,16 @@ set(CPACK_SOURCE_IGNORE_FILES
     "/html/"
     "/bindings/"
     "TODO"
-    "/external/assimp"
-    "/pqp-1.3"
     "releaseChecklist.txt"
-    "exposed_decl.pypp.txt"
     "ompl.pc$"
-    "installPyPlusPlus.bat$"
-    "installPyPlusPlus.sh$"
     "create_symlinks.sh$"
     "uninstall_symlinks.sh$"
     "config.h$"
     ".registered$"
-    ".tar.gz"
-    ".tgz$"
-    ".zip$"
     "download.md$"
     "mainpage.md$"
-    "binding_generator.py$")
+    "binding_generator.py$"
+    "install-ompl-ubuntu.sh$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 
@@ -70,7 +63,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
       OUTPUT_VARIABLE UBUNTU_RELEASE
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   set(CPACK_PACKAGE_FILE_NAME "omplapp_${OMPL_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}-Ubuntu${UBUNTU_RELEASE}")
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-opengl, python-qt4-dev, python-qt4-gl, freeglut3-dev, libode-dev, libassimp-dev, libtriangle-dev, libccd-dev")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-all-dev, python-opengl, python-pyqt5.qtopengl, freeglut3-dev, libode-dev, libassimp-dev, libtriangle-dev, libccd-dev")
 endif()
 
 if(APPLE)
