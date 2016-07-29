@@ -27,6 +27,7 @@
 
 // STL headers
 #include <memory>
+#include <utility>
 #include <vector>
 #include <limits>
 #include <cmath>
@@ -47,10 +48,10 @@ namespace ompl
             typedef std::function<void(fcl::Vec3f&, fcl::Quaternion3f&, const base::State*)> FCLPoseFromStateCallback;
 
             FCLMethodWrapper (const GeometrySpecification &geom,
-                              const GeometricStateExtractor &se,
+                              GeometricStateExtractor se,
                               bool selfCollision,
-                              FCLPoseFromStateCallback poseCallback) : extractState_(se), selfCollision_(selfCollision),
-                                                                       poseFromStateCallback_ (poseCallback)
+                              FCLPoseFromStateCallback poseCallback) : extractState_(std::move(se)), selfCollision_(selfCollision),
+                                                                       poseFromStateCallback_ (std::move(poseCallback))
             {
                 configure (geom);
             }

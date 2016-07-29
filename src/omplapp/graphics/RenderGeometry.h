@@ -16,6 +16,8 @@
 #include "omplapp/geometry/RigidBodyGeometry.h"
 #include <ompl/base/Planner.h>
 
+#include <utility>
+
 namespace ompl
 {
     namespace app
@@ -26,7 +28,7 @@ namespace ompl
         public:
 
             /** \brief Constructor expects a state space that can represent a rigid body */
-            RenderGeometry(const RigidBodyGeometry &rbg, const GeometricStateExtractor &se) : rbg_(rbg), se_(se)
+            RenderGeometry(const RigidBodyGeometry &rbg, GeometricStateExtractor se) : rbg_(rbg), se_(std::move(se))
             {
             }
 

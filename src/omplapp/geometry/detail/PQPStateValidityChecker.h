@@ -23,6 +23,7 @@
 #include <PQP.h>
 #include <memory>
 #include <functional>
+#include <utility>
 #include <vector>
 #include <limits>
 #include <cmath>
@@ -118,7 +119,7 @@ namespace ompl
         public:
 
             PQPStateValidityChecker(const base::SpaceInformationPtr &si, const GeometrySpecification &geom,
-                                    const GeometricStateExtractor &se, bool selfCollision) : base::StateValidityChecker(si), extractState_(se),
+                                    GeometricStateExtractor se, bool selfCollision) : base::StateValidityChecker(si), extractState_(std::move(se)),
                                                                                              selfCollision_(selfCollision)
             {
                 configure(geom);

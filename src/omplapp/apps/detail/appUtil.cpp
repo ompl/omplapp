@@ -18,6 +18,7 @@
 #include <ompl/base/objectives/MechanicalWorkOptimizationObjective.h>
 #include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <limits>
+#include <utility>
 
 void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, double factor, double add,
                                              unsigned int robotCount, const base::StateSpacePtr &space, MotionModel mtype)
@@ -97,7 +98,7 @@ namespace ompl
             {
             public:
 
-                GeometricStateProjector2D(const base::StateSpacePtr &space, const base::StateSpacePtr &gspace, const GeometricStateExtractor &se) : base::ProjectionEvaluator(space), gm_(gspace->as<base::SE2StateSpace>()), se_(se)
+                GeometricStateProjector2D(const base::StateSpacePtr &space, const base::StateSpacePtr &gspace, GeometricStateExtractor se) : base::ProjectionEvaluator(space), gm_(gspace->as<base::SE2StateSpace>()), se_(std::move(se))
                 {
                 }
 
@@ -133,7 +134,7 @@ namespace ompl
             {
             public:
 
-                GeometricStateProjector3D(const base::StateSpacePtr &space, const base::StateSpacePtr &gspace, const GeometricStateExtractor &se) : base::ProjectionEvaluator(space), gm_(gspace->as<base::SE3StateSpace>()), se_(se)
+                GeometricStateProjector3D(const base::StateSpacePtr &space, const base::StateSpacePtr &gspace, GeometricStateExtractor se) : base::ProjectionEvaluator(space), gm_(gspace->as<base::SE3StateSpace>()), se_(std::move(se))
                 {
                 }
 
