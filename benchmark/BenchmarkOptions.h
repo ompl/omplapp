@@ -50,8 +50,8 @@ struct BenchmarkOptions
         readOptions(filename);
     }
 
-    typedef std::map<std::string, std::string> PlannerOpt; // options specific to the planner
-    typedef std::map<std::string, std::string> ContextOpt; // other options (not specific to the planner)
+    using PlannerOpt = std::map<std::string, std::string>; // options specific to the planner
+    using ContextOpt = std::map<std::string, std::string>; // other options (not specific to the planner)
 
     // all the options for a benchmark execution
     struct AllOptions

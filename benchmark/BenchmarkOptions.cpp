@@ -107,8 +107,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
     cfg.close();
     boost::program_options::store(po, vm);
     declared_options_.clear();
-    for (boost::program_options::variables_map::iterator it = vm.begin() ; it != vm.end() ; ++it)
-        declared_options_[it->first] = boost::any_cast<std::string>(vm[it->first].value());
+    for (auto & variable : vm) //boost::program_options::variables_map::iterator it = vm.begin() ; it != vm.end() ; ++it)
+        declared_options_[variable.first] = boost::any_cast<std::string>(vm[variable.first].value());
 
     std::vector<std::string> unr = boost::program_options::collect_unrecognized(po.options, boost::program_options::exclude_positional);
     planners_.clear();
@@ -195,14 +195,14 @@ bool BenchmarkOptions::readOptions(const char *filename)
 
         // now we merge the global (problem context) in all the planner specific contexts
         if (!problem_context.empty())
-            for (std::map<std::string, std::vector<AllOptions> >::iterator it = planners_.begin() ; it != planners_.end() ; ++it)
-                for (std::size_t i = 0 ; i < it->second.size() ; ++i)
+            for (auto & planner : planners_)
+                for (auto & option : planner.second)
                 {
-                    ContextOpt &planner_options = it->second[i].c;
+                    ContextOpt &planner_options = option.c;
                     ContextOpt backup = planner_options;
                     planner_options = problem_context;
-                    for (std::map<std::string, std::string>::iterator jt = backup.begin() ; jt != backup.end() ; ++jt)
-                        planner_options[jt->first] = jt->second;
+                    for (auto & boption : backup)
+                        planner_options[boption.first] = boption.second;
                 }
     }
 

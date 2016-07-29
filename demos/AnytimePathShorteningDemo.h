@@ -218,8 +218,8 @@ bool validArguments(const ProblemType& probType, const OptimizationType &optType
     if (valid)
     {
         std::cout << "Solving the " << ProblemTypeStrings[probType] << " problem using " << OptTypeStrings[optType] << " optimization for " << runtime << " seconds with " << std::endl;
-        for (size_t i = 0; i < planners.size(); ++i)
-            std::cout << PlannerTypeStrings[planners[i]] << " ";
+        for (const auto & planner : planners)
+            std::cout << PlannerTypeStrings[planner] << " ";
         std::cout << std::endl;
     }
 

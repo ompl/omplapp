@@ -253,11 +253,10 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
 
 void CFGBenchmark::setupBenchmark(void)
 {
-    std::map<std::string, std::vector<BenchmarkOptions::AllOptions> >::iterator it;
-    for (it = bo_.planners_.begin() ; it != bo_.planners_.end() ; ++it)
-        for (std::size_t i = 0 ; i < it->second.size() ; ++i)
+    for (auto & planner : bo_.planners_)
+        for (auto & option : planner.second)
             benchmark_->addPlannerAllocator(std::bind(&CFGBenchmark::allocPlanner, this, std::placeholders::_1,
-                                            it->first, it->second[i]));
+                                            planner.first, option));
     benchmark_->setPlannerSwitchEvent(std::bind(&CFGBenchmark::preSwitchEvent, this, std::placeholders::_1));
     if (bo_.declared_options_.find("benchmark.save_paths") != bo_.declared_options_.end())
     {
