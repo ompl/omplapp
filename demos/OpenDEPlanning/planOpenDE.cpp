@@ -67,7 +67,7 @@ static void simLoop (int /*pause*/)
 
 static void playPath(oc::OpenDESimpleSetup *ss)
 {
-    while (1)
+    while (true)
     {
         ss->playSolutionPath(0.005);
         static ompl::time::duration d = ompl::time::seconds(1);
