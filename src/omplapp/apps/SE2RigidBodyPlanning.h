@@ -32,33 +32,33 @@ namespace ompl
                 name_ = "Rigid body planning (2D)";
             }
 
-            virtual ~SE2RigidBodyPlanning() = default;
+            ~SE2RigidBodyPlanning() override = default;
 
-            bool isSelfCollisionEnabled() const
+            bool isSelfCollisionEnabled() const override
             {
                 return false;
             }
 
-            virtual base::ScopedState<> getDefaultStartState() const;
+            base::ScopedState<> getDefaultStartState() const override;
 
-            virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
+            base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const override
             {
                 return state;
             }
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
+            const base::StateSpacePtr& getGeometricComponentStateSpace() const override
             {
                 return getStateSpace();
             }
 
-            virtual unsigned int getRobotCount() const
+            unsigned int getRobotCount() const override
             {
                 return 1;
             }
 
         protected:
 
-            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const
+            const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const override
             {
                 return state;
             }

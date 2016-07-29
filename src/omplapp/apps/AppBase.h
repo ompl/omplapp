@@ -50,7 +50,7 @@ namespace ompl
             {
             }
 
-            virtual ~AppBase() = default;
+            ~AppBase() override = default;
 
             AppType getAppType()
             {
@@ -92,7 +92,7 @@ namespace ompl
                                              getRobotCount(), getGeometricComponentStateSpace(), mtype_);
             }
 
-            virtual void setup()
+            void setup() override
             {
                 inferEnvironmentBounds();
 

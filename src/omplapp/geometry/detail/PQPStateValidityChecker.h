@@ -126,7 +126,7 @@ namespace ompl
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
-            virtual bool isValid(const base::State *state) const
+            bool isValid(const base::State *state) const override
             {
                 typedef typename OMPL_StateType<T>::type StateType;
 
@@ -176,7 +176,7 @@ namespace ompl
                 return true;
             }
 
-            virtual double clearance(const base::State *state) const
+            double clearance(const base::State *state) const override
             {
                 typedef typename OMPL_StateType<T>::type StateType;
 

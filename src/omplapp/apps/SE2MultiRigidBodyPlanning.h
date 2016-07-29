@@ -26,23 +26,23 @@ namespace ompl
             /// @brief Constructs an instance of multiple rigid bodies for 2D geometric planning.  n is the number of independent bodies in SE(2)
             SE2MultiRigidBodyPlanning(unsigned int n);
 
-            virtual ~SE2MultiRigidBodyPlanning() = default;
+            ~SE2MultiRigidBodyPlanning() override = default;
 
             /// @brief Constructs the default start state where all robots begin at their geometric center.
             /// If robots are all using the same mesh, this state is not likely to be valid.
-            virtual base::ScopedState<> getDefaultStartState() const;
+            base::ScopedState<> getDefaultStartState() const override;
 
-            virtual void inferEnvironmentBounds();
+            void inferEnvironmentBounds() override;
 
-            virtual void inferProblemDefinitionBounds();
+            void inferProblemDefinitionBounds() override;
 
-            bool isSelfCollisionEnabled() const
+            bool isSelfCollisionEnabled() const override
             {
                 // Make sure that self collision is enabled to avoid inter-rigid body collision
                 return true;
             }
 
-            virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
+            base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const override
             {
                 return state;
             }
@@ -53,20 +53,20 @@ namespace ompl
                 return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(index);
             }
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
+            const base::StateSpacePtr& getGeometricComponentStateSpace() const override
             {
                 // Return the zeroth component.  All components are the same.
                 return getGeometricComponentStateSpace(0);
             }
 
-            virtual unsigned int getRobotCount() const
+            unsigned int getRobotCount() const override
             {
                 return n_;
             }
 
         protected:
             /// @brief Returns the state corresponding to the indexth rigid body in the compound state
-            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const;
+            const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int index) const override;
 
             /// @brief The number of independent rigid bodies to plan for
             unsigned int n_;

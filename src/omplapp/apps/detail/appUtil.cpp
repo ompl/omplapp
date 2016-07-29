@@ -102,19 +102,19 @@ namespace ompl
                 {
                 }
 
-                virtual unsigned int getDimension() const
+                unsigned int getDimension() const override
                 {
                     return 2;
                 }
 
-                virtual void project(const base::State *state, base::EuclideanProjection &projection) const
+                void project(const base::State *state, base::EuclideanProjection &projection) const override
                 {
                     const base::State *gs = se_(state, 0);
                     projection(0) = gs->as<base::SE2StateSpace::StateType>()->getX();
                     projection(1) = gs->as<base::SE2StateSpace::StateType>()->getY();
                 }
 
-                virtual void defaultCellSizes()
+                void defaultCellSizes() override
                 {
                     bounds_ = gm_->getBounds();
                     const std::vector<double> b = bounds_.getDifference();
@@ -138,12 +138,12 @@ namespace ompl
                 {
                 }
 
-                virtual unsigned int getDimension() const
+                unsigned int getDimension() const override
                 {
                     return 3;
                 }
 
-                virtual void project(const base::State *state, base::EuclideanProjection &projection) const
+                void project(const base::State *state, base::EuclideanProjection &projection) const override
                 {
                     const base::State *gs = se_(state, 0);
                     projection(0) = gs->as<base::SE3StateSpace::StateType>()->getX();
@@ -151,7 +151,7 @@ namespace ompl
                     projection(2) = gs->as<base::SE3StateSpace::StateType>()->getZ();
                 }
 
-                virtual void defaultCellSizes()
+                void defaultCellSizes() override
                 {
                     bounds_ = gm_->getBounds();
                     const std::vector<double> b = bounds_.getDifference();
@@ -177,7 +177,7 @@ namespace ompl
                     : GridDecomposition(32, 2, bounds), space_(space), position_(space->getValueLocations()[0])
                 {
                 }
-                virtual void project(const ompl::base::State *s, std::vector<double> &coord) const
+                void project(const ompl::base::State *s, std::vector<double> &coord) const override
                 {
                     const double* pos = space_->getValueAddressAtLocation(s, position_);
                     coord.resize(2);
@@ -185,8 +185,8 @@ namespace ompl
                     coord[1] = pos[1];
                 }
 
-                virtual void sampleFullState(const ompl::base::StateSamplerPtr &sampler,
-                const std::vector<double>& coord, ompl::base::State *s) const
+                void sampleFullState(const ompl::base::StateSamplerPtr &sampler,
+                const std::vector<double>& coord, ompl::base::State *s) const override
                 {
                     double* pos = space_->getValueAddressAtLocation(s, position_);
                     sampler->sampleUniform(s);
@@ -207,7 +207,7 @@ namespace ompl
                     : GridDecomposition(16, 3, bounds), space_(space), position_(space->getValueLocations()[0])
                 {
                 }
-                virtual void project(const ompl::base::State *s, std::vector<double> &coord) const
+                void project(const ompl::base::State *s, std::vector<double> &coord) const override
                 {
                     const double* pos = space_->getValueAddressAtLocation(s, position_);
                     coord.resize(3);
@@ -216,8 +216,8 @@ namespace ompl
                     coord[2] = pos[2];
                 }
 
-                virtual void sampleFullState(const ompl::base::StateSamplerPtr &sampler,
-                const std::vector<double>& coord, ompl::base::State *s) const
+                void sampleFullState(const ompl::base::StateSamplerPtr &sampler,
+                const std::vector<double>& coord, ompl::base::State *s) const override
                 {
                     double* pos = space_->getValueAddressAtLocation(s, position_);
                     sampler->sampleUniform(s);

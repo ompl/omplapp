@@ -44,10 +44,10 @@ namespace ompl
             }
 
             /// \brief Destructor
-            virtual ~FCLContinuousMotionValidator() = default;
+            ~FCLContinuousMotionValidator() override = default;
 
             /// \brief Returns true if motion between s1 and s2 is collision free.
-            virtual bool checkMotion(const ob::State *s1, const ob::State *s2) const
+            bool checkMotion(const ob::State *s1, const ob::State *s2) const override
             {
                 double unused;
 
@@ -64,7 +64,7 @@ namespace ompl
             /// \brief Checks the motion between s1 and s2. If the motion is
             /// invalid, lastValid contains the last valid state and the
             /// parameterized time [0,1) when this state occurs.
-            virtual bool checkMotion(const ob::State *s1, const ob::State *s2, std::pair<ob::State*, double> &lastValid) const
+            bool checkMotion(const ob::State *s1, const ob::State *s2, std::pair<ob::State*, double> &lastValid) const override
             {
                 bool valid = false;
 

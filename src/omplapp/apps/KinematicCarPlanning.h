@@ -41,22 +41,22 @@ namespace ompl
         public:
             KinematicCarPlanning();
             KinematicCarPlanning(const control::ControlSpacePtr &controlSpace);
-            ~KinematicCarPlanning() = default;
+            ~KinematicCarPlanning() override = default;
 
-            bool isSelfCollisionEnabled() const
+            bool isSelfCollisionEnabled() const override
             {
                 return false;
             }
-            virtual unsigned int getRobotCount() const
+            unsigned int getRobotCount() const override
             {
                 return 1;
             }
-            virtual base::ScopedState<> getDefaultStartState() const;
-            virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
+            base::ScopedState<> getDefaultStartState() const override;
+            base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const override
             {
                 return state;
             }
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
+            const base::StateSpacePtr& getGeometricComponentStateSpace() const override
             {
                 return getStateSpace();
             }
@@ -72,7 +72,7 @@ namespace ompl
 
         protected:
 
-            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const
+            const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const override
             {
                 return state;
             }

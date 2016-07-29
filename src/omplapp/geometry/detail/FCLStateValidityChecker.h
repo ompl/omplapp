@@ -79,17 +79,17 @@ namespace ompl
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
-            virtual ~FCLStateValidityChecker () = default;
+            ~FCLStateValidityChecker () override = default;
 
             /// \brief Checks whether the given robot state collides with the
             /// environment or itself.
-            virtual bool isValid (const ob::State *state) const
+            bool isValid (const ob::State *state) const override
             {
                 return si_->satisfiesBounds (state) && fclWrapper_->isValid (state);
             }
 
             /// \brief Returns the minimum distance from the given robot state and the environment
-            virtual double clearance (const ob::State *state) const
+            double clearance (const ob::State *state) const override
             {
                 return fclWrapper_->clearance (state);
             }

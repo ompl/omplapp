@@ -44,19 +44,19 @@ namespace ompl
 
                 si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&BlimpPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
             }
-            ~BlimpPlanning() = default;
+            ~BlimpPlanning() override = default;
 
-            bool isSelfCollisionEnabled() const
+            bool isSelfCollisionEnabled() const override
             {
                 return false;
             }
-            virtual unsigned int getRobotCount() const
+            unsigned int getRobotCount() const override
             {
                 return 1;
             }
-            virtual base::ScopedState<> getDefaultStartState() const;
-            virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const;
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
+            base::ScopedState<> getDefaultStartState() const override;
+            base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const override;
+            const base::StateSpacePtr& getGeometricComponentStateSpace() const override
             {
                 return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(0);
             }
@@ -65,7 +65,7 @@ namespace ompl
 
         protected:
 
-            virtual const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const
+            const base::State* getGeometricComponentStateInternal(const base::State* state, unsigned int /*index*/) const override
             {
                 return state->as<base::CompoundState>()->components[0];
             }
