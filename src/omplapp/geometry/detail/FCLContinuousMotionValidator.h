@@ -44,9 +44,7 @@ namespace ompl
             }
 
             /// \brief Destructor
-            virtual ~FCLContinuousMotionValidator()
-            {
-            }
+            virtual ~FCLContinuousMotionValidator() = default;
 
             /// \brief Returns true if motion between s1 and s2 is collision free.
             virtual bool checkMotion(const ob::State *s1, const ob::State *s2) const

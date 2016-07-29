@@ -41,9 +41,7 @@ namespace ompl
         public:
             KinematicCarPlanning();
             KinematicCarPlanning(const control::ControlSpacePtr &controlSpace);
-            ~KinematicCarPlanning()
-            {
-            }
+            ~KinematicCarPlanning() = default;
 
             bool isSelfCollisionEnabled() const
             {

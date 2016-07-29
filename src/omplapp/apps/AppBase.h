@@ -50,9 +50,7 @@ namespace ompl
             {
             }
 
-            virtual ~AppBase()
-            {
-            }
+            virtual ~AppBase() = default;
 
             AppType getAppType()
             {

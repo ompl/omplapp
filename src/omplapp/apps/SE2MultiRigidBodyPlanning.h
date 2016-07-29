@@ -26,7 +26,7 @@ namespace ompl
             /// @brief Constructs an instance of multiple rigid bodies for 2D geometric planning.  n is the number of independent bodies in SE(2)
             SE2MultiRigidBodyPlanning(unsigned int n);
 
-            virtual ~SE2MultiRigidBodyPlanning() {}
+            virtual ~SE2MultiRigidBodyPlanning() = default;
 
             /// @brief Constructs the default start state where all robots begin at their geometric center.
             /// If robots are all using the same mesh, this state is not likely to be valid.

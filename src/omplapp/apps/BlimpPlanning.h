@@ -44,9 +44,7 @@ namespace ompl
 
                 si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&BlimpPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
             }
-            ~BlimpPlanning()
-            {
-            }
+            ~BlimpPlanning() = default;
 
             bool isSelfCollisionEnabled() const
             {

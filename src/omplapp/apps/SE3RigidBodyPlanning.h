@@ -32,9 +32,7 @@ namespace ompl
                 name_ = "Rigid body planning (3D)";
             }
 
-            virtual ~SE3RigidBodyPlanning()
-            {
-            }
+            virtual ~SE3RigidBodyPlanning() = default;
 
             bool isSelfCollisionEnabled() const
             {

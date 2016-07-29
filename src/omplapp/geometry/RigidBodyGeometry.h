@@ -58,9 +58,7 @@ namespace ompl
             {
             }
 
-            virtual ~RigidBodyGeometry()
-            {
-            }
+            virtual ~RigidBodyGeometry() = default;
 
             MotionModel getMotionModel() const
             {

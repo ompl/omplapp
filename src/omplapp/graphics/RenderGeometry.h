@@ -32,9 +32,7 @@ namespace ompl
             {
             }
 
-            virtual ~RenderGeometry()
-            {
-            }
+            virtual ~RenderGeometry() = default;
 
             int renderEnvironment() const;
 

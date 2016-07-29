@@ -79,9 +79,7 @@ namespace ompl
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
-            virtual ~FCLStateValidityChecker ()
-            {
-            }
+            virtual ~FCLStateValidityChecker () = default;
 
             /// \brief Checks whether the given robot state collides with the
             /// environment or itself.
