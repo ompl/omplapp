@@ -274,11 +274,11 @@ namespace ompl
 
                         for (auto & j : t)
                         {
-                            pts.push_back (fcl::Vec3f (j[0], j[1], j[2]));
+                            pts.emplace_back(j[0], j[1], j[2]);
                         }
 
                         for (unsigned int j = 0; j < t.size (); j+=3)
-                            triangles.push_back (fcl::Triangle (j, j+1, j+2));
+                            triangles.emplace_back(j, j+1, j+2);
                     }
                 }
                 return std::make_pair (pts, triangles);
