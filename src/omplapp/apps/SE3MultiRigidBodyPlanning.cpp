@@ -22,14 +22,14 @@ ompl::app::SE3MultiRigidBodyPlanning::SE3MultiRigidBodyPlanning(unsigned int n) 
         si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.0);
 }
 
-void ompl::app::SE3MultiRigidBodyPlanning::inferEnvironmentBounds(void)
+void ompl::app::SE3MultiRigidBodyPlanning::inferEnvironmentBounds()
 {
     // Infer bounds for all n SE(3) spaces
     for (unsigned int i = 0; i < n_; ++i)
         InferEnvironmentBounds(getGeometricComponentStateSpace(i), *static_cast<RigidBodyGeometry*>(this));
 }
 
-void ompl::app::SE3MultiRigidBodyPlanning::inferProblemDefinitionBounds(void)
+void ompl::app::SE3MultiRigidBodyPlanning::inferProblemDefinitionBounds()
 {
     // Make sure that all n SE(3) spaces get the same bounds, if they are adjusted
     for (unsigned int i = 0; i < n_; ++i)
@@ -38,7 +38,7 @@ void ompl::app::SE3MultiRigidBodyPlanning::inferProblemDefinitionBounds(void)
                                     n_, getGeometricComponentStateSpace(i), mtype_);
 }
 
-ompl::base::ScopedState<> ompl::app::SE3MultiRigidBodyPlanning::getDefaultStartState(void) const
+ompl::base::ScopedState<> ompl::app::SE3MultiRigidBodyPlanning::getDefaultStartState() const
 {
     base::ScopedState<> st(getStateSpace());
     base::CompoundStateSpace::StateType* c_st = st.get()->as<base::CompoundStateSpace::StateType>();

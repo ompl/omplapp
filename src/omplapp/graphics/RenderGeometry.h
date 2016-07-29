@@ -32,13 +32,13 @@ namespace ompl
             {
             }
 
-            virtual ~RenderGeometry(void)
+            virtual ~RenderGeometry()
             {
             }
 
-            int renderEnvironment(void) const;
+            int renderEnvironment() const;
 
-            int renderRobot(void) const;
+            int renderRobot() const;
 
             int renderRobotPart(unsigned int index) const;
 

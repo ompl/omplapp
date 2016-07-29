@@ -14,13 +14,13 @@
 #include "omplapp/graphics/detail/assimpGUtil.h"
 #include "omplapp/graphics/detail/RenderPlannerData.h"
 
-int ompl::app::RenderGeometry::renderEnvironment(void) const
+int ompl::app::RenderGeometry::renderEnvironment() const
 {
     const GeometrySpecification &gs = rbg_.getGeometrySpecification();
     return scene::assimpRender(gs.obstacles, gs.obstaclesShift);
 }
 
-int ompl::app::RenderGeometry::renderRobot(void) const
+int ompl::app::RenderGeometry::renderRobot() const
 {
     const GeometrySpecification &gs = rbg_.getGeometrySpecification();
     return scene::assimpRender(gs.robot, gs.robotShift);

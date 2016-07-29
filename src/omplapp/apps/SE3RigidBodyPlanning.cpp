@@ -12,7 +12,7 @@
 
 #include "omplapp/apps/SE3RigidBodyPlanning.h"
 
-ompl::base::ScopedState<> ompl::app::SE3RigidBodyPlanning::getDefaultStartState(void) const
+ompl::base::ScopedState<> ompl::app::SE3RigidBodyPlanning::getDefaultStartState() const
 {
     base::ScopedState<base::SE3StateSpace> st(getGeometricComponentStateSpace());
     aiVector3D s = getRobotCenter(0);

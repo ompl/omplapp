@@ -44,7 +44,7 @@ namespace ompl
             }
 
             /// \brief Destructor
-            virtual ~FCLContinuousMotionValidator(void)
+            virtual ~FCLContinuousMotionValidator()
             {
             }
 

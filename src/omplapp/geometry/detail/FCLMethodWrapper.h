@@ -56,7 +56,7 @@ namespace ompl
                 configure (geom);
             }
 
-            virtual ~FCLMethodWrapper (void)
+            virtual ~FCLMethodWrapper ()
             {
                 for (auto & robotPart : robotParts_)
                     delete robotPart;

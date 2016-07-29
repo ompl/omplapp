@@ -54,15 +54,15 @@ namespace ompl
             {
             }
 
-            bool isSelfCollisionEnabled(void) const
+            bool isSelfCollisionEnabled() const
             {
                 return false;
             }
-            virtual unsigned int getRobotCount(void) const
+            virtual unsigned int getRobotCount() const
             {
                 return 1;
             }
-            virtual base::ScopedState<> getDefaultStartState(void) const;
+            virtual base::ScopedState<> getDefaultStartState() const;
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
             {
                 base::ScopedState<> r(si_);
@@ -73,7 +73,7 @@ namespace ompl
                 return r;
             }
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
             {
                 return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(0);
             }
@@ -107,11 +107,11 @@ namespace ompl
 
             virtual void postPropagate(const base::State* state, const control::Control* control, const double duration, base::State* result);
 
-            static control::ControlSpacePtr constructControlSpace(void)
+            static control::ControlSpacePtr constructControlSpace()
             {
                 return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 2));
             }
-            static base::StateSpacePtr constructStateSpace(void)
+            static base::StateSpacePtr constructStateSpace()
             {
                 base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
                 stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE2StateSpace()), 1.);

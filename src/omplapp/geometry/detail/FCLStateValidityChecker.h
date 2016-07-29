@@ -79,7 +79,7 @@ namespace ompl
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
-            virtual ~FCLStateValidityChecker (void)
+            virtual ~FCLStateValidityChecker ()
             {
             }
 
@@ -96,7 +96,7 @@ namespace ompl
                 return fclWrapper_->clearance (state);
             }
 
-            const FCLMethodWrapperPtr& getFCLWrapper (void) const
+            const FCLMethodWrapperPtr& getFCLWrapper () const
             {
                 return fclWrapper_;
             }

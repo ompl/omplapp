@@ -102,7 +102,7 @@ namespace ompl
                 {
                 }
 
-                virtual unsigned int getDimension(void) const
+                virtual unsigned int getDimension() const
                 {
                     return 2;
                 }
@@ -114,7 +114,7 @@ namespace ompl
                     projection(1) = gs->as<base::SE2StateSpace::StateType>()->getY();
                 }
 
-                virtual void defaultCellSizes(void)
+                virtual void defaultCellSizes()
                 {
                     bounds_ = gm_->getBounds();
                     const std::vector<double> b = bounds_.getDifference();
@@ -138,7 +138,7 @@ namespace ompl
                 {
                 }
 
-                virtual unsigned int getDimension(void) const
+                virtual unsigned int getDimension() const
                 {
                     return 3;
                 }
@@ -151,7 +151,7 @@ namespace ompl
                     projection(2) = gs->as<base::SE3StateSpace::StateType>()->getZ();
                 }
 
-                virtual void defaultCellSizes(void)
+                virtual void defaultCellSizes()
                 {
                     bounds_ = gm_->getBounds();
                     const std::vector<double> b = bounds_.getDifference();

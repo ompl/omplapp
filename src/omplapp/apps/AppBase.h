@@ -50,7 +50,7 @@ namespace ompl
             {
             }
 
-            virtual ~AppBase(void)
+            virtual ~AppBase()
             {
             }
 
@@ -63,9 +63,9 @@ namespace ompl
                 return name_;
             }
 
-            virtual bool isSelfCollisionEnabled(void) const = 0;
+            virtual bool isSelfCollisionEnabled() const = 0;
 
-            virtual base::ScopedState<> getDefaultStartState(void) const = 0;
+            virtual base::ScopedState<> getDefaultStartState() const = 0;
 
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const = 0;
 
@@ -74,27 +74,27 @@ namespace ompl
                 return base::ScopedState<>(getGeometricComponentStateSpace(), getGeometricComponentStateInternal(state.get(), index));
             }
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const = 0;
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const = 0;
 
-            virtual unsigned int getRobotCount(void) const = 0;
+            virtual unsigned int getRobotCount() const = 0;
 
-            GeometricStateExtractor getGeometricStateExtractor(void) const
+            GeometricStateExtractor getGeometricStateExtractor() const
             {
                 return std::bind(&AppBase::getGeometricComponentStateInternal, this, std::placeholders::_1, std::placeholders::_2);
             }
 
-            virtual void inferEnvironmentBounds(void)
+            virtual void inferEnvironmentBounds()
             {
                 InferEnvironmentBounds(getGeometricComponentStateSpace(), *static_cast<RigidBodyGeometry*>(this));
             }
 
-            virtual void inferProblemDefinitionBounds(void)
+            virtual void inferProblemDefinitionBounds()
             {
                 InferProblemDefinitionBounds(AppTypeSelector<T>::SimpleSetup::getProblemDefinition(), getGeometricStateExtractor(), factor_, add_,
                                              getRobotCount(), getGeometricComponentStateSpace(), mtype_);
             }
 
-            virtual void setup(void)
+            virtual void setup()
             {
                 inferEnvironmentBounds();
 
@@ -145,7 +145,7 @@ namespace ompl
         };
 
         template<>
-        inline AppType AppBase<CONTROL>::getAppType(void)
+        inline AppType AppBase<CONTROL>::getAppType()
         {
             return CONTROL;
         }

@@ -119,7 +119,7 @@ void DisplayOpenDESpaces::displaySpace(dSpaceID space)
     }
 }
 
-void DisplayOpenDESpaces::displaySpaces(void)
+void DisplayOpenDESpaces::displaySpaces()
 {
     for (unsigned int i = 0 ; i < m_spaces.size() ; ++i)
     {
@@ -141,7 +141,7 @@ void DisplayOpenDESpaces::setGeomColor(dGeomID geom, float r, float g, float b)
     m_gcolors[geom] = c;
 }
 
-void DisplayOpenDESpaces::clear(void)
+void DisplayOpenDESpaces::clear()
 {
     m_spaces.clear();
     m_colors.clear();

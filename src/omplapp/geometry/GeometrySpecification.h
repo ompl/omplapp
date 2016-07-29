@@ -37,7 +37,7 @@ namespace ompl
         {
         public:
 
-            GeometrySpecification(void)
+            GeometrySpecification()
             {
             }
 

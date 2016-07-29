@@ -58,31 +58,31 @@ namespace ompl
             {
             }
 
-            virtual ~RigidBodyGeometry(void)
+            virtual ~RigidBodyGeometry()
             {
             }
 
-            MotionModel getMotionModel(void) const
+            MotionModel getMotionModel() const
             {
                 return mtype_;
             }
 
-            CollisionChecker getCollisionCheckerType(void) const
+            CollisionChecker getCollisionCheckerType() const
             {
                 return ctype_;
             }
 
-            bool hasEnvironment(void) const
+            bool hasEnvironment() const
             {
                 return !importerEnv_.empty();
             }
 
-            bool hasRobot(void) const
+            bool hasRobot() const
             {
                 return !importerRobot_.empty();
             }
 
-            unsigned int getLoadedRobotCount(void) const
+            unsigned int getLoadedRobotCount() const
             {
                 return importerRobot_.size();
             }
@@ -114,7 +114,7 @@ namespace ompl
             /** \brief Allocate default state validity checker using PQP. */
             const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
 
-            const GeometrySpecification& getGeometrySpecification(void) const;
+            const GeometrySpecification& getGeometrySpecification() const;
 
             /** \brief The bounds of the environment are inferred
                 based on the axis-aligned bounding box for the objects
@@ -126,7 +126,7 @@ namespace ompl
             }
 
             /** \brief Get the data set by setBoundsFactor() */
-            double getBoundsFactor(void) const
+            double getBoundsFactor() const
             {
                 return factor_;
             }
@@ -141,7 +141,7 @@ namespace ompl
             }
 
             /** \brief Get the data set by setBoundsAddition() */
-            double getBoundsAddition(void) const
+            double getBoundsAddition() const
             {
                 return add_;
             }
@@ -150,11 +150,11 @@ namespace ompl
                 infer its bounds. The bounds will be 2-dimensional
                 when planning in 2D and 3-dimensional when planning in
                 3D. */
-            base::RealVectorBounds inferEnvironmentBounds(void) const;
+            base::RealVectorBounds inferEnvironmentBounds() const;
 
         protected:
 
-            void computeGeometrySpecification(void);
+            void computeGeometrySpecification();
 
             MotionModel         mtype_;
 

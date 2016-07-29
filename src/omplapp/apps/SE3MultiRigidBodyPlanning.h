@@ -26,17 +26,17 @@ namespace ompl
             /// @brief Constructs an instance of multiple rigid bodies for 3D geometric planning.  n is the number of independent bodies in SE(3)
             SE3MultiRigidBodyPlanning(unsigned int n);
 
-            virtual ~SE3MultiRigidBodyPlanning(void) {}
+            virtual ~SE3MultiRigidBodyPlanning() {}
 
             /// @brief Constructs the default start state where all robots begin at their geometric center.
             /// If robots are all using the same mesh, this state is not likely to be valid.
-            virtual base::ScopedState<> getDefaultStartState(void) const;
+            virtual base::ScopedState<> getDefaultStartState() const;
 
-            virtual void inferEnvironmentBounds(void);
+            virtual void inferEnvironmentBounds();
 
-            virtual void inferProblemDefinitionBounds(void);
+            virtual void inferProblemDefinitionBounds();
 
-            bool isSelfCollisionEnabled(void) const
+            bool isSelfCollisionEnabled() const
             {
                 // Make sure that self collision is enabled to avoid inter-rigid body collision
                 return true;
@@ -53,13 +53,13 @@ namespace ompl
                 return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(index);
             }
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
             {
                 // Return the zeroth component.  All components are the same.
                 return getGeometricComponentStateSpace(0);
             }
 
-            virtual unsigned int getRobotCount(void) const
+            virtual unsigned int getRobotCount() const
             {
                 return n_;
             }

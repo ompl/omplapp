@@ -48,17 +48,17 @@ namespace ompl
             {
             }
 
-            bool isSelfCollisionEnabled(void) const
+            bool isSelfCollisionEnabled() const
             {
                 return false;
             }
-            virtual unsigned int getRobotCount(void) const
+            virtual unsigned int getRobotCount() const
             {
                 return 1;
             }
-            virtual base::ScopedState<> getDefaultStartState(void) const;
+            virtual base::ScopedState<> getDefaultStartState() const;
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const;
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
             {
                 return getStateSpace()->as<base::CompoundStateSpace>()->getSubspace(0);
             }
@@ -76,11 +76,11 @@ namespace ompl
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
 
-            static control::ControlSpacePtr constructControlSpace(void)
+            static control::ControlSpacePtr constructControlSpace()
             {
                 return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 3));
             }
-            static base::StateSpacePtr constructStateSpace(void);
+            static base::StateSpacePtr constructStateSpace();
 
             double timeStep_;
             control::ODESolverPtr odeSolver;

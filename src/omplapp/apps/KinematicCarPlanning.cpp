@@ -30,7 +30,7 @@ ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpac
     si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&KinematicCarPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
 }
 
-ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(void) const
+ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState() const
 {
     base::ScopedState<base::SE2StateSpace> sSE2(getStateSpace());
     aiVector3D s = getRobotCenter(0);
@@ -41,7 +41,7 @@ ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState(
     return sSE2;
 }
 
-void ompl::app::KinematicCarPlanning::setDefaultControlBounds(void)
+void ompl::app::KinematicCarPlanning::setDefaultControlBounds()
 {
     base::RealVectorBounds cbounds(2);
     cbounds.low[0] = -5.;

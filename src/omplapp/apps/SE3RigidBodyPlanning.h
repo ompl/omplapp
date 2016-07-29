@@ -27,33 +27,33 @@ namespace ompl
         {
         public:
 
-            SE3RigidBodyPlanning(void) : AppBase<GEOMETRIC>(base::StateSpacePtr(new base::SE3StateSpace()), Motion_3D)
+            SE3RigidBodyPlanning() : AppBase<GEOMETRIC>(base::StateSpacePtr(new base::SE3StateSpace()), Motion_3D)
             {
                 name_ = "Rigid body planning (3D)";
             }
 
-            virtual ~SE3RigidBodyPlanning(void)
+            virtual ~SE3RigidBodyPlanning()
             {
             }
 
-            bool isSelfCollisionEnabled(void) const
+            bool isSelfCollisionEnabled() const
             {
                 return false;
             }
 
-            virtual base::ScopedState<> getDefaultStartState(void) const;
+            virtual base::ScopedState<> getDefaultStartState() const;
 
             virtual base::ScopedState<> getFullStateFromGeometricComponent(const base::ScopedState<> &state) const
             {
                 return state;
             }
 
-            virtual const base::StateSpacePtr& getGeometricComponentStateSpace(void) const
+            virtual const base::StateSpacePtr& getGeometricComponentStateSpace() const
             {
                 return getStateSpace();
             }
 
-            virtual unsigned int getRobotCount(void) const
+            virtual unsigned int getRobotCount() const
             {
                 return 1;
             }

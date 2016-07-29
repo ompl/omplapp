@@ -12,7 +12,7 @@
 
 #include "omplapp/apps/QuadrotorPlanning.h"
 
-ompl::base::ScopedState<> ompl::app::QuadrotorPlanning::getDefaultStartState(void) const
+ompl::base::ScopedState<> ompl::app::QuadrotorPlanning::getDefaultStartState() const
 {
     base::ScopedState<base::SE3StateSpace> s(getGeometricComponentStateSpace());
     aiVector3D c = getRobotCenter(0);
@@ -92,7 +92,7 @@ void ompl::app::QuadrotorPlanning::postPropagate(const base::State* /*state*/, c
     cs->getSubspace(1)->enforceBounds(csState[1]);
 }
 
-ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace(void)
+ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace()
 {
     base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
 

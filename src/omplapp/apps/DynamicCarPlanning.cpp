@@ -13,7 +13,7 @@
 #include "omplapp/apps/DynamicCarPlanning.h"
 #include <boost/math/constants/constants.hpp>
 
-ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState(void) const
+ompl::base::ScopedState<> ompl::app::DynamicCarPlanning::getDefaultStartState() const
 {
     base::ScopedState<base::CompoundStateSpace> s(getStateSpace());
     base::SE2StateSpace::StateType& pose = *s->as<base::SE2StateSpace::StateType>(0);

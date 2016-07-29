@@ -12,7 +12,7 @@
 
 #include "omplapp/apps/BlimpPlanning.h"
 
-ompl::base::ScopedState<> ompl::app::BlimpPlanning::getDefaultStartState(void) const
+ompl::base::ScopedState<> ompl::app::BlimpPlanning::getDefaultStartState() const
 {
     base::ScopedState<base::SE3StateSpace> s(getGeometricComponentStateSpace());
     aiVector3D c = getRobotCenter(0);
@@ -74,7 +74,7 @@ void ompl::app::BlimpPlanning::ode(const control::ODESolver::StateType& q, const
     qdot[10] = u[2];
 }
 
-ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace(void)
+ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace()
 {
     base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
 

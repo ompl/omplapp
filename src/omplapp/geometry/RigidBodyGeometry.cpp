@@ -102,7 +102,7 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
         return false;
 }
 
-ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBounds(void) const
+ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBounds() const
 {
     base::RealVectorBounds bounds(3);
 
@@ -122,12 +122,12 @@ ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBound
     return bounds;
 }
 
-const ompl::app::GeometrySpecification& ompl::app::RigidBodyGeometry::getGeometrySpecification(void) const
+const ompl::app::GeometrySpecification& ompl::app::RigidBodyGeometry::getGeometrySpecification() const
 {
     return geom_;
 }
 
-void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void)
+void ompl::app::RigidBodyGeometry::computeGeometrySpecification()
 {
     validitySvc_.reset();
     geom_.obstacles.clear();
