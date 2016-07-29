@@ -151,7 +151,7 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
 
         if (problem == 0)       std::cout << "- Apartment problem " << std::flush;
         else if (problem == 1) std::cout << "- Cubicles problem "  << std::flush;
-        else if (problem == 2) std::cout << "- \'Easy\' problem "  << std::flush;
+        else if (problem == 2) std::cout << R"(- 'Easy' problem )"  << std::flush;
 
         // plan in SE3
         app::SE3RigidBodyPlanning setup;
@@ -261,7 +261,7 @@ int main (int argc, char **argv)
         else if (i == 1)
             std::cout << " Cubicles problem - Median Time (s)" << std::endl;
         else if (i == 2)
-            std::cout << " \'Easy\' problem - Median Time (s)" << std::endl;
+            std::cout << R"( 'Easy' problem - Median Time (s))" << std::endl;
 
         std::cout << "    Discrete PQP: " << (isOdd ? *pqp_time : .5*(*pqp_time + *(pqp_time+1)))
             << "  " << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
