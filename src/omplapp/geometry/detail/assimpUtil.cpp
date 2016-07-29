@@ -22,14 +22,14 @@ void ompl::app::scene::inferBounds(base::RealVectorBounds &bounds, const std::ve
     double maxX = -minX;
     double maxY = maxX;
     double maxZ = maxX;
-    for (unsigned int i = 0 ; i < vertices.size() ; ++i)
+    for (const auto & vertex : vertices)
     {
-        if (minX > vertices[i].x) minX = vertices[i].x;
-        if (maxX < vertices[i].x) maxX = vertices[i].x;
-        if (minY > vertices[i].y) minY = vertices[i].y;
-        if (maxY < vertices[i].y) maxY = vertices[i].y;
-        if (minZ > vertices[i].z) minZ = vertices[i].z;
-        if (maxZ < vertices[i].z) maxZ = vertices[i].z;
+        if (minX > vertex.x) minX = vertex.x;
+        if (maxX < vertex.x) maxX = vertex.x;
+        if (minY > vertex.y) minY = vertex.y;
+        if (maxY < vertex.y) maxY = vertex.y;
+        if (minZ > vertex.z) minZ = vertex.z;
+        if (maxZ < vertex.z) maxZ = vertex.z;
     }
 
     multiply -= 1.0;
@@ -111,8 +111,8 @@ void ompl::app::scene::sceneCenter(const aiScene *scene, aiVector3D &center)
     std::vector<aiVector3D> vertices;
     extractVertices(scene, vertices);
     center.Set(0, 0, 0);
-    for (unsigned int i = 0 ; i < vertices.size() ; ++i)
-        center += vertices[i];
+    for (auto & vertex : vertices)
+        center += vertex;
     center /= (float)vertices.size();
 }
 

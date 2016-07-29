@@ -251,8 +251,8 @@ namespace ompl
                         std::vector<aiVector3D> t;
                         scene::extractTriangles(scenes[i], t);
                         if (center.size() > i)
-                            for (unsigned int j = 0 ; j < t.size() ; ++j)
-                                t[j] -= center[i];
+                            for (auto & j : t)
+                                j -= center[i];
                         triangles.insert(triangles.end(), t.begin(), t.end());
                     }
                 return getPQPModelFromTris(triangles);

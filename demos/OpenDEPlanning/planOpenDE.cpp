@@ -56,8 +56,8 @@ static void simLoop (int /*pause*/)
         glPointSize(2.0);
         glColor3f(1.0f, 0.0f, 0.0f);
         glBegin(GL_POINTS);
-        for (unsigned int i = 0 ; i < POINTS.size() ; ++i)
-            glVertex3d(POINTS[i].first, POINTS[i].second, 0.05);
+        for (auto & i : POINTS)
+            glVertex3d(i.first, i.second, 0.05);
         glEnd();
     }
 

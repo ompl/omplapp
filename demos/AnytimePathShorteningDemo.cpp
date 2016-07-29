@@ -205,9 +205,9 @@ void solve(const ProblemType& probType, const OptimizationType &optType, const d
     if (optType != NONE)
     {
         // Adding planners
-        for (size_t i = 0; i < planners.size(); ++i)
+        for (auto i : planners)
         {
-            base::PlannerPtr subPlanner = allocPlanner(planners[i], setup->getSpaceInformation());
+            base::PlannerPtr subPlanner = allocPlanner(i, setup->getSpaceInformation());
             planner->as<geometric::AnytimePathShortening>()->addPlanner(subPlanner);
         }
 

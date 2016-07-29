@@ -57,8 +57,8 @@ namespace ompl
 
             virtual ~FCLMethodWrapper (void)
             {
-                for (unsigned int i=0; i<robotParts_.size(); ++i)
-                    delete robotParts_[i];
+                for (auto & robotPart : robotParts_)
+                    delete robotPart;
             }
 
             /// \brief Checks whether the given robot state collides with the
@@ -266,14 +266,14 @@ namespace ompl
                         scene::extractTriangles (scenes[i], t);
 
                         if (center.size () > i)
-                            for (unsigned int j = 0; j < t.size (); ++j)
-                                t[j] -= center[i];
+                            for (auto & j : t)
+                                j -= center[i];
 
                         assert (t.size () % 3 == 0);
 
-                        for (unsigned int j = 0; j < t.size (); ++j)
+                        for (auto & j : t)
                         {
-                            pts.push_back (fcl::Vec3f (t[j][0], t[j][1], t[j][2]));
+                            pts.push_back (fcl::Vec3f (j[0], j[1], j[2]));
                         }
 
                         for (unsigned int j = 0; j < t.size (); j+=3)

@@ -106,10 +106,10 @@ ompl::base::RealVectorBounds ompl::app::RigidBodyGeometry::inferEnvironmentBound
 {
     base::RealVectorBounds bounds(3);
 
-    for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
+    for (const auto & i : importerEnv_)
     {
         std::vector<aiVector3D> vertices;
-        scene::extractVertices(importerEnv_[i]->GetScene(), vertices);
+        scene::extractVertices(i->GetScene(), vertices);
         scene::inferBounds(bounds, vertices, factor_, add_);
     }
 
@@ -135,8 +135,8 @@ void ompl::app::RigidBodyGeometry::computeGeometrySpecification(void)
     geom_.robot.clear();
     geom_.robotShift.clear();
 
-    for (unsigned int i = 0 ; i < importerEnv_.size() ; ++i)
-        geom_.obstacles.push_back(importerEnv_[i]->GetScene());
+    for (auto & i : importerEnv_)
+        geom_.obstacles.push_back(i->GetScene());
 
     for (unsigned int i = 0 ; i < importerRobot_.size() ; ++i)
     {

@@ -34,11 +34,11 @@ void ompl::app::InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &p
     double maxX = -minX;
     double maxY = maxX;
     double maxZ = maxX;
-    for (unsigned int i = 0 ; i < states.size() ; ++i)
+    for (auto & state : states)
     {
         for (unsigned int r = 0 ; r < robotCount ; ++r)
         {
-            const base::State *s = se(states[i], r);
+            const base::State *s = se(state, r);
             double x = mtype == Motion_2D ? s->as<base::SE2StateSpace::StateType>()->getX() : s->as<base::SE3StateSpace::StateType>()->getX();
             double y = mtype == Motion_2D ? s->as<base::SE2StateSpace::StateType>()->getY() : s->as<base::SE3StateSpace::StateType>()->getY();
             double z = mtype == Motion_2D ? 0.0 : s->as<base::SE3StateSpace::StateType>()->getZ();
