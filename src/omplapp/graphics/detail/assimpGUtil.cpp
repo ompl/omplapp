@@ -127,11 +127,11 @@ namespace ompl
                     const aiMesh* mesh = scene->mMeshes[nd->mMeshes[n]];
 
                     apply_material(scene->mMaterials[mesh->mMaterialIndex]);
-                    if(mesh->mNormals == NULL)
+                    if(mesh->mNormals == nullptr)
                         glDisable(GL_LIGHTING);
                     else
                         glEnable(GL_LIGHTING);
-                    if(mesh->mColors[0] == NULL)
+                    if(mesh->mColors[0] == nullptr)
                         glDisable(GL_COLOR_MATERIAL);
                     else
                         glEnable(GL_COLOR_MATERIAL);
@@ -153,9 +153,9 @@ namespace ompl
                         for(i = 0; i < (int)face->mNumIndices; i++)
                         {
                             int index = face->mIndices[i];
-                            if(mesh->mColors[0] != NULL)
+                            if(mesh->mColors[0] != nullptr)
                                 Color4f(&mesh->mColors[0][index]);
-                            if(mesh->mNormals != NULL)
+                            if(mesh->mNormals != nullptr)
                                 glNormal3fv(&mesh->mNormals[index].x);
                             glVertex3fv(&mesh->mVertices[index].x);
                         }

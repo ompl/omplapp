@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     fn.start = &start;
     fn.step = &simLoop;
     fn.command = &command;
-    fn.stop = 0;
+    fn.stop = nullptr;
 
     char *textures = (char*)alloca(strlen(OMPLAPP_RESOURCE_DIR) + 10);
     strcpy(textures, OMPLAPP_RESOURCE_DIR);
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
     ss.setup();
     ss.print();
-    std::thread *th = NULL;
+    std::thread *th = nullptr;
 
     std::cout << "Planning for at most 60 seconds ..." << std::endl;
 

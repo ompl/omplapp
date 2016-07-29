@@ -52,7 +52,7 @@ geometric::SimpleSetup* allocProblem(const ProblemType &probType)
             return static_cast<geometric::SimpleSetup*>(new app::SE3MultiRigidBodyPlanning(2));
         default:
             OMPL_ERROR("Unknown problem type in allocProblem");
-            return NULL;
+            return nullptr;
     }
 }
 

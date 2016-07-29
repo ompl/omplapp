@@ -115,7 +115,7 @@ void DisplayOpenDESpaces::displaySpace(dSpaceID space)
             dsSetColor(it->second.r,it->second.g,it->second.b);
         else
             dsSetColor(m_activeColor.r, m_activeColor.g, m_activeColor.b);
-        drawGeom(geom, NULL, NULL, 0);
+        drawGeom(geom, nullptr, nullptr, 0);
     }
 }
 
