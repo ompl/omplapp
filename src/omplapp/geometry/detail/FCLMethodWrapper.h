@@ -224,7 +224,7 @@ namespace ompl
                 // Configuring the model of the robot, composed of one or more pieces
                 for (size_t rbt = 0; rbt < geom.robot.size (); ++rbt)
                 {
-                    Model* model = new Model();
+                    auto* model = new Model();
                     model->beginModel ();
                     aiVector3D shift(0.0, 0.0, 0.0);
                     if (geom.robotShift.size () > rbt)

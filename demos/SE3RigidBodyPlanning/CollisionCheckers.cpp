@@ -247,9 +247,9 @@ int main (int argc, char **argv)
     {
         bool isOdd = pqp_times[i].size() % 2 == 1;
         unsigned int n = pqp_times[i].size() / 2u;
-        std::vector<double>::iterator pqp_time = pqp_times[i].begin() + n;
-        std::vector<double>::iterator dfcl_time = dfcl_times[i].begin()+n;
-        std::vector<double>::iterator cfcl_time = cfcl_times[i].begin()+n;
+        auto pqp_time = pqp_times[i].begin() + n;
+        auto dfcl_time = dfcl_times[i].begin()+n;
+        auto cfcl_time = cfcl_times[i].begin()+n;
 
         std::nth_element(pqp_times[i].begin(), pqp_time, pqp_times[i].end());
         std::nth_element(dfcl_times[i].begin(), dfcl_time, dfcl_times[i].end());

@@ -45,7 +45,7 @@ base::ValidStateSamplerPtr allocObstacleStateSampler(const base::SpaceInformatio
 
 base::ValidStateSamplerPtr allocMaximizeClearanceStateSampler(const base::SpaceInformation *si)
 {
-    base::MaximizeClearanceValidStateSampler *s = new base::MaximizeClearanceValidStateSampler(si);
+    auto *s = new base::MaximizeClearanceValidStateSampler(si);
     s->setNrImproveAttempts(5);
     return base::ValidStateSamplerPtr(s);
 }
