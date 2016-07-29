@@ -45,7 +45,7 @@ namespace ompl
         {
         public:
 
-            typedef std::function<void(fcl::Vec3f&, fcl::Quaternion3f&, const base::State*)> FCLPoseFromStateCallback;
+            using FCLPoseFromStateCallback = std::function<void (fcl::Vec3f &, fcl::Quaternion3f &, const base::State *)>;
 
             FCLMethodWrapper (const GeometrySpecification &geom,
                               GeometricStateExtractor se,
@@ -285,9 +285,9 @@ namespace ompl
             }
 
             /// \brief The type of geometric bounding done for the robot and environment
-            typedef fcl::OBBRSS  BVType;
+            using BVType = fcl::OBBRSS;
             /// \brief The type geometric model used for the meshes
-            typedef fcl::BVHModel <BVType> Model;
+            using Model = fcl::BVHModel<BVType>;
 
             /// \brief Geometric model used for the environment
             Model environment_;

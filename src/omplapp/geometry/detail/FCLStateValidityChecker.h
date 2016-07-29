@@ -37,7 +37,7 @@ namespace ompl
         template<MotionModel T>
         struct OMPL_FCL_StateType
         {
-            typedef ob::SE3StateSpace::StateType type;
+            using type = ob::SE3StateSpace::StateType;
 
             void FCLPoseFromState(fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
@@ -54,7 +54,7 @@ namespace ompl
         template<>
         struct OMPL_FCL_StateType<Motion_2D>
         {
-            typedef ob::SE2StateSpace::StateType type;
+            using type = ob::SE2StateSpace::StateType;
 
             void FCLPoseFromState (fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {

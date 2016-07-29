@@ -39,7 +39,7 @@ namespace ompl
         template<MotionModel T>
         struct OMPL_StateType
         {
-            typedef base::SE3StateSpace::StateType type;
+            using type = base::SE3StateSpace::StateType;
 
             /** \brief  Convert a quaternion to a 3x3 rotation matrix; based on code from
                 http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm */
@@ -80,7 +80,7 @@ namespace ompl
         template<>
         struct OMPL_StateType<Motion_2D>
         {
-            typedef base::SE2StateSpace::StateType type;
+            using type = base::SE2StateSpace::StateType;
 
             void PQP_pose_from_state(PQP_REAL robTrans[3], PQP_REAL robRot[3][3], const type &s) const
             {
@@ -128,7 +128,7 @@ namespace ompl
 
             bool isValid(const base::State *state) const override
             {
-                typedef typename OMPL_StateType<T>::type StateType;
+                using StateType = typename OMPL_StateType<T>::type;
 
                 if (!si_->satisfiesBounds(state))
                     return false;
@@ -178,7 +178,7 @@ namespace ompl
 
             double clearance(const base::State *state) const override
             {
-                typedef typename OMPL_StateType<T>::type StateType;
+                using StateType = typename OMPL_StateType<T>::type;
 
                 double dist = std::numeric_limits<double>::infinity();
                 if (environment_)
@@ -207,7 +207,7 @@ namespace ompl
         protected:
 
             /** \brief Shared pointer wrapper for PQP_Model */
-            typedef std::shared_ptr<PQP_Model>     PQPModelPtr;
+            using PQPModelPtr = std::shared_ptr<PQP_Model>;
 
             void configure(const GeometrySpecification &geom)
             {
