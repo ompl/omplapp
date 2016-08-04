@@ -149,8 +149,9 @@ int main(int argc, char **argv)
     tools::Benchmark b(setup, benchmark_name);
 
     // optionally set pre & pos run events
-    b.setPreRunEvent(std::bind(&preRunEvent, std::placeholders::_1));
-    b.setPostRunEvent(std::bind(&postRunEvent, std::placeholders::_1, std::placeholders::_2));
+    b.setPreRunEvent([](const base::PlannerPtr& planner) { preRunEvent (planner); });
+    b.setPostRunEvent([](const base::PlannerPtr& planner, tools::Benchmark::RunProperties& run)
+        { postRunEvent(planner, run); });
 
     b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
     b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));

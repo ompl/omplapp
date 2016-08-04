@@ -142,7 +142,7 @@ int main(int argc, char **argv)
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
         }
 
-        th = new std::thread(std::bind(&playPath, &ss));
+        th = new std::thread([&ss] { return playPath(&ss); });
     }
 
     // run simulation

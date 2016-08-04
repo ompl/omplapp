@@ -22,7 +22,6 @@
 
 #include <PQP.h>
 #include <memory>
-#include <functional>
 #include <utility>
 #include <vector>
 #include <limits>

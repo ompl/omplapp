@@ -14,20 +14,34 @@
 #include <boost/math/constants/constants.hpp>
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning()
-    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(new control::ODEBasicSolver<>(si_, std::bind(&KinematicCarPlanning::ode, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)))
+    : AppBase<CONTROL>(constructControlSpace(), Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(new control::ODEBasicSolver<>(si_, [&](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
+    {
+        ode(q, ctrl, qdot);
+    }))
 {
     name_ = std::string("Kinematic car");
     setDefaultControlBounds();
 
-    si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&KinematicCarPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+    si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver,
+        [&](const base::State* state, const control::Control* control, const double duration, base::State* result)
+        {
+            postPropagate(state, control, duration, result);
+        }));
 }
 
 ompl::app::KinematicCarPlanning::KinematicCarPlanning(const control::ControlSpacePtr &controlSpace)
-    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(new control::ODEBasicSolver<>(si_, std::bind(&KinematicCarPlanning::ode, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)))
+    : AppBase<CONTROL>(controlSpace, Motion_2D), timeStep_(1e-2), lengthInv_(1.), odeSolver(new control::ODEBasicSolver<>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
+    {
+        ode(q, ctrl, qdot);
+    }))
 {
     setDefaultControlBounds();
 
-    si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&KinematicCarPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+    si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver,
+        [this](const base::State* state, const control::Control* control, const double duration, base::State* result)
+        {
+            postPropagate(state, control, duration, result);
+        }));
 }
 
 ompl::base::ScopedState<> ompl::app::KinematicCarPlanning::getDefaultStartState() const

@@ -37,12 +37,21 @@ namespace ompl
         {
         public:
             BlimpPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), odeSolver(new control::ODEBasicSolver<>(si_, std::bind(&BlimpPlanning::ode, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)))
+                : AppBase<CONTROL>(constructControlSpace(), Motion_3D),
+                  timeStep_(1e-2),
+                  odeSolver(new control::ODEBasicSolver<>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
+                      {
+                          ode(q, ctrl, qdot);
+                      }))
             {
                 name_ = std::string("Blimp");
                 setDefaultBounds();
 
-                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver, std::bind(&BlimpPlanning::postPropagate, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)));
+                si_->setStatePropagator(control::ODESolver::getStatePropagator(odeSolver,
+                    [this](const base::State* state, const control::Control* control, const double duration, base::State* result)
+                    {
+                        postPropagate(state, control, duration, result);
+                    }));
             }
             ~BlimpPlanning() override = default;
 

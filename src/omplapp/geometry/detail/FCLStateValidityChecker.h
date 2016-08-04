@@ -25,7 +25,6 @@
 
 // Boost and STL headers
 #include <memory>
-#include <functional>
 
 namespace ob = ompl::base;
 
@@ -73,8 +72,13 @@ namespace ompl
         {
         public:
             FCLStateValidityChecker (const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,
-                                     const GeometricStateExtractor &se, bool selfCollision) : ob::StateValidityChecker(si),
-                                                                                              fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision, std::bind (&OMPL_FCL_StateType<T>::FCLPoseFromState, stateConvertor_, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)))
+                                     const GeometricStateExtractor &se, bool selfCollision)
+            : ob::StateValidityChecker(si),
+              fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision,
+                [this](fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) 
+                {
+                    stateConvertor_.FCLPoseFromState(trans, quat, state);
+                }))
             {
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
