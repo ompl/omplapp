@@ -156,7 +156,7 @@ void SE3BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
 }
 
 
-void SE2Benchmark::configure(void)
+void SE2Benchmark::configure()
 {
     setup_se2_.reset(new ompl::app::SE2RigidBodyPlanning());
     setup_se2_->setRobotMesh(getRobotMesh());
@@ -178,7 +178,7 @@ void SE2Benchmark::configure(void)
     benchmark_.reset(new ompl::tools::Benchmark(*setup_se2_, bo_.declared_options_["problem.name"]));
 }
 
-void SE3Benchmark::configure(void)
+void SE3Benchmark::configure()
 {
     setup_se3_.reset(new ompl::app::SE3RigidBodyPlanning());
     setup_se3_->setRobotMesh(getRobotMesh());
@@ -199,7 +199,7 @@ void SE3Benchmark::configure(void)
     benchmark_.reset(new ompl::tools::Benchmark(*setup_se3_, bo_.declared_options_["problem.name"]));
 }
 
-void KinematicCarBenchmark::configure(void)
+void KinematicCarBenchmark::configure()
 {
     setup_kinematicCar_.reset(new ompl::app::KinematicCarPlanning());
     setup_kinematicCar_->setRobotMesh(getRobotMesh());
@@ -221,7 +221,7 @@ void KinematicCarBenchmark::configure(void)
     benchmark_.reset(new ompl::tools::Benchmark(*setup_kinematicCar_, bo_.declared_options_["problem.name"]));
 }
 
-void DynamicCarBenchmark::configure(void)
+void DynamicCarBenchmark::configure()
 {
     setup_dynamicCar_.reset(new ompl::app::DynamicCarPlanning());
     setup_dynamicCar_->setRobotMesh(getRobotMesh());
@@ -245,7 +245,7 @@ void DynamicCarBenchmark::configure(void)
     benchmark_.reset(new ompl::tools::Benchmark(*setup_dynamicCar_, bo_.declared_options_["problem.name"]));
 }
 
-void BlimpBenchmark::configure(void)
+void BlimpBenchmark::configure()
 {
     setup_blimp_.reset(new ompl::app::BlimpPlanning());
     setup_blimp_->setRobotMesh(getRobotMesh());
@@ -267,7 +267,7 @@ void BlimpBenchmark::configure(void)
     setup_blimp_->print();
     benchmark_.reset(new ompl::tools::Benchmark(*setup_blimp_, bo_.declared_options_["problem.name"]));
 }
-void QuadrotorBenchmark::configure(void)
+void QuadrotorBenchmark::configure()
 {
     setup_quadrotor_.reset(new ompl::app::QuadrotorPlanning());
     setup_quadrotor_->setRobotMesh(getRobotMesh());

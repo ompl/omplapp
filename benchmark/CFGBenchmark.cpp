@@ -102,7 +102,7 @@ std::string CFGBenchmark::getEnvironmentMesh()
 ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt)
 {
     const ompl::control::SpaceInformationPtr siC = std::dynamic_pointer_cast<ompl::control::SpaceInformation>(si);
-    ompl::base::Planner *p = NULL;
+    ompl::base::Planner *p = nullptr;
 
     if (siC)
     {
@@ -180,7 +180,7 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
     if (p)
     {
         pcontext_[p] = opt.c;
-        BenchmarkOptions::PlannerOpt::const_iterator iter = opt.p.find("name");
+        auto iter = opt.p.find("name");
         if (iter != opt.p.end())
         {
             p->setName(iter->second);
@@ -197,7 +197,7 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
 
 ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type)
 {
-    ompl::base::ValidStateSampler *vss = NULL;
+    ompl::base::ValidStateSampler *vss = nullptr;
     if (type == "uniform")
         vss = new ompl::base::UniformValidStateSampler(si);
     else if (type == "gaussian")
@@ -251,21 +251,36 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
     return opt;
 }
 
-void CFGBenchmark::setupBenchmark(void)
+void CFGBenchmark::setupBenchmark()
 {
     for (auto & planner : bo_.planners_)
         for (auto & option : planner.second)
-            benchmark_->addPlannerAllocator(std::bind(&CFGBenchmark::allocPlanner, this, std::placeholders::_1,
-                                            planner.first, option));
-    benchmark_->setPlannerSwitchEvent(std::bind(&CFGBenchmark::preSwitchEvent, this, std::placeholders::_1));
+            benchmark_->addPlannerAllocator(
+                [this, planner, option](const ompl::base::SpaceInformationPtr &si)
+                {
+                    return allocPlanner(si, planner.first, option);
+                });
+    benchmark_->setPlannerSwitchEvent(
+        [this](const ompl::base::PlannerPtr planner)
+        {
+            preSwitchEvent(planner);
+        });
     if (bo_.declared_options_.find("benchmark.save_paths") != bo_.declared_options_.end())
     {
         std::string savePathArg = bo_.declared_options_["benchmark.save_paths"];
         if (savePathArg.substr(0,3) == std::string("all")) // starts with "all"
-            benchmark_->setPostRunEvent(std::bind(&CFGBenchmark::saveAllPaths, this, std::placeholders::_1, std::placeholders::_2));
+            benchmark_->setPostRunEvent(
+                [this](const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &properties)
+                {
+                    saveAllPaths(planner, properties);
+                });
         else if (savePathArg.substr(0,8) == std::string("shortest")
             || savePathArg.substr(0,4) == std::string("best")) // starts with "shortest" or "best"
-            benchmark_->setPostRunEvent(std::bind(&CFGBenchmark::saveBestPath, this, std::placeholders::_1, std::placeholders::_2));
+            benchmark_->setPostRunEvent(
+                [this](const ompl::base::PlannerPtr &planner, ompl::tools::Benchmark::RunProperties &properties)
+                {
+                    saveBestPath(planner, properties);
+                });
     }
 }
 
@@ -273,8 +288,11 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
 {
     activeParams_ = pcontext_[planner.get()];
     if (activeParams_.find("sampler") != activeParams_.end())
-        planner->getSpaceInformation()->setValidStateSamplerAllocator(std::bind(&CFGBenchmark::allocValidStateSampler, this, std::placeholders::_1,
-                                                                      activeParams_["sampler"]));
+        planner->getSpaceInformation()->setValidStateSamplerAllocator(
+            [this](const ompl::base::SpaceInformation *si)
+            {
+                return allocValidStateSampler(si, activeParams_["sampler"]);
+            });
     else
         planner->getSpaceInformation()->clearValidStateSamplerAllocator();
     planner->getSpaceInformation()->params().setParams(activeParams_, true);
@@ -369,14 +387,14 @@ void CFGBenchmark::saveBestPath(const ompl::base::PlannerPtr &planner, ompl::too
     }
 }
 
-void CFGBenchmark::setup(void)
+void CFGBenchmark::setup()
 {
     configure();
     if (benchmark_)
         setupBenchmark();
 }
 
-void CFGBenchmark::runBenchmark(void)
+void CFGBenchmark::runBenchmark()
 {
     if (!isValid())
         return;

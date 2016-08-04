@@ -107,7 +107,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
     cfg.close();
     boost::program_options::store(po, vm);
     declared_options_.clear();
-    for (auto & variable : vm) //boost::program_options::variables_map::iterator it = vm.begin() ; it != vm.end() ; ++it)
+    for (auto & variable : vm)
         declared_options_[variable.first] = boost::any_cast<std::string>(vm[variable.first].value());
 
     std::vector<std::string> unr = boost::program_options::collect_unrecognized(po.options, boost::program_options::exclude_positional);
@@ -167,10 +167,10 @@ bool BenchmarkOptions::readOptions(const char *filename)
         }
 
         // read planner specific params
-        for (std::size_t i = 0 ; i < sizeof(KNOWN_PLANNERS) / sizeof(std::string) ; ++i)
-            if (op.substr(0, KNOWN_PLANNERS[i].length()) == KNOWN_PLANNERS[i])
+        for (const auto & i : KNOWN_PLANNERS)
+            if (op.substr(0, i.length()) == i)
             {
-                if (op == KNOWN_PLANNERS[i])
+                if (op == i)
                 {
                     planners_[op].resize(planners_[op].size() + 1);
                     planners_[op].back().c = temp_context;
@@ -178,16 +178,16 @@ bool BenchmarkOptions::readOptions(const char *filename)
                     temp_context.clear();
                 }
                 else
-                    if (op.length() > KNOWN_PLANNERS[i].length() && op[KNOWN_PLANNERS[i].length()] == '.')
+                    if (op.length() > i.length() && op[i.length()] == '.')
                     {
-                        last_planner = KNOWN_PLANNERS[i];
-                        op = op.substr(KNOWN_PLANNERS[i].length() + 1);
-                        if (planners_[KNOWN_PLANNERS[i]].empty())
-                            planners_[KNOWN_PLANNERS[i]].resize(1);
-                        planners_[KNOWN_PLANNERS[i]].back().p[op] = val;
+                        last_planner = i;
+                        op = op.substr(i.length() + 1);
+                        if (planners_[i].empty())
+                            planners_[i].resize(1);
+                        planners_[i].back().p[op] = val;
                         if (!temp_context.empty())
                         {
-                            planners_[KNOWN_PLANNERS[i]].back().c = temp_context;
+                            planners_[i].back().c = temp_context;
                             temp_context.clear();
                         }
                     }
@@ -215,7 +215,7 @@ bool BenchmarkOptions::readOptions(const char *filename)
     return true;
 }
 
-bool BenchmarkOptions::isSE2Problem(void) const
+bool BenchmarkOptions::isSE2Problem() const
 {
     return declared_options_.find("problem.start.x") != declared_options_.end() &&  declared_options_.find("problem.start.y") != declared_options_.end() &&
     declared_options_.find("problem.start.theta") != declared_options_.end() &&
@@ -228,7 +228,7 @@ bool BenchmarkOptions::isSE2Problem(void) const
     declared_options_.find("problem.goal.axis.y") == declared_options_.end() && declared_options_.find("problem.goal.axis.z") == declared_options_.end();
 }
 
-bool BenchmarkOptions::isSE3Problem(void) const
+bool BenchmarkOptions::isSE3Problem() const
 {
     return declared_options_.find("problem.start.x") != declared_options_.end() &&  declared_options_.find("problem.start.y") != declared_options_.end() &&
     declared_options_.find("problem.start.theta") != declared_options_.end() &&

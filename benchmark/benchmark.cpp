@@ -48,8 +48,8 @@ int main(int argc, char **argv)
     BenchmarkOptions bo;
     if (bo.readOptions(argv[1]))
     {
-        CFGBenchmark *b = NULL;
-        std::map<std::string, std::string>::iterator controlType = bo.declared_options_.find("problem.control");
+        CFGBenchmark *b = nullptr;
+        auto controlType = bo.declared_options_.find("problem.control");
         if (bo.isSE2Problem())
         {
             if (controlType == bo.declared_options_.end())
