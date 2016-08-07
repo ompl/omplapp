@@ -48,7 +48,7 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
 
 void kinematicCarDemo(app::KinematicCarPlanning& setup)
 {
-    setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    setup.setPlanner(std::make_shared<control::KPIECE1>(setup.getSpaceInformation()));
     std::vector<double> cs(2);
     cs[0] = cs[1] = 0.1;
     setup.setup();
@@ -75,8 +75,8 @@ void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
     tools::Benchmark::Request request(20., 10000., 10); // runtime (s), memory (MB), run count
 
     tools::Benchmark b(setup, setup.getName());
-    b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    b.addPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<control::KPIECE1>(setup.getSpaceInformation()));
     b.benchmark(request);
     b.saveResultsToFile();
 }

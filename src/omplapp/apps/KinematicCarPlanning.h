@@ -83,11 +83,11 @@ namespace ompl
 
             static control::ControlSpacePtr constructControlSpace()
             {
-                return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 2));
+                return std::make_shared<control::RealVectorControlSpace>(constructStateSpace(), 2);
             }
             static base::StateSpacePtr constructStateSpace()
             {
-                return base::StateSpacePtr(new base::SE2StateSpace());
+                return std::make_shared<base::SE2StateSpace>();
             }
 
             double timeStep_;

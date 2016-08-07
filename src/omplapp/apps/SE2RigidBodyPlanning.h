@@ -27,7 +27,7 @@ namespace ompl
         {
         public:
 
-            SE2RigidBodyPlanning() : AppBase<GEOMETRIC>(base::StateSpacePtr(new base::SE2StateSpace()), Motion_2D)
+            SE2RigidBodyPlanning() : AppBase<GEOMETRIC>(std::make_shared<base::SE2StateSpace>(), Motion_2D)
             {
                 name_ = "Rigid body planning (2D)";
             }

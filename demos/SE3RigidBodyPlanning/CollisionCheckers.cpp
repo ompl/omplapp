@@ -168,12 +168,13 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
         if (continuous)
         {
             setup.setup(); // FCLContinuousMotionValidator extracts goodies from the state validity checker.  Instantiate the svc here.
-            base::MotionValidatorPtr mv (new app::FCLContinuousMotionValidator (setup.getSpaceInformation(), setup.getMotionModel()));
-            setup.getSpaceInformation ()->setMotionValidator (mv);
+            setup.getSpaceInformation()->setMotionValidator(
+                std::make_shared<app::FCLContinuousMotionValidator>(
+                    setup.getSpaceInformation(), setup.getMotionModel()));
         }
 
         setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-        setup.setPlanner (base::PlannerPtr (new geometric::RRT (setup.getSpaceInformation ())));
+        setup.setPlanner(std::make_shared<geometric::RRT>(setup.getSpaceInformation()));
         setup.setup ();
 
         while (successful < tries)

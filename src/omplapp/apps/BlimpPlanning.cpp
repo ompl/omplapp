@@ -76,12 +76,12 @@ void ompl::app::BlimpPlanning::ode(const control::ODESolver::StateType& q, const
 
 ompl::base::StateSpacePtr ompl::app::BlimpPlanning::constructStateSpace()
 {
-    base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
+    auto stateSpace(std::make_shared<base::CompoundStateSpace>());
 
-    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
-    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), .3);
-    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(1)), .3);
-    stateSpace->as<base::CompoundStateSpace>()->lock();
+    stateSpace->addSubspace(std::make_shared<base::SE3StateSpace>(), 1.);
+    stateSpace->addSubspace(std::make_shared<base::RealVectorStateSpace>(3), .3);
+    stateSpace->addSubspace(std::make_shared<base::RealVectorStateSpace>(1), .3);
+    stateSpace->lock();
     return stateSpace;
 }
 

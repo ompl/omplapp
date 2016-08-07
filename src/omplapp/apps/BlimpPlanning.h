@@ -39,7 +39,7 @@ namespace ompl
             BlimpPlanning()
                 : AppBase<CONTROL>(constructControlSpace(), Motion_3D),
                   timeStep_(1e-2),
-                  odeSolver(new control::ODEBasicSolver<>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
+                  odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);
                       }))
@@ -85,7 +85,7 @@ namespace ompl
 
             static control::ControlSpacePtr constructControlSpace()
             {
-                return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 3));
+                return std::make_shared<control::RealVectorControlSpace>(constructStateSpace(), 3);
             }
             static base::StateSpacePtr constructStateSpace();
 

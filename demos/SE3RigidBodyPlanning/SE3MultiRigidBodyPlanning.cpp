@@ -68,7 +68,7 @@ int main()
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
 
     // use RRTConnect for planning
-    setup.setPlanner (base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+    setup.setPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
 
     // we call setup just so print() can show more information
     setup.setup();

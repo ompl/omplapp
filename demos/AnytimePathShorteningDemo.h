@@ -236,43 +236,43 @@ base::PlannerPtr allocPlanner(PlannerType type, const base::SpaceInformationPtr&
     switch (type)
     {
         case RRT:
-            planner = base::PlannerPtr(new geometric::RRT(si));
+            planner = std::make_shared<geometric::RRT>(si);
             break;
 
         case RRTSTAR:
-            planner = base::PlannerPtr(new geometric::RRTstar(si));
+            planner = std::make_shared<geometric::RRTstar>(si);
             break;
 
         case EST:
-            planner = base::PlannerPtr(new geometric::EST(si));
+            planner = std::make_shared<geometric::EST>(si);
             break;
 
         case SBL:
-            planner = base::PlannerPtr(new geometric::SBL(si));
+            planner = std::make_shared<geometric::SBL>(si);
             break;
 
         case RRTCONNECT:
-            planner = base::PlannerPtr(new geometric::RRTConnect(si));
+            planner = std::make_shared<geometric::RRTConnect>(si);
             break;
 
         case PRM:
-            planner = base::PlannerPtr(new geometric::PRM(si));
+            planner = std::make_shared<geometric::PRM>(si);
             break;
 
         case PRMSTAR:
-            planner = base::PlannerPtr(new geometric::PRM(si, true));
+            planner = std::make_shared<geometric::PRM>(si, true);
             break;
 
         case KPIECE:
-            planner = base::PlannerPtr(new geometric::KPIECE1(si));
+            planner = std::make_shared<geometric::KPIECE1>(si);
             break;
 
         case BKPIECE:
-            planner = base::PlannerPtr(new geometric::BKPIECE1(si));
+            planner = std::make_shared<geometric::BKPIECE1>(si);
             break;
 
         case LBKPIECE:
-            planner = base::PlannerPtr(new geometric::LBKPIECE1(si));
+            planner = std::make_shared<geometric::LBKPIECE1>(si);
             break;
 
         default:

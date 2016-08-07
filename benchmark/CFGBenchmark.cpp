@@ -102,84 +102,84 @@ std::string CFGBenchmark::getEnvironmentMesh()
 ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt)
 {
     const ompl::control::SpaceInformationPtr siC = std::dynamic_pointer_cast<ompl::control::SpaceInformation>(si);
-    ompl::base::Planner *p = nullptr;
+    ompl::base::PlannerPtr p;
 
     if (siC)
     {
         if (name == "rrt")
-            p = new ompl::control::RRT(siC);
+            p = std::make_shared<ompl::control::RRT>(siC);
         else if (name == "est")
-            p = new ompl::control::EST(siC);
+            p = std::make_shared<ompl::control::EST>(siC);
         else if (name == "kpiece")
-            p = new ompl::control::KPIECE1(siC);
+            p = std::make_shared<ompl::control::KPIECE1>(siC);
         else if (name == "pdst")
-            p = new ompl::control::PDST(siC);
+            p = std::make_shared<ompl::control::PDST>(siC);
         else if (name == "sycloprrt")
-            p = new ompl::control::SyclopRRT(siC, allocDecomposition());
+            p = std::make_shared<ompl::control::SyclopRRT>(siC, allocDecomposition());
         else if (name == "syclopest")
-            p = new ompl::control::SyclopEST(siC, allocDecomposition());
+            p = std::make_shared<ompl::control::SyclopEST>(siC, allocDecomposition());
         else
             std::cerr << "Unknown planner: " << name << std::endl;
     }
     else
     {
         if (name == "rrt")
-            p = new ompl::geometric::RRT(si);
+            p = std::make_shared<ompl::geometric::RRT>(si);
         else if (name == "rrtconnect")
-            p = new ompl::geometric::RRTConnect(si);
+            p = std::make_shared<ompl::geometric::RRTConnect>(si);
         else if (name == "lazyrrt")
-            p = new ompl::geometric::LazyRRT(si);
+            p = std::make_shared<ompl::geometric::LazyRRT>(si);
         else if (name == "rrtstar")
-            p = new ompl::geometric::RRTstar(si);
+            p = std::make_shared<ompl::geometric::RRTstar>(si);
         else if (name == "lbtrrt")
-            p = new ompl::geometric::LBTRRT(si);
+            p = std::make_shared<ompl::geometric::LBTRRT>(si);
         else if (name == "trrt")
-            p = new ompl::geometric::TRRT(si);
+            p = std::make_shared<ompl::geometric::TRRT>(si);
         else if (name == "est")
-            p = new ompl::geometric::EST(si);
+            p = std::make_shared<ompl::geometric::EST>(si);
         else if (name == "biest")
-            p = new ompl::geometric::BiEST(si);
+            p = std::make_shared<ompl::geometric::BiEST>(si);
         else if (name == "projest")
-            p = new ompl::geometric::ProjEST(si);
+            p = std::make_shared<ompl::geometric::ProjEST>(si);
         else if (name == "sbl")
-            p = new ompl::geometric::SBL(si);
+            p = std::make_shared<ompl::geometric::SBL>(si);
         else if (name == "kpiece")
-            p = new ompl::geometric::KPIECE1(si);
+            p = std::make_shared<ompl::geometric::KPIECE1>(si);
         else if (name == "bkpiece")
-            p = new ompl::geometric::BKPIECE1(si);
+            p = std::make_shared<ompl::geometric::BKPIECE1>(si);
         else if (name == "lbkpiece")
-            p = new ompl::geometric::LBKPIECE1(si);
+            p = std::make_shared<ompl::geometric::LBKPIECE1>(si);
         else if (name == "prm")
-            p = new ompl::geometric::PRM(si);
+            p = std::make_shared<ompl::geometric::PRM>(si);
         else if (name == "lazyprm")
-            p = new ompl::geometric::LazyPRM(si);
+            p = std::make_shared<ompl::geometric::LazyPRM>(si);
         else if (name == "prmstar")
-            p = new ompl::geometric::PRMstar(si);
+            p = std::make_shared<ompl::geometric::PRMstar>(si);
         else if (name == "lazyprmstar")
-            p = new ompl::geometric::LazyPRMstar(si);
+            p = std::make_shared<ompl::geometric::LazyPRMstar>(si);
         else if (name == "spars")
-            p = new ompl::geometric::SPARS(si);
+            p = std::make_shared<ompl::geometric::SPARS>(si);
         else if (name == "spars2")
-            p = new ompl::geometric::SPARStwo(si);
+            p = std::make_shared<ompl::geometric::SPARStwo>(si);
         else if (name == "stride")
-            p = new ompl::geometric::STRIDE(si);
+            p = std::make_shared<ompl::geometric::STRIDE>(si);
         else if (name == "pdst")
-            p = new ompl::geometric::PDST(si);
+            p = std::make_shared<ompl::geometric::PDST>(si);
         else if (name == "fmt")
-            p = new ompl::geometric::FMT(si);
+            p = std::make_shared<ompl::geometric::FMT>(si);
 		else if (name == "bfmt")
-            p = new ompl::geometric::BFMT(si);
+            p = std::make_shared<ompl::geometric::BFMT>(si);
         else if (name == "aps")
-            p = new ompl::geometric::AnytimePathShortening(si);
+            p = std::make_shared<ompl::geometric::AnytimePathShortening>(si);
         else if (name == "cforest")
-            p = new ompl::geometric::CForest(si);
+            p = std::make_shared<ompl::geometric::CForest>(si);
         else
             std::cerr << "Unknown planner: " << name << std::endl;
     }
 
     if (p)
     {
-        pcontext_[p] = opt.c;
+        pcontext_[p.get()] = opt.c;
         auto iter = opt.p.find("name");
         if (iter != opt.p.end())
         {
@@ -192,29 +192,25 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p->params().setParams(opt.p);
         std::cout << "Allocated " << p->getName() << std::endl;
     }
-    return ompl::base::PlannerPtr(p);
+    return p;
 }
 
 ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl::base::SpaceInformation *si, const std::string &type)
 {
-    ompl::base::ValidStateSampler *vss = nullptr;
+    ompl::base::ValidStateSamplerPtr vss;
     if (type == "uniform")
-        vss = new ompl::base::UniformValidStateSampler(si);
+        vss = std::make_shared<ompl::base::UniformValidStateSampler>(si);
     else if (type == "gaussian")
-        vss = new ompl::base::GaussianValidStateSampler(si);
+        vss = std::make_shared<ompl::base::GaussianValidStateSampler>(si);
     else if (type == "obstacle_based")
-        vss = new ompl::base::ObstacleBasedValidStateSampler(si);
+        vss = std::make_shared<ompl::base::ObstacleBasedValidStateSampler>(si);
     else if (type == "max_clearance")
-        vss = new ompl::base::MaximizeClearanceValidStateSampler(si);
+        vss = std::make_shared<ompl::base::MaximizeClearanceValidStateSampler>(si);
     else
         std::cerr << "Unknown sampler type: " << type << std::endl;
     if (vss)
-    {
         vss->params().setParams(activeParams_, true);
-        return ompl::base::ValidStateSamplerPtr(vss);
-    }
-    else
-        return ompl::base::ValidStateSamplerPtr();
+    return vss;
 }
 
 ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(const ompl::base::SpaceInformationPtr &si)
@@ -227,11 +223,11 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
     std::string objective = bo_.declared_options_["problem.objective"];
 
     if (objective.substr(0,6) == std::string("length"))
-        opt.reset(new ompl::base::PathLengthOptimizationObjective(si));
+        opt = std::make_shared<ompl::base::PathLengthOptimizationObjective>(si);
     else if (objective.substr(0,17) == std::string("max_min_clearance"))
-        opt.reset(new ompl::base::MaximizeMinClearanceObjective(si));
+        opt = std::make_shared<ompl::base::MaximizeMinClearanceObjective>(si);
     else if (objective.substr(0,15) == std::string("mechanical_work"))
-        opt.reset(new ompl::base::MechanicalWorkOptimizationObjective(si));
+        opt = std::make_shared<ompl::base::MechanicalWorkOptimizationObjective>(si);
 
     if (opt && bo_.declared_options_.find("problem.objective.threshold") != bo_.declared_options_.end())
     {

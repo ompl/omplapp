@@ -28,28 +28,6 @@
 #include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
 using namespace ompl;
 
-base::ValidStateSamplerPtr allocUniformStateSampler(const base::SpaceInformation *si)
-{
-    return base::ValidStateSamplerPtr(new base::UniformValidStateSampler(si));
-}
-
-base::ValidStateSamplerPtr allocGaussianStateSampler(const base::SpaceInformation *si)
-{
-    return base::ValidStateSamplerPtr(new base::GaussianValidStateSampler(si));
-}
-
-base::ValidStateSamplerPtr allocObstacleStateSampler(const base::SpaceInformation *si)
-{
-    return base::ValidStateSamplerPtr(new base::ObstacleBasedValidStateSampler(si));
-}
-
-base::ValidStateSamplerPtr allocMaximizeClearanceStateSampler(const base::SpaceInformation *si)
-{
-    auto *s = new base::MaximizeClearanceValidStateSampler(si);
-    s->setNrImproveAttempts(5);
-    return base::ValidStateSamplerPtr(s);
-}
-
 void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
                 double& runtime_limit, double& memory_limit, int& run_count)
 {
@@ -73,7 +51,6 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
-    setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
     setup.setup();
 
     std::vector<double> cs(3);
@@ -153,21 +130,25 @@ int main(int argc, char **argv)
     b.setPostRunEvent([](const base::PlannerPtr& planner, tools::Benchmark::RunProperties& run)
         { postRunEvent(planner, run); });
 
-    b.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::RRT(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::BKPIECE1(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::LBKPIECE1(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::KPIECE1(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::SBL(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::EST(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new geometric::PRM(setup.getSpaceInformation())));
+    b.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::RRT>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::BKPIECE1>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::LBKPIECE1>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::KPIECE1>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::SBL>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::EST>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<geometric::PRM>(setup.getSpaceInformation()));
 
     int sampler_id = argc > 2 ? ((argv[2][0] - '0') % 4) : -1;
 
     if (sampler_id == 0 || sampler_id < 0)
     {
         // run all planners with a uniform valid state sampler on the benchmark problem
-        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocUniformStateSampler);
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
+            {
+                return std::make_shared<base::UniformValidStateSampler>(si);
+            });
         b.setExperimentName(benchmark_name + "_uniform_sampler");
         b.benchmark(request);
         b.saveResultsToFile();
@@ -176,7 +157,11 @@ int main(int argc, char **argv)
     if (sampler_id == 1 || sampler_id < 0)
     {
         // run all planners with a Gaussian valid state sampler on the benchmark problem
-        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocGaussianStateSampler);
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
+            {
+                return std::make_shared<base::GaussianValidStateSampler>(si);
+            });
         b.setExperimentName(benchmark_name + "_gaussian_sampler");
         b.benchmark(request);
         b.saveResultsToFile();
@@ -185,7 +170,11 @@ int main(int argc, char **argv)
     if (sampler_id == 2 || sampler_id < 0)
     {
         // run all planners with a obstacle-based valid state sampler on the benchmark problem
-        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocObstacleStateSampler);
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
+            {
+                return std::make_shared<base::ObstacleBasedValidStateSampler>(si);
+            });
         b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
         b.benchmark(request);
         b.saveResultsToFile();
@@ -194,7 +183,13 @@ int main(int argc, char **argv)
     if (sampler_id == 3 || sampler_id < 0)
     {
         // run all planners with a maximum-clearance valid state sampler on the benchmark problem
-        setup.getSpaceInformation()->setValidStateSamplerAllocator(&allocMaximizeClearanceStateSampler);
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
+            {
+                auto vss = std::make_shared<base::MaximizeClearanceValidStateSampler>(si);
+                vss->setNrImproveAttempts(5);
+                return vss;
+            });
         b.setExperimentName(benchmark_name + "_maxclearance_sampler");
         b.benchmark(request);
         b.saveResultsToFile();

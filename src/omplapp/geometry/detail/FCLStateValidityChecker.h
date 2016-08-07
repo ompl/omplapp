@@ -74,8 +74,8 @@ namespace ompl
             FCLStateValidityChecker (const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,
                                      const GeometricStateExtractor &se, bool selfCollision)
             : ob::StateValidityChecker(si),
-              fclWrapper_(new FCLMethodWrapper (geom, se, selfCollision,
-                [this](fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) 
+              fclWrapper_(std::make_shared<FCLMethodWrapper>(geom, se, selfCollision,
+                [this](fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state)
                 {
                     stateConvertor_.FCLPoseFromState(trans, quat, state);
                 }))

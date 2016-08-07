@@ -312,7 +312,7 @@ namespace ompl
                     return std::make_pair(model, 0.0);
 
                 // create the PQP model
-                model.reset(new PQP_Model());
+                model = std::make_shared<PQP_Model>();
                 model->BeginModel();
                 int id = 0;
                 const int N = triangles.size() / 3;

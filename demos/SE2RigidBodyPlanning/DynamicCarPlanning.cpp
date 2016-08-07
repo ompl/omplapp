@@ -45,10 +45,10 @@ void dynamicCarSetup(app::DynamicCarPlanning& setup)
     setup.setStartAndGoalStates(start, goal, .5);
 
     // optionally, set a planner
-    //setup.setPlanner(base::PlannerPtr(new control::EST(setup.getSpaceInformation())));
-    //setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
-    //setup.setPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
-    //setup.setPlanner(base::PlannerPtr(new control::PDST(setup.getSpaceInformation())));
+    //setup.setPlanner(std::make_shared<control::EST>(setup.getSpaceInformation()));
+    //setup.setPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
+    //setup.setPlanner(std::make_shared<control::KPIECE1>(setup.getSpaceInformation()));
+    //setup.setPlanner(std::make_shared<control::PDST>(setup.getSpaceInformation()));
     std::vector<double> cs(2);
     cs[0] = cs[1] = 0.1;
     setup.setup();
@@ -82,8 +82,8 @@ void dynamicCarBenchmark(app::DynamicCarPlanning& setup)
     setup.setup ();
 
     tools::Benchmark b(setup, setup.getName());
-    b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    b.addPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<control::KPIECE1>(setup.getSpaceInformation()));
     b.benchmark(request);
     b.saveResultsToFile();
 }

@@ -48,36 +48,35 @@ int main(int argc, char **argv)
     BenchmarkOptions bo;
     if (bo.readOptions(argv[1]))
     {
-        CFGBenchmark *b = nullptr;
+        std::shared_ptr<CFGBenchmark> b;
         auto controlType = bo.declared_options_.find("problem.control");
         if (bo.isSE2Problem())
         {
             if (controlType == bo.declared_options_.end())
-                b = new SE2Benchmark(bo);
+                b = std::make_shared<SE2Benchmark>(bo);
             else if (controlType->second == "kinematic_car")
-                b = new KinematicCarBenchmark(bo);
+                b = std::make_shared<KinematicCarBenchmark>(bo);
             else if (controlType->second == "dynamic_car")
-                b = new DynamicCarBenchmark(bo);
+                b = std::make_shared<DynamicCarBenchmark>(bo);
             else
-                b = new SE2Benchmark(bo);
+                b = std::make_shared<SE2Benchmark>(bo);
         }
         else if (bo.isSE3Problem())
         {
             if (controlType == bo.declared_options_.end())
-                b = new SE3Benchmark(bo);
+                b = std::make_shared<SE3Benchmark>(bo);
             else if (controlType->second == "blimp")
-                b = new BlimpBenchmark(bo);
+                b = std::make_shared<BlimpBenchmark>(bo);
             else if (controlType->second == "quadrotor")
-                b = new QuadrotorBenchmark(bo);
+                b = std::make_shared<QuadrotorBenchmark>(bo);
             else
-                b = new SE3Benchmark(bo);
+                b = std::make_shared<SE3Benchmark>(bo);
         }
 
         if (b)
         {
             b->setup();
             b->runBenchmark();
-            delete b;
         }
         else
             std::cerr << "No known benchmark" << std::endl;

@@ -28,7 +28,7 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
     assert(!robot.empty());
     std::size_t p = importerRobot_.size();
     importerRobot_.resize(p + 1);
-    importerRobot_[p].reset(new Assimp::Importer());
+    importerRobot_[p] = std::make_shared<Assimp::Importer>();
 
     const aiScene* robotScene = importerRobot_[p]->ReadFile(robot.c_str(),
                                                             aiProcess_Triangulate            |
@@ -71,7 +71,7 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     assert(!env.empty());
     std::size_t p = importerEnv_.size();
     importerEnv_.resize(p + 1);
-    importerEnv_[p].reset(new Assimp::Importer());
+    importerEnv_[p] = std::make_shared<Assimp::Importer>();
 
     const aiScene* envScene = importerEnv_[p]->ReadFile(env.c_str(),
                                                         aiProcess_Triangulate            |
@@ -184,16 +184,16 @@ const ompl::base::StateValidityCheckerPtr& ompl::app::RigidBodyGeometry::allocSt
 #if OMPL_HAS_PQP
         case PQP:
             if (mtype_ == Motion_2D)
-                validitySvc_.reset (new PQPStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
+                validitySvc_ = std::make_shared<PQPStateValidityChecker<Motion_2D>>(si, geom, se, selfCollision);
             else
-                validitySvc_.reset (new PQPStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+                validitySvc_ = std::make_shared<PQPStateValidityChecker<Motion_3D>>(si, geom, se, selfCollision);
             break;
 #endif
         case FCL:
             if (mtype_ == Motion_2D)
-                validitySvc_.reset (new FCLStateValidityChecker<Motion_2D>(si, geom, se, selfCollision));
+                validitySvc_ = std::make_shared<FCLStateValidityChecker<Motion_2D>>(si, geom, se, selfCollision);
             else
-                validitySvc_.reset (new FCLStateValidityChecker<Motion_3D>(si, geom, se, selfCollision));
+                validitySvc_ = std::make_shared<FCLStateValidityChecker<Motion_3D>>(si, geom, se, selfCollision);
             break;
 
         default:

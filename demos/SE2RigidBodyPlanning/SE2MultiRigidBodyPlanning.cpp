@@ -54,7 +54,7 @@ int main()
     setup.setStartAndGoalStates(start, goal);
 
     // use RRTConnect for planning
-    setup.setPlanner (base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+    setup.setPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
 
     setup.setup();
     setup.print(std::cout);

@@ -53,7 +53,7 @@ void quadrotorDemo(app::QuadrotorPlanning& setup)
     std::vector<double> coords;
 
     std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
-    setup.setPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
+    setup.setPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
 
     // try to solve the problem
     if (setup.solve(40))
@@ -79,8 +79,8 @@ void quadrotorBenchmark(app::QuadrotorPlanning& setup)
     setup.setup ();
 
     tools::Benchmark b(setup, setup.getName());
-    b.addPlanner(base::PlannerPtr(new control::RRT(setup.getSpaceInformation())));
-    b.addPlanner(base::PlannerPtr(new control::KPIECE1(setup.getSpaceInformation())));
+    b.addPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
+    b.addPlanner(std::make_shared<control::KPIECE1>(setup.getSpaceInformation()));
     b.benchmark(request);
     b.saveResultsToFile();
 }

@@ -104,13 +104,13 @@ int main(int argc, char **argv)
     DISP.setGeomColor(movable_box_geom[3], 0.1, 0.8, 0.8);
     DISP.setGeomColor(goal_geom, 0.0, 0.9, 0.1);
 
-    oc::OpenDEEnvironmentPtr ce(new CarEnvironment());
-    ob::StateSpacePtr sm(new CarStateSpace(ce));
+    oc::OpenDEEnvironmentPtr ce = std::make_shared<CarEnvironment>();
+    ob::StateSpacePtr sm = std::make_shared<CarStateSpace>(ce);
 
-    oc::ControlSpacePtr cm(new CarControlSpace(sm));
+    oc::ControlSpacePtr cm = std::make_shared<CarControlSpace>(sm);
 
     oc::OpenDESimpleSetup ss(cm);
-    ss.setGoal(ob::GoalPtr(new CarGoal(ss.getSpaceInformation(), GOAL_X, GOAL_Y)));
+    ss.setGoal(std::make_shared<CarGoal>(ss.getSpaceInformation(), GOAL_X, GOAL_Y));
     ob::RealVectorBounds vb(3);
     vb.low[0] = -50;
     vb.low[1] = -50;
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
     ss.setup();
     ss.print();
-    std::thread *th = nullptr;
+    std::shared_ptr<std::thread> th;
 
     std::cout << "Planning for at most 60 seconds ..." << std::endl;
 
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
         }
 
-        th = new std::thread([&ss] { return playPath(&ss); });
+        th = std::make_shared<std::thread>([&ss] { return playPath(&ss); });
     }
 
     // run simulation

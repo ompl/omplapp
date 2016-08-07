@@ -13,13 +13,14 @@
 #include "omplapp/apps/SE3MultiRigidBodyPlanning.h"
 
 ompl::app::SE3MultiRigidBodyPlanning::SE3MultiRigidBodyPlanning(unsigned int n) :
-    AppBase<GEOMETRIC>(base::StateSpacePtr(new base::CompoundStateSpace()), Motion_3D), n_(n)
+    AppBase<GEOMETRIC>(std::make_shared<base::CompoundStateSpace>(), Motion_3D), n_(n)
 {
     assert (n > 0);
     name_ = "Multi rigid body planning (3D)";
     // Adding n SE(3) StateSpaces
     for (unsigned int i = 0; i < n_; ++i)
-        si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.0);
+        si_->getStateSpace()->as<base::CompoundStateSpace>()->addSubspace(
+            std::make_shared<base::SE3StateSpace>(), 1.0);
 }
 
 void ompl::app::SE3MultiRigidBodyPlanning::inferEnvironmentBounds()

@@ -52,14 +52,14 @@ int main()
 
     // make sure the planners run until the time limit, and get the best possible solution
     setup.getProblemDefinition()->setOptimizationObjective(
-        base::OptimizationObjectivePtr(new base::PathLengthOptimizationObjective(setup.getSpaceInformation())));
+        std::make_shared<base::PathLengthOptimizationObjective>(setup.getSpaceInformation()));
 
     setup.setup();
 
     std::stringstream res;
 
     // run with RRT*
-    setup.setPlanner(base::PlannerPtr(new geometric::RRTstar(setup.getSpaceInformation())));
+    setup.setPlanner(std::make_shared<geometric::RRTstar>(setup.getSpaceInformation()));
     res << "RRT*" << std::endl;
     for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
     {
@@ -79,14 +79,14 @@ int main()
         op.clearPlanners();
 
         // add one planer only, so there is only one planning thread in use
-        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+        op.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
 
         double length = -1.0;
         double duration = 0.0;
 
         ompl::time::point start = ompl::time::now();
         // try to solve the problem
-        if (op.solve(time, 20, 1) && setup.haveExactSolutionPath())
+        if (op.solve(time, 30, 1) && setup.haveExactSolutionPath())
         {
             duration = ompl::time::seconds(ompl::time::now() - start);
             length = setup.getSolutionPath().length();
@@ -104,17 +104,17 @@ int main()
         op.clearPlanners();
 
         // add one planer only, so there is only one planning thread in use
-        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
-        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
-        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
-        op.addPlanner(base::PlannerPtr(new geometric::RRTConnect(setup.getSpaceInformation())));
+        op.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
+        op.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
+        op.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
+        op.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
 
         double length = -1.0;
         double duration = 0.0;
 
         ompl::time::point start = ompl::time::now();
         // try to solve the problem
-        if (op.solve(time, 20, 4) && setup.haveExactSolutionPath())
+        if (op.solve(time, 30, 4) && setup.haveExactSolutionPath())
         {
             duration = ompl::time::seconds(ompl::time::now() - start);
             length = setup.getSolutionPath().length();

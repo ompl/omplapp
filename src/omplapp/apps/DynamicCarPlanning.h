@@ -45,7 +45,7 @@ namespace ompl
             DynamicCarPlanning()
                 : AppBase<CONTROL>(constructControlSpace(), Motion_2D),
                   timeStep_(1e-2), lengthInv_(1.), mass_(1.),
-                  odeSolver(new control::ODEBasicSolver<>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
+                  odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);
                       }))
@@ -116,14 +116,14 @@ namespace ompl
 
             static control::ControlSpacePtr constructControlSpace()
             {
-                return control::ControlSpacePtr(new control::RealVectorControlSpace(constructStateSpace(), 2));
+                return std::make_shared<control::RealVectorControlSpace>(constructStateSpace(), 2);
             }
             static base::StateSpacePtr constructStateSpace()
             {
-                base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
-                stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE2StateSpace()), 1.);
-                stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(2)), .3);
-                stateSpace->as<base::CompoundStateSpace>()->lock();
+                auto stateSpace(std::make_shared<base::CompoundStateSpace>());
+                stateSpace->addSubspace(std::make_shared<base::SE2StateSpace>(), 1.);
+                stateSpace->addSubspace(std::make_shared<base::RealVectorStateSpace>(2), .3);
+                stateSpace->lock();
                 return stateSpace;
             }
 

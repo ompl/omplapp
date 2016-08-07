@@ -94,11 +94,11 @@ void ompl::app::QuadrotorPlanning::postPropagate(const base::State* /*state*/, c
 
 ompl::base::StateSpacePtr ompl::app::QuadrotorPlanning::constructStateSpace()
 {
-    base::StateSpacePtr stateSpace = base::StateSpacePtr(new base::CompoundStateSpace());
+    auto stateSpace(std::make_shared<base::CompoundStateSpace>());
 
-    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::SE3StateSpace()), 1.);
-    stateSpace->as<base::CompoundStateSpace>()->addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(6)), .3);
-    stateSpace->as<base::CompoundStateSpace>()->lock();
+    stateSpace->addSubspace(std::make_shared<base::SE3StateSpace>(), 1.);
+    stateSpace->addSubspace(std::make_shared<base::RealVectorStateSpace>(6), .3);
+    stateSpace->lock();
     return stateSpace;
 }
 

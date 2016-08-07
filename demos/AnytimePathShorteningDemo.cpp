@@ -24,19 +24,7 @@
 
 using namespace ompl;
 
-void freeProblem(geometric::SimpleSetup* setup, const ProblemType &probType)
-{
-    if (probType == BARRIERS)
-        delete static_cast<app::SE2RigidBodyPlanning*>(setup);
-    else if (probType == CUBICLES)
-        delete static_cast<app::SE3RigidBodyPlanning*>(setup);
-    else if (probType == EASY)
-        delete static_cast<app::SE3MultiRigidBodyPlanning*>(setup);
-    else
-        OMPL_ERROR("FATAL: Unknown problem type in freeProblem");
-}
-
-geometric::SimpleSetup* allocProblem(const ProblemType &probType)
+std::shared_ptr<geometric::SimpleSetup> allocProblem(const ProblemType &probType)
 {
     // Explicitly use the FCL collision checker.  PQP is not multi-threaded, and
     // multiple planners using the same SpaceInformation instance simultaneously
@@ -45,18 +33,18 @@ geometric::SimpleSetup* allocProblem(const ProblemType &probType)
     switch (probType)
     {
         case BARRIERS:
-            return static_cast<geometric::SimpleSetup*>(new app::SE2RigidBodyPlanning());
+            return std::make_shared<app::SE2RigidBodyPlanning>();
         case CUBICLES:
-            return static_cast<geometric::SimpleSetup*>(new app::SE3RigidBodyPlanning());
+            return std::make_shared<app::SE3RigidBodyPlanning>();
         case EASY:
-            return static_cast<geometric::SimpleSetup*>(new app::SE3MultiRigidBodyPlanning(2));
+            return std::make_shared<app::SE3MultiRigidBodyPlanning>(2);
         default:
             OMPL_ERROR("Unknown problem type in allocProblem");
             return nullptr;
     }
 }
 
-void setStartAndGoalStates(const ProblemType& probType, geometric::SimpleSetup *setup)
+void setStartAndGoalStates(const ProblemType& probType, std::shared_ptr<geometric::SimpleSetup> &setup)
 {
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR);
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR);
@@ -162,14 +150,14 @@ void setStartAndGoalStates(const ProblemType& probType, geometric::SimpleSetup *
             break;
     }
 
-    dynamic_cast<app::RigidBodyGeometry*>(setup)->setRobotMesh(robot_fname);
-    dynamic_cast<app::RigidBodyGeometry*>(setup)->setEnvironmentMesh(env_fname);
+    dynamic_cast<app::RigidBodyGeometry*>(setup.get())->setRobotMesh(robot_fname);
+    dynamic_cast<app::RigidBodyGeometry*>(setup.get())->setEnvironmentMesh(env_fname);
 }
 
 
 void solve(const ProblemType& probType, const OptimizationType &optType, const double& runtime, const std::vector<PlannerType>& planners)
 {
-    geometric::SimpleSetup *setup = allocProblem(probType);
+    auto setup(allocProblem(probType));
 
     setStartAndGoalStates(probType, setup);
 
@@ -180,17 +168,17 @@ void solve(const ProblemType& probType, const OptimizationType &optType, const d
     switch (optType)
     {
         case SHORTCUT:
-            planner = base::PlannerPtr(new geometric::AnytimePathShortening(setup->getSpaceInformation()));
+            planner = std::make_shared<geometric::AnytimePathShortening>(setup->getSpaceInformation());
             planner->as<geometric::AnytimePathShortening>()->setHybridize(false);
             break;
 
         case HYBRIDIZE:
-            planner = base::PlannerPtr(new geometric::AnytimePathShortening(setup->getSpaceInformation()));
+            planner = std::make_shared<geometric::AnytimePathShortening>(setup->getSpaceInformation());
             planner->as<geometric::AnytimePathShortening>()->setShortcut(false);
             break;
 
         case ALTERNATE:
-            planner = base::PlannerPtr(new geometric::AnytimePathShortening(setup->getSpaceInformation()));
+            planner = std::make_shared<geometric::AnytimePathShortening>(setup->getSpaceInformation());
             break;
 
         case NONE:
@@ -236,7 +224,6 @@ void solve(const ProblemType& probType, const OptimizationType &optType, const d
     benchmark.addPlanner(planner);
     benchmark.benchmark(request);
     benchmark.saveResultsToFile();
-    freeProblem(setup, probType);
 }
 
 int main(int argc, char **argv)

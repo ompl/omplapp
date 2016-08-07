@@ -158,7 +158,7 @@ void SE3BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
 
 void SE2Benchmark::configure()
 {
-    setup_se2_.reset(new ompl::app::SE2RigidBodyPlanning());
+    setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>();
     setup_se2_->setRobotMesh(getRobotMesh());
     setup_se2_->setEnvironmentMesh(getEnvironmentMesh());
 
@@ -175,12 +175,12 @@ void SE2Benchmark::configure()
     setup_se2_->setOptimizationObjective(getOptimizationObjective(setup_se2_->getSpaceInformation()));
     setup_se2_->setup();
     setup_se2_->print();
-    benchmark_.reset(new ompl::tools::Benchmark(*setup_se2_, bo_.declared_options_["problem.name"]));
+    benchmark_ = std::make_shared<ompl::tools::Benchmark>(*setup_se2_, bo_.declared_options_["problem.name"]);
 }
 
 void SE3Benchmark::configure()
 {
-    setup_se3_.reset(new ompl::app::SE3RigidBodyPlanning());
+    setup_se3_ = std::make_shared<ompl::app::SE3RigidBodyPlanning>();
     setup_se3_->setRobotMesh(getRobotMesh());
     setup_se3_->setEnvironmentMesh(getEnvironmentMesh());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_se3_->getStateSpace());
@@ -196,12 +196,12 @@ void SE3Benchmark::configure()
     setup_se3_->setOptimizationObjective(getOptimizationObjective(setup_se3_->getSpaceInformation()));
     setup_se3_->setup();
     setup_se3_->print();
-    benchmark_.reset(new ompl::tools::Benchmark(*setup_se3_, bo_.declared_options_["problem.name"]));
+    benchmark_ = std::make_shared<ompl::tools::Benchmark>(*setup_se3_, bo_.declared_options_["problem.name"]);
 }
 
 void KinematicCarBenchmark::configure()
 {
-    setup_kinematicCar_.reset(new ompl::app::KinematicCarPlanning());
+    setup_kinematicCar_ = std::make_shared<ompl::app::KinematicCarPlanning>();
     setup_kinematicCar_->setRobotMesh(getRobotMesh());
     setup_kinematicCar_->setEnvironmentMesh(getEnvironmentMesh());
 
@@ -218,12 +218,12 @@ void KinematicCarBenchmark::configure()
     setup_kinematicCar_->setOptimizationObjective(getOptimizationObjective(setup_kinematicCar_->getSpaceInformation()));
     setup_kinematicCar_->setup();
     setup_kinematicCar_->print();
-    benchmark_.reset(new ompl::tools::Benchmark(*setup_kinematicCar_, bo_.declared_options_["problem.name"]));
+    benchmark_ = std::make_shared<ompl::tools::Benchmark>(*setup_kinematicCar_, bo_.declared_options_["problem.name"]);
 }
 
 void DynamicCarBenchmark::configure()
 {
-    setup_dynamicCar_.reset(new ompl::app::DynamicCarPlanning());
+    setup_dynamicCar_ = std::make_shared<ompl::app::DynamicCarPlanning>();
     setup_dynamicCar_->setRobotMesh(getRobotMesh());
     setup_dynamicCar_->setEnvironmentMesh(getEnvironmentMesh());
 
@@ -242,12 +242,12 @@ void DynamicCarBenchmark::configure()
     setup_dynamicCar_->setOptimizationObjective(getOptimizationObjective(setup_dynamicCar_->getSpaceInformation()));
     setup_dynamicCar_->setup();
     setup_dynamicCar_->print();
-    benchmark_.reset(new ompl::tools::Benchmark(*setup_dynamicCar_, bo_.declared_options_["problem.name"]));
+    benchmark_ = std::make_shared<ompl::tools::Benchmark>(*setup_dynamicCar_, bo_.declared_options_["problem.name"]);
 }
 
 void BlimpBenchmark::configure()
 {
-    setup_blimp_.reset(new ompl::app::BlimpPlanning());
+    setup_blimp_ = std::make_shared<ompl::app::BlimpPlanning>();
     setup_blimp_->setRobotMesh(getRobotMesh());
     setup_blimp_->setEnvironmentMesh(getEnvironmentMesh());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_blimp_->getGeometricComponentStateSpace());
@@ -265,11 +265,11 @@ void BlimpBenchmark::configure()
     setup_blimp_->setOptimizationObjective(getOptimizationObjective(setup_blimp_->getSpaceInformation()));
     setup_blimp_->setup();
     setup_blimp_->print();
-    benchmark_.reset(new ompl::tools::Benchmark(*setup_blimp_, bo_.declared_options_["problem.name"]));
+    benchmark_ = std::make_shared<ompl::tools::Benchmark>(*setup_blimp_, bo_.declared_options_["problem.name"]);
 }
 void QuadrotorBenchmark::configure()
 {
-    setup_quadrotor_.reset(new ompl::app::QuadrotorPlanning());
+    setup_quadrotor_ = std::make_shared<ompl::app::QuadrotorPlanning>();
     setup_quadrotor_->setRobotMesh(getRobotMesh());
     setup_quadrotor_->setEnvironmentMesh(getEnvironmentMesh());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_quadrotor_->getGeometricComponentStateSpace());
@@ -287,5 +287,5 @@ void QuadrotorBenchmark::configure()
     setup_quadrotor_->setOptimizationObjective(getOptimizationObjective(setup_quadrotor_->getSpaceInformation()));
     setup_quadrotor_->setup();
     setup_quadrotor_->print();
-    benchmark_.reset(new ompl::tools::Benchmark(*setup_quadrotor_, bo_.declared_options_["problem.name"]));
+    benchmark_ = std::make_shared<ompl::tools::Benchmark>(*setup_quadrotor_, bo_.declared_options_["problem.name"]);
 }

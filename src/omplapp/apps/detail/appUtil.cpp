@@ -238,8 +238,8 @@ ompl::base::ProjectionEvaluatorPtr ompl::app::allocGeometricStateProjector(const
                                                                            const base::StateSpacePtr &gspace, const GeometricStateExtractor &se)
 {
     if (mtype == Motion_2D)
-        return base::ProjectionEvaluatorPtr(new detail::GeometricStateProjector2D(space, gspace, se));
-    return base::ProjectionEvaluatorPtr(new detail::GeometricStateProjector3D(space, gspace, se));
+        return std::make_shared<detail::GeometricStateProjector2D>(space, gspace, se);
+    return std::make_shared<detail::GeometricStateProjector3D>(space, gspace, se);
 }
 
 ompl::control::DecompositionPtr ompl::app::allocDecomposition(const base::StateSpacePtr &space, MotionModel mtype,
@@ -249,8 +249,8 @@ ompl::control::DecompositionPtr ompl::app::allocDecomposition(const base::StateS
     const_cast<ompl::base::StateSpace*>(space.get())->computeLocations();
 
     if (mtype == Motion_2D)
-        return control::DecompositionPtr(new detail::Decomposition2D(gspace->as<ompl::base::SE2StateSpace>()->getBounds(), space));
-    return control::DecompositionPtr(new detail::Decomposition3D(gspace->as<ompl::base::SE3StateSpace>()->getBounds(), space));
+        return std::make_shared<detail::Decomposition2D>(gspace->as<ompl::base::SE2StateSpace>()->getBounds(), space);
+    return std::make_shared<detail::Decomposition3D>(gspace->as<ompl::base::SE3StateSpace>()->getBounds(), space);
 }
 
 ompl::base::OptimizationObjectivePtr ompl::app::getOptimizationObjective(
@@ -258,15 +258,15 @@ ompl::base::OptimizationObjectivePtr ompl::app::getOptimizationObjective(
 {
     base::OptimizationObjectivePtr obj;
     if (objective == std::string("length"))
-        obj.reset(new base::PathLengthOptimizationObjective(si));
+        obj = std::make_shared<base::PathLengthOptimizationObjective>(si);
     else if (objective == std::string("max min clearance"))
-        obj.reset(new base::MaximizeMinClearanceObjective(si));
+        obj = std::make_shared<base::MaximizeMinClearanceObjective>(si);
     else if (objective == std::string("mechanical work"))
-        obj.reset(new base::MechanicalWorkOptimizationObjective(si));
+        obj = std::make_shared<base::MechanicalWorkOptimizationObjective>(si);
     else
     {
         OMPL_WARN("ompl::app::getOptimizationObjective: unknown optimization objective called \"%s\"; using \"length\" instead", objective.c_str());
-        obj.reset(new base::PathLengthOptimizationObjective(si));
+        obj = std::make_shared<base::PathLengthOptimizationObjective>(si);
     }
     obj->setCostThreshold(base::Cost(threshold));
     return obj;
