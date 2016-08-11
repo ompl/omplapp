@@ -244,13 +244,12 @@ int main (int argc, char **argv)
     std::cout << std::endl << "Analysis:" << std::endl;
 
     // Assume size of all 3 time vectors are the same
-    for (size_t i = 0; i < pqp_times.size (); ++i)
+    for (size_t i = 0; i < pqp_times.size(); ++i)
     {
-        bool isOdd = pqp_times[i].size() % 2 == 1;
-        unsigned int n = pqp_times[i].size() / 2u;
-        auto pqp_time = pqp_times[i].begin() + n;
-        auto dfcl_time = dfcl_times[i].begin()+n;
-        auto cfcl_time = cfcl_times[i].begin()+n;
+        bool isOdd;
+        auto pqp_time = pqp_times[i].begin() + pqp_times[i].size() / 2u;
+        auto dfcl_time = dfcl_times[i].begin() + dfcl_times[i].size() / 2u;
+        auto cfcl_time = cfcl_times[i].begin() + cfcl_times[i].size() / 2u;
 
         std::nth_element(pqp_times[i].begin(), pqp_time, pqp_times[i].end());
         std::nth_element(dfcl_times[i].begin(), dfcl_time, dfcl_times[i].end());
@@ -264,10 +263,13 @@ int main (int argc, char **argv)
         else if (i == 2)
             std::cout << R"( 'Easy' problem - Median Time (s))" << std::endl;
 
+        isOdd = pqp_times[i].size() % 2 == 1;
         std::cout << "    Discrete PQP: " << (isOdd ? *pqp_time : .5*(*pqp_time + *(pqp_time+1)))
             << "  " << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
+        isOdd = dfcl_times[i].size() % 2 == 1;
         std::cout << "    Discrete FCL: " << (isOdd ? *dfcl_time : .5*(*dfcl_time + *(dfcl_time+1)))
             << "  " << nr_tries << "/" << dfcl_attempts[i] << " planning attempts successful" << std::endl;
+        isOdd = cfcl_times[i].size() % 2 == 1;
         std::cout << "  Continuous FCL: " << (isOdd ? *cfcl_time : .5*(*cfcl_time + *(cfcl_time+1)))
             << "  " << nr_tries << " total attempts" << std::endl;
     }
