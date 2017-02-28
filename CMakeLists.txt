@@ -174,6 +174,7 @@ endif()
 if (FLANN_FOUND)
     set(OMPL_HAVE_FLANN 1)
     include_directories("${FLANN_INCLUDE_DIRS}")
+    link_directories(${FLANN_LIBRARY_DIRS})
 endif()
 
 set(OMPL_EXTENSION_MORSE ${MORSE_FOUND})
