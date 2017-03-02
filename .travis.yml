@@ -47,8 +47,8 @@ install:
         cmake .;
         sudo make install;
         cd ..;
-        wget -O - https://github.com/flexible-collision-library/fcl/archive/0.4.0.tar.gz | tar zxf - ;
-        cd fcl-0.4.0;
+        wget -O - https://github.com/flexible-collision-library/fcl/archive/0.5.0.tar.gz | tar zxf - ;
+        cd fcl-0.5.0;
         cmake .;
         sudo make install;
         cd ..;
