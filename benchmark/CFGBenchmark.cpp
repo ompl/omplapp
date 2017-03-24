@@ -320,7 +320,7 @@ void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::too
     {
         const ompl::tools::Benchmark::Status& status = benchmark_->getStatus();
         std::string fname = benchmark_->getExperimentName() + std::string("_")
-            + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(status.activeRun)
+            + status.activePlanner + std::string("_") + std::to_string(status.activeRun)
             + std::string(".path");
         std::ofstream pathfile(fname.c_str());
         ompl::base::PathPtr path = pdef->getSolutionPath();
@@ -360,7 +360,7 @@ void CFGBenchmark::saveBestPath(const ompl::base::PlannerPtr &planner, ompl::too
     if (status.activeRun == benchmark_->getRecordedExperimentData().runCount - 1 && bestPath_)
     {
         std::string fname = benchmark_->getExperimentName() + std::string("_")
-                          + status.activePlanner + std::string("_") + boost::lexical_cast<std::string>(bestPathIndex_)
+                          + status.activePlanner + std::string("_") + std::to_string(bestPathIndex_)
                           + std::string(".path");
         std::ofstream pathfile(fname.c_str());
 
