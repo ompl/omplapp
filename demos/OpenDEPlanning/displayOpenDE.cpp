@@ -28,9 +28,9 @@ void DisplayOpenDESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R,
 {
     int i;
 
-    if (!g) return;
+    if (g == nullptr) return;
 
-    if (dGeomIsSpace(g))
+    if (dGeomIsSpace(g) != 0)
     {
         displaySpace((dSpaceID)g);
         return;
@@ -39,8 +39,8 @@ void DisplayOpenDESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R,
     int type = dGeomGetClass (g);
     if (type == dBoxClass)
     {
-        if (!pos) pos = dGeomGetPosition (g);
-        if (!R) R = dGeomGetRotation (g);
+        if (pos == nullptr) pos = dGeomGetPosition (g);
+        if (R == nullptr) R = dGeomGetRotation (g);
 
         dVector3 sides;
         dGeomBoxGetLengths (g,sides);
@@ -48,30 +48,30 @@ void DisplayOpenDESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R,
     }
     else if (type == dSphereClass)
     {
-        if (!pos) pos = dGeomGetPosition (g);
-        if (!R) R = dGeomGetRotation (g);
+        if (pos == nullptr) pos = dGeomGetPosition (g);
+        if (R == nullptr) R = dGeomGetRotation (g);
         dsDrawSphere (pos,R,dGeomSphereGetRadius (g));
     }
     else if (type == dCapsuleClass)
     {
-        if (!pos) pos = dGeomGetPosition (g);
-        if (!R) R = dGeomGetRotation (g);
+        if (pos == nullptr) pos = dGeomGetPosition (g);
+        if (R == nullptr) R = dGeomGetRotation (g);
         dReal radius,length;
         dGeomCapsuleGetParams (g,&radius,&length);
         dsDrawCapsule (pos,R,length,radius);
     }
     else if (type == dCylinderClass)
     {
-        if (!pos) pos = dGeomGetPosition (g);
-        if (!R) R = dGeomGetRotation (g);
+        if (pos == nullptr) pos = dGeomGetPosition (g);
+        if (R == nullptr) R = dGeomGetRotation (g);
         dReal radius,length;
         dGeomCylinderGetParams (g,&radius,&length);
         dsDrawCylinder (pos,R,length,radius);
     }
     else if (type == dGeomTransformClass)
     {
-        if (!pos) pos = dGeomGetPosition (g);
-        if (!R) R = dGeomGetRotation (g);
+        if (pos == nullptr) pos = dGeomGetPosition (g);
+        if (R == nullptr) R = dGeomGetRotation (g);
 
         dGeomID g2 = dGeomTransformGetGeom (g);
         const dReal *pos2 = dGeomGetPosition (g2);
@@ -88,7 +88,7 @@ void DisplayOpenDESpaces::drawGeom (dGeomID g, const dReal *pos, const dReal *R,
     else
         show_aabb = 0;
 
-    if (show_aabb)
+    if (show_aabb != 0)
     {
         // draw the bounding box for this geom
         dReal aabb[6];

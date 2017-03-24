@@ -80,7 +80,7 @@ namespace ompl
                 if (!valid)
                 {
                     ob::State *lastValidState;
-                    if (lastValid.first)
+                    if (lastValid.first != nullptr)
                         lastValidState = lastValid.first;
                     else
                         lastValidState = si_->allocState ();
@@ -103,7 +103,7 @@ namespace ompl
 
                     lastValid.second = collisionTime;
 
-                    if (!lastValid.first)
+                    if (lastValid.first == nullptr)
                         si_->freeState (lastValidState);
                 }
 
@@ -119,7 +119,7 @@ namespace ompl
             void defaultSettings(MotionModel mm)
             {
                 stateSpace_ = si_->getStateSpace().get();
-                if (!stateSpace_)
+                if (stateSpace_ == nullptr)
                     throw Exception("No state space for motion validator");
 
                 // Extract FCLWrapper from FCLStateValidityChecker.
@@ -129,7 +129,7 @@ namespace ompl
                         const app::FCLStateValidityChecker<app::Motion_2D> *fcl_2d_state_checker;
                         fcl_2d_state_checker = dynamic_cast <const app::FCLStateValidityChecker<app::Motion_2D>* > (si_->getStateValidityChecker ().get ());
 
-                        if (!fcl_2d_state_checker)
+                        if (fcl_2d_state_checker == nullptr)
                         {
                             // Be extra verbose in this fatal error
                             OMPL_ERROR("Unable to cast state validity checker to FCLStateValidityChecker.");
@@ -143,7 +143,7 @@ namespace ompl
                         const app::FCLStateValidityChecker<app::Motion_3D> *fcl_3d_state_checker;
                         fcl_3d_state_checker = dynamic_cast <const app::FCLStateValidityChecker<app::Motion_3D>* > (si_->getStateValidityChecker ().get ());
 
-                        if (!fcl_3d_state_checker)
+                        if (fcl_3d_state_checker == nullptr)
                         {
                             // Be extra verbose in this fatal error
                             OMPL_ERROR("Unable to cast state validity checker to FCLStateValidityChecker.");

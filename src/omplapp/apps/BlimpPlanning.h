@@ -78,7 +78,7 @@ namespace ompl
                 return state->as<base::CompoundState>()->components[0];
             }
 
-            void postPropagate(const base::State* state, const control::Control* control, const double duration, base::State* result);
+            void postPropagate(const base::State* state, const control::Control* control, double duration, base::State* result);
 
             virtual void ode(const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot);
 

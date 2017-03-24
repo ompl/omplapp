@@ -23,8 +23,8 @@ int main()
     // load the robot and the environment
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/2D/car1_planar_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/2D/Maze_planar_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
+    setup.setRobotMesh(robot_fname);
+    setup.setEnvironmentMesh(env_fname);
 
     // define starting state
     base::ScopedState<base::SE2StateSpace> start(setup.getSpaceInformation());

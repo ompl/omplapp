@@ -26,8 +26,8 @@ void configureApartmentProblem (app::SE3RigidBodyPlanning &setup)
     std::string robot_mesh = std::string (OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
 
     // load the robot and the environment
-    setup.setEnvironmentMesh(environment_mesh.c_str());
-    setup.setRobotMesh(robot_mesh.c_str());
+    setup.setEnvironmentMesh(environment_mesh);
+    setup.setRobotMesh(robot_mesh);
 
     // Bounds for Apartment environment
     base::RealVectorBounds bounds(3);
@@ -65,8 +65,8 @@ void configureEasyProblem (app::SE3RigidBodyPlanning &setup)
     std::string robot_mesh = std::string (OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
 
     // load the robot and the environment
-    setup.setEnvironmentMesh(environment_mesh.c_str());
-    setup.setRobotMesh(robot_mesh.c_str());
+    setup.setEnvironmentMesh(environment_mesh);
+    setup.setRobotMesh(robot_mesh);
 
     // Bounds for Easy/TwistyCool environment
     base::RealVectorBounds bounds(3);
@@ -104,8 +104,8 @@ void configureCubiclesProblem (app::SE3RigidBodyPlanning &setup)
     std::string robot_mesh = std::string (OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
 
     // load the robot and the environment
-    setup.setEnvironmentMesh(environment_mesh.c_str());
-    setup.setRobotMesh(robot_mesh.c_str());
+    setup.setEnvironmentMesh(environment_mesh);
+    setup.setRobotMesh(robot_mesh);
 
     // Bounds for cubicles environment
     base::RealVectorBounds bounds(3);

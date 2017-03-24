@@ -102,7 +102,7 @@ namespace ompl
 void ompl::app::scene::extractVertices(const aiScene *scene, std::vector<aiVector3D> &vertices)
 {
     vertices.clear();
-    if (scene && scene->HasMeshes())
+    if ((scene != nullptr) && scene->HasMeshes())
         extractVerticesAux(scene, scene->mRootNode, aiMatrix4x4(), vertices);
 }
 
@@ -119,7 +119,7 @@ void ompl::app::scene::sceneCenter(const aiScene *scene, aiVector3D &center)
 void ompl::app::scene::extractTriangles(const aiScene *scene, std::vector<aiVector3D> &triangles)
 {
     triangles.clear();
-    if (scene && scene->HasMeshes())
+    if ((scene != nullptr) && scene->HasMeshes())
         extractTrianglesAux(scene, scene->mRootNode, aiMatrix4x4(), triangles);
 }
 

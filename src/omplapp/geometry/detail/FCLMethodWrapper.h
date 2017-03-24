@@ -259,7 +259,7 @@ namespace ompl
 
                 for (unsigned int i = 0; i < scenes.size (); ++i)
                 {
-                    if (scenes[i])
+                    if (scenes[i] != nullptr)
                     {
                         std::vector<aiVector3D> t;
                         // extractTriangles is a misleading name.  this extracts the set of points,

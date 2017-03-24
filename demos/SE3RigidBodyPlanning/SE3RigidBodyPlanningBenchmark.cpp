@@ -34,8 +34,8 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     benchmark_name = std::string("cubicles");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
+    setup.setRobotMesh(robot_fname);
+    setup.setEnvironmentMesh(env_fname);
 
     base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
     start->setX(-4.96);
@@ -68,8 +68,8 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     benchmark_name = std::string("Twistycool");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_robot.dae";
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_env.dae";
-    setup.setRobotMesh(robot_fname.c_str());
-    setup.setEnvironmentMesh(env_fname.c_str());
+    setup.setRobotMesh(robot_fname);
+    setup.setEnvironmentMesh(env_fname);
 
     base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
     start->setX(270.);

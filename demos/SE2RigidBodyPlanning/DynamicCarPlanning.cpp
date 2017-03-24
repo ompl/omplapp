@@ -88,7 +88,7 @@ void dynamicCarBenchmark(app::DynamicCarPlanning& setup)
     b.saveResultsToFile();
 }
 
-int main(int argc, char**)
+int main(int argc, char** /*unused*/)
 {
     app::DynamicCarPlanning car;
     dynamicCarSetup(car);

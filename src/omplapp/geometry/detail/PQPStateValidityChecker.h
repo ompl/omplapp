@@ -149,7 +149,7 @@ namespace ompl
                     PQP_CollideResult cr;
                     PQP_Collide(&cr, robRot, robTrans, robotParts_[i].get(),
                                 identityRotation, identityTranslation, environment_.get(), PQP_FIRST_CONTACT);
-                    if (cr.Colliding())
+                    if (cr.Colliding() != 0)
                         return false;
                 }
 
@@ -166,7 +166,7 @@ namespace ompl
                             PQP_CollideResult cr;
                             PQP_Collide(&cr, robRot, robTrans, robotParts_[i].get(),
                                         robRot2, robTrans2, robotParts_[j].get(), PQP_FIRST_CONTACT);
-                            if (cr.Colliding())
+                            if (cr.Colliding() != 0)
                                 return false;
                         }
                     }
@@ -246,7 +246,7 @@ namespace ompl
             {
                 std::vector<aiVector3D> triangles;
                 for (unsigned int i = 0 ; i < scenes.size() ; ++i)
-                    if (scenes[i])
+                    if (scenes[i] != nullptr)
                     {
                         std::vector<aiVector3D> t;
                         scene::extractTriangles(scenes[i], t);

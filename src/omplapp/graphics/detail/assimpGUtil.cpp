@@ -93,13 +93,13 @@ namespace ompl
 
                 max = 1;
                 if(AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_ENABLE_WIREFRAME, &wireframe, &max))
-                    fill_mode = wireframe ? GL_LINE : GL_FILL;
+                    fill_mode = wireframe != 0 ? GL_LINE : GL_FILL;
                 else
                     fill_mode = GL_FILL;
                 glPolygonMode(GL_FRONT_AND_BACK, fill_mode);
 
                 max = 1;
-                if((AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) && two_sided)
+                if((AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) && (two_sided != 0))
                     glEnable(GL_CULL_FACE);
                 else
                     glDisable(GL_CULL_FACE);

@@ -42,7 +42,7 @@ void ompl::app::SE3MultiRigidBodyPlanning::inferProblemDefinitionBounds()
 ompl::base::ScopedState<> ompl::app::SE3MultiRigidBodyPlanning::getDefaultStartState() const
 {
     base::ScopedState<> st(getStateSpace());
-    auto* c_st = st.get()->as<base::CompoundStateSpace::StateType>();
+    auto* c_st = st->as<base::CompoundStateSpace::StateType>();
     for (unsigned int i = 0; i < n_; ++i)
     {
         aiVector3D s = getRobotCenter(i);

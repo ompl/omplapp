@@ -85,7 +85,7 @@ void quadrotorBenchmark(app::QuadrotorPlanning& setup)
     b.saveResultsToFile();
 }
 
-int main(int argc, char**)
+int main(int argc, char** /*unused*/)
 {
     app::QuadrotorPlanning quadrotor;
     quadrotorSetup(quadrotor);

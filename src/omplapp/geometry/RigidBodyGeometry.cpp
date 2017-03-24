@@ -36,7 +36,7 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
                                                             aiProcess_SortByPType            |
                                                             aiProcess_OptimizeGraph          |
                                                             aiProcess_OptimizeMeshes);
-    if (robotScene)
+    if (robotScene != nullptr)
     {
         if (!robotScene->HasMeshes())
         {
@@ -55,8 +55,7 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
         computeGeometrySpecification();
         return true;
     }
-    else
-        return false;
+    return false;
 }
 
 bool ompl::app::RigidBodyGeometry::setEnvironmentMesh(const std::string &env)
@@ -79,7 +78,7 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
                                                         aiProcess_SortByPType            |
                                                         aiProcess_OptimizeGraph          |
                                                         aiProcess_OptimizeMeshes);
-    if (envScene)
+    if (envScene != nullptr)
     {
         if (!envScene->HasMeshes())
         {
@@ -98,7 +97,7 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
         computeGeometrySpecification();
         return true;
     }
-    else
+    
         return false;
 }
 
