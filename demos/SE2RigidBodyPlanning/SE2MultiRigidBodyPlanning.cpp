@@ -33,20 +33,20 @@ int main()
     base::ScopedState<base::CompoundStateSpace> goal(setup.getSpaceInformation());
 
     // define starting state for robot 1
-    base::SE2StateSpace::StateType* start1 = start.get()->as<base::SE2StateSpace::StateType>(0);
+    auto* start1 = start.get()->as<base::SE2StateSpace::StateType>(0);
     start1->setXY(0., 0.);
     start1->setYaw(0.);
     // define goal state for robot 1
-    base::SE2StateSpace::StateType* goal1 = goal.get()->as<base::SE2StateSpace::StateType>(0);
+    auto* goal1 = goal.get()->as<base::SE2StateSpace::StateType>(0);
     goal1->setXY(26., 0.);
     goal1->setYaw(0.);
 
     // define starting state for robot 2
-    base::SE2StateSpace::StateType* start2 = start.get()->as<base::SE2StateSpace::StateType>(1);
+    auto* start2 = start.get()->as<base::SE2StateSpace::StateType>(1);
     start2->setXY(26., 0.);
     start2->setYaw(0.);
     // define goal state for robot 2
-    base::SE2StateSpace::StateType* goal2 = goal.get()->as<base::SE2StateSpace::StateType>(1);
+    auto* goal2 = goal.get()->as<base::SE2StateSpace::StateType>(1);
     goal2->setXY(-30., 0.);
     goal2->setYaw(0.);
 

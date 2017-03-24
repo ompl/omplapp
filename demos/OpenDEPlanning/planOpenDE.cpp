@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     fn.command = &command;
     fn.stop = nullptr;
 
-    char *textures = (char*)alloca(strlen(OMPLAPP_RESOURCE_DIR) + 10);
+    auto *textures = (char*)alloca(strlen(OMPLAPP_RESOURCE_DIR) + 10);
     strcpy(textures, OMPLAPP_RESOURCE_DIR);
     strcat(textures, "/textures");
     fn.path_to_textures = textures;

@@ -40,7 +40,7 @@ namespace ompl
 
             void FCLPoseFromState(fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
-                const type * derived = static_cast <const type*> (state);
+                const auto * derived = static_cast <const type*> (state);
 
                 trans.setValue (derived->getX (), derived->getY (), derived->getZ ());
                 quat.getW () = derived->rotation ().w;
@@ -58,7 +58,7 @@ namespace ompl
             void FCLPoseFromState (fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
             {
                 static const fcl::Vec3f zaxis(0., 0., 1.);
-                const type * derived = static_cast <const type*> (state);
+                const auto * derived = static_cast <const type*> (state);
 
                 trans.setValue (derived->getX (), derived->getY (), 0.0);
                 quat.fromAxisAngle(zaxis, derived->getYaw ());

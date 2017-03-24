@@ -169,7 +169,7 @@ void SE2Benchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
     setup_se2_->setStartAndGoalStates(start, goal, t);
     setBounds(setup_se2_->getStateSpace());
     setup_se2_->setOptimizationObjective(getOptimizationObjective(setup_se2_->getSpaceInformation()));
@@ -190,7 +190,7 @@ void SE3Benchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
     setup_se3_->setStartAndGoalStates(start, goal, t);
     setBounds(setup_se3_->getStateSpace());
     setup_se3_->setOptimizationObjective(getOptimizationObjective(setup_se3_->getSpaceInformation()));
@@ -212,7 +212,7 @@ void KinematicCarBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
     setup_kinematicCar_->setStartAndGoalStates(start, goal, t);
     setBounds(setup_kinematicCar_->getStateSpace());
     setup_kinematicCar_->setOptimizationObjective(getOptimizationObjective(setup_kinematicCar_->getSpaceInformation()));
@@ -234,7 +234,7 @@ void DynamicCarBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
     setup_dynamicCar_->setStartAndGoalStates(
         setup_dynamicCar_->getFullStateFromGeometricComponent(start),
         setup_dynamicCar_->getFullStateFromGeometricComponent(goal), t);
@@ -257,7 +257,7 @@ void BlimpBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
     setup_blimp_->setStartAndGoalStates(
         setup_blimp_->getFullStateFromGeometricComponent(start),
         setup_blimp_->getFullStateFromGeometricComponent(goal), t);
@@ -279,7 +279,7 @@ void QuadrotorBenchmark::configure()
     if (!getGoalState(goal))
         return;
 
-    double t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
+    auto t = boost::lexical_cast<double>(bo_.declared_options_["problem.threshold"]);
     setup_quadrotor_->setStartAndGoalStates(
         setup_quadrotor_->getFullStateFromGeometricComponent(start),
         setup_quadrotor_->getFullStateFromGeometricComponent(goal), t);

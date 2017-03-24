@@ -324,14 +324,14 @@ void CFGBenchmark::saveAllPaths(const ompl::base::PlannerPtr &planner, ompl::too
             + std::string(".path");
         std::ofstream pathfile(fname.c_str());
         ompl::base::PathPtr path = pdef->getSolutionPath();
-        ompl::geometric::PathGeometric* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(path.get());
+        auto* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(path.get());
         if (geoPath)
         {
             geoPath->interpolate();
             geoPath->printAsMatrix(pathfile);
         }
         else {
-            ompl::control::PathControl* controlPath = dynamic_cast<ompl::control::PathControl*>(path.get());
+            auto* controlPath = dynamic_cast<ompl::control::PathControl*>(path.get());
             if (controlPath)
             {
                 controlPath->interpolate();
@@ -364,14 +364,14 @@ void CFGBenchmark::saveBestPath(const ompl::base::PlannerPtr &planner, ompl::too
                           + std::string(".path");
         std::ofstream pathfile(fname.c_str());
 
-        ompl::geometric::PathGeometric* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(bestPath_.get());
+        auto* geoPath = dynamic_cast<ompl::geometric::PathGeometric*>(bestPath_.get());
         if (geoPath)
         {
             geoPath->interpolate();
             geoPath->printAsMatrix(pathfile);
         }
         else {
-            ompl::control::PathControl* controlPath = dynamic_cast<ompl::control::PathControl*>(bestPath_.get());
+            auto* controlPath = dynamic_cast<ompl::control::PathControl*>(bestPath_.get());
             if (controlPath)
             {
                 controlPath->interpolate();

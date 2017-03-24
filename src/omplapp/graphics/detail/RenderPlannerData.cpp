@@ -95,7 +95,7 @@ namespace ompl
                     for (unsigned int r = 0 ; r < count ; ++r)
                     {
                         const base::State *st = gse(vtx.getState(), r);
-                        const base::SE2StateSpace::StateType* se2st = static_cast<const base::SE2StateSpace::StateType*>(st);
+                        const auto* se2st = static_cast<const base::SE2StateSpace::StateType*>(st);
                         renderState (*se2st);
                     }
                 }
@@ -107,7 +107,7 @@ namespace ompl
                     for (unsigned int r = 0 ; r < count ; ++r)
                     {
                         const base::State *st = gse(vtx.getState(), r);
-                        const base::SE3StateSpace::StateType* se3st = static_cast<const base::SE3StateSpace::StateType*>(st);
+                        const auto* se3st = static_cast<const base::SE3StateSpace::StateType*>(st);
                         renderState (*se3st);
                     }
                 }
@@ -129,13 +129,13 @@ namespace ompl
                 for (std::size_t i = 0; i < pd.numVertices(); ++i)
                 {
                     const base::PlannerDataVertex& vtx = pd.getVertex(i);
-                    const base::SE2StateSpace::StateType* vi =
+                    const auto* vi =
                         static_cast<const base::SE2StateSpace::StateType*>(gse(vtx.getState(), 0));
                     setStateColor(vtx.getTag());
                     numEdges = pd.getEdges(i, edgeList);
                     for (unsigned int j = 0; j < numEdges; ++j)
                     {
-                        const base::SE2StateSpace::StateType* vj =
+                        const auto* vj =
                             static_cast<const base::SE2StateSpace::StateType*>(gse(pd.getVertex(edgeList[j]).getState(), 0));
                         renderEdge(*vi, *vj);
                     }
@@ -144,13 +144,13 @@ namespace ompl
                 for (std::size_t i = 0; i < pd.numVertices(); ++i)
                 {
                     const base::PlannerDataVertex& vtx = pd.getVertex(i);
-                    const base::SE3StateSpace::StateType* vi =
+                    const auto* vi =
                         static_cast<const base::SE3StateSpace::StateType*>(gse(vtx.getState(), 0));
                     setStateColor(vtx.getTag());
                     numEdges = pd.getEdges(i, edgeList);
                     for (unsigned int j = 0; j < numEdges; ++j)
                     {
-                        const base::SE3StateSpace::StateType* vj =
+                        const auto* vj =
                             static_cast<const base::SE3StateSpace::StateType*>(gse(pd.getVertex(edgeList[j]).getState(), 0));
                         renderEdge(*vi, *vj);
                     }

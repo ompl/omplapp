@@ -42,11 +42,11 @@ void ompl::app::SE2MultiRigidBodyPlanning::inferProblemDefinitionBounds()
 ompl::base::ScopedState<> ompl::app::SE2MultiRigidBodyPlanning::getDefaultStartState() const
 {
     base::ScopedState<> st(getStateSpace());
-    base::CompoundStateSpace::StateType* c_st = st.get()->as<base::CompoundStateSpace::StateType>();
+    auto* c_st = st.get()->as<base::CompoundStateSpace::StateType>();
     for (unsigned int i = 0; i < n_; ++i)
     {
         aiVector3D s = getRobotCenter(i);
-        base::SE2StateSpace::StateType* sub = c_st->as<base::SE2StateSpace::StateType>(i);
+        auto* sub = c_st->as<base::SE2StateSpace::StateType>(i);
         sub->setX(s.x);
         sub->setY(s.y);
         sub->setYaw(0.0);
@@ -57,7 +57,7 @@ ompl::base::ScopedState<> ompl::app::SE2MultiRigidBodyPlanning::getDefaultStartS
 const ompl::base::State* ompl::app::SE2MultiRigidBodyPlanning::getGeometricComponentStateInternal(const ompl::base::State* state, unsigned int index) const
 {
     assert (index < n_);
-    const base::SE2StateSpace::StateType* st = state->as<base::CompoundStateSpace::StateType>()->as<base::SE2StateSpace::StateType>(index);
+    const auto* st = state->as<base::CompoundStateSpace::StateType>()->as<base::SE2StateSpace::StateType>(index);
     return static_cast<const base::State*>(st);
 }
 

@@ -49,7 +49,7 @@ void ompl::app::DynamicCarPlanning::postPropagate(const base::State* /*state*/, 
     // Normalize orientation value between 0 and 2*pi
     const base::SO2StateSpace* SO2 = getStateSpace()->as<base::CompoundStateSpace>()
         ->as<base::SE2StateSpace>(0)->as<base::SO2StateSpace>(1);
-    base::SO2StateSpace::StateType* so2 = result->as<base::CompoundStateSpace::StateType>()
+    auto* so2 = result->as<base::CompoundStateSpace::StateType>()
         ->as<base::SE2StateSpace::StateType>(0)->as<base::SO2StateSpace::StateType>(1);
     SO2->enforceBounds(so2);
 }
