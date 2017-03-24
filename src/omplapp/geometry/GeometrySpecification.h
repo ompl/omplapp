@@ -37,9 +37,7 @@ namespace ompl
         {
         public:
 
-            GeometrySpecification()
-            {
-            }
+            GeometrySpecification() = default;
 
             std::vector<const aiScene *> robot;
             std::vector<aiVector3D>      robotShift;
