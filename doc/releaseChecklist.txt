@@ -18,6 +18,7 @@ Steps to release a new version:
 * commit and push ${HOME}/src/ompl.github.io
 * tag omplapp, ompl, ompl.github.io with version number x.y.z (including patch level this time)
 * update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org) for ompl, fcl, libccd, flann, ode, castxml, py-pygccxml, py-pyplusplus and other possible dependencies.
+* Update homebrew OMPL recipe (https://github.com/Homebrew/homebrew-core/blob/master/Formula/ompl.rb) and create a pull request.
 * push changes to ompl and omplapp repos on bitbucket:
     - in the folders that contains the private clone of ompl, execute this command:
       hg push -b default ssh://hg@bitbucket.org/ompl/ompl
