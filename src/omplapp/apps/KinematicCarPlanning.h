@@ -90,8 +90,8 @@ namespace ompl
                 return std::make_shared<base::SE2StateSpace>();
             }
 
-            double timeStep_;
-            double lengthInv_;
+            double timeStep_{1e-2};
+            double lengthInv_{1.};
             control::ODESolverPtr odeSolver;
         };
     }

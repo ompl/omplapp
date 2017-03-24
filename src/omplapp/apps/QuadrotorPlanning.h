@@ -37,7 +37,7 @@ namespace ompl
         {
         public:
             QuadrotorPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D), timeStep_(1e-2), massInv_(1.), beta_(1.),
+                : AppBase<CONTROL>(constructControlSpace(), Motion_3D),
                   odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);
@@ -103,9 +103,9 @@ namespace ompl
             }
             static base::StateSpacePtr constructStateSpace();
 
-            double timeStep_;
-            double massInv_;
-            double beta_;
+            double timeStep_{1e-2};
+            double massInv_{1.};
+            double beta_{1.};
             control::ODESolverPtr odeSolver;
         };
 

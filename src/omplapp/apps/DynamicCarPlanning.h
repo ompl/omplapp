@@ -44,7 +44,6 @@ namespace ompl
         public:
             DynamicCarPlanning()
                 : AppBase<CONTROL>(constructControlSpace(), Motion_2D),
-                  timeStep_(1e-2), lengthInv_(1.), mass_(1.),
                   odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);
@@ -127,9 +126,9 @@ namespace ompl
                 return stateSpace;
             }
 
-            double timeStep_;
-            double lengthInv_;
-            double mass_;
+            double timeStep_{1e-2};
+            double lengthInv_{1.};
+            double mass_{1.};
             control::ODESolverPtr odeSolver;
         };
 
