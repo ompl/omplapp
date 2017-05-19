@@ -1,5 +1,10 @@
 # Release Notes
 
+# OMPL.app 1.3.1 (May 18, 2017)
+
+- Tidy up code.
+- Small bug fixes.
+
 
 # OMPL.app 1.3.0 (March 1, 2017)
 
