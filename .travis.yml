@@ -32,7 +32,7 @@ install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap homebrew/science;
       brew install boost-python ode eigen python cmake libccd assimp;
-      brew install https://raw.github.com/dartsim/homebrew-dart/master/fcl.rb;
+      brew install https://raw.github.com/dartsim/homebrew-dart/master/Formula/fcl.rb;
       if [ ! -e ${HOME}/castxml ]; then
         curl https://midas3.kitware.com/midas/download/item/318762/castxml-macosx.tar.gz | tar zxf - -C ${HOME};
       fi;
