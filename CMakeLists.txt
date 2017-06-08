@@ -142,6 +142,14 @@ include_directories(
     "${CCD_INCLUDE_DIRS}"
     "${ASSIMP_INCLUDE_DIRS}")
 
+# ROS installs fcl in /usr. In /usr/include/fcl/config.h it says octomap was
+# enabled. Octomap is installed in /opt/ros/${ROS_DISTRO}/include (most
+# likely), but fcl.pc doesn't have that information, so we just add it to the
+# include path.
+if(DEFINED ENV{ROS_DISTRO})
+    include_directories("/opt/ros/$ENV{ROS_DISTRO}/include")
+endif()
+
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARY}
