@@ -38,15 +38,19 @@ namespace ompl
         {
             using type = ob::SE3StateSpace::StateType;
 
-            void FCLPoseFromState(fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
+            void FCLPoseFromState(FCLMethodWrapper::Transform &tf, const ob::State *state) const
             {
-                const auto * derived = static_cast <const type*> (state);
-
-                trans.setValue (derived->getX (), derived->getY (), derived->getZ ());
-                quat.getW () = derived->rotation ().w;
-                quat.getX () = derived->rotation ().x;
-                quat.getY () = derived->rotation ().y;
-                quat.getZ () = derived->rotation ().z;
+                const auto *derived = static_cast <const type*>(state);
+                const auto &q = derived->rotation();
+#if FCL_MAJOR_VERSION==0 && FCL_MINOR_VERSION<6
+                tf = FCLMethodWrapper::Transform(
+                        FCLMethodWrapper::Quaternion(q.w, q.x, q.y, q.z),
+                        FCLMethodWrapper::Vector3(derived->getX(), derived->getY(), derived->getZ())
+                    );
+#else
+                tf = fcl::Translation3d(derived->getX(), derived->getY(), derived->getZ()) *
+                    FCLMethodWrapper::Quaternion(q.w, q.x, q.y, q.z);
+#endif
             }
         };
 
@@ -55,13 +59,20 @@ namespace ompl
         {
             using type = ob::SE2StateSpace::StateType;
 
-            void FCLPoseFromState (fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state) const
+            void FCLPoseFromState(FCLMethodWrapper::Transform &tf, const ob::State *state) const
             {
-                static const fcl::Vec3f zaxis(0., 0., 1.);
-                const auto * derived = static_cast <const type*> (state);
-
-                trans.setValue (derived->getX (), derived->getY (), 0.0);
-                quat.fromAxisAngle(zaxis, derived->getYaw ());
+                static const FCLMethodWrapper::Vector3 zaxis(0., 0., 1.);
+                const auto * derived = static_cast <const type*>(state);
+#if FCL_MAJOR_VERSION==0 && FCL_MINOR_VERSION<6
+                FCLMethodWrapper::Quaternion q;
+                q.fromAxisAngle(zaxis, derived->getYaw());
+                tf = FCLMethodWrapper::Transform(q,
+                        FCLMethodWrapper::Vector3(derived->getX(), derived->getY(), 0.)
+                    );
+#else
+                tf = fcl::Translation3d(derived->getX(), derived->getY(), 0.) *
+                            fcl::AngleAxisd(derived->getYaw(), zaxis);
+#endif
             }
         };
         /// @endcond
@@ -71,34 +82,34 @@ namespace ompl
         class FCLStateValidityChecker : public ob::StateValidityChecker
         {
         public:
-            FCLStateValidityChecker (const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,
-                                     const GeometricStateExtractor &se, bool selfCollision)
+            FCLStateValidityChecker(const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,
+                                    const GeometricStateExtractor &se, bool selfCollision)
             : ob::StateValidityChecker(si),
               fclWrapper_(std::make_shared<FCLMethodWrapper>(geom, se, selfCollision,
-                [this](fcl::Vec3f &trans, fcl::Quaternion3f &quat, const ob::State *state)
+                [this](FCLMethodWrapper::Transform &tf, const ob::State *state)
                 {
-                    stateConvertor_.FCLPoseFromState(trans, quat, state);
+                    stateConvertor_.FCLPoseFromState(tf, state);
                 }))
             {
                 specs_.clearanceComputationType = base::StateValidityCheckerSpecs::EXACT;
             }
 
-            ~FCLStateValidityChecker () override = default;
+            ~FCLStateValidityChecker() override = default;
 
             /// \brief Checks whether the given robot state collides with the
             /// environment or itself.
-            bool isValid (const ob::State *state) const override
+            bool isValid(const ob::State *state) const override
             {
-                return si_->satisfiesBounds (state) && fclWrapper_->isValid (state);
+                return si_->satisfiesBounds(state) && fclWrapper_->isValid(state);
             }
 
             /// \brief Returns the minimum distance from the given robot state and the environment
-            double clearance (const ob::State *state) const override
+            double clearance(const ob::State *state) const override
             {
-                return fclWrapper_->clearance (state);
+                return fclWrapper_->clearance(state);
             }
 
-            const FCLMethodWrapperPtr& getFCLWrapper () const
+            const FCLMethodWrapperPtr& getFCLWrapper() const
             {
                 return fclWrapper_;
             }
