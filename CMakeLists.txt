@@ -48,7 +48,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
-set(OMPL_DEMO_INSTALL_DIR "share/ompl${OMPL_INSTALL_SUFFIX}/demos"
+set(OMPL_DEMO_INSTALL_DIR "share/ompl/demos"
     CACHE STRING "Relative path to directory where demos will be installed")
 set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
     CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
@@ -221,12 +221,12 @@ add_subdirectory(benchmark)
 add_subdirectory(py-bindings)
 
 install(DIRECTORY resources
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
     COMPONENT omplapp
     PATTERN ".DS_Store" EXCLUDE)
 
 install(DIRECTORY webapp
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
     COMPONENT omplapp
     PATTERN ".DS_Store" EXCLUDE)
 find_python_module(flask)
@@ -235,7 +235,7 @@ find_program(CELERY celery)
 if(PY_FLASK AND PY_CELERY AND CELERY)
     install(PROGRAMS webapp/ompl_webapp
         DESTINATION bin
-        RENAME ompl_webapp${OMPL_INSTALL_SUFFIX})
+        RENAME ompl_webapp)
 endif()
 
 # HACK ALERT: just in case the version of OpenDE used for libdrawstuff is used for libompl
@@ -254,11 +254,11 @@ if(NOT MSVC)
     install(FILES "${pkg_conf_file}"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
         COMPONENT ompl
-        RENAME "ompl${OMPL_INSTALL_SUFFIX}.pc")
+        RENAME "ompl.pc")
 endif()
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/doc/markdown/FindOMPL.cmake"
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
     COMPONENT ompl
     RENAME ompl-config.cmake)
 if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
@@ -267,12 +267,12 @@ if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.6)
         "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
         VERSION ${OMPL_VERSION} COMPATIBILITY SameMajorVersion)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl-config-version.cmake"
-        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
         COMPONENT ompl)
 endif()
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
-  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl${OMPL_INSTALL_SUFFIX}"
+  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
   COMPONENT ompl)
 
 # script to install ompl on Ubuntu
@@ -286,22 +286,6 @@ configure_file(
     IMMEDIATE @ONLY)
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
-if (OMPL_VERSIONED_INSTALL)
-    # script to create sym links
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh.in"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh" @ONLY)
-    execute_process(COMMAND
-        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/create_symlinks.sh"
-        "omplapp" WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/.symlinks/" DESTINATION .)
-    # script to uninstall sym links
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh.in"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh" @ONLY)
-    add_custom_target(uninstall_links COMMAND
-        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/uninstall_symlinks.sh")
-    add_dependencies(uninstall uninstall_links)
-endif()
 
 include(CPackSettings)
 
