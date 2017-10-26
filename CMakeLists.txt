@@ -87,7 +87,8 @@ find_package(OpenGL)
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
 find_package(Python)
-find_package(Boost COMPONENTS python QUIET)
+find_boost_python()
+
 find_python_module(PyQt5 QUIET)
 find_python_module(PyQt4 QUIET)
 find_python_module(PySide QUIET)
