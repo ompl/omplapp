@@ -33,6 +33,7 @@ matrix:
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap homebrew/science;
+      brew update;
       brew install boost-python ode eigen python cmake libccd assimp castxml;
       brew install https://raw.github.com/dartsim/homebrew-dart/master/Formula/fcl.rb;
     else
