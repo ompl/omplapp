@@ -1,8 +1,3 @@
-cache:
-  apt: true
-  directories:
-    - ${HOME}/castxml
-    - /usr/local
 language: cpp
 
 matrix:
@@ -11,31 +6,35 @@ matrix:
       dist: trusty
       sudo: required
       compiler: gcc
-      env: PYTHONPATH=/usr/local/lib/python2.7/dist-packages PATH=${PATH}:${HOME}/castxml/bin
+      env: PYTHONPATH=/usr/local/lib/python2.7/dist-packages PATH=${PATH}:${HOME}/castxml/bin JOBS=4 TEST_EXCLUDE='test_machine_spec'
+      addons:
+        apt:
+          packages:
+            - libboost1.55-all-dev
+            - python-dev
+            - libode-dev
+            - libeigen3-dev
+            - python-pip
+            - freeglut3-dev
+            - libassimp-dev
+      cache:
+        apt: true
+        directories:
+          - ${HOME}/castxml
+          - /usr/local
     - os: osx
-      osx_image: xcode8.2
+      osx_image: xcode9.1
       compiler: clang
-  allow_failures:
-    - os: osx
-
-addons:
-  apt:
-    packages:
-      - libboost-all-dev
-      - python-dev
-      - libode-dev
-      - libeigen3-dev
-      - freeglut3-dev
-      - libassimp-dev
+      env: JOBS=2 TEST_EXCLUDE='test_(machine_specs|random)'
+      cache:
+        directories:
+          - /usr/local
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap homebrew/science;
-      brew install boost-python ode eigen python cmake libccd assimp;
+      brew install boost-python ode eigen python cmake libccd assimp castxml;
       brew install https://raw.github.com/dartsim/homebrew-dart/master/Formula/fcl.rb;
-      if [ ! -e ${HOME}/castxml ]; then
-        curl https://midas3.kitware.com/midas/download/item/318762/castxml-macosx.tar.gz | tar zxf - -C ${HOME};
-      fi;
     else
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get -y update;
@@ -75,14 +74,7 @@ script:
   #- make -j4 update_bindings
 
   # Build
-  - make -j4
+  - make -j $JOBS
 
   # Run unit tests
-  # On OS X, exclude test_machine_specs; fails due to "lazy" memory freeing in Release mode (test passes in Debug builds).
-  # On OS X, exclude test_random; fails due to bug in Boost.Random in 1.56.
-  # On Linux, exclude test_machine_specs; started to fail when we switched to g++-5
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      ctest -E 'test_(machine_specs|random)';
-    else
-      ctest -E 'test_machine_specs';
-    fi
+  - ctest -E "$TEST_EXCLUDE";
