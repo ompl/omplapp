@@ -33,9 +33,10 @@ matrix:
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew tap homebrew/science;
+      git -C "$(brew --repo homebrew/core)" fetch --unshallow
       brew update;
-      brew install boost-python ode eigen python cmake libccd assimp castxml;
       brew install https://raw.github.com/dartsim/homebrew-dart/master/Formula/fcl.rb;
+      brew install boost-python ode eigen python assimp castxml;
     else
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get -y update;
