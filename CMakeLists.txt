@@ -89,6 +89,22 @@ find_package(OpenGL)
 find_package(Python)
 find_boost_python()
 
+if(PYTHON_FOUND)
+    # PyPy is more than an order of magnitude faster in generating the Python
+    # bindings than CPython, so use it if available.
+    find_program(PYPY NAMES pypy${PYTHON_VERSION_MAJOR} pypy)
+    if(PYPY)
+        option(OMPL_USE_PYPY "Use PyPy for generating Python bindings" ON)
+    else()
+        option(OMPL_USE_PYPY "Use PyPy for generating Python bindings" OFF)
+    endif()
+    if(OMPL_USE_PYPY)
+        set(PYTHON_BINDING_EXEC "${PYPY}")
+    else()
+        set(PYTHON_BINDING_EXEC "${PYTHON_EXEC}")
+    endif()
+endif()
+
 find_python_module(PyQt5 QUIET)
 find_python_module(PyQt4 QUIET)
 find_python_module(PySide QUIET)
