@@ -279,7 +279,7 @@ namespace ompl
             }
 
             /// \brief Convert a mesh to a FCL BVH model
-            std::pair<std::vector<Vector3>, std::vector<fcl::Triangle>>getFCLModelFromScene(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &center) const
+            std::pair<std::vector<Vector3>, std::vector<fcl::Triangle>> getFCLModelFromScene(const std::vector<const aiScene*> &scenes, const std::vector<aiVector3D> &center) const
             {
                 // Model consists of a set of points, and a set of triangles
                 // that connect those points
