@@ -2,9 +2,9 @@
 trap kill_celery INT
 
 function kill_celery() {
-    for p  in `ps aux |grep omplweb.celery| awk '{print $2}'`; do
-        kill $p 2>&1 >& /dev/null
-    done
+    if [[ -e /tmp/omplweb.pid ]]; then
+        kill `cat /tmp/omplweb.pid`
+    fi
 }
 
 cd `dirname $0`
@@ -22,7 +22,7 @@ celerystatus=`celery status -q -C -A omplweb.celery 2>&1 | cut -f2 -d " "`
 if [[ ! ${celerystatus} == "OK" ]]; then
     echo "If you want to use the benchmarking facilities of ompl_webapp,"
     echo "run the \"plannerarena\" command as well."
-    celery worker -A omplweb.celery --loglevel=info 2>&1 >& /tmp/omplweb-celery.log &
+    celery worker -A omplweb.celery -Q omplapp --loglevel=info --pidfile=/tmp/omplweb.pid --logfile=/tmp/omplweb-celery.log &
     python ./omplweb.py
     kill_celery
 else

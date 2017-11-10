@@ -87,6 +87,7 @@ def make_celery():
         backend_url += ":" + preferences["broker_port"]
 
     celery = Celery(app.name, broker=broker_url, backend=backend_url)
+    celery.conf.update({u'task_default_queue': u'omplapp'})
     return celery
 
 
@@ -466,7 +467,7 @@ def create_session():
     """
     Creates a session folder and returns its name
     """
-    if not os.path.isdir("/tmp/omplweb_sessions"):
+    if not os.path.isdir("/tmp/omplweb_sessions") and not os.path.exists(ompl_sessions_dir):
         # Session folders reside in /tmp, but symlinked into static/sessions
         os.makedirs("/tmp/omplweb_sessions")
         os.symlink("/tmp/omplweb_sessions", ompl_sessions_dir)
@@ -501,7 +502,7 @@ def send_problems():
         if filename.endswith(".cfg"):
             three_d.append(filename)
 
-    return json.dumps({"2D" : two_d, "3D" : three_d})
+    return json.dumps({"2D" : sorted(two_d), "3D" : sorted(three_d)})
 
 
 @app.route('/planners')
@@ -510,7 +511,7 @@ def planners():
     planners = {}
     planners['geometric'] = og.planners.plannerMap
     planners['control'] = oc.planners.plannerMap
-    return json.dumps(planners)
+    return json.dumps(planners, sort_keys=True)
 
 @app.route('/offset', methods=["POST"])
 def find_offset():
@@ -532,7 +533,7 @@ def get_robot_types():
             name = eval('oa.%s().getName()' % c)
             apptype = eval('oa.%s().getAppType()' % c)
             robot_types[str(c)] = {"name" : str(name), "apptype" : str(apptype)}
-    return json.dumps(robot_types)
+    return json.dumps(robot_types, sort_keys=True)
 
 @app.route("/request_problem", methods=['POST'])
 def request_problem():
