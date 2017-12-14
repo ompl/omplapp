@@ -31,11 +31,11 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
     importerRobot_[p] = std::make_shared<Assimp::Importer>();
 
     const aiScene* robotScene = importerRobot_[p]->ReadFile(robot.c_str(),
+                                                            aiProcess_GenNormals             |
                                                             aiProcess_Triangulate            |
                                                             aiProcess_JoinIdenticalVertices  |
                                                             aiProcess_SortByPType            |
-                                                            aiProcess_OptimizeGraph          |
-                                                            aiProcess_OptimizeMeshes);
+                                                            aiProcess_OptimizeGraph);
     if (robotScene != nullptr)
     {
         if (!robotScene->HasMeshes())
@@ -73,11 +73,12 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     importerEnv_[p] = std::make_shared<Assimp::Importer>();
 
     const aiScene* envScene = importerEnv_[p]->ReadFile(env.c_str(),
+                                                        aiProcess_GenNormals             |
                                                         aiProcess_Triangulate            |
                                                         aiProcess_JoinIdenticalVertices  |
                                                         aiProcess_SortByPType            |
-                                                        aiProcess_OptimizeGraph          |
-                                                        aiProcess_OptimizeMeshes);
+                                                        aiProcess_OptimizeGraph);
+
     if (envScene != nullptr)
     {
         if (!envScene->HasMeshes())

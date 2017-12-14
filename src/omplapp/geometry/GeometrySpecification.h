@@ -14,11 +14,7 @@
 #define OMPLAPP_GEOMETRY_GEOMETRY_SPECIFICATION_
 
 #include "omplapp/config.h"
-#if OMPL_HAS_ASSIMP3
 #include <assimp/scene.h>
-#else
-#include <assimp/aiScene.h>
-#endif
 #include <vector>
 #include <functional>
 #include <ompl/base/State.h>

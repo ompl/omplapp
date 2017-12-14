@@ -15,10 +15,6 @@
 
 #define OMPLAPP_RESOURCE_DIR "@OMPLAPP_RESOURCE_DIR@"
 
-/** \brief Specify which version of Assimp is used */
-#cmakedefine01 OMPL_HAS_ASSIMP2
-#cmakedefine01 OMPL_HAS_ASSIMP3
-
 /** Whether PQP was found */
 #cmakedefine01 OMPL_HAS_PQP
 
