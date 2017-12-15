@@ -15,37 +15,38 @@
 import sys
 from os.path import abspath, dirname, join
 from decimal import Decimal
-import inspect
+from inspect import isclass
+import OpenGL
+OpenGL.ERROR_CHECKING = False
+from OpenGL import GL, GLU
+import webbrowser
+from math import cos, sin, asin, acos, atan2, pi, sqrt
 qt5 = False
 try:
     # try PyQt5 first
     from PyQt5 import QtWidgets, QtCore, QtGui, QtOpenGL
     from PyQt5.QtCore import pyqtSignal as Signal
     qt5 = True
-except:
+except ModuleNotFoundError:
     # deprecated, will be removed at some point
     try:
         from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
         from PyQt4.QtCore import pyqtSignal as Signal
         QtWidgets = QtGui
-    except:
+    except ModuleNotFoundError:
         # if PyQt* wasn't found, try PySide
         from PySide import QtCore, QtGui, QtOpenGL
         from PySide.QtCore import Signal
         QtWidgets = QtGui
-import OpenGL
-OpenGL.ERROR_CHECKING = False
-from OpenGL import GL, GLU
-import webbrowser, re
-from math import cos, sin, asin, acos, atan2, pi, pow, ceil, sqrt
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
     import ConfigParser
-except:
+except ModuleNotFoundError:
     import configparser as ConfigParser
 
-sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings' ) )
-from ompl.util import OutputHandler, useOutputHandler, LogLevel, OMPL_DEBUG, OMPL_INFORM, OMPL_WARN, OMPL_ERROR
+sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings'))
+from ompl.util import OutputHandler, useOutputHandler, LogLevel, \
+    OMPL_DEBUG, OMPL_INFORM, OMPL_ERROR
 from ompl import base as ob
 from ompl import geometric as og
 from ompl import control as oc
@@ -117,25 +118,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.environmentFile = None
         self.robotFile = None
         self.path = None
-        self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged[int].connect(self.setRobotType)
+        self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged[int].connect(
+            self.setRobotType)
         self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
         self.mainWidget.solveWidget.clearButton.clicked.connect(self.clear)
         self.mainWidget.boundsWidget.resetButton.clicked.connect(self.resetBounds)
 
         # connect timeLimit widgets in geometric and control planning with each other and with the
         # MainWindow.setTimeLimit method
-        self.mainWidget.plannerWidget.geometricPlanning.timeLimit.valueChanged[float].connect(self.setTimeLimit)
+        self.mainWidget.plannerWidget.geometricPlanning.timeLimit.valueChanged[float].connect(
+            self.setTimeLimit)
         self.mainWidget.plannerWidget.geometricPlanning.timeLimit.valueChanged[float].connect(
             self.mainWidget.plannerWidget.controlPlanning.timeLimit.setValue)
-        self.mainWidget.plannerWidget.controlPlanning.timeLimit.valueChanged[float].connect(self.setTimeLimit)
+        self.mainWidget.plannerWidget.controlPlanning.timeLimit.valueChanged[float].connect(
+            self.setTimeLimit)
         self.mainWidget.plannerWidget.controlPlanning.timeLimit.valueChanged[float].connect(
             self.mainWidget.plannerWidget.geometricPlanning.timeLimit.setValue)
         self.timeLimit = self.mainWidget.plannerWidget.geometricPlanning.timeLimit.value()
 
-        self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(self.mainWidget.glViewer.setLowerBound)
-        self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(self.mainWidget.glViewer.setUpperBound)
-        self.mainWidget.glViewer.boundLowChanged.connect(self.mainWidget.boundsWidget.bounds_low.setBounds)
-        self.mainWidget.glViewer.boundHighChanged.connect(self.mainWidget.boundsWidget.bounds_high.setBounds)
+        self.mainWidget.boundsWidget.bounds_low.valueChanged.connect(
+            self.mainWidget.glViewer.setLowerBound)
+        self.mainWidget.boundsWidget.bounds_high.valueChanged.connect(
+            self.mainWidget.glViewer.setUpperBound)
+        self.mainWidget.glViewer.boundLowChanged.connect(
+            self.mainWidget.boundsWidget.bounds_low.setBounds)
+        self.mainWidget.glViewer.boundHighChanged.connect(
+            self.mainWidget.boundsWidget.bounds_high.setBounds)
 
         #self.commandWindow = CommandWindow(self) # not implemented yet
         robotType = [t[0] for t in self.robotTypes].index('GSE3RigidBodyPlanning')
@@ -148,7 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def openEnvironment(self):
         fname = getOpenFileNameAsAstring(self, "Open Environment")
-        if len(fname)>0 and fname!=self.environmentFile:
+        if fname and fname != self.environmentFile:
             self.environmentFile = fname
             self.omplSetup.setEnvironmentMesh(self.environmentFile)
             self.mainWidget.glViewer.setEnvironment(self.omplSetup.renderEnvironment())
@@ -160,7 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def openRobot(self):
         fname = getOpenFileNameAsAstring(self, "Open Robot")
-        if len(fname)>0 and fname!=self.robotFile:
+        if fname and fname != self.robotFile:
             self.robotFile = fname
             self.omplSetup.setRobotMesh(self.robotFile)
             self.mainWidget.glViewer.setRobot(self.omplSetup.renderRobot())
@@ -168,20 +176,21 @@ class MainWindow(QtWidgets.QMainWindow):
             # full state
             start = self.omplSetup.getDefaultStartState()
             # just the first geometric component
-            start = self.omplSetup.getGeometricComponentState(start,0)
+            start = self.omplSetup.getGeometricComponentState(start, 0)
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(start, self.is3D)
             if self.isGeometric:
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.setValue(
                     self.omplSetup.getSpaceInformation().getStateValidityCheckingResolution())
-            self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+            self.mainWidget.glViewer.setBounds(
+                self.omplSetup.getGeometricComponentStateSpace().getBounds())
 
     def openConfig(self):
         fname = getOpenFileNameAsAstring(self, "Open Problem Configuration", "", "*.cfg")
-        if len(fname)>0:
+        if fname:
             OMPL_INFORM("Loading " + fname)
-            if (sys.version_info > (3, 0)):
-                config = ConfigParser.ConfigParser(strict = False)
+            if sys.version_info > (3, 0):
+                config = ConfigParser.ConfigParser(strict=False)
             else:
                 config = ConfigParser.ConfigParser()
             config.readfp(open(fname, 'r'))
@@ -248,8 +257,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mainWidget.problemWidget.setStartPose(start, self.is3D)
             self.mainWidget.problemWidget.setGoalPose(goal, self.is3D)
             if self.is3D:
-                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and config.has_option("problem", "volume.min.z") and
-                    config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y") and config.has_option("problem", "volume.max.z")):
+                if config.has_option("problem", "volume.min.x") and \
+                   config.has_option("problem", "volume.min.y") and \
+                   config.has_option("problem", "volume.min.z") and \
+                   config.has_option("problem", "volume.max.x") and \
+                   config.has_option("problem", "volume.max.y") and \
+                   config.has_option("problem", "volume.max.z"):
                     bounds = ob.RealVectorBounds(3)
                     bounds.low[0] = config.getfloat("problem", "volume.min.x")
                     bounds.low[1] = config.getfloat("problem", "volume.min.y")
@@ -260,8 +273,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
                     self.mainWidget.glViewer.setBounds(bounds)
             else:
-                if (config.has_option("problem", "volume.min.x") and config.has_option("problem", "volume.min.y") and
-                    config.has_option("problem", "volume.max.x") and config.has_option("problem", "volume.max.y")):
+                if config.has_option("problem", "volume.min.x") and \
+                   config.has_option("problem", "volume.min.y") and \
+                   config.has_option("problem", "volume.max.x") and \
+                   config.has_option("problem", "volume.max.y"):
                     bounds = ob.RealVectorBounds(2)
                     bounds.low[0] = config.getfloat("problem", "volume.min.x")
                     bounds.low[1] = config.getfloat("problem", "volume.min.y")
@@ -280,16 +295,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def saveConfig(self):
         fname = getSaveFileNameAsAstring(self, 'Save Problem Configuration', 'config.cfg')
-        if len(fname)>0:
+        if fname:
             config = ConfigParser.ConfigParser()
             config.add_section("problem")
             config.set("problem", "robot", self.robotFile)
             config.set("problem", "world", self.environmentFile)
             startPose = self.mainWidget.problemWidget.getStartPose()
             goalPose = self.mainWidget.problemWidget.getGoalPose()
-            config.set("problem", "objective",
+            config.set("problem", "objective", \
                 str(self.mainWidget.problemWidget.objectiveSelect.currentText()).replace(" ", "_"))
-            config.set("problem", "objective.threshold", str(self.mainWidget.problemWidget.objectiveThreshold.value()))
+            config.set("problem", "objective.threshold", \
+                str(self.mainWidget.problemWidget.objectiveThreshold.value()))
             ctype = str(self.mainWidget.problemWidget.robotTypeSelect.currentText())
             if not ctype.startswith('Rigid body planning'):
                 if ctype == "Blimp":
@@ -306,8 +322,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 config.set("problem", "start.y", str(startPose().getY()))
                 config.set("problem", "start.z", str(startPose().getZ()))
                 rs = startPose().rotation()
-                if rs.w==1:
-                    config.set("problem", "start.theta",  "0")
+                if rs.w == 1:
+                    config.set("problem", "start.theta", "0")
                     config.set("problem", "start.axis.x", "1")
                     config.set("problem", "start.axis.y", "0")
                     config.set("problem", "start.axis.z", "0")
@@ -321,8 +337,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 config.set("problem", "goal.y", str(goalPose().getY()))
                 config.set("problem", "goal.z", str(goalPose().getZ()))
                 rg = goalPose().rotation()
-                if rg.w==1:
-                    config.set("problem", "goal.theta",  "0")
+                if rg.w == 1:
+                    config.set("problem", "goal.theta", "0")
                     config.set("problem", "goal.axis.x", "1")
                     config.set("problem", "goal.axis.y", "0")
                     config.set("problem", "goal.axis.z", "0")
@@ -355,7 +371,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _arrayToSE2State(self, a):
         st = ob.State(self.omplSetup.getGeometricComponentStateSpace())
-        st().setXY(a[0],a[1])
+        st().setXY(a[0], a[1])
         st().setYaw(a[2])
         return st
     def _arrayToSE3State(self, a):
@@ -367,11 +383,11 @@ class MainWindow(QtWidgets.QMainWindow):
         return st
     def openPath(self):
         fname = getOpenFileNameAsAstring(self, "Open Path")
-        if len(fname)>0:
+        if fname:
             path = []
-            for line in open(fname,'r').readlines():
+            for line in open(fname, 'r').readlines():
                 l = line.strip()
-                if len(l) == 0:
+                if not l:
                     continue
                 path.append([float(x) for x in l.split(' ')])
 
@@ -396,14 +412,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def savePath(self):
         if self.path:
             fname = getSaveFileNameAsAstring(self, 'Save Path', 'path.txt')
-            if len(fname)>0:
+            if fname:
                 ind = range(7 if self.is3D else 3)
-                pathstr = '\n'.join([ ' '.join([str(s[i]) for i in ind]) for s in self.path])
-                open(fname,'w').write(pathstr)
+                pathstr = '\n'.join([' '.join([str(s[i]) for i in ind]) for s in self.path])
+                open(fname, 'w').write(pathstr)
 
     def savePlannerData(self):
         fname = getSaveFileNameAsAstring(self, 'Save Roadmap/Tree', 'plannerData.graphml')
-        if len(fname)>0:
+        if fname:
             pd = ob.PlannerData(self.omplSetup.getSpaceInformation())
             self.omplSetup.getPlannerData(pd)
             pd.computeEdgeWeights()
@@ -412,10 +428,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 outfile.close()
 
     def setSolutionPath(self, path):
-            ns = len(path.getStates())
-            self.path = [ self.omplSetup.getGeometricComponentState(
-                ob.State(self.omplSetup.getGeometricComponentStateSpace(),path.getState(i)), 0) for i in range(ns) ]
-            self.mainWidget.glViewer.setSolutionPath(self.path)
+        ns = len(path.getStates())
+        self.path = [self.omplSetup.getGeometricComponentState(
+            ob.State(self.omplSetup.getGeometricComponentStateSpace(), path.getState(i)), 0) \
+            for i in range(ns)]
+        self.mainWidget.glViewer.setSolutionPath(self.path)
 
     def randMotion(self):
         self.configureApp()
@@ -466,18 +483,20 @@ class MainWindow(QtWidgets.QMainWindow):
             plannerParams = self.mainWidget.plannerWidget.controlPlanning.plannerList[plannerid]
         if plannerParams[0].startswith('ompl.control.Syclop'):
             decomposition = self.omplSetup.allocDecomposition()
-            planner = eval('%s(si,decomposition)' % plannerParams[0])
+            planner = eval('%s(si, decomposition)' % plannerParams[0])
         else:
             planner = eval('%s(si)' % plannerParams[0])
         params = planner.params()
-        for (param,widget) in plannerParams[1].items():
+        for (param, widget) in plannerParams[1].items():
             if isinstance(widget, QtWidgets.QCheckBox):
                 params[param].setValue('1' if widget.isChecked() else '0')
             elif isinstance(widget, QtWidgets.QComboBox):
                 if self.isGeometric:
-                    val = og.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
+                    val = \
+                    og.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
                 else:
-                    val = oc.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
+                    val = \
+                    oc.planners.getPlanners()[plannerParams[0]][param][2][widget.currentIndex()]
                 params[param].setValue(val)
             else:
                 params[param].setValue(str(widget.value()))
@@ -489,7 +508,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.path = None
         self.omplSetup = eval('oa.%s()' % self.robotTypes[value][0])
         self.clear(True)
-        self.isGeometric = self.robotTypes[value][2]==oa.GEOMETRIC
+        self.isGeometric = self.robotTypes[value][2] == oa.GEOMETRIC
         self.is3D = isinstance(self.omplSetup.getGeometricComponentStateSpace(), ob.SE3StateSpace)
         self.mainWidget.plannerWidget.setCurrentIndex(0 if self.isGeometric else 1)
         self.mainWidget.problemWidget.poses.setCurrentIndex(0 if self.is3D else 1)
@@ -500,17 +519,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def configureApp(self):
         self.omplSetup.clear()
-        startPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getStartPose())
-        goalPose = self.omplSetup.getFullStateFromGeometricComponent(self.mainWidget.problemWidget.getGoalPose())
+        startPose = self.omplSetup.getFullStateFromGeometricComponent(
+            self.mainWidget.problemWidget.getStartPose())
+        goalPose = self.omplSetup.getFullStateFromGeometricComponent(
+            self.mainWidget.problemWidget.getGoalPose())
         self.omplSetup.setPlanner(self.createPlanner())
         if self.is3D:
             bounds = ob.RealVectorBounds(3)
-            (bounds.low[0],bounds.low[1],bounds.low[2]) = self.mainWidget.glViewer.bounds_low
-            (bounds.high[0],bounds.high[1],bounds.high[2]) = self.mainWidget.glViewer.bounds_high
+            (bounds.low[0], bounds.low[1], bounds.low[2]) = self.mainWidget.glViewer.bounds_low
+            (bounds.high[0], bounds.high[1], bounds.high[2]) = self.mainWidget.glViewer.bounds_high
         else:
             bounds = ob.RealVectorBounds(2)
-            (bounds.low[0],bounds.low[1]) = self.mainWidget.glViewer.bounds_low[:2]
-            (bounds.high[0],bounds.high[1]) = self.mainWidget.glViewer.bounds_high[:2]
+            (bounds.low[0], bounds.low[1]) = self.mainWidget.glViewer.bounds_low[:2]
+            (bounds.high[0], bounds.high[1]) = self.mainWidget.glViewer.bounds_high[:2]
         self.omplSetup.getGeometricComponentStateSpace().setBounds(bounds)
         if self.isGeometric:
             self.omplSetup.setStartAndGoalStates(startPose, goalPose, 1e-6)
@@ -540,28 +561,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mainWidget.glViewer.plannerDataList = self.omplSetup.renderPlannerData(pd)
 
         # update the displayed bounds, in case planning did so
-        self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+        self.mainWidget.glViewer.setBounds(
+            self.omplSetup.getGeometricComponentStateSpace().getBounds())
         if solved:
             if self.isGeometric:
                 path = self.omplSetup.getSolutionPath()
                 initialValid = path.check()
-                if initialValid == False:
+                if not initialValid:
                     OMPL_ERROR("Path reported by planner seems to be invalid!")
                 self.omplSetup.simplifySolution()
                 path = self.omplSetup.getSolutionPath()
-                if initialValid == True and path.check() == False:
+                if initialValid and not path.check():
                     OMPL_ERROR("Simplified path seems to be invalid!")
             else:
                 path = self.omplSetup.getSolutionPath().asGeometric()
-                if path.check() == False:
+                if not path.check():
                     OMPL_ERROR("Path reported by planner seems to be invalid!")
 
-            ns = int(100.0 * float(path.length()) / float(self.omplSetup.getStateSpace().getMaximumExtent()))
+            ns = int(100.0 * float(path.length()) / \
+                float(self.omplSetup.getStateSpace().getMaximumExtent()))
             if self.isGeometric and len(path.getStates()) < ns:
                 OMPL_DEBUG("Interpolating solution path to " + str(ns) + " states")
                 path.interpolate(ns)
                 if len(path.getStates()) != ns:
-                    OMPL_ERROR("Interpolation produced " + str(len(path.getStates())) + " states instead of " + str(ns) + " states!")
+                    OMPL_ERROR("Interpolation produced " + str(len(path.getStates())) + \
+                        " states instead of " + str(ns) + " states!")
 #            if path.check() == False:
 #                OMPL_ERROR("Something wicked happened to the path during interpolation")
             self.setSolutionPath(path)
@@ -578,44 +602,46 @@ class MainWindow(QtWidgets.QMainWindow):
             b = ob.RealVectorBounds(2)
             self.omplSetup.getGeometricComponentStateSpace().setBounds(b)
         self.omplSetup.inferEnvironmentBounds()
-        self.mainWidget.glViewer.setBounds(self.omplSetup.getGeometricComponentStateSpace().getBounds())
+        self.mainWidget.glViewer.setBounds(
+            self.omplSetup.getGeometricComponentStateSpace().getBounds())
 
     def createActions(self):
-        self.openEnvironmentAct = QtWidgets.QAction('Open &Environment', self,
-            shortcut='Ctrl+E', statusTip='Open an environment model',
+        self.openEnvironmentAct = QtWidgets.QAction('Open &Environment', self, \
+            shortcut='Ctrl+E', statusTip='Open an environment model', \
             triggered=self.openEnvironment)
-        self.openRobotAct = QtWidgets.QAction('Open &Robot', self,
-            shortcut='Ctrl+R', statusTip='Open a robot model',
+        self.openRobotAct = QtWidgets.QAction('Open &Robot', self, \
+            shortcut='Ctrl+R', statusTip='Open a robot model', \
             triggered=self.openRobot)
-        self.openConfigAct = QtWidgets.QAction('Open Problem &Configuration', self,
-            shortcut='Ctrl+O', statusTip='Open a problem configuration (.cfg file)',
+        self.openConfigAct = QtWidgets.QAction('Open Problem &Configuration', self, \
+            shortcut='Ctrl+O', statusTip='Open a problem configuration (.cfg file)', \
             triggered=self.openConfig)
-        self.saveConfigAct = QtWidgets.QAction('Save Problem Con&figuration', self,
-            shortcut='Ctrl+S', statusTip='Save a problem configuration (.cfg file)',
+        self.saveConfigAct = QtWidgets.QAction('Save Problem Con&figuration', self, \
+            shortcut='Ctrl+S', statusTip='Save a problem configuration (.cfg file)', \
             triggered=self.saveConfig)
-        self.openPathAct = QtWidgets.QAction('&Open Path', self,
-            shortcut='Ctrl+Alt+O', statusTip='Open a path',
+        self.openPathAct = QtWidgets.QAction('&Open Path', self, \
+            shortcut='Ctrl+Alt+O', statusTip='Open a path', \
             triggered=self.openPath)
-        self.savePathAct = QtWidgets.QAction('Save &Path', self,
-            shortcut='Ctrl+Alt+S', statusTip='Save a path',
+        self.savePathAct = QtWidgets.QAction('Save &Path', self, \
+            shortcut='Ctrl+Alt+S', statusTip='Save a path', \
             triggered=self.savePath)
-        self.savePlannerDataAct = QtWidgets.QAction('Save Roadmap/Tree', self,
-            statusTip='Save the roadmap/tree that was created by "Solve"',
+        self.savePlannerDataAct = QtWidgets.QAction('Save Roadmap/Tree', self, \
+            statusTip='Save the roadmap/tree that was created by "Solve"', \
             triggered=self.savePlannerData)
-        self.exitAct = QtWidgets.QAction('E&xit', self, shortcut='Ctrl+Q',
+        self.exitAct = QtWidgets.QAction('E&xit', self, shortcut='Ctrl+Q', \
             statusTip='Exit the application', triggered=self.close)
 
-        self.logWindowAct = QtWidgets.QAction('Log Window', self,
+        self.logWindowAct = QtWidgets.QAction('Log Window', self, \
             shortcut='Ctrl+1', triggered=self.showLogWindow)
-        self.randMotionAct = QtWidgets.QAction('Random &Motion', self, shortcut='Ctrl+M', triggered=self.randMotion)
-        self.commandWindowAct = QtWidgets.QAction('Command Window', self,
+        self.randMotionAct = QtWidgets.QAction('Random &Motion', self, \
+            shortcut='Ctrl+M', triggered=self.randMotion)
+        self.commandWindowAct = QtWidgets.QAction('Command Window', self, \
             shortcut='Ctrl+2', triggered=self.showCommandWindow)
 
-        self.omplWebAct = QtWidgets.QAction('OMPL Web Site', self,
+        self.omplWebAct = QtWidgets.QAction('OMPL Web Site', self, \
             triggered=self.omplWebSite)
-        self.contactDevsAct = QtWidgets.QAction('Contact Developers', self,
+        self.contactDevsAct = QtWidgets.QAction('Contact Developers', self, \
             triggered=self.contactDevs)
-        self.emailListAct = QtWidgets.QAction('Email OMPL Mailing List', self,
+        self.emailListAct = QtWidgets.QAction('Email OMPL Mailing List', self, \
             triggered=self.emailList)
 
     def createMenus(self):
@@ -641,10 +667,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.helpMenu.addAction(self.emailListAct)
 
     def createRobotTypeList(self):
-        from inspect import isclass
         self.robotTypes = []
         for c in dir(oa):
-            if eval('isclass(oa.%s) and issubclass(oa.%s, (oa.AppBaseGeometric,oa.AppBaseControl)) and issubclass(oa.%s, oa.RenderGeometry)' % (c,c,c)):
+            if eval('isclass(oa.%s) and issubclass(oa.%s, ' \
+                    '(oa.AppBaseGeometric,oa.AppBaseControl)) ' \
+                    'and issubclass(oa.%s, oa.RenderGeometry)' % (c, c, c)):
                 name = eval('oa.%s().getName()' % c)
                 apptype = eval('oa.%s().getAppType()' % c)
                 self.robotTypes.append((c, name, apptype))
@@ -658,12 +685,14 @@ class MainWidget(QtWidgets.QWidget):
         self.plannerWidget = PlannerWidget()
         self.boundsWidget = BoundsWidget()
         self.solveWidget = SolveWidget()
-        self.solveWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed))
+        self.solveWidget.setSizePolicy(QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed))
         tabWidget = QtWidgets.QTabWidget()
         tabWidget.addTab(self.problemWidget, "Problem")
         tabWidget.addTab(self.plannerWidget, "Planner")
         tabWidget.addTab(self.boundsWidget, "Bounding box")
-        tabWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
+        tabWidget.setSizePolicy(QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.glViewer, 0, 0, 2, 1)
         layout.addWidget(tabWidget, 0, 1)
@@ -671,7 +700,8 @@ class MainWidget(QtWidgets.QWidget):
         self.setLayout(layout)
         self.problemWidget.startChanged.connect(self.glViewer.setStartPose)
         self.problemWidget.goalChanged.connect(self.glViewer.setGoalPose)
-        self.solveWidget.explorationVizSelect.currentIndexChanged[int].connect(self.glViewer.showPlannerData)
+        self.solveWidget.explorationVizSelect.currentIndexChanged[int].connect(
+            self.glViewer.showPlannerData)
         self.solveWidget.animateCheck.toggled.connect(self.glViewer.toggleAnimation)
         self.solveWidget.speedSlider.valueChanged.connect(self.glViewer.setSpeed)
 
@@ -700,12 +730,12 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.lastPos = QtCore.QPoint()
         self.environment = None
         self.robot = None
-        self.center = [0,0,0]
+        self.center = [0, 0, 0]
         self.scale = 1
         self.viewheight = 1
-        self.cameraPose = [0,0,0,0,0,0]
-        self.startPose = [0,0,0,0,0,0]
-        self.goalPose = [0,0,0,0,0,0]
+        self.cameraPose = [0, 0, 0, 0, 0, 0]
+        self.startPose = [0, 0, 0, 0, 0, 0]
+        self.goalPose = [0, 0, 0, 0, 0, 0]
         self.solutionPath = None
         self.pathIndex = 0
         self.timer = QtCore.QTimer()
@@ -732,36 +762,38 @@ class GLViewer(QtOpenGL.QGLWidget):
             bounds.high[i] = self.bounds_high[i]
         return bounds
     def setBounds(self, bounds):
-        self.bounds_low = [x for x in bounds.low ]
-        self.bounds_high = [x for x in bounds.high ]
-        if len(self.bounds_low)==2:
+        self.bounds_low = [x for x in bounds.low]
+        self.bounds_high = [x for x in bounds.high]
+        if len(self.bounds_low) == 2:
             self.bounds_low.append(0)
             self.bounds_high.append(0)
         bbox = list(zip(self.bounds_low, self.bounds_high))
-        self.center = [ .5*(p0+p1) for (p0,p1) in bbox ]
-        m = max([p1-p0 for (p0,p1) in bbox ])
-        self.scale = 1. if m==0 else 1. / m
+        self.center = [.5 * (p0 + p1) for (p0, p1) in bbox]
+        m = max([p1 - p0 for (p0, p1) in bbox])
+        self.scale = 1. if m == 0 else 1. / m
         self.viewheight = (self.bounds_high[2]-self.bounds_low[2])*self.scale*3
         self.boundLowChanged.emit(self.bounds_low)
         self.boundHighChanged.emit(self.bounds_high)
     def updateBounds(self, pos):
-        lo=False
-        hi=False
-        if self.bounds_low == None:
+        lo = False
+        hi = False
+        if self.bounds_low is None:
             self.bounds_low = pos
             self.bounds_high = pos
             self.boundLowChanged.emit(self.bounds_low)
             self.boundHighChanged.emit(self.bounds_high)
         else:
             for i in range(3):
-                if pos[i]<self.bounds_low[i]:
+                if pos[i] < self.bounds_low[i]:
                     self.bounds_low[i] = pos[i]
                     lo = True
-                elif pos[i]>self.bounds_high[i]:
+                elif pos[i] > self.bounds_high[i]:
                     self.bounds_high[i] = pos[i]
                     hi = True
-            if lo: self.boundLowChanged.emit(self.bounds_low)
-            if hi: self.boundHighChanged.emit(self.bounds_high)
+            if lo:
+                self.boundLowChanged.emit(self.bounds_low)
+            if hi:
+                self.boundHighChanged.emit(self.bounds_high)
     def setLowerBound(self, bound):
         self.bounds_low = bound
         self.updateGL()
@@ -787,7 +819,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.timer.stop()
         self.updateGL()
     def setSpeed(self, value):
-        if value==0:
+        if value == 0:
             self.timer.stop()
         else:
             self.timer.start(100.0/float(value))
@@ -797,14 +829,16 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.pathIndex = (self.pathIndex + 1) % len(self.solutionPath)
             self.updateGL()
     def setSolutionPath(self, path):
-        self.solutionPath = [ self.getTransform(state()) for state in path ]
+        self.solutionPath = [self.getTransform(state()) for state in path]
         self.pathIndex = 0
         self.updateGL()
     def setRobot(self, robot):
-        if self.robot: GL.glDeleteLists(self.robot, 1)
+        if self.robot:
+            GL.glDeleteLists(self.robot, 1)
         self.robot = robot
     def setEnvironment(self, environment):
-        if self.environment: GL.glDeleteLists(self.environment, 1)
+        if self.environment:
+            GL.glDeleteLists(self.environment, 1)
         self.environment = environment
     def clear(self, deepClean=False):
         self.solutionPath = None
@@ -815,10 +849,10 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.setEnvironment(None)
             self.bounds_low = None
             self.bounds_high = None
-            self.cameraPose = [0,0,0,0,0,0]
+            self.cameraPose = [0, 0, 0, 0, 0, 0]
         self.updateGL()
     def initializeGL(self):
-        GL.glClearColor(0.5,0.5,0.5,1.)
+        GL.glClearColor(0.5, 0.5, 0.5, 1.)
         GL.glEnable(GL.GL_LIGHTING)
         GL.glEnable(GL.GL_LIGHT0)
         GL.glEnable(GL.GL_LIGHT1)
@@ -839,29 +873,29 @@ class GLViewer(QtOpenGL.QGLWidget):
         GL.glRotated(pose[1], 0.0, 1.0, 0.0)
         GL.glRotated(pose[2], 0.0, 0.0, 1.0)
     def getTransform(self, xform):
-        if hasattr(xform,'rotation'):
+        if hasattr(xform, 'rotation'):
             R = xform.rotation()
-            (w,x,y,z) = (R.w, -R.x, -R.y, -R.z)
-            return [ w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0,
-                2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0,
-                2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
-                xform.getX(), xform.getY(), xform.getZ(), 1 ]
-        else:
-            th = -xform.getYaw()
-            return [ cos(th), -sin(th), 0, 0,
+            (w, x, y, z) = (R.w, -R.x, -R.y, -R.z)
+            return [w*w+x*x-y*y-z*z, 2*(x*y-w*z), 2*(x*z+w*y), 0,
+                    2*(x*y+w*z), w*w-x*x+y*y-z*z, 2*(y*z-w*x), 0,
+                    2*(x*z-w*y), 2*(y*z+w*x), w*w-x*x-y*y+z*z, 0,
+                    xform.getX(), xform.getY(), xform.getZ(), 1]
+        th = -xform.getYaw()
+        return [cos(th), -sin(th), 0, 0,
                 sin(th), cos(th), 0, 0,
                 0, 0, 1, 0,
-                xform.getX(), xform.getY(), 0, 1 ]
+                xform.getX(), xform.getY(), 0, 1]
 
     def drawBounds(self):
         lo = self.bounds_low
         hi = self.bounds_high
-        p = [lo, [lo[0],lo[1],hi[2]], [lo[0],hi[1],lo[2]], [lo[0],hi[1],hi[2]],
-            [hi[0],lo[1],lo[2]], [hi[0],lo[1],hi[2]], [hi[0],hi[1],lo[2]], hi]
-        ind = [(0,1),(1,3),(3,2),(2,0),(4,5),(5,7),(7,6),(6,4),(0,4),(1,5),(2,6),(3,7)]
+        p = [lo, [lo[0], lo[1], hi[2]], [lo[0], hi[1], lo[2]], [lo[0], hi[1], hi[2]], \
+            [hi[0], lo[1], lo[2]], [hi[0], lo[1], hi[2]], [hi[0], hi[1], lo[2]], hi]
+        ind = [(0, 1), (1, 3), (3, 2), (2, 0), (4, 5), (5, 7), (7, 6), (6, 4), (0, 4), \
+            (1, 5), (2, 6), (3, 7)]
         GL.glDisable(GL.GL_LIGHTING)
         GL.glDisable(GL.GL_COLOR_MATERIAL)
-        GL.glColor3f(1,1,1)
+        GL.glColor3f(1, 1, 1)
         GL.glBegin(GL.GL_LINES)
         for edge in ind:
             GL.glVertex3fv(p[edge[0]])
@@ -872,15 +906,15 @@ class GLViewer(QtOpenGL.QGLWidget):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
-        GLU.gluLookAt(0,0,3, 0,0,-5, 0,1,0)
+        GLU.gluLookAt(0, 0, 3, 0, 0, -5, 0, 1, 0)
         #GLU.gluLookAt(1,1,2, -1,-1,-3, 0,1,0)
         self.transform(self.cameraPose)
         GL.glScalef(self.scale, self.scale, self.scale)
-        GL.glTranslatef(-self.center[0],-self.center[1],-self.center[2])
+        GL.glTranslatef(-self.center[0], -self.center[1], -self.center[2])
         # draw bounding box
         if self.bounds_low:
             self.drawBounds()
-        if (self.robot):
+        if self.robot:
             # draw start pose
             self.transform(self.startPose)
             GL.glCallList(self.robot)
@@ -897,7 +931,7 @@ class GLViewer(QtOpenGL.QGLWidget):
                     n = len(self.solutionPath)
                     nmax = 100
                     if n < nmax:
-                        ind = range(0,n)
+                        ind = range(0, n)
                     else:
                         step = float(n - 1.)/float(nmax - 1)
                         ind = [int(step*i) for i in range(nmax)]
@@ -913,7 +947,8 @@ class GLViewer(QtOpenGL.QGLWidget):
             GL.glPopMatrix()
 
         # draw environment
-        if self.environment: GL.glCallList(self.environment)
+        if self.environment:
+            GL.glCallList(self.environment)
 
         # draw the planner data
         if self.drawPlannerData and self.plannerDataList:
@@ -938,7 +973,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         dy = event.y() - self.lastPos.y()
         buttons = event.buttons()
         modifiers = event.modifiers()
-        if buttons & QtCore.Qt.LeftButton and not (modifiers & QtCore.Qt.META):
+        if buttons & QtCore.Qt.LeftButton and not modifiers & QtCore.Qt.META:
             if modifiers & QtCore.Qt.SHIFT:
                 self.center[0] = self.center[0] + dx/self.scale
                 self.center[1] = self.center[1] + dy/self.scale
@@ -951,7 +986,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.setRotationAngle(0, self.cameraPose[0] + dy)
             self.setRotationAngle(2, self.cameraPose[2] + dx)
         elif buttons & QtCore.Qt.MidButton:
-            if dy>0:
+            if dy > 0:
                 self.scale = self.scale*(1. + .01*dy)
             else:
                 self.scale = self.scale*(1. - .01*dy)
@@ -971,7 +1006,7 @@ class ProblemWidget(QtWidgets.QWidget):
 
     def __init__(self, robotTypes):
         super(ProblemWidget, self).__init__()
-        robotTypeLabel =  QtWidgets.QLabel('Robot type')
+        robotTypeLabel = QtWidgets.QLabel('Robot type')
         self.robotTypeSelect = QtWidgets.QComboBox()
         for robotType in robotTypes:
             self.robotTypeSelect.addItem(robotType[1])
@@ -982,7 +1017,7 @@ class ProblemWidget(QtWidgets.QWidget):
         self.startPose2D = Pose2DBox('Start pose')
         self.goalPose2D = Pose2DBox('Goal pose')
 
-        elevation2Dlabel = QtWidgets.QLabel('Elevation')
+        #elevation2Dlabel = QtWidgets.QLabel('Elevation')
         self.elevation2D = QtWidgets.QDoubleSpinBox()
         self.elevation2D.setRange(-1000, 1000)
         self.elevation2D.setSingleStep(1)
@@ -996,7 +1031,7 @@ class ProblemWidget(QtWidgets.QWidget):
         startGoal2D = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.startPose2D, 0, 0, 1, 2)
-        layout.addWidget(self.goalPose2D, 1, 0, 1 ,2)
+        layout.addWidget(self.goalPose2D, 1, 0, 1, 2)
         #layout.addWidget(elevation2Dlabel, 2, 0, QtCore.Qt.AlignRight)
         #layout.addWidget(self.elevation2D, 2, 1)
         startGoal2D.setLayout(layout)
@@ -1005,10 +1040,9 @@ class ProblemWidget(QtWidgets.QWidget):
         self.poses.addWidget(startGoal3D)
         self.poses.addWidget(startGoal2D)
 
-        self.objectives = {'length': 'PathLengthOptimizationObjective',
-            'max min clearance': 'MaximizeMinClearanceObjective',
-            'mechanical work': 'MechanicalWorkOptimizationObjective'
-        }
+        self.objectives = {'length': 'PathLengthOptimizationObjective', \
+            'max min clearance': 'MaximizeMinClearanceObjective', \
+            'mechanical work': 'MechanicalWorkOptimizationObjective'}
         self.objectiveSelect = QtWidgets.QComboBox()
         self.objectiveSelect.addItems(sorted(self.objectives.keys()))
         self.objectiveThreshold = QtWidgets.QDoubleSpinBox()
@@ -1038,11 +1072,14 @@ class ProblemWidget(QtWidgets.QWidget):
         #     self.elevation2D.setValue(value().getZ())
         self.startPose3D.setPose(value, self.elevation2D.value(), is3D)
     def getStartPose(self):
-        return self.startPose3D.getPose() if self.poses.currentIndex()==0 else self.startPose2D.getPose()
+        return self.startPose3D.getPose() \
+            if self.poses.currentIndex() == 0 else self.startPose2D.getPose()
     def getGoalPose(self):
-        return self.goalPose3D.getPose() if self.poses.currentIndex()==0 else self.goalPose2D.getPose()
+        return self.goalPose3D.getPose() \
+            if self.poses.currentIndex() == 0 else self.goalPose2D.getPose()
     def startPoseChange(self, value):
-        if self.poses.currentIndex()==1: value[5] = self.elevation2D.value()
+        if self.poses.currentIndex() == 1:
+            value[5] = self.elevation2D.value()
         self.startChanged.emit(value)
     def setGoalPose(self, value, is3D):
         self.goalPose2D.setPose(value, is3D)
@@ -1050,12 +1087,15 @@ class ProblemWidget(QtWidgets.QWidget):
         #     self.elevation2D.setValue(value().getZ())
         self.goalPose3D.setPose(value, self.elevation2D.value(), is3D)
     def goalPoseChange(self, value):
-        if self.poses.currentIndex()==1: value[5] = self.elevation2D.value()
+        if self.poses.currentIndex() == 1:
+            value[5] = self.elevation2D.value()
         self.goalChanged.emit(value)
     def elevationChange(self, value):
-        state = [ 0, 0, self.startPose2D.rot.value(), self.startPose2D.posx.value(), self.startPose2D.posy.value(), value ]
+        state = [0, 0, self.startPose2D.rot.value(), self.startPose2D.posx.value(), \
+            self.startPose2D.posy.value(), value]
         self.startChanged.emit(state)
-        state = [ 0, 0, self.goalPose2D.rot.value(), self.goalPose2D.posx.value(), self.goalPose2D.posy.value(), value ]
+        state = [0, 0, self.goalPose2D.rot.value(), self.goalPose2D.posx.value(), \
+            self.goalPose2D.posy.value(), value]
         self.goalChanged.emit(state)
     def getObjective(self, si):
         obj = eval('ob.%s(si)' % self.objectives[self.objectiveSelect.currentText()])
@@ -1083,13 +1123,13 @@ class Pose3DBox(QtWidgets.QGroupBox):
         self.posz.setRange(-1000, 1000)
         self.posz.setSingleStep(1)
         self.rotx = QtWidgets.QDoubleSpinBox()
-        self.rotx.setRange(-360,360)
+        self.rotx.setRange(-360, 360)
         self.rotx.setSingleStep(1)
         self.roty = QtWidgets.QDoubleSpinBox()
-        self.roty.setRange(-360,360)
+        self.roty.setRange(-360, 360)
         self.roty.setSingleStep(1)
         self.rotz = QtWidgets.QDoubleSpinBox()
-        self.rotz.setRange(-360,360)
+        self.rotz.setRange(-360, 360)
         self.rotz.setSingleStep(1)
 
         layout = QtWidgets.QGridLayout()
@@ -1122,7 +1162,7 @@ class Pose3DBox(QtWidgets.QGroupBox):
             q = state.rotation()
             rad2deg = 180/pi
             self.rotx.setValue(rad2deg * atan2(2.*(q.w*q.x+q.y*q.z), 1.-2.*(q.x*q.x+q.y*q.y)))
-            self.roty.setValue(rad2deg * asin(max(min(2.*(q.w*q.y-q.z*q.x),1.),-1.)))
+            self.roty.setValue(rad2deg * asin(max(min(2.*(q.w*q.y-q.z*q.x), 1.), -1.)))
             self.rotz.setValue(rad2deg * atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)))
         else:
             self.posx.setValue(state.getX())
@@ -1138,8 +1178,8 @@ class Pose3DBox(QtWidgets.QGroupBox):
         state().setY(self.posy.value())
         state().setZ(self.posz.value())
         angles = [self.rotx.value(), self.roty.value(), self.rotz.value()]
-        c = [ cos(angle*pi/360.) for angle in angles ]
-        s = [ sin(angle*pi/360.) for angle in angles ]
+        c = [cos(angle*pi/360.) for angle in angles]
+        s = [sin(angle*pi/360.) for angle in angles]
         rot = state().rotation()
         rot.w = c[0]*c[1]*c[2] - s[0]*s[1]*s[2]
         rot.x = s[0]*c[1]*c[2] + c[0]*s[1]*s[2]
@@ -1147,9 +1187,9 @@ class Pose3DBox(QtWidgets.QGroupBox):
         rot.z = c[0]*c[1]*s[2] + s[0]*s[1]*c[2]
         return state
 
-    def poseChange(self, value):
-        self.valueChanged.emit([self.rotx.value(), self.roty.value(), self.rotz.value(),
-            self.posx.value(), self.posy.value(), self.posz.value() ])
+    def poseChange(self, _):
+        self.valueChanged.emit([self.rotx.value(), self.roty.value(), self.rotz.value(), \
+            self.posx.value(), self.posy.value(), self.posz.value()])
 
 class Pose2DBox(QtWidgets.QGroupBox):
     valueChanged = Signal(list)
@@ -1167,7 +1207,7 @@ class Pose2DBox(QtWidgets.QGroupBox):
         self.posy.setRange(-1000, 1000)
         self.posy.setSingleStep(1)
         self.rot = QtWidgets.QDoubleSpinBox()
-        self.rot.setRange(-180,179) # SO2StateSpace is parameterized from [-pi,pi)
+        self.rot.setRange(-180, 179) # SO2StateSpace is parameterized from [-pi,pi)
         self.rot.setSingleStep(1)
 
         layout = QtWidgets.QGridLayout()
@@ -1189,7 +1229,7 @@ class Pose2DBox(QtWidgets.QGroupBox):
             self.posx.setValue(state.getX())
             self.posy.setValue(state.getY())
             q = state.rotation()
-            self.rot.setValue(atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)) * 180 / pi )
+            self.rot.setValue(atan2(2.*(q.w*q.z+q.x*q.y), 1.-2.*(q.y*q.y+q.z*q.z)) * 180 / pi)
         else:
             self.posx.setValue(state.getX())
             self.posy.setValue(state.getY())
@@ -1202,8 +1242,8 @@ class Pose2DBox(QtWidgets.QGroupBox):
         state().setYaw(self.rot.value() * pi / 180)
         return state
 
-    def poseChange(self, value):
-        self.valueChanged.emit([0, 0, self.rot.value(), self.posx.value(), self.posy.value(), 0 ])
+    def poseChange(self, _):
+        self.valueChanged.emit([0, 0, self.rot.value(), self.posx.value(), self.posy.value(), 0])
 
 class PlannerHelperWidget(QtWidgets.QGroupBox):
     def __init__(self, name, planners):
@@ -1220,7 +1260,7 @@ class PlannerHelperWidget(QtWidgets.QGroupBox):
             layout = QtWidgets.QGridLayout()
             i = 0
             paramDict = {}
-            for (key,val) in sorted(params.items()):
+            for (key, val) in sorted(params.items()):
                 label = QtWidgets.QLabel(val[0])
                 if val[1] == ompl.PlanningAlgorithms.BOOL:
                     widget = QtWidgets.QCheckBox()
@@ -1254,17 +1294,19 @@ class PlannerHelperWidget(QtWidgets.QGroupBox):
                 paramDict[key] = widget
             options.setLayout(layout)
             self.stackedWidget.addWidget(options)
-            self.plannerList.append((planner,paramDict))
+            self.plannerList.append((planner, paramDict))
 
         self.plannerSelect.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
         self.plannerSelect.currentIndexChanged[int].connect(self.stackedWidget.setCurrentIndex)
 
 class GeometricPlannerWidget(PlannerHelperWidget):
     def __init__(self):
-        super(GeometricPlannerWidget, self).__init__('Geometric planning', og.planners.getPlanners())
+        super(GeometricPlannerWidget, self).__init__('Geometric planning', \
+            og.planners.getPlanners())
 
         # make KPIECE1 the default planner
-        self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index('ompl.geometric.KPIECE1'))
+        self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index(
+            'ompl.geometric.KPIECE1'))
 
         timeLimitLabel = QtWidgets.QLabel('Time (sec.)')
         self.timeLimit = QtWidgets.QDoubleSpinBox()
@@ -1292,10 +1334,12 @@ class GeometricPlannerWidget(PlannerHelperWidget):
 
 class ControlPlannerWidget(PlannerHelperWidget):
     def __init__(self):
-        super(ControlPlannerWidget, self).__init__('Planning with controls', oc.planners.getPlanners())
+        super(ControlPlannerWidget, self).__init__('Planning with controls', \
+            oc.planners.getPlanners())
 
         # make KPIECE1 the default planner
-        self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index('ompl.control.KPIECE1'))
+        self.plannerSelect.setCurrentIndex([p[0] for p in self.plannerList].index(
+            'ompl.control.KPIECE1'))
 
         timeLimitLabel = QtWidgets.QLabel('Time (sec.)')
         self.timeLimit = QtWidgets.QDoubleSpinBox()
@@ -1351,9 +1395,9 @@ class BoundsWidget(QtWidgets.QWidget):
         self.bounds_low = BoundsBox('Lower bounds')
         self.resetButton = QtWidgets.QPushButton('Reset')
         layout = QtWidgets.QGridLayout()
-        layout.addWidget(self.bounds_high, 0,0)
-        layout.addWidget(self.bounds_low, 1,0)
-        layout.addWidget(self.resetButton, 2,0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.bounds_high, 0, 0)
+        layout.addWidget(self.bounds_low, 1, 0)
+        layout.addWidget(self.resetButton, 2, 0, QtCore.Qt.AlignRight)
         self.setLayout(layout)
 
 class BoundsBox(QtWidgets.QGroupBox):
@@ -1393,8 +1437,8 @@ class BoundsBox(QtWidgets.QGroupBox):
         self.posy.setValue(value[1])
         self.posz.setValue(value[2])
 
-    def boundsChange(self, value):
-        self.valueChanged.emit([ self.posx.value(), self.posy.value(), self.posz.value() ])
+    def boundsChange(self, _):
+        self.valueChanged.emit([self.posx.value(), self.posy.value(), self.posz.value()])
 
 class SolveWidget(QtWidgets.QWidget):
     def __init__(self):

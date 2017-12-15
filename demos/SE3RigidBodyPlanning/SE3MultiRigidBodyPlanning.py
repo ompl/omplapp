@@ -21,13 +21,11 @@ ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 try:
     from ompl import base as ob
     from ompl import geometric as og
-    from ompl import control as oc
     from ompl import app as oa
-except:
-    sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings' ) )
+except ModuleNotFoundError:
+    sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
     from ompl import base as ob
     from ompl import geometric as og
-    from ompl import control as oc
     from ompl import app as oa
 
 # plan in SE(3) for two robots
@@ -69,7 +67,7 @@ goal2.setZ(70.57)
 goal2.rotation().setIdentity()
 
 # set the start & goal states
-setup.setStartAndGoalStates(start, goal);
+setup.setStartAndGoalStates(start, goal)
 
 # setting collision checking resolution to 1% of the space extent
 setup.getSpaceInformation().setStateValidityCheckingResolution(0.01)
