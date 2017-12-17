@@ -78,6 +78,7 @@
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 #include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
+#include <ompl/base/samplers/BridgeTestValidStateSampler.h>
 
 #include <fstream>
 
@@ -206,6 +207,8 @@ ompl::base::ValidStateSamplerPtr CFGBenchmark::allocValidStateSampler(const ompl
         vss = std::make_shared<ompl::base::ObstacleBasedValidStateSampler>(si);
     else if (type == "max_clearance")
         vss = std::make_shared<ompl::base::MaximizeClearanceValidStateSampler>(si);
+    else if (type == "bridge_test")
+        vss = std::make_shared<ompl::base::BridgeTestValidStateSampler>(si);
     else
         std::cerr << "Unknown sampler type: " << type << std::endl;
     if (vss)

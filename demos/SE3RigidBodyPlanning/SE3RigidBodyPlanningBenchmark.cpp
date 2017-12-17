@@ -26,6 +26,7 @@
 #include <ompl/base/samplers/GaussianValidStateSampler.h>
 #include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
 #include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
+#include <ompl/base/samplers/BridgeTestValidStateSampler.h>
 using namespace ompl;
 
 void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
@@ -139,7 +140,7 @@ int main(int argc, char **argv)
     b.addPlanner(std::make_shared<geometric::EST>(setup.getSpaceInformation()));
     b.addPlanner(std::make_shared<geometric::PRM>(setup.getSpaceInformation()));
 
-    int sampler_id = argc > 2 ? ((argv[2][0] - '0') % 4) : -1;
+    int sampler_id = argc > 2 ? ((argv[2][0] - '0') % 5) : -1;
 
     if (sampler_id == 0 || sampler_id < 0)
     {
@@ -195,5 +196,17 @@ int main(int argc, char **argv)
         b.saveResultsToFile();
     }
 
+    if (sampler_id == 4 || sampler_id < 0)
+    {
+        // run all planners with a maximum-clearance valid state sampler on the benchmark problem
+        setup.getSpaceInformation()->setValidStateSamplerAllocator(
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
+            {
+                return std::make_shared<base::BridgeTestValidStateSampler>(si);
+            });
+        b.setExperimentName(benchmark_name + "_maxclearance_sampler");
+        b.benchmark(request);
+        b.saveResultsToFile();
+    }
     return 0;
 }
