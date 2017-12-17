@@ -80,4 +80,4 @@ script:
   - make -j $JOBS
 
   # Run unit tests
-  - ctest -E "$TEST_EXCLUDE";
+  - ctest -j $JOBS -E "$TEST_EXCLUDE";
