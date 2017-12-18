@@ -27,13 +27,13 @@ try:
     from PyQt5 import QtWidgets, QtCore, QtGui, QtOpenGL
     from PyQt5.QtCore import pyqtSignal as Signal
     qt5 = True
-except ModuleNotFoundError:
+except ImportError:
     # deprecated, will be removed at some point
     try:
         from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
         from PyQt4.QtCore import pyqtSignal as Signal
         QtWidgets = QtGui
-    except ModuleNotFoundError:
+    except ImportError:
         # if PyQt* wasn't found, try PySide
         from PySide import QtCore, QtGui, QtOpenGL
         from PySide.QtCore import Signal
@@ -41,7 +41,7 @@ except ModuleNotFoundError:
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
     import ConfigParser
-except ModuleNotFoundError:
+except ImportError:
     import configparser as ConfigParser
 
 sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings'))

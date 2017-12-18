@@ -12,7 +12,7 @@ from inspect import isclass
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
     import ConfigParser
-except ModuleNotFoundError:
+except ImportError:
     import configparser as ConfigParser
 
 # Constants
@@ -33,7 +33,7 @@ try:
     from ompl import app as oa
     from ompl.util import OMPL_DEBUG, OMPL_INFORM, OMPL_WARN, OMPL_ERROR
     from ompl_benchmark_statistics import readBenchmarkLog
-except ModuleNotFoundError:
+except ImportError:
     sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
     import ompl
     from ompl import base as ob
