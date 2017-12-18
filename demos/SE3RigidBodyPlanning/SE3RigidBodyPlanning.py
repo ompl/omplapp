@@ -21,7 +21,7 @@ ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 try:
     from ompl import base as ob
     from ompl import app as oa
-except ModuleNotFoundError:
+except ImportError:
     sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
     from ompl import base as ob
     from ompl import app as oa

@@ -22,7 +22,7 @@ try:
     from ompl import base as ob
     from ompl import geometric as og
     from ompl import app as oa
-except ModuleNotFoundError:
+except ImportError:
     sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
     from ompl import base as ob
     from ompl import geometric as og
