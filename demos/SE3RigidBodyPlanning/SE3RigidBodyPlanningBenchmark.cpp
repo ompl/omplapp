@@ -150,7 +150,7 @@ int main(int argc, char **argv)
             {
                 return std::make_shared<base::UniformValidStateSampler>(si);
             });
-        b.setExperimentName(benchmark_name + "_uniform_sampler");
+        b.addExperimentParameter("sampler_id", "INTEGER", "0");
         b.benchmark(request);
         b.saveResultsToFile();
     }
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
             {
                 return std::make_shared<base::GaussianValidStateSampler>(si);
             });
-        b.setExperimentName(benchmark_name + "_gaussian_sampler");
+        b.addExperimentParameter("sampler_id", "INTEGER", "1");
         b.benchmark(request);
         b.saveResultsToFile();
     }
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
             {
                 return std::make_shared<base::ObstacleBasedValidStateSampler>(si);
             });
-        b.setExperimentName(benchmark_name + "_obstaclebased_sampler");
+        b.addExperimentParameter("sampler_id", "INTEGER", "2");
         b.benchmark(request);
         b.saveResultsToFile();
     }
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
                 vss->setNrImproveAttempts(5);
                 return vss;
             });
-        b.setExperimentName(benchmark_name + "_maxclearance_sampler");
+        b.addExperimentParameter("sampler_id", "INTEGER", "3");
         b.benchmark(request);
         b.saveResultsToFile();
     }
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
             {
                 return std::make_shared<base::BridgeTestValidStateSampler>(si);
             });
-        b.setExperimentName(benchmark_name + "_maxclearance_sampler");
+        b.addExperimentParameter("sampler_id", "INTEGER", "4");
         b.benchmark(request);
         b.saveResultsToFile();
     }
