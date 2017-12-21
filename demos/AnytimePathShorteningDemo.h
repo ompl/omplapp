@@ -1,27 +1,27 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Ryan Luna */
 
+#include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/kpiece/BKPIECE1.h>
+#include <ompl/geometric/planners/kpiece/KPIECE1.h>
+#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
+#include <ompl/geometric/planners/prm/PRM.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/geometric/planners/prm/PRM.h>
-#include <ompl/geometric/planners/est/EST.h>
-#include <ompl/geometric/planners/sbl/SBL.h>
-#include <ompl/geometric/planners/kpiece/KPIECE1.h>
-#include <ompl/geometric/planners/kpiece/BKPIECE1.h>
-#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
+#include <ompl/geometric/planners/sbl/SBL.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace ompl;
 
@@ -33,7 +33,7 @@ enum ProblemType
     INVALID_PROBLEM
 };
 
-static const char * ProblemTypeStrings[3] = {"Barriers", "Cubicles", "Easy"};
+static const char *ProblemTypeStrings[3] = {"Barriers", "Cubicles", "Easy"};
 
 enum OptimizationType
 {
@@ -44,7 +44,7 @@ enum OptimizationType
     INVALID_OPTIMIZATION
 };
 
-static const char * OptTypeStrings[4] = {"Shortcut", "Hybridize", "Alternating", "None"};
+static const char *OptTypeStrings[4] = {"Shortcut", "Hybridize", "Alternating", "None"};
 
 enum PlannerType
 {
@@ -61,9 +61,11 @@ enum PlannerType
     INVALID_PLANNER
 };
 
-static const char* PlannerTypeStrings[10] = {"RRT", "RRT*", "EST", "SBL", "RRTConnect", "PRM", "PRM*", "KPIECE", "BKPIECE", "LBKPIECE"};
+static const char *PlannerTypeStrings[10] = {"RRT", "RRT*", "EST",    "SBL",     "RRTConnect",
+                                             "PRM", "PRM*", "KPIECE", "BKPIECE", "LBKPIECE"};
 
-void readArgsFromFile(const char* filename, ProblemType &probType, OptimizationType &optType, double &runtime, std::vector<PlannerType>& planners)
+void readArgsFromFile(const char *filename, ProblemType &probType, OptimizationType &optType, double &runtime,
+                      std::vector<PlannerType> &planners)
 {
     std::cout << __FUNCTION__ << "  " << filename << std::endl;
 
@@ -129,7 +131,8 @@ void readArgsFromFile(const char* filename, ProblemType &probType, OptimizationT
     fin.close();
 }
 
-void parseArguments(int argc, char **argv, ProblemType &probType, OptimizationType &optType, double &runtime, std::vector<PlannerType>& planners)
+void parseArguments(int argc, char **argv, ProblemType &probType, OptimizationType &optType, double &runtime,
+                    std::vector<PlannerType> &planners)
 {
     if (argc == 2)
     {
@@ -162,7 +165,7 @@ void parseArguments(int argc, char **argv, ProblemType &probType, OptimizationTy
 
     for (int i = 4; i < argc; ++i)
     {
-        std::string plannerArg (argv[i]);
+        std::string plannerArg(argv[i]);
         if (plannerArg == "rrt")
             planners.push_back(RRT);
         else if (plannerArg == "rrtstar")
@@ -188,7 +191,8 @@ void parseArguments(int argc, char **argv, ProblemType &probType, OptimizationTy
     }
 }
 
-bool validArguments(const ProblemType& probType, const OptimizationType &optType, const double& runtime, const std::vector<PlannerType>& planners)
+bool validArguments(const ProblemType &probType, const OptimizationType &optType, const double &runtime,
+                    const std::vector<PlannerType> &planners)
 {
     bool valid = true;
     if (probType == INVALID_PROBLEM)
@@ -217,8 +221,9 @@ bool validArguments(const ProblemType& probType, const OptimizationType &optType
 
     if (valid)
     {
-        std::cout << "Solving the " << ProblemTypeStrings[probType] << " problem using " << OptTypeStrings[optType] << " optimization for " << runtime << " seconds with " << std::endl;
-        for (const auto & planner : planners)
+        std::cout << "Solving the " << ProblemTypeStrings[probType] << " problem using " << OptTypeStrings[optType]
+                  << " optimization for " << runtime << " seconds with " << std::endl;
+        for (const auto &planner : planners)
             std::cout << PlannerTypeStrings[planner] << " ";
         std::cout << std::endl;
     }
@@ -226,9 +231,9 @@ bool validArguments(const ProblemType& probType, const OptimizationType &optType
     return valid;
 }
 
-base::PlannerPtr allocPlanner(PlannerType type, const base::SpaceInformationPtr& si)
+base::PlannerPtr allocPlanner(PlannerType type, const base::SpaceInformationPtr &si)
 {
-    assert (type != INVALID_PLANNER);
+    assert(type != INVALID_PLANNER);
 
     base::PlannerPtr planner;
     planner.reset();

@@ -1,18 +1,18 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Ioan Sucan */
 
-#include "OpenDEWorld.inc"
 #include "OMPLEnvironment.inc"
 #include "OMPLSetup.inc"
+#include "OpenDEWorld.inc"
 
 #include "displayOpenDE.h"
 #include "omplapp/config.h"
@@ -28,26 +28,26 @@
 #define dsDrawCapsule dsDrawCapsuleD
 #endif
 
-static DisplayOpenDESpaces                         DISP;
-static std::vector< std::pair<double, double> > POINTS;
-static bool                                     drawTree = true;
+static DisplayOpenDESpaces DISP;
+static std::vector<std::pair<double, double>> POINTS;
+static bool drawTree = true;
 
 static void start()
 {
     dAllocateODEDataForThread(dAllocateMaskAll);
-    static float xyz[3] = { 3.8548f,9.0843f,7.5900f} ;
-    static float hpr[3] = { -145.5f,-22.5f,0.25f } ;
+    static float xyz[3] = {3.8548f, 9.0843f, 7.5900f};
+    static float hpr[3] = {-145.5f, -22.5f, 0.25f};
 
-    dsSetViewpoint (xyz,hpr);
+    dsSetViewpoint(xyz, hpr);
 }
 
-static void command (int cmd)
+static void command(int cmd)
 {
     if ((char)cmd == 't')
         drawTree = !drawTree;
 }
 
-static void simLoop (int /*pause*/)
+static void simLoop(int /*pause*/)
 {
     DISP.displaySpaces();
 
@@ -56,7 +56,7 @@ static void simLoop (int /*pause*/)
         glPointSize(2.0);
         glColor3f(1.0f, 0.0f, 0.0f);
         glBegin(GL_POINTS);
-        for (auto & i : POINTS)
+        for (auto &i : POINTS)
             glVertex3d(i.first, i.second, 0.05);
         glEnd();
     }
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     fn.command = &command;
     fn.stop = nullptr;
 
-    auto *textures = (char*)alloca(strlen(OMPLAPP_RESOURCE_DIR) + 10);
+    auto *textures = (char *)alloca(strlen(OMPLAPP_RESOURCE_DIR) + 10);
     strcpy(textures, OMPLAPP_RESOURCE_DIR);
     strcat(textures, "/textures");
     fn.path_to_textures = textures;
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
         POINTS.clear();
         ob::PlannerData pd(ss.getSpaceInformation());
         ss.getPlannerData(pd);
-        for (unsigned int i = 0 ; i < pd.numVertices() ; ++i)
+        for (unsigned int i = 0; i < pd.numVertices(); ++i)
         {
             const double *pos = pd.getVertex(i).getState()->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
             POINTS.push_back(std::make_pair(pos[0], pos[1]));
@@ -149,12 +149,12 @@ int main(int argc, char **argv)
     dsSimulationLoop(argc, argv, 640, 480, &fn);
     if (th)
     {
-        //th->interrupt();
+        // th->interrupt();
         th->join();
     }
 
-    dSpaceDestroy (space);
-    dWorldDestroy (world);
+    dSpaceDestroy(space);
+    dWorldDestroy(world);
     dCloseODE();
 
     return 0;

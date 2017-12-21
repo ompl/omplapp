@@ -1,25 +1,25 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Mark Moll */
 
-#include <ompl/tools/benchmark/Benchmark.h>
-#include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/kpiece/KPIECE1.h>
+#include <ompl/control/planners/rrt/RRT.h>
+#include <ompl/tools/benchmark/Benchmark.h>
 #include <omplapp/apps/KinematicCarPlanning.h>
 #include <omplapp/config.h>
 #include <boost/math/constants/constants.hpp>
 
 using namespace ompl;
 
-void kinematicCarSetup(app::KinematicCarPlanning& setup)
+void kinematicCarSetup(app::KinematicCarPlanning &setup)
 {
     // plan for kinematic car in SE(2)
     base::StateSpacePtr SE2(setup.getStateSpace());
@@ -46,7 +46,7 @@ void kinematicCarSetup(app::KinematicCarPlanning& setup)
     setup.setStartAndGoalStates(start, goal, .1);
 }
 
-void kinematicCarDemo(app::KinematicCarPlanning& setup)
+void kinematicCarDemo(app::KinematicCarPlanning &setup)
 {
     setup.setPlanner(std::make_shared<control::KPIECE1>(setup.getSpaceInformation()));
     std::vector<double> cs(2);
@@ -59,20 +59,19 @@ void kinematicCarDemo(app::KinematicCarPlanning& setup)
     {
         // print the (approximate) solution path: print states along the path
         // and controls required to get from one state to the next
-        control::PathControl& path(setup.getSolutionPath());
-        //path.interpolate(); // uncomment if you want to plot the path
+        control::PathControl &path(setup.getSolutionPath());
+        // path.interpolate(); // uncomment if you want to plot the path
         path.printAsMatrix(std::cout);
         if (!setup.haveExactSolutionPath())
         {
-            std::cout << "Solution is approximate. Distance to actual goal is " <<
-                setup.getProblemDefinition()->getSolutionDifference() << std::endl;
+            std::cout << "Solution is approximate. Distance to actual goal is "
+                      << setup.getProblemDefinition()->getSolutionDifference() << std::endl;
         }
     }
-
 }
-void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
+void kinematicCarBenchmark(app::KinematicCarPlanning &setup)
 {
-    tools::Benchmark::Request request(20., 10000., 10); // runtime (s), memory (MB), run count
+    tools::Benchmark::Request request(20., 10000., 10);  // runtime (s), memory (MB), run count
 
     tools::Benchmark b(setup, setup.getName());
     b.addPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
@@ -81,7 +80,7 @@ void kinematicCarBenchmark(app::KinematicCarPlanning& setup)
     b.saveResultsToFile();
 }
 
-int main(int argc, char** /*unused*/)
+int main(int argc, char ** /*unused*/)
 {
     app::KinematicCarPlanning regularCar;
 
@@ -89,8 +88,8 @@ int main(int argc, char** /*unused*/)
 
     // If any command line arguments are given, solve the problem multiple
     // times with different planners and collect benchmark statistics.
-        // Otherwise, solve the problem once for each car type and print the path.
-    if (argc>1)
+    // Otherwise, solve the problem once for each car type and print the path.
+    if (argc > 1)
         kinematicCarBenchmark(regularCar);
     else
         kinematicCarDemo(regularCar);

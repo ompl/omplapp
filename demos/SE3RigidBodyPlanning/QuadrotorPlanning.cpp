@@ -1,24 +1,24 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Mark Moll */
 
-#include <ompl/tools/benchmark/Benchmark.h>
-#include <ompl/control/planners/rrt/RRT.h>
 #include <ompl/control/planners/kpiece/KPIECE1.h>
+#include <ompl/control/planners/rrt/RRT.h>
+#include <ompl/tools/benchmark/Benchmark.h>
 #include <omplapp/apps/QuadrotorPlanning.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
 
-void quadrotorSetup(app::QuadrotorPlanning& setup)
+void quadrotorSetup(app::QuadrotorPlanning &setup)
 {
     base::StateSpacePtr stateSpace(setup.getStateSpace());
 
@@ -43,16 +43,15 @@ void quadrotorSetup(app::QuadrotorPlanning& setup)
     goal->rotation().setIdentity();
 
     // set the start & goal states
-    setup.setStartAndGoalStates(
-        setup.getFullStateFromGeometricComponent(start),
-        setup.getFullStateFromGeometricComponent(goal), .5);
+    setup.setStartAndGoalStates(setup.getFullStateFromGeometricComponent(start),
+                                setup.getFullStateFromGeometricComponent(goal), .5);
 }
 
-void quadrotorDemo(app::QuadrotorPlanning& setup)
+void quadrotorDemo(app::QuadrotorPlanning &setup)
 {
     std::vector<double> coords;
 
-    std::cout<<"\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
+    std::cout << "\n\n***** Planning for a " << setup.getName() << " *****\n" << std::endl;
     setup.setPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
 
     // try to solve the problem
@@ -60,23 +59,23 @@ void quadrotorDemo(app::QuadrotorPlanning& setup)
     {
         // print the (approximate) solution path: print states along the path
         // and controls required to get from one state to the next
-        control::PathControl& path(setup.getSolutionPath());
-        //path.interpolate(); // uncomment if you want to plot the path
+        control::PathControl &path(setup.getSolutionPath());
+        // path.interpolate(); // uncomment if you want to plot the path
         path.printAsMatrix(std::cout);
 
         if (!setup.haveExactSolutionPath())
         {
-            std::cout << "Solution is approximate. Distance to actual goal is " <<
-                setup.getProblemDefinition()->getSolutionDifference() << std::endl;
+            std::cout << "Solution is approximate. Distance to actual goal is "
+                      << setup.getProblemDefinition()->getSolutionDifference() << std::endl;
         }
     }
 }
 
-void quadrotorBenchmark(app::QuadrotorPlanning& setup)
+void quadrotorBenchmark(app::QuadrotorPlanning &setup)
 {
-    tools::Benchmark::Request request(100., 10000., 10); // runtime (s), memory (MB), run count
+    tools::Benchmark::Request request(100., 10000., 10);  // runtime (s), memory (MB), run count
 
-    setup.setup ();
+    setup.setup();
 
     tools::Benchmark b(setup, setup.getName());
     b.addPlanner(std::make_shared<control::RRT>(setup.getSpaceInformation()));
@@ -85,7 +84,7 @@ void quadrotorBenchmark(app::QuadrotorPlanning& setup)
     b.saveResultsToFile();
 }
 
-int main(int argc, char** /*unused*/)
+int main(int argc, char ** /*unused*/)
 {
     app::QuadrotorPlanning quadrotor;
     quadrotorSetup(quadrotor);
@@ -93,7 +92,7 @@ int main(int argc, char** /*unused*/)
     // If any command line arguments are given, solve the problem multiple
     // times with different planners and collect benchmark statistics.
     // Otherwise, solve the problem once and print the path.
-    if (argc>1)
+    if (argc > 1)
         quadrotorBenchmark(quadrotor);
     else
         quadrotorDemo(quadrotor);

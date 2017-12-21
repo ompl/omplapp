@@ -1,29 +1,29 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2012, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2012, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Ryan Luna */
 
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/util/Console.h>
-#include <omplapp/config.h>
 #include <omplapp/apps/SE3RigidBodyPlanning.h>
+#include <omplapp/config.h>
 #include <omplapp/geometry/detail/FCLContinuousMotionValidator.h>
 #include <vector>
 
 using namespace ompl;
 
-void configureApartmentProblem (app::SE3RigidBodyPlanning &setup)
+void configureApartmentProblem(app::SE3RigidBodyPlanning &setup)
 {
     std::string problem = "Apartment";
     std::string environment_mesh = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_env.dae";
-    std::string robot_mesh = std::string (OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
+    std::string robot_mesh = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
 
     // load the robot and the environment
     setup.setEnvironmentMesh(environment_mesh);
@@ -39,30 +39,30 @@ void configureApartmentProblem (app::SE3RigidBodyPlanning &setup)
     bounds.high[2] = 90.39;
 
     // Start/Goal pair for the Apartment environment
-    base::ScopedState<base::SE3StateSpace> start (setup.getSpaceInformation ());
-    start->setX (-31.19);
-    start->setY (-99.85);
-    start->setZ (36.46);
-    start->rotation ().setIdentity ();
+    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
+    start->setX(-31.19);
+    start->setY(-99.85);
+    start->setZ(36.46);
+    start->rotation().setIdentity();
 
-    base::ScopedState<base::SE3StateSpace> goal (setup.getSpaceInformation ());
-    goal->setX (140.0);
-    goal->setY (0.0);
-    goal->setZ (36.46);
-    goal->rotation ().setIdentity ();
+    base::ScopedState<base::SE3StateSpace> goal(setup.getSpaceInformation());
+    goal->setX(140.0);
+    goal->setY(0.0);
+    goal->setZ(36.46);
+    goal->rotation().setIdentity();
 
     // Set start and goal
     setup.setStartAndGoalStates(start, goal);
 
     // Bound the state space
-    setup.getSpaceInformation ()->getStateSpace ()->as <base::SE3StateSpace> ()->setBounds (bounds);
+    setup.getSpaceInformation()->getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
 }
 
-void configureEasyProblem (app::SE3RigidBodyPlanning &setup)
+void configureEasyProblem(app::SE3RigidBodyPlanning &setup)
 {
     std::string problem = "Easy";
     std::string environment_mesh = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_env.dae";
-    std::string robot_mesh = std::string (OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
+    std::string robot_mesh = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
 
     // load the robot and the environment
     setup.setEnvironmentMesh(environment_mesh);
@@ -78,30 +78,30 @@ void configureEasyProblem (app::SE3RigidBodyPlanning &setup)
     bounds.high[2] = -72.86;
 
     // Start/Goal pair for the Easy/TwistyCool environment
-    base::ScopedState<base::SE3StateSpace> start (setup.getSpaceInformation ());
-    start->setX (270.4);
-    start->setY (50.0);
-    start->setZ (-406.82);
-    start->rotation ().setIdentity ();
+    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
+    start->setX(270.4);
+    start->setY(50.0);
+    start->setZ(-406.82);
+    start->rotation().setIdentity();
 
-    base::ScopedState<base::SE3StateSpace> goal (setup.getSpaceInformation ());
-    goal->setX (270.4);
-    goal->setY (50.0);
-    goal->setZ (-186.82);
-    goal->rotation ().setIdentity ();
+    base::ScopedState<base::SE3StateSpace> goal(setup.getSpaceInformation());
+    goal->setX(270.4);
+    goal->setY(50.0);
+    goal->setZ(-186.82);
+    goal->rotation().setIdentity();
 
     // Set start and goal
     setup.setStartAndGoalStates(start, goal);
 
     // Bound the state space
-    setup.getSpaceInformation ()->getStateSpace ()->as <base::SE3StateSpace> ()->setBounds (bounds);
+    setup.getSpaceInformation()->getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
 }
 
-void configureCubiclesProblem (app::SE3RigidBodyPlanning &setup)
+void configureCubiclesProblem(app::SE3RigidBodyPlanning &setup)
 {
     std::string problem = "cubicles";
     std::string environment_mesh = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_env.dae";
-    std::string robot_mesh = std::string (OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
+    std::string robot_mesh = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/" + problem + "_robot.dae";
 
     // load the robot and the environment
     setup.setEnvironmentMesh(environment_mesh);
@@ -117,31 +117,32 @@ void configureCubiclesProblem (app::SE3RigidBodyPlanning &setup)
     bounds.high[2] = 101.00;
 
     // Start/Goal pair for cubicles environment
-    base::ScopedState<base::SE3StateSpace> start (setup.getSpaceInformation ());
-    start->setX (-4.96);
-    start->setY (-40.62);
-    start->setZ (70.57);
-    start->rotation ().setIdentity ();
+    base::ScopedState<base::SE3StateSpace> start(setup.getSpaceInformation());
+    start->setX(-4.96);
+    start->setY(-40.62);
+    start->setZ(70.57);
+    start->rotation().setIdentity();
 
-    base::ScopedState<base::SE3StateSpace> goal (setup.getSpaceInformation ());
-    goal->setX (200.00);
-    goal->setY (-40.62);
-    goal->setZ (70.57);
-    goal->rotation ().setIdentity ();
+    base::ScopedState<base::SE3StateSpace> goal(setup.getSpaceInformation());
+    goal->setX(200.00);
+    goal->setY(-40.62);
+    goal->setZ(70.57);
+    goal->rotation().setIdentity();
 
     // Set start and goal
     setup.setStartAndGoalStates(start, goal);
 
     // Bound the state space
-    setup.getSpaceInformation ()->getStateSpace ()->as <base::SE3StateSpace> ()->setBounds (bounds);
+    setup.getSpaceInformation()->getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
 }
 
-void test (unsigned int tries, std::vector <std::vector<double> > &times, std::vector<int> &attempts, bool fcl=false, bool continuous=false)
+void test(unsigned int tries, std::vector<std::vector<double>> &times, std::vector<int> &attempts, bool fcl = false,
+          bool continuous = false)
 {
-    std::cout << "Evaluating " << (continuous ? "continuous" : "discrete")
-                 << " " << (fcl ? "FCL" : "PQP") << " checker" << std::endl;
+    std::cout << "Evaluating " << (continuous ? "continuous" : "discrete") << " " << (fcl ? "FCL" : "PQP") << " checker"
+              << std::endl;
 
-    std::vector <double> time;
+    std::vector<double> time;
     unsigned int successful = 0;
     unsigned int problem = 0;
 
@@ -149,44 +150,53 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
     {
         unsigned int nr_attempts = 0;
 
-        if (problem == 0)       std::cout << "- Apartment problem " << std::flush;
-        else if (problem == 1) std::cout << "- Cubicles problem "  << std::flush;
-        else if (problem == 2) std::cout << R"(- 'Easy' problem )"  << std::flush;
+        if (problem == 0)
+            std::cout << "- Apartment problem " << std::flush;
+        else if (problem == 1)
+            std::cout << "- Cubicles problem " << std::flush;
+        else if (problem == 2)
+            std::cout << R"(- 'Easy' problem )" << std::flush;
 
         // plan in SE3
         app::SE3RigidBodyPlanning setup;
 
         switch (problem)
         {
-            case 0: configureApartmentProblem (setup); break;
-            case 1: configureCubiclesProblem (setup); break;
-            case 2: configureEasyProblem (setup); break;
+            case 0:
+                configureApartmentProblem(setup);
+                break;
+            case 1:
+                configureCubiclesProblem(setup);
+                break;
+            case 2:
+                configureEasyProblem(setup);
+                break;
         }
 
-        setup.setStateValidityCheckerType (fcl ? app::FCL : app::PQP);
+        setup.setStateValidityCheckerType(fcl ? app::FCL : app::PQP);
 
         if (continuous)
         {
-            setup.setup(); // FCLContinuousMotionValidator extracts goodies from the state validity checker.  Instantiate the svc here.
-            setup.getSpaceInformation()->setMotionValidator(
-                std::make_shared<app::FCLContinuousMotionValidator>(
-                    setup.getSpaceInformation(), setup.getMotionModel()));
+            setup.setup();  // FCLContinuousMotionValidator extracts goodies from the state validity checker.
+                            // Instantiate the svc here.
+            setup.getSpaceInformation()->setMotionValidator(std::make_shared<app::FCLContinuousMotionValidator>(
+                setup.getSpaceInformation(), setup.getMotionModel()));
         }
 
         setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
         setup.setPlanner(std::make_shared<geometric::RRT>(setup.getSpaceInformation()));
-        setup.setup ();
+        setup.setup();
 
         while (successful < tries)
         {
-            setup.clear ();
+            setup.clear();
             setup.solve(30.0);
 
             // Retry if the planner failed, except for the continuous collision checker case.
-            if (setup.haveExactSolutionPath () || continuous)
+            if (setup.haveExactSolutionPath() || continuous)
             {
                 successful++;
-                time.push_back (setup.getLastPlanComputationTime ());
+                time.push_back(setup.getLastPlanComputationTime());
                 std::cout << '.' << std::flush;
             }
             else
@@ -194,52 +204,54 @@ void test (unsigned int tries, std::vector <std::vector<double> > &times, std::v
             nr_attempts++;
         }
 
-        times.push_back (time);
-        time.clear ();
+        times.push_back(time);
+        time.clear();
         successful = 0;
         problem++;
-        attempts.push_back (nr_attempts);
+        attempts.push_back(nr_attempts);
         std::cout << std::endl;
     }
 }
 
 // Compares discrete and continuous collision checkers in OMPL.app
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
 #if OMPL_HAS_PQP
     // User can supply number of tries as 2nd command line argument.  Otherwise, use default NR_TRIES.
     unsigned int nr_tries;
     if (argc == 2)
     {
-        nr_tries = atoi (argv[1]);
+        nr_tries = atoi(argv[1]);
 
         // make sure command line input is valid
-        if (nr_tries == std::numeric_limits<unsigned int>::min() || nr_tries == std::numeric_limits<unsigned int>::max())
+        if (nr_tries == std::numeric_limits<unsigned int>::min() ||
+            nr_tries == std::numeric_limits<unsigned int>::max())
             nr_tries = 20u;
     }
     else
         nr_tries = 20u;
 
-    ompl::msg::noOutputHandler(); // Disable console output from OMPL.
+    ompl::msg::noOutputHandler();  // Disable console output from OMPL.
 
-    std::vector <std::vector <double> > pqp_times;
-    std::vector <std::vector <double> > dfcl_times;
-    std::vector <std::vector <double> > cfcl_times;
-    std::vector <int> pqp_attempts;
-    std::vector <int> dfcl_attempts;
-    std::vector <int> cfcl_attempts;
+    std::vector<std::vector<double>> pqp_times;
+    std::vector<std::vector<double>> dfcl_times;
+    std::vector<std::vector<double>> cfcl_times;
+    std::vector<int> pqp_attempts;
+    std::vector<int> dfcl_attempts;
+    std::vector<int> cfcl_attempts;
 
     std::cout << "Comparing collision checkers:" << std::endl;
-    std::cout << "Each problem is executed until " << nr_tries << " attempts are successful (30 sec limit)" << std::endl;
+    std::cout << "Each problem is executed until " << nr_tries << " attempts are successful (30 sec limit)"
+              << std::endl;
 
     // PQP Test (discrete)
-    test (nr_tries, pqp_times, pqp_attempts);
+    test(nr_tries, pqp_times, pqp_attempts);
 
     // Discrete FCL Test
-    test (nr_tries, dfcl_times, dfcl_attempts, true);
+    test(nr_tries, dfcl_times, dfcl_attempts, true);
 
     // Continuous FCL Test
-    test (nr_tries, cfcl_times, cfcl_attempts, true, true);
+    test(nr_tries, cfcl_times, cfcl_attempts, true, true);
 
     std::cout << std::endl << "Analysis:" << std::endl;
 
@@ -264,14 +276,14 @@ int main (int argc, char **argv)
             std::cout << R"( 'Easy' problem - Median Time (s))" << std::endl;
 
         isOdd = pqp_times[i].size() % 2 == 1;
-        std::cout << "    Discrete PQP: " << (isOdd ? *pqp_time : .5*(*pqp_time + *(pqp_time+1)))
-            << "  " << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
+        std::cout << "    Discrete PQP: " << (isOdd ? *pqp_time : .5 * (*pqp_time + *(pqp_time + 1))) << "  "
+                  << nr_tries << "/" << pqp_attempts[i] << " planning attempts successful" << std::endl;
         isOdd = dfcl_times[i].size() % 2 == 1;
-        std::cout << "    Discrete FCL: " << (isOdd ? *dfcl_time : .5*(*dfcl_time + *(dfcl_time+1)))
-            << "  " << nr_tries << "/" << dfcl_attempts[i] << " planning attempts successful" << std::endl;
+        std::cout << "    Discrete FCL: " << (isOdd ? *dfcl_time : .5 * (*dfcl_time + *(dfcl_time + 1))) << "  "
+                  << nr_tries << "/" << dfcl_attempts[i] << " planning attempts successful" << std::endl;
         isOdd = cfcl_times[i].size() % 2 == 1;
-        std::cout << "  Continuous FCL: " << (isOdd ? *cfcl_time : .5*(*cfcl_time + *(cfcl_time+1)))
-            << "  " << nr_tries << " total attempts" << std::endl;
+        std::cout << "  Continuous FCL: " << (isOdd ? *cfcl_time : .5 * (*cfcl_time + *(cfcl_time + 1))) << "  "
+                  << nr_tries << " total attempts" << std::endl;
     }
 
 #else
@@ -280,4 +292,3 @@ int main (int argc, char **argv)
 
     return 0;
 }
-

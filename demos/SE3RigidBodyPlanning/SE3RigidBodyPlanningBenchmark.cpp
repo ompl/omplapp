@@ -1,36 +1,36 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Ioan Sucan */
 
-#include <omplapp/config.h>
-#include <omplapp/apps/SE3RigidBodyPlanning.h>
-#include <ompl/tools/benchmark/Benchmark.h>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
+#include <ompl/geometric/planners/est/EST.h>
 #include <ompl/geometric/planners/kpiece/BKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
-#include <ompl/geometric/planners/sbl/SBL.h>
-#include <ompl/geometric/planners/est/EST.h>
+#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/rrt/RRT.h>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
+#include <ompl/geometric/planners/sbl/SBL.h>
+#include <ompl/tools/benchmark/Benchmark.h>
+#include <omplapp/apps/SE3RigidBodyPlanning.h>
+#include <omplapp/config.h>
 
-#include <ompl/base/samplers/UniformValidStateSampler.h>
-#include <ompl/base/samplers/GaussianValidStateSampler.h>
-#include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
-#include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
 #include <ompl/base/samplers/BridgeTestValidStateSampler.h>
+#include <ompl/base/samplers/GaussianValidStateSampler.h>
+#include <ompl/base/samplers/MaximizeClearanceValidStateSampler.h>
+#include <ompl/base/samplers/ObstacleBasedValidStateSampler.h>
+#include <ompl/base/samplers/UniformValidStateSampler.h>
 using namespace ompl;
 
-void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
-                double& runtime_limit, double& memory_limit, int& run_count)
+void benchmark0(std::string &benchmark_name, app::SE3RigidBodyPlanning &setup, double &runtime_limit,
+                double &memory_limit, int &run_count)
 {
     benchmark_name = std::string("cubicles");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/cubicles_robot.dae";
@@ -55,16 +55,18 @@ void benchmark0(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     setup.setup();
 
     std::vector<double> cs(3);
-    cs[0] = 35; cs[1] = 35; cs[2] = 35;
+    cs[0] = 35;
+    cs[1] = 35;
+    cs[2] = 35;
     setup.getStateSpace()->getDefaultProjection()->setCellSizes(cs);
 
     runtime_limit = 10.0;
-    memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 500;
+    memory_limit = 10000.0;  // set high because memory usage is not always estimated correctly
+    run_count = 500;
 }
 
-void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
-                double& runtime_limit, double& memory_limit, int& run_count)
+void benchmark1(std::string &benchmark_name, app::SE3RigidBodyPlanning &setup, double &runtime_limit,
+                double &memory_limit, int &run_count)
 {
     benchmark_name = std::string("Twistycool");
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR) + "/3D/Twistycool_robot.dae";
@@ -85,27 +87,27 @@ void benchmark1(std::string& benchmark_name, app::SE3RigidBodyPlanning& setup,
     goal->rotation().setIdentity();
 
     base::RealVectorBounds bounds(3);
-    bounds.setHigh(0,350.);
-    bounds.setHigh(1,250.);
-    bounds.setHigh(2,-150.);
-    bounds.setLow(0,200.);
-    bounds.setLow(1,75.);
-    bounds.setLow(2,-450.);
+    bounds.setHigh(0, 350.);
+    bounds.setHigh(1, 250.);
+    bounds.setHigh(2, -150.);
+    bounds.setLow(0, 200.);
+    bounds.setLow(1, 75.);
+    bounds.setLow(2, -450.);
     setup.getStateSpace()->as<base::SE3StateSpace>()->setBounds(bounds);
 
     setup.setStartAndGoalStates(start, goal);
     setup.getSpaceInformation()->setStateValidityCheckingResolution(0.01);
 
     runtime_limit = 60.0;
-    memory_limit  = 10000.0; // set high because memory usage is not always estimated correctly
-    run_count     = 50;
+    memory_limit = 10000.0;  // set high because memory usage is not always estimated correctly
+    run_count = 50;
 }
 
-void preRunEvent(const base::PlannerPtr& /*planner*/)
+void preRunEvent(const base::PlannerPtr & /*planner*/)
 {
 }
 
-void postRunEvent(const base::PlannerPtr& /*planner*/, tools::Benchmark::RunProperties& /*run*/)
+void postRunEvent(const base::PlannerPtr & /*planner*/, tools::Benchmark::RunProperties & /*run*/)
 {
 }
 
@@ -117,7 +119,7 @@ int main(int argc, char **argv)
     int run_count;
     int benchmark_id = argc > 1 ? ((argv[1][0] - '0') % 2) : 0;
 
-    if (benchmark_id==0)
+    if (benchmark_id == 0)
         benchmark0(benchmark_name, setup, runtime_limit, memory_limit, run_count);
     else
         benchmark1(benchmark_name, setup, runtime_limit, memory_limit, run_count);
@@ -127,9 +129,9 @@ int main(int argc, char **argv)
     tools::Benchmark b(setup, benchmark_name);
 
     // optionally set pre & pos run events
-    b.setPreRunEvent([](const base::PlannerPtr& planner) { preRunEvent (planner); });
-    b.setPostRunEvent([](const base::PlannerPtr& planner, tools::Benchmark::RunProperties& run)
-        { postRunEvent(planner, run); });
+    b.setPreRunEvent([](const base::PlannerPtr &planner) { preRunEvent(planner); });
+    b.setPostRunEvent(
+        [](const base::PlannerPtr &planner, tools::Benchmark::RunProperties &run) { postRunEvent(planner, run); });
 
     b.addPlanner(std::make_shared<geometric::RRTConnect>(setup.getSpaceInformation()));
     b.addPlanner(std::make_shared<geometric::RRT>(setup.getSpaceInformation()));
@@ -146,8 +148,7 @@ int main(int argc, char **argv)
     {
         // run all planners with a uniform valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(
-            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
-            {
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr {
                 return std::make_shared<base::UniformValidStateSampler>(si);
             });
         b.addExperimentParameter("sampler_id", "INTEGER", "0");
@@ -159,8 +160,7 @@ int main(int argc, char **argv)
     {
         // run all planners with a Gaussian valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(
-            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
-            {
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr {
                 return std::make_shared<base::GaussianValidStateSampler>(si);
             });
         b.addExperimentParameter("sampler_id", "INTEGER", "1");
@@ -172,8 +172,7 @@ int main(int argc, char **argv)
     {
         // run all planners with a obstacle-based valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(
-            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
-            {
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr {
                 return std::make_shared<base::ObstacleBasedValidStateSampler>(si);
             });
         b.addExperimentParameter("sampler_id", "INTEGER", "2");
@@ -185,8 +184,7 @@ int main(int argc, char **argv)
     {
         // run all planners with a maximum-clearance valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(
-            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
-            {
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr {
                 auto vss = std::make_shared<base::MaximizeClearanceValidStateSampler>(si);
                 vss->setNrImproveAttempts(5);
                 return vss;
@@ -200,8 +198,7 @@ int main(int argc, char **argv)
     {
         // run all planners with a maximum-clearance valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(
-            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr
-            {
+            [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr {
                 return std::make_shared<base::BridgeTestValidStateSampler>(si);
             });
         b.addExperimentParameter("sampler_id", "INTEGER", "4");

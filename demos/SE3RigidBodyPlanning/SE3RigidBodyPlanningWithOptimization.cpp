@@ -1,20 +1,20 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Ioan Sucan */
 
-#include <omplapp/apps/SE3RigidBodyPlanning.h>
+#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
+#include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/tools/multiplan/OptimizePlan.h>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/base/objectives/PathLengthOptimizationObjective.h>
+#include <omplapp/apps/SE3RigidBodyPlanning.h>
 #include <omplapp/config.h>
 
 using namespace ompl;
@@ -61,19 +61,19 @@ int main()
     // run with RRT*
     setup.setPlanner(std::make_shared<geometric::RRTstar>(setup.getSpaceInformation()));
     res << "RRT*" << std::endl;
-    for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
+    for (double time = 1.0; time < 10.1; time = time + 1.0)
     {
         setup.clear();
         double length = -1.0;
         // try to solve the problem
         if (setup.solve(time) && setup.haveExactSolutionPath())
             length = setup.getSolutionPath().length();
-        res << "time = "  << setup.getLastPlanComputationTime() << " \t length = " << length << std::endl;
+        res << "time = " << setup.getLastPlanComputationTime() << " \t length = " << length << std::endl;
     }
 
     tools::OptimizePlan op(setup.getProblemDefinition());
     res << "RRTConnect with path hybridization (one thread)" << std::endl;
-    for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
+    for (double time = 1.0; time < 10.1; time = time + 1.0)
     {
         setup.clear();
         op.clearPlanners();
@@ -98,7 +98,7 @@ int main()
     }
 
     res << "RRTConnect with path hybridization (four threads)" << std::endl;
-    for (double time = 1.0 ; time < 10.1 ; time = time + 1.0)
+    for (double time = 1.0; time < 10.1; time = time + 1.0)
     {
         setup.clear();
         op.clearPlanners();

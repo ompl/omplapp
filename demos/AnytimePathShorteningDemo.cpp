@@ -1,24 +1,24 @@
 /*********************************************************************
-* Rice University Software Distribution License
-*
-* Copyright (c) 2010, Rice University
-* All Rights Reserved.
-*
-* For a full description see the file named LICENSE.
-*
-*********************************************************************/
+ * Rice University Software Distribution License
+ *
+ * Copyright (c) 2010, Rice University
+ * All Rights Reserved.
+ *
+ * For a full description see the file named LICENSE.
+ *
+ *********************************************************************/
 
 /* Author: Ryan Luna */
 
 #include "AnytimePathShorteningDemo.h"
 
-#include <omplapp/apps/SE2RigidBodyPlanning.h>
-#include <omplapp/apps/SE3RigidBodyPlanning.h>
-#include <omplapp/apps/SE3MultiRigidBodyPlanning.h>
-#include <omplapp/config.h>
-#include <ompl/tools/benchmark/Benchmark.h>
 #include <ompl/geometric/planners/AnytimePathShortening.h>
+#include <ompl/tools/benchmark/Benchmark.h>
 #include <ompl/util/Console.h>
+#include <omplapp/apps/SE2RigidBodyPlanning.h>
+#include <omplapp/apps/SE3MultiRigidBodyPlanning.h>
+#include <omplapp/apps/SE3RigidBodyPlanning.h>
+#include <omplapp/config.h>
 
 #include <cmath>
 
@@ -44,7 +44,7 @@ std::shared_ptr<geometric::SimpleSetup> allocProblem(const ProblemType &probType
     }
 }
 
-void setStartAndGoalStates(const ProblemType& probType, std::shared_ptr<geometric::SimpleSetup> &setup)
+void setStartAndGoalStates(const ProblemType &probType, std::shared_ptr<geometric::SimpleSetup> &setup)
 {
     std::string robot_fname = std::string(OMPLAPP_RESOURCE_DIR);
     std::string env_fname = std::string(OMPLAPP_RESOURCE_DIR);
@@ -150,12 +150,12 @@ void setStartAndGoalStates(const ProblemType& probType, std::shared_ptr<geometri
             break;
     }
 
-    dynamic_cast<app::RigidBodyGeometry*>(setup.get())->setRobotMesh(robot_fname);
-    dynamic_cast<app::RigidBodyGeometry*>(setup.get())->setEnvironmentMesh(env_fname);
+    dynamic_cast<app::RigidBodyGeometry *>(setup.get())->setRobotMesh(robot_fname);
+    dynamic_cast<app::RigidBodyGeometry *>(setup.get())->setEnvironmentMesh(env_fname);
 }
 
-
-void solve(const ProblemType& probType, const OptimizationType &optType, const double& runtime, const std::vector<PlannerType>& planners)
+void solve(const ProblemType &probType, const OptimizationType &optType, const double &runtime,
+           const std::vector<PlannerType> &planners)
 {
     auto setup(allocProblem(probType));
 
@@ -201,7 +201,8 @@ void solve(const ProblemType& probType, const OptimizationType &optType, const d
 
         std::cout << "Planner suite: " << std::endl;
         for (size_t i = 0; i < planners.size(); ++i)
-            std::cout << i+1 << ": " << planner->as<geometric::AnytimePathShortening>()->getPlanner(i)->getName() << std::endl;
+            std::cout << i + 1 << ": " << planner->as<geometric::AnytimePathShortening>()->getPlanner(i)->getName()
+                      << std::endl;
     }
     else
     {
@@ -239,7 +240,9 @@ int main(int argc, char **argv)
         if (argc != 2)
         {
             std::cout << "Usage:" << std::endl;
-            std::cout << "demo_AnytimePathShortening ([barriers|cubicles|easy] [shortcut|hybridize|alternate|none] [runtime(seconds)] [planner1] (planner2)...)|(input file)" << std::endl;
+            std::cout << "demo_AnytimePathShortening ([barriers|cubicles|easy] [shortcut|hybridize|alternate|none] "
+                         "[runtime(seconds)] [planner1] (planner2)...)|(input file)"
+                      << std::endl;
             return 0;
         }
     }
