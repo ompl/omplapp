@@ -10,9 +10,9 @@
 
 /* Author: Ioan Sucan */
 
+#include "OpenDEWorld.inc"
 #include "OMPLEnvironment.inc"
 #include "OMPLSetup.inc"
-#include "OpenDEWorld.inc"
 
 #include "displayOpenDE.h"
 #include "omplapp/config.h"
