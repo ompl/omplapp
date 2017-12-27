@@ -32,7 +32,7 @@ install:
       brew update;
       brew install homebrew/science/libccd;
       brew install dartsim/dart/fcl;
-      brew install boost ode eigen assimp;
+      brew install ode eigen assimp;
     else
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get -y update;
