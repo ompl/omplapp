@@ -10,8 +10,8 @@ platform: x64
 
 environment:
   CTEST_OUTPUT_ON_FAILURE: 1
-  BOOST_ROOT: C:\Libraries\boost_1_65_1
-  BOOST_LIBRARYDIR: C:\Libraries\boost_1_65_1\lib64-msvc-14.1
+  BOOST_ROOT: C:\Libraries\boost_1_64_0
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_64_0\lib64-msvc-14.1
   CMAKE_TOOLCHAIN_FILE: -DCMAKE_TOOLCHAIN_FILE="C:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
   CMAKE_GENERATOR: -G"Visual Studio 15 2017 Win64"
   CMAKE_TOOLCHAIN: -T"v141"
@@ -23,7 +23,7 @@ cache:
 configuration: Release
 
 before_build:
-  - cmd: dir C:\Libraries\boost_1_65_1\lib64-msvc-14.1
+  - cmd: dir C:\Libraries\boost_1_64_0\lib64-msvc-14.1
   - cmd: vcpkg install eigen3:%VCPKG_ARCH%
   - cmd: vcpkg install fcl:%VCPKG_ARCH%
   - cmd: vcpkg install assimp:%VCPKG_ARCH%
