@@ -14,7 +14,7 @@ environment:
   BOOST_LIBRARYDIR: C:\Libraries\boost_1_65_1\lib64-msvc-14.1
   CMAKE_TOOLCHAIN_FILE: -DCMAKE_TOOLCHAIN_FILE="C:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
   CMAKE_GENERATOR: -G"Visual Studio 15 2017 Win64"
-  CMAKE_TOOLCHAIN: -T"v140"
+  CMAKE_TOOLCHAIN: -T"v141"
   VCPKG_ARCH: x64-windows
 
 cache:
