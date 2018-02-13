@@ -11,10 +11,10 @@ platform: x64
 environment:
   CTEST_OUTPUT_ON_FAILURE: 1
   BOOST_ROOT: C:\Libraries\boost_1_64_0
-  BOOST_LIBRARYDIR: C:\Libraries\boost_1_64_0\lib64-msvc-14.1
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_64_0\lib64-msvc-14.0
   CMAKE_TOOLCHAIN_FILE: -DCMAKE_TOOLCHAIN_FILE="C:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
   CMAKE_GENERATOR: -G"Visual Studio 15 2017 Win64"
-  CMAKE_TOOLCHAIN: -T"v141"
+  CMAKE_TOOLCHAIN: -T"v140"
   VCPKG_ARCH: x64-windows
 
 cache:
@@ -23,7 +23,7 @@ cache:
 configuration: Release
 
 before_build:
-  - cmd: dir C:\Libraries\boost_1_64_0\lib64-msvc-14.1
+  - cmd: dir C:\Libraries\boost_1_64_0
   - cmd: vcpkg install eigen3:%VCPKG_ARCH%
   - cmd: vcpkg install fcl:%VCPKG_ARCH%
   - cmd: vcpkg install assimp:%VCPKG_ARCH%
@@ -32,7 +32,7 @@ before_build:
   - cmd: set
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_TOOLCHAIN_FILE% %CMAKE_TOOLCHAIN% -DOMPL_REGISTRATION=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_DEBUG=ON -DBoost_COMPILER=-vc141 ..
+  - cmd: cmake %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_TOOLCHAIN_FILE% %CMAKE_TOOLCHAIN% -DOMPL_REGISTRATION=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_DEBUG=ON ..
 
 build:
   project: C:\projects\omplapp\build\omplapp.sln
