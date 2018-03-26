@@ -115,8 +115,8 @@ find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
 endif()
-# Eigen is needed for the InformedStateSampler
-find_package(Eigen3 QUIET)
+# Eigen is needed for constrained planning, the InformedStateSampler, and VFRRT
+find_package(Eigen3 REQUIRED)
 # If Triangle is installed, enable code for triangular decompositions
 find_package(Triangle QUIET)
 # If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
@@ -149,6 +149,7 @@ include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
     "${Boost_INCLUDE_DIR}"
+    "${EIGEN3_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIRS}"
     "${CCD_INCLUDE_DIRS}"
     "${ASSIMP_INCLUDE_DIRS}")
@@ -183,11 +184,6 @@ endif()
 set(OMPL_EXTENSION_TRIANGLE ${TRIANGLE_FOUND})
 if (TRIANGLE_FOUND)
   include_directories(${TRIANGLE_INCLUDE_DIR})
-endif()
-
-if (EIGEN3_FOUND)
-    set(OMPL_HAVE_EIGEN3 1)
-    include_directories("${EIGEN3_INCLUDE_DIR}")
 endif()
 
 if (FLANN_FOUND)

@@ -14,11 +14,9 @@ OMPL.app has the following required dependencies:
 
 * [Boost](http://www.boost.org) (version 1.54 or higher)
 * [CMake](http://www.cmake.org) (version 2.8.7 or higher)
-* [Assimp](http://assimp.org)
-* [FCL](https://github.com/flexible-collision-library/fcl)
-
-OMPL.app's build system will attempt to automatically download and build
-Assimp and FCL if not already installed.
+* [Eigen](http://eigen.tuxfamily.org) (version 3.3 or higher)
+* [Assimp](http://assimp.org) (version 3.0.1270 or higher)
+* [FCL](https://github.com/flexible-collision-library/fcl) (version 0.3.1 or higher)
 
 The following dependencies are optional:
 
@@ -28,7 +26,6 @@ The following dependencies are optional:
 * [ODE](http://ode.org) (needed to compile support for planning using the Open Dynamics Engine)
 * [Doxygen](http://www.doxygen.org) (needed to create a local copy of the documentation at
   http://ompl.kavrakilab.org)
-* [Eigen](http://eigen.tuxfamily.org) (needed for an informed sampling technique to improve the optimization of path length and for the Vector Field RRT planner)
 
 Once dependencies are installed, you can build OMPL.app on Linux, OS X,
 and MS Windows. Go to the top-level directory of OMPL.app and type the
