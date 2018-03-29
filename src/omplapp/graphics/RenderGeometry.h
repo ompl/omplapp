@@ -23,7 +23,7 @@ namespace ompl
     namespace app
     {
 
-        class RenderGeometry
+        class OMPL_EXPORT RenderGeometry
         {
         public:
 

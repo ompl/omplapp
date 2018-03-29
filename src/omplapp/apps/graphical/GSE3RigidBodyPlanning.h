@@ -21,7 +21,7 @@ namespace ompl
     namespace app
     {
 
-        class GSE3RigidBodyPlanning : public SE3RigidBodyPlanning,
+        class OMPL_EXPORT GSE3RigidBodyPlanning : public SE3RigidBodyPlanning,
                                       public RenderGeometry
         {
         public:

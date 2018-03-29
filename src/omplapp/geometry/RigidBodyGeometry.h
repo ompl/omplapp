@@ -33,7 +33,7 @@ namespace ompl
         enum CollisionChecker
             { PQP, FCL };
 
-        class RigidBodyGeometry
+        class OMPL_EXPORT RigidBodyGeometry
         {
         public:
 

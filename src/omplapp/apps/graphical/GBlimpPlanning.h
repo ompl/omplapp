@@ -21,7 +21,7 @@ namespace ompl
     namespace app
     {
 
-        class GBlimpPlanning : public BlimpPlanning,
+        class OMPL_EXPORT GBlimpPlanning : public BlimpPlanning,
                                public RenderGeometry
         {
         public:

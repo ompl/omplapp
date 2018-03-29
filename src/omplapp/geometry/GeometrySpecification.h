@@ -29,7 +29,7 @@ namespace ompl
 
         typedef std::function<const base::State *(const base::State *, unsigned int)> GeometricStateExtractor;
 
-        class GeometrySpecification
+        class OMPL_EXPORT GeometrySpecification
         {
         public:
 

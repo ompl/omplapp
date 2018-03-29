@@ -113,7 +113,7 @@ namespace ompl
             implemented (knowledge of the state space is needed for this
             function to be implemented) */
         template<MotionModel T>
-        class PQPStateValidityChecker : public base::StateValidityChecker
+        class OMPL_EXPORT PQPStateValidityChecker : public base::StateValidityChecker
         {
         public:
 

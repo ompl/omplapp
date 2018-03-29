@@ -21,7 +21,7 @@ namespace ompl
     namespace app
     {
 
-        class GQuadrotorPlanning : public QuadrotorPlanning,
+        class OMPL_EXPORT GQuadrotorPlanning : public QuadrotorPlanning,
                                    public RenderGeometry
         {
         public:

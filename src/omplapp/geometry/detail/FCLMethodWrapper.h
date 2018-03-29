@@ -49,7 +49,7 @@ namespace ompl
         OMPL_CLASS_FORWARD(FCLMethodWrapper);
 
         /// \brief Wrapper for FCL discrete and continuous collision checking and distance queries
-        class FCLMethodWrapper
+        class OMPL_EXPORT FCLMethodWrapper
         {
         public:
 

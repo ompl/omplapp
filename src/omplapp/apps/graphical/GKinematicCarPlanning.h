@@ -21,7 +21,7 @@ namespace ompl
     namespace app
     {
 
-        class GKinematicCarPlanning : public KinematicCarPlanning,
+        class OMPL_EXPORT GKinematicCarPlanning : public KinematicCarPlanning,
                                     public RenderGeometry
         {
         public:

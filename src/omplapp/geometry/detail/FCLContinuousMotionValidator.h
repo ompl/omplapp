@@ -27,7 +27,7 @@ namespace ompl
     namespace app
     {
         /// \brief A motion validator that utilizes FCL's continuous collision checking
-        class FCLContinuousMotionValidator : public ob::MotionValidator
+        class OMPL_EXPORT FCLContinuousMotionValidator : public ob::MotionValidator
         {
         public:
 

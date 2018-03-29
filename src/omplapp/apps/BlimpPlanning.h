@@ -33,7 +33,7 @@ namespace ompl
             where \f$(x,y,z)\f$ is the position, \f$\theta\f$ the heading, and the
             controls \f$(u_f,u_z,u_\theta)\f$ control their rate of change.
         */
-        class BlimpPlanning : public AppBase<CONTROL>
+        class OMPL_EXPORT BlimpPlanning : public AppBase<CONTROL>
         {
         public:
             BlimpPlanning()

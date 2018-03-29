@@ -79,7 +79,7 @@ namespace ompl
 
         /// \brief Wrapper for FCL collision and distance checking
         template<MotionModel T>
-        class FCLStateValidityChecker : public ob::StateValidityChecker
+        class OMPL_EXPORT FCLStateValidityChecker : public ob::StateValidityChecker
         {
         public:
             FCLStateValidityChecker(const ob::SpaceInformationPtr &si, const GeometrySpecification &geom,

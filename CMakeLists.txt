@@ -5,6 +5,9 @@ endif()
 if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0.0)
     cmake_policy(SET CMP0042 OLD)
 endif()
+if(NOT ${CMAKE_VERSION} VERSION_LESS 3.3.0)
+    cmake_policy(SET CMP0063 NEW)
+endif()
 project(omplapp CXX C)
 
 # set the default build type
@@ -35,6 +38,7 @@ include(GNUInstallDirs)
 include(CompilerSettings)
 include(OMPLVersion)
 include(OMPLUtils)
+include(GenerateExportHeader)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
@@ -148,6 +152,7 @@ endif()
 include_directories(
     "${OMPLAPP_INCLUDE_DIR}"
     "${OMPL_INCLUDE_DIR}"
+    "${CMAKE_BINARY_DIR}/ompl/src"
     "${Boost_INCLUDE_DIR}"
     "${EIGEN3_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIRS}"

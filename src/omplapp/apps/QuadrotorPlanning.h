@@ -33,7 +33,7 @@ namespace ompl
             acceleration, \f$m\f$ is the mass, and \f$\beta\f$ is a damping coefficient.
             The system is controlled through \f$u=(u_0,u_1,u_2,u_3)\f$.
         */
-        class QuadrotorPlanning : public AppBase<CONTROL>
+        class OMPL_EXPORT QuadrotorPlanning : public AppBase<CONTROL>
         {
         public:
             QuadrotorPlanning()

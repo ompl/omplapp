@@ -20,20 +20,25 @@ namespace ompl
     namespace app
     {
 
+        OMPL_EXPORT
         void InferProblemDefinitionBounds(const base::ProblemDefinitionPtr &pdef, const GeometricStateExtractor &se, double factor, double add,
                                           unsigned int robotCount, const base::StateSpacePtr &space, MotionModel mtype);
+        OMPL_EXPORT
         void InferEnvironmentBounds(const base::StateSpacePtr &space, const RigidBodyGeometry &rbg);
 
+        OMPL_EXPORT
         base::ProjectionEvaluatorPtr allocGeometricStateProjector(const base::StateSpacePtr &space, MotionModel mtype,
                                                                   const base::StateSpacePtr &gspace, const GeometricStateExtractor &se);
 
         /** \brief Allocate a default 2D/3D grid decomposition (depending on the MotionModel)
             for use with the SyclopEST and SyclopRRT planners. */
+        OMPL_EXPORT
         control::DecompositionPtr allocDecomposition(const base::StateSpacePtr &space, MotionModel mtype,
             const base::StateSpacePtr &gspace);
 
         /** \brief Create an optimization objective. The objective name can be:
             "length", "max min clearance", or "mechanical work" */
+        OMPL_EXPORT
         ompl::base::OptimizationObjectivePtr getOptimizationObjective(const base::SpaceInformationPtr &si, const std::string &objective, double threshold);
 
     }

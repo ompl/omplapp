@@ -36,7 +36,7 @@ namespace ompl
             distance between the front and rear axle of the car (set to 1 by
             default).
         */
-        class KinematicCarPlanning : public AppBase<CONTROL>
+        class OMPL_EXPORT KinematicCarPlanning : public AppBase<CONTROL>
         {
         public:
             KinematicCarPlanning();

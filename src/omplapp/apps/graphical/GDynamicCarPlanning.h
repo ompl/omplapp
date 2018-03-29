@@ -21,7 +21,7 @@ namespace ompl
     namespace app
     {
 
-        class GDynamicCarPlanning : public DynamicCarPlanning,
+        class OMPL_EXPORT GDynamicCarPlanning : public DynamicCarPlanning,
                                     public RenderGeometry
         {
         public:

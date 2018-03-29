@@ -39,7 +39,7 @@ namespace ompl
             and rear axle of the car. Both \f$m\f$ and \f$L\f$ are set to 1 by
             default.
         */
-        class DynamicCarPlanning : public AppBase<CONTROL>
+        class OMPL_EXPORT DynamicCarPlanning : public AppBase<CONTROL>
         {
         public:
             DynamicCarPlanning()

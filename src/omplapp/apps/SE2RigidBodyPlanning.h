@@ -23,7 +23,7 @@ namespace ompl
 
         /** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
             for rigid bodies in SE2. */
-        class SE2RigidBodyPlanning : public AppBase<GEOMETRIC>
+        class OMPL_EXPORT SE2RigidBodyPlanning : public AppBase<GEOMETRIC>
         {
         public:
 

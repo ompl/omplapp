@@ -41,7 +41,7 @@ namespace ompl
         };
 
         template<AppType T>
-        class AppBase : public AppTypeSelector<T>::SimpleSetup,
+        class OMPL_EXPORT AppBase : public AppTypeSelector<T>::SimpleSetup,
                         public RigidBodyGeometry
         {
         public:
