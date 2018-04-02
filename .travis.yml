@@ -27,12 +27,8 @@ matrix:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew tap dartsim/dart;
-      brew tap homebrew/science;
       brew update;
-      brew install homebrew/science/libccd;
-      brew install dartsim/dart/fcl;
-      brew install ode eigen assimp;
+      brew install libccd fcl eigen assimp;
     else
       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
       sudo apt-get -y update;
