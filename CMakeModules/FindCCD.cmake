@@ -5,5 +5,8 @@ if(PKGCONFIG_FOUND)
     if(CCD_LIBRARIES AND NOT CCD_INCLUDE_DIRS)
         set(CCD_INCLUDE_DIRS "/usr/include")
     endif()
+else()
+    # vcpkg installs cmake config files for libccd
+    find_package(CCD CONFIG)
 endif()
 find_package_handle_standard_args(CCD DEFAULT_MSG CCD_LIBRARIES CCD_INCLUDE_DIRS)

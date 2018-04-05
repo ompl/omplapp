@@ -2,69 +2,52 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
 version: "{build}"
-os: Visual Studio 2015
+os: Visual Studio 2017
 
 clone_folder: C:\projects\omplapp
 shallow_clone: true
 
-# branches:
-#   only:
-#     - master
 platform: x64
 
 environment:
   CTEST_OUTPUT_ON_FAILURE: 1
-  BOOST_ROOT: C:\Libraries\boost_1_59_0
-  BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
+  CMAKE_TOOLCHAIN_FILE: -DCMAKE_TOOLCHAIN_FILE="C:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
+  CMAKE_GENERATOR: -G"Visual Studio 15 2017 Win64"
+  VCPKG_ARCH: x64-windows
 
 cache:
-  - C:\Program Files\assimp
-  - C:\Program Files\libccd
-  - C:\Program Files\fcl
+  - C:\tools\vcpkg\installed -> .appveyor.yml
 
 configuration: Release
 
 before_build:
-  - cmd: if not exist C:\"Program Files"\assimp\lib\assimp.lib (
-            curl -L -o assimp.zip http://downloads.sourceforge.net/project/assimp/assimp-3.0/assimp--3.0.1270-source-only.zip &&
-            cmake -E tar zxf assimp.zip &&
-            cd assimp--3.0.1270-source-only &&
-            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DBUILD_ASSIMP_TOOLS=OFF . &&
-            cmake --build . --target install --config %Configuration% &&
-            cd ..
-         ) else (echo Using cached assimp)
-  - cmd: if not exist C:\"Program Files"\libccd\lib\ccd.lib (
-            curl -L -o libccd-2.0.tar.gz https://github.com/danfis/libccd/archive/v2.0.tar.gz &&
-            cmake -E tar zxf libccd-2.0.tar.gz &&
-            cd libccd-2.0 &&
-            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% . &&
-            cmake --build . --target install --config %Configuration% &&
-            cd ..
-         ) else (echo Using cached libccd)
-  - cmd: if not exist C:\"Program Files"\fcl\lib\fcl.lib (
-            curl -L -o fcl.zip https://github.com/flexible-collision-library/fcl/archive/0.5.0.zip &&
-            cmake -E tar zxf fcl.zip &&
-            cd fcl-0.5.0 &&
-            cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARY="C:\Program Files\libccd\lib\ccd.lib" . &&
-            cmake --build . --target install --config %Configuration% &&
-            cd ..
-         ) else (echo Using cached fcl)
+  - cmd: vcpkg install assimp:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-disjoint-sets:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-dynamic-bitset:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-filesystem:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-graph:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-odeint:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-program-options:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-serialization:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-system:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-test:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-ublas:%VCPKG_ARCH%
+  - cmd: vcpkg install eigen3:%VCPKG_ARCH%
+  - cmd: vcpkg install fcl:%VCPKG_ARCH%
   - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
-  - cmd: set
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=%Configuration% -DOMPL_REGISTRATION=OFF -DOMPL_BUILD_DEMOS=OFF -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DASSIMP_INCLUDE_DIRS="C:\Program Files\assimp\include" -DASSIMP_LIBRARIES="C:\Program Files\assimp\lib\assimp.lib" -DCCD_INCLUDE_DIRS="C:\Program Files\libccd\include" -DCCD_LIBRARIES="C:\Program Files\libccd\lib\ccd.lib" -DFCL_INCLUDE_DIRS="C:\Program Files\fcl\include" -DFCL_LIBRARIES="C:\Program Files\fcl\lib\fcl.lib" ..
+  - cmd: cmake %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_TOOLCHAIN_FILE% -DOMPL_REGISTRATION=OFF ..
 
 build:
   project: C:\projects\omplapp\build\omplapp.sln
   parallel: true
 
 after_build:
-  - cmd: cmake --build . --target package --config %Configuration%
+  - cmd: cmake --build . --config %configuration% --target package
 
-# tests seem to hang
-#test_script:
-#  - cmd: ctest -C %Configuration%
+test_script:
+  - cmd: ctest -C %configuration%
 
 artifacts:
-  - path: 'build\ompl*.zip'
+  - path: 'build\omplapp*.zip'
