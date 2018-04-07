@@ -64,7 +64,7 @@ sudo apt-get install ros-`rosversion -d`-ompl</pre>
   <!-- Linux (generic) -->
   <div role="tabpanel" class="tab-pane" id="linux">
     <h2>Linux (generic)</h2>
-    <p>OMPL requires <a href="http://www.boost.org">Boost</a> (version 1.54 or higher) and <a href="http://www.cmake.org">CMake</a> (version 2.8.7 or higher). Some additional features are available if <a href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen 3</a> or <a href="http://www.ode.org">ODE</a> are installed.
+    <p>OMPL requires <a href="http://www.boost.org">Boost</a> (version 1.54 or higher), <a href="http://www.cmake.org">CMake</a> (version 2.8.7 or higher), and <a href="http://eigen.tuxfamily.org">Eigen</a> (version 3.3 or higher). Some additional features are available if <a href="http://www.ode.org">ODE</a> is installed.
     OMPL.app requires in addition <a href="http://www.assimp.org">Assimp</a>, <a href="http://freeglut.sourceforge.net">Open GL libraries and header files</a>, <a href="https://github.com/danfis/libccd">libccd</a> (version 2.0.0 or higher), and <a href="https://github.com/flexible-collision-library/fcl">FCL</a> (version 0.4.0 or higher). To be able to generate python bindings you need to install the <a href="http://www.python.org">Python</a> library and header files and <a href="installPyPlusPlus.html">Py++</a>. The OMPL.app GUI requires <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download5">PyQt5</a> (including its OpenGL bindings) and <a href="http://pyopengl.sourceforge.net">PyOpenGL</a>. Finally, you need a C++11 compiler (g++-5 or newer).</p>
     <p>Once the dependencies are installed, OMPL.app can then be compiled like so:</p>
     <ul>
@@ -107,4 +107,3 @@ cmake ../..</pre></li>
   </div>
 </div>
 \endhtmlonly
-
