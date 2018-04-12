@@ -107,7 +107,7 @@ namespace ompl
                     return 2;
                 }
 
-                void project(const base::State *state, base::EuclideanProjection &projection) const override
+                void project(const base::State *state, Eigen::Ref<Eigen::VectorXd> projection) const override
                 {
                     const base::State *gs = se_(state, 0);
                     projection(0) = gs->as<base::SE2StateSpace::StateType>()->getX();
@@ -143,7 +143,7 @@ namespace ompl
                     return 3;
                 }
 
-                void project(const base::State *state, base::EuclideanProjection &projection) const override
+                void project(const base::State *state, Eigen::Ref<Eigen::VectorXd> projection) const override
                 {
                     const base::State *gs = se_(state, 0);
                     projection(0) = gs->as<base::SE3StateSpace::StateType>()->getX();

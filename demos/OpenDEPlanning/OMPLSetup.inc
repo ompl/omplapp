@@ -68,7 +68,7 @@ public:
         cellSizes_[1] = 1.0;
     }
 
-    virtual void project(const ob::State *state, ob::EuclideanProjection &projection) const
+    virtual void project(const ob::State *state, Eigen::Ref<Eigen::VectorXd> projection) const
     {
         const double *pos = state->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
         projection[0] = pos[0];
