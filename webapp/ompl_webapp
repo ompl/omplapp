@@ -23,7 +23,7 @@ if [[ ! ${celerystatus} == "OK" ]]; then
     echo "If you want to use the benchmarking facilities of ompl_webapp,"
     echo "run the \"plannerarena\" command as well."
     celery worker -A omplweb.celery -Q omplapp --loglevel=info --pidfile=/tmp/omplweb.pid --logfile=/tmp/omplweb-celery.log &
-    python ./omplweb.py
+    ./omplweb.py
     kill_celery
 else
     echo "Celery is already running an omplweb job queue."

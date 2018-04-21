@@ -247,7 +247,12 @@ install(DIRECTORY resources
 install(DIRECTORY webapp
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
     COMPONENT omplapp
-    PATTERN ".DS_Store" EXCLUDE)
+    PATTERN ".DS_Store" EXCLUDE
+    PATTERN "__pycache__" EXCLUDE
+    PATTERN "omplweb.py" EXCLUDE)
+install_python(PROGRAMS webapp/omplweb.py
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl/webapp"
+    COMPONENT omplapp)
 find_python_module(flask)
 find_python_module(celery)
 find_program(CELERY celery)
