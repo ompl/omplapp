@@ -104,7 +104,7 @@ namespace ompl
             /** \brief Change the type of collision checking for the rigid body */
             virtual void setStateValidityCheckerType (CollisionChecker ctype);
 
-            /** \brief Allocate default state validity checker using PQP. */
+            /** \brief Allocate default state validity checker using FCL. */
             const base::StateValidityCheckerPtr& allocStateValidityChecker(const base::SpaceInformationPtr &si, const GeometricStateExtractor &se, bool selfCollision);
 
             const GeometrySpecification& getGeometrySpecification() const;

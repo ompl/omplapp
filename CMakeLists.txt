@@ -121,6 +121,8 @@ find_package(Eigen3 REQUIRED)
 find_package(Triangle QUIET)
 # If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
 find_package(flann 1.8.3 QUIET)
+# If Spot is installed, we enable suppport for constructing finite automata from LTL formulae
+find_package(spot)
 # MORSE is only needed for Modular OpenRobots Simulation Engine bindings
 find_package(MORSE QUIET)
 # ODE is only needed for Open Dynamics Engine bindings
@@ -190,6 +192,12 @@ if (FLANN_FOUND)
     set(OMPL_HAVE_FLANN 1)
     include_directories("${FLANN_INCLUDE_DIRS}")
     link_directories(${FLANN_LIBRARY_DIRS})
+endif()
+
+if (SPOT_FOUND)
+    set(OMPL_HAVE_SPOT 1)
+    include_directories("${SPOT_INCLUDE_DIRS}")
+    link_directories(${SPOT_LIBRARY_DIRS})
 endif()
 
 set(OMPL_EXTENSION_MORSE ${MORSE_FOUND})
@@ -287,7 +295,7 @@ if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.8)
     set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
     configure_package_config_file(ompl/omplConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
-        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/ompl/cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
         PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
         NO_CHECK_REQUIRED_COMPONENTS_MACRO)
     write_basic_package_version_file(
@@ -296,7 +304,7 @@ if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.8)
         COMPATIBILITY SameMajorVersion)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
-        DESTINATION ${LIB_INSTALL_DIR}/cmake/ompl
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
         COMPONENT ompl)
 endif()
 
