@@ -27,7 +27,7 @@ The following dependencies are optional:
 * [Doxygen](http://www.doxygen.org) (needed to create a local copy of the documentation at
   http://ompl.kavrakilab.org)
 
-Once dependencies are installed, you can build OMPL.app on Linux, OS X,
+Once dependencies are installed, you can build OMPL.app on Linux, macOS,
 and MS Windows. Go to the top-level directory of OMPL.app and type the
 following commands:
 

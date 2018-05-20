@@ -22,6 +22,9 @@ if (OMPL_BUILD_DEMOS)
     # create executable for planning with OPENDE
     if (OPENDE_FOUND AND DRAWSTUFF_FOUND)
         if(APPLE)
+            set_package_properties(GLUT PROPERTIES
+                URL "https://www.opengl.org/resources/libraries/glut/"
+                PURPOSE "Used for one ODE demo program on macOS.")
             find_package(GLUT)
         endif(APPLE)
         add_definitions(${OPENDE_DEFINITIONS})

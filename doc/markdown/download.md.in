@@ -7,7 +7,7 @@
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
 
-  OMPL.app is also available through the OS X MacPorts package manager (type “sudo port install ompl +app”).
+  OMPL.app is also available through the macOS MacPorts package manager (type “sudo port install ompl +app”).
 
 - __OMPL__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
 

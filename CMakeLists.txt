@@ -32,6 +32,7 @@ set(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
     "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
 include(GNUInstallDirs)
+include(FeatureSummary)
 include(CompilerSettings)
 include(OMPLVersion)
 include(OMPLUtils)
@@ -64,9 +65,12 @@ else(IS_ICPC)
     add_definitions(-DBOOST_TEST_DYN_LINK)
 endif(IS_ICPC)
 
-find_package(Boost 1.54 COMPONENTS serialization filesystem system program_options REQUIRED)
+set_package_properties(Boost PROPERTIES
+    URL "http://boost.org"
+    PURPOSE "Used throughout OMPL for data serialization, graphs, etc.")
+find_package(Boost 1.54 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
 
-# on OS X we need to check whether to use libc++ or libstdc++ with clang++
+# on macOS we need to check whether to use libc++ or libstdc++ with clang++
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     include(GetPrerequisites)
     get_prerequisites("${Boost_SYSTEM_LIBRARY}" _libs 0 0 "/" "")
@@ -83,28 +87,24 @@ if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     endif()
 endif()
 
+set_package_properties(OpenGL PROPERTIES
+    URL "http://opengl.org"
+    PURPOSE "Used to render graphics in ompl_app.")
 find_package(OpenGL)
+set_package_properties(Python PROPERTIES
+    URL "http://python.org"
+    PURPOSE "Used for python bindings.")
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
 find_package(Python)
 find_boost_python()
 
 if(PYTHON_FOUND)
-    # PyPy is more than an order of magnitude faster in generating the Python
-    # bindings than CPython, so use it if available.
-    find_program(PYPY NAMES pypy${PYTHON_VERSION_MAJOR} pypy)
-    if(PYPY)
-        option(OMPL_USE_PYPY "Use PyPy for generating Python bindings" ON)
-    else()
-        option(OMPL_USE_PYPY "Use PyPy for generating Python bindings" OFF)
-    endif()
-    if(OMPL_USE_PYPY)
-        set(PYTHON_BINDING_EXEC "${PYPY}")
-    else()
-        set(PYTHON_BINDING_EXEC "${PYTHON_EXEC}")
-    endif()
+    set_package_properties(pypy PROPERTIES
+        URL "http://pypy.org"
+        PURPOSE "Used to speed up the generation of python bindings.")
+    find_package(pypy QUIET)
 endif()
-
 find_python_module(PyQt5 QUIET)
 find_python_module(PyQt4 QUIET)
 find_python_module(PySide QUIET)
@@ -115,27 +115,49 @@ find_python_module(OpenGL)
 if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
 endif()
-# Eigen is needed for constrained planning, the InformedStateSampler, and VFRRT
+set_package_properties(Eigen3 PROPERTIES
+    URL "http://eigen.tuxfamily.org"
+    PURPOSE "A linear algebra library used throughout OMPL.")
 find_package(Eigen3 REQUIRED)
-# If Triangle is installed, enable code for triangular decompositions
+set_package_properties(Triangle PROPERTIES
+    URL "http://www.cs.cmu.edu/~quake/triangle.html"
+    PURPOSE "Used to create triangular decompositions of polygonal 2D environments.")
 find_package(Triangle QUIET)
-# If FLANN is installed, a wrapper for its nearest neighbor data structures can be used
+set_package_properties(flann PROPERTIES
+    URL "https://github.com/mariusmuja/flann"
+    PURPOSE "If detetected, FLANN can be used for nearest neighbor queries by OMPL.")
 find_package(flann 1.8.3 QUIET)
-# If Spot is installed, we enable suppport for constructing finite automata from LTL formulae
+set_package_properties(spot PROPERTIES
+    URL "http://spot.lrde.epita.fr"
+    PURPOSE "Used for constructing finite automata from LTL formulae.")
 find_package(spot)
-# MORSE is only needed for Modular OpenRobots Simulation Engine bindings
+set_package_properties(MORSE PROPERTIES
+    URL "https://www.openrobots.org/wiki/morse"
+    PURPOSE "OMPL includes a plugin for the MORSE Robot Simulation engine.")
 find_package(MORSE QUIET)
-# ODE is only needed for Open Dynamics Engine bindings
+set_package_properties(OpenDE PROPERTIES
+    URL "http://ode.org"
+    PURPOSE "The Open Dynamics Engine can be used as a \"black box\" for kinodynamic planning.")
 find_package(OpenDE QUIET)
-# This library is included in the Open Dynamics source distribution and is used in one demo only
+set_package_properties(Drawstuff PROPERTIES
+    URL "http://ode.org"
+    PURPOSE "Part of the ODE source distribution, used in one demo program.")
 find_package(Drawstuff QUIET)
-# Assimp is need to load meshes
+set_package_properties(Assimp PROPERTIES
+    URL "http://assimp.org"
+    PURPOSE "Used in ompl_app for reading meshes representing robots and environments.")
 find_package(Assimp REQUIRED)
-# We need FCL and its dependency CCD for collision checking
+set_package_properties(CCD PROPERTIES
+    URL "https://github.com/danfis/libccd"
+    PURPOSE "Used for collision checking, an FCL dependency.")
 find_package(CCD REQUIRED)
+set_package_properties(FCL PROPERTIES
+    URL "https://github.com/flexible-collision-library/fcl"
+    PURPOSE "The default collision checking library.")
 find_package(FCL REQUIRED)
-
-# pthread is sometimes needed, depending on OS / compiler
+set_package_properties(Threads PROPERTIES
+    URL "https://en.wikipedia.org/wiki/POSIX_Threads"
+    PURPOSE "Pthreads is sometimes needed, depending on OS / compiler.")
 find_package(Threads QUIET)
 
 enable_testing()
@@ -220,16 +242,14 @@ if(PYTHON_FOUND)
     endif()
 endif()
 
-option(OMPLAPP_PQP "Enable support for the PQP collision checking library" ON)
-if(OMPLAPP_PQP)
-    # If the PQP is installed, it is possible to use as the collision checker with OMPL.app.
-    # (FCL is the default collision checker)
-    find_package(PQP QUIET)
-    if(PQP_FOUND)
-        include_directories("${PQP_INCLUDE_DIR}")
-        set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
-        set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
-    endif()
+set_package_properties(PQP PROPERTIES
+    URL "http://gamma.cs.unc.edu/SSV/"
+    PURPOSE "Used as an alternative, additional collision checking library (the default is FCL).")
+find_package(PQP QUIET)
+if(PQP_FOUND)
+    include_directories("${PQP_INCLUDE_DIR}")
+    set(OMPLAPP_MODULE_LIBRARIES ${OMPLAPP_MODULE_LIBRARIES} ${PQP_LIBRARY})
+    set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
 endif()
 
 # extra menu option for OMPLapp documentation:
@@ -338,3 +358,11 @@ if (OMPL_REGISTRATION)
         endif()
     endif()
 endif()
+
+set_package_properties(PkgConfig PROPERTIES
+    URL "https://www.freedesktop.org/wiki/Software/pkg-config/"
+    PURPOSE "Used to find (compilation flags for) dependencies.")
+set_package_properties(castxml PROPERTIES
+    URL "https://github.com/CastXML/CastXML"
+    PURPOSE "Used to generate Python bindings.")
+feature_summary(DESCRIPTION INCLUDE_QUIET_PACKAGES WHAT ALL)

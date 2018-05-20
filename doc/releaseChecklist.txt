@@ -10,7 +10,7 @@ Steps to release a new version:
 * run ompl_app.py and solve a test problem
 * make install
 * make package_source
-* on OS X type this command to create new tar ball without annoying resource forks:
+* on macOS type this command to create new tar ball without annoying resource forks:
   tar czf omplapp-x.y.z-Source.tar.gz -C _CPack_Packages/Darwin-Source/TGZ omplapp-x.y.z-Source
 * upload to bitbucket.org
 * make website for both omplapp and ompl to update web site repo (assumed to exist in ${HOME}/src/ompl.github.io)
