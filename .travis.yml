@@ -6,24 +6,25 @@ matrix:
       dist: trusty
       sudo: required
       compiler: gcc
-      env: JOBS=4
       addons:
         apt:
           packages:
-            - libboost1.55-all-dev
+            - libboost-serialization1.55-dev
+            - libboost-filesystem1.55-dev
+            - libboost-system1.55-dev
+            - libboost-program-options1.55-dev
+            - libboost-test1.55-dev
             - libode-dev
             - libeigen3-dev
             - freeglut3-dev
             - libassimp-dev
       cache:
         apt: true
+        directories:
+          - /usr/local
     - os: osx
       osx_image: xcode9.1
       compiler: clang
-      env: JOBS=2
-      cache:
-        directories:
-          - /usr/local
 
 install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
@@ -55,5 +56,5 @@ script:
   - mkdir -p build
   - cd build
   - cmake -DOMPL_REGISTRATION=OFF -DCMAKE_INSTALL_PREFIX=tmp ..
-  - make -j $JOBS
-  - ctest -j $JOBS
+  - make -j `nproc 2>/dev/null || sysctl -n hw.ncpu`
+  - ctest
