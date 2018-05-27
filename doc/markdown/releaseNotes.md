@@ -1,4 +1,4 @@
-# Release Notes
+# Release Notes {#releaseNotes}
 
 # OMPL.app 1.3.2 (November 11, 2017)
 

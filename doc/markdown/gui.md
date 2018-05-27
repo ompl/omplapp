@@ -1,4 +1,4 @@
-# Graphical User Interface to OMPL
+# Graphical User Interface to OMPL {#gui}
 
 __Contents:__
 

@@ -1,4 +1,4 @@
-# OMPL Web App
+# OMPL Web App {#webapp}
 
 __Contents__:
 
