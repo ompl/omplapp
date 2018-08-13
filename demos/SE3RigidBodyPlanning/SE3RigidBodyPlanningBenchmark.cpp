@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 
     if (sampler_id == 4 || sampler_id < 0)
     {
-        // run all planners with a maximum-clearance valid state sampler on the benchmark problem
+        // run all planners with a bridge-test valid state sampler on the benchmark problem
         setup.getSpaceInformation()->setValidStateSamplerAllocator(
             [](const base::SpaceInformation *si) -> base::ValidStateSamplerPtr {
                 return std::make_shared<base::BridgeTestValidStateSampler>(si);

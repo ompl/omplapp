@@ -24,4 +24,4 @@ Steps to release a new version:
       hg push -b default ssh://hg@bitbucket.org/ompl/ompl
     - do the same for the omplapp repo
 * update version on https://en.wikipedia.org/wiki/OMPL
-* announce to ompl-users@lists.sourceforge.net
+* announce on ompl-users@lists.sourceforge.net, robot-motion@mit.edu
