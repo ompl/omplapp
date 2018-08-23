@@ -237,9 +237,9 @@ ompl::base::OptimizationObjectivePtr CFGBenchmark::getOptimizationObjective(cons
         std::string threshold = bo_.declared_options_["problem.objective.threshold"];
         try
         {
-            opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+            opt->setCostThreshold(ompl::base::Cost(std::stod(threshold)));
         }
-        catch(boost::bad_lexical_cast &)
+        catch(std::invalid_argument &)
         {
             OMPL_WARN("Unable to parse optimization threshold: %s", threshold.c_str());
         }
@@ -304,9 +304,9 @@ void CFGBenchmark::preSwitchEvent(const ompl::base::PlannerPtr &planner)
         std::string threshold = activeParams_["objective.threshold"];
         try
         {
-            opt->setCostThreshold(ompl::base::Cost(boost::lexical_cast<double>(threshold)));
+            opt->setCostThreshold(ompl::base::Cost(std::stod(threshold)));
         }
-        catch(boost::bad_lexical_cast &)
+        catch(std::invalid_argument &)
         {
             OMPL_WARN("Unable to parse optimization threshold: %s", threshold.c_str());
         }
@@ -404,11 +404,11 @@ void CFGBenchmark::runBenchmark()
 
     try
     {
-        tl = boost::lexical_cast<double>(bo_.declared_options_["benchmark.time_limit"]);
-        ml = boost::lexical_cast<double>(bo_.declared_options_["benchmark.mem_limit"]);
-        rc = boost::lexical_cast<unsigned int>(bo_.declared_options_["benchmark.run_count"]);
+        tl = std::stod(bo_.declared_options_["benchmark.time_limit"]);
+        ml = std::stod(bo_.declared_options_["benchmark.mem_limit"]);
+        rc = std::stoul(bo_.declared_options_["benchmark.run_count"]);
     }
-    catch(boost::bad_lexical_cast &)
+    catch(std::invalid_argument &)
     {
         std::cerr << "Unable to parse benchmark parameters" << std::endl;
         return;
