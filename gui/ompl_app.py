@@ -118,6 +118,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.environmentFile = None
         self.robotFile = None
         self.path = None
+        self.isGeometric = True
+        self.is3D = True
         self.mainWidget.problemWidget.robotTypeSelect.currentIndexChanged[int].connect(
             self.setRobotType)
         self.mainWidget.solveWidget.solveButton.clicked.connect(self.solve)
@@ -193,7 +195,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 config = ConfigParser.ConfigParser(strict=False)
             else:
                 config = ConfigParser.ConfigParser()
-            config.readfp(open(fname, 'r'))
+            config.read([fname])
             if config.has_option("problem", "start.z"):
                 if config.has_option("problem", "control"):
                     ctype = config.get("problem", "control")
@@ -825,7 +827,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             self.timer.start(100.0/float(value))
             self.updatePathPose()
     def updatePathPose(self):
-        if self.solutionPath != None:
+        if self.solutionPath is not None:
             self.pathIndex = (self.pathIndex + 1) % len(self.solutionPath)
             self.updateGL()
     def setSolutionPath(self, path):
@@ -921,7 +923,7 @@ class GLViewer(QtOpenGL.QGLWidget):
             GL.glPopMatrix()
 
             # draw path pose(s)
-            if self.solutionPath != None:
+            if self.solutionPath is not None:
                 if self.animate:
                     GL.glPushMatrix()
                     GL.glMultMatrixf(self.solutionPath[self.pathIndex])

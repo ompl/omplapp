@@ -45,11 +45,9 @@ except ImportError:
     from ompl_benchmark_statistics import readBenchmarkLog
 
 import flask
-from flask import Flask
 from werkzeug import secure_filename
 
 from celery import Celery
-from celery.result import AsyncResult
 
 
 def initialize():
@@ -66,12 +64,9 @@ def initialize():
         if exists(loc):
             conf_file_loc = loc
             break
-    conf_file = open(conf_file_loc, "r")
-    config.readfp(conf_file)
+    config.read([conf_file_loc])
     preferences = config._sections["webapp"]
     preferences["plannerarena_port"] = config.get("plannerarena", "plannerarena_port")
-
-    conf_file.close()
     return preferences
 
 def make_celery():
@@ -127,9 +122,7 @@ def parse_cfg(cfg_path):
     else:
         config = ConfigParser.ConfigParser()
 
-    cfg_file = open(cfg_path, 'r')
-    config.readfp(cfg_file)
-    cfg_file.close()
+    config.read([cfg_path])
     return config._sections['problem']
 
 
@@ -361,7 +354,7 @@ def solve(problem):
         coords = []
         state = pd.getVertex(i).getState()
 
-        if type(state) == ob.CompoundStateInternal:
+        if isinstance(state) == ob.CompoundStateInternal:
             state = state[0]
 
         coords.append(state.getX())
@@ -418,7 +411,7 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
 
     # Run the benchmark, produces .log file
     try:
-        output = subprocess.check_output("ompl_benchmark " + cfg_loc + ".cfg", \
+        subprocess.check_output("ompl_benchmark " + cfg_loc + ".cfg", \
             shell=True, \
             stderr=subprocess.STDOUT, \
             env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + ":" + os.environ["PATH"]))
@@ -554,18 +547,16 @@ def request_problem():
     cfg_file_loc = join(problem_files, dimension, cfg_filename)
     cfg_data = parse_cfg(cfg_file_loc)
 
-    if (sys.version_info > (3, 0)):
+    if sys.version_info > (3, 0):
         config = ConfigParser.ConfigParser(strict=False)
     else:
         config = ConfigParser.ConfigParser()
 
-    cfg_file = open(cfg_file_loc, 'r')
-    config.readfp(cfg_file)
+    config.read([cfg_file_loc])
 
     cfg_data['robot_loc'] = join("static/problem_files", dimension, config.get("problem", "robot"))
     cfg_data['env_loc'] = join("static/problem_files", dimension, config.get("problem", "world"))
 
-    cfg_file.close()
     return json.dumps(cfg_data)
 
 
@@ -661,8 +652,7 @@ def init_benchmark():
 
     db_filename = basename(db_filepath)
 
-    result = benchmark.delay(cfg_name, session_id, cfg_loc, db_filename, problem_name, env_loc, \
-        robot_loc)
+    benchmark.delay(cfg_name, session_id, cfg_loc, db_filename, problem_name, env_loc, robot_loc)
 
     return db_filename
 
