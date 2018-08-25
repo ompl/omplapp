@@ -21,23 +21,31 @@ OpenGL.ERROR_CHECKING = False
 from OpenGL import GL, GLU
 import webbrowser
 from math import cos, sin, asin, acos, atan2, pi, sqrt
-qt5 = False
+
+USE_DEPRECATED_API = False
+
 try:
     # try PyQt5 first
     from PyQt5 import QtWidgets, QtCore, QtGui, QtOpenGL
     from PyQt5.QtCore import pyqtSignal as Signal
-    qt5 = True
 except ImportError:
-    # deprecated, will be removed at some point
+    # next try PySide2
     try:
-        from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
-        from PyQt4.QtCore import pyqtSignal as Signal
-        QtWidgets = QtGui
+        from PySide2 import QtCore, QtOpenGL, QtWidgets, QtGui
+        from PySide2.QtCore import Signal
     except ImportError:
-        # if PyQt* wasn't found, try PySide
-        from PySide import QtCore, QtGui, QtOpenGL
-        from PySide.QtCore import Signal
-        QtWidgets = QtGui
+        # next try PyQt4
+        # (deprecated, will be removed at some point)
+        USE_DEPRECATED_API = True
+        try:
+            from PyQt4 import QtGui, QtCore, QtGui, QtOpenGL
+            from PyQt4.QtCore import pyqtSignal as Signal
+        except ImportError:
+            # finally try PySide
+            from PySide import QtCore, QtGui, QtOpenGL
+            from PySide.QtCore import Signal
+        QtWidets = QtGui
+
 # The ConfigParser module has been renamed to configparser in Python 3.0
 try:
     import ConfigParser
@@ -995,7 +1003,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.lastPos = event.pos()
 
     def wheelEvent(self, event):
-        if qt5:
+        if not USE_DEPRECATED_API:
             self.scale = self.scale * pow(2.0, -event.angleDelta().y() / 240.0)
         else:
             self.scale = self.scale * pow(2.0, -event.delta() / 240.0)
