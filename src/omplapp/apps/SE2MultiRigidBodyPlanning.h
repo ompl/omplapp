@@ -20,7 +20,7 @@ namespace ompl
     {
 
         /// @brief Wrapper for ompl::app::RigidBodyPlanning that plans for multiple rigid bodies in SE2.
-        class SE2MultiRigidBodyPlanning : public AppBase<GEOMETRIC>
+        class SE2MultiRigidBodyPlanning : public AppBase<AppType::GEOMETRIC>
         {
         public:
             /// @brief Constructs an instance of multiple rigid bodies for 2D geometric planning.  n is the number of independent bodies in SE(2)
@@ -74,4 +74,3 @@ namespace ompl
 
     }
 }
-

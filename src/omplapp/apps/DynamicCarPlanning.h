@@ -39,11 +39,11 @@ namespace ompl
             and rear axle of the car. Both \f$m\f$ and \f$L\f$ are set to 1 by
             default.
         */
-        class DynamicCarPlanning : public AppBase<CONTROL>
+        class DynamicCarPlanning : public AppBase<AppType::CONTROL>
         {
         public:
             DynamicCarPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_2D),
+                : AppBase<AppType::CONTROL>(constructControlSpace(), Motion_2D),
                   odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);

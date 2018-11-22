@@ -33,11 +33,11 @@ namespace ompl
             acceleration, \f$m\f$ is the mass, and \f$\beta\f$ is a damping coefficient.
             The system is controlled through \f$u=(u_0,u_1,u_2,u_3)\f$.
         */
-        class QuadrotorPlanning : public AppBase<CONTROL>
+        class QuadrotorPlanning : public AppBase<AppType::CONTROL>
         {
         public:
             QuadrotorPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D),
+                : AppBase<AppType::CONTROL>(constructControlSpace(), Motion_3D),
                   odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);

@@ -13,7 +13,7 @@
 #include "omplapp/apps/SE2MultiRigidBodyPlanning.h"
 
 ompl::app::SE2MultiRigidBodyPlanning::SE2MultiRigidBodyPlanning(unsigned int n) :
-    AppBase<GEOMETRIC>(std::make_shared<base::CompoundStateSpace>(), Motion_2D), n_(n)
+    AppBase<AppType::GEOMETRIC>(std::make_shared<base::CompoundStateSpace>(), Motion_2D), n_(n)
 {
     assert (n > 0);
     name_ = "Multi rigid body planning (2D)";
@@ -34,7 +34,7 @@ void ompl::app::SE2MultiRigidBodyPlanning::inferProblemDefinitionBounds()
 {
     // Make sure that all n SE(2) spaces get the same bounds, if they are adjusted
     for (unsigned int i = 0; i < n_; ++i)
-        InferProblemDefinitionBounds(AppTypeSelector<GEOMETRIC>::SimpleSetup::getProblemDefinition(),
+        InferProblemDefinitionBounds(AppTypeSelector<AppType::GEOMETRIC>::SimpleSetup::getProblemDefinition(),
                                     getGeometricStateExtractor(), factor_, add_,
                                     n_, getGeometricComponentStateSpace(i), mtype_);
 }
@@ -60,4 +60,3 @@ const ompl::base::State* ompl::app::SE2MultiRigidBodyPlanning::getGeometricCompo
     const auto* st = state->as<base::CompoundStateSpace::StateType>()->as<base::SE2StateSpace::StateType>(index);
     return static_cast<const base::State*>(st);
 }
-

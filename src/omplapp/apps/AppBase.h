@@ -23,7 +23,7 @@ namespace ompl
     namespace app
     {
 
-        enum AppType
+        enum class AppType
             { GEOMETRIC, CONTROL };
 
         template<AppType T>
@@ -34,7 +34,7 @@ namespace ompl
         };
 
         template<>
-        struct AppTypeSelector<CONTROL>
+        struct AppTypeSelector<AppType::CONTROL>
         {
             typedef control::SimpleSetup SimpleSetup;
             typedef control::ControlSpacePtr SpaceType;
@@ -54,7 +54,7 @@ namespace ompl
 
             AppType getAppType()
             {
-                return GEOMETRIC;
+                return AppType::GEOMETRIC;
             }
             const std::string& getName()
             {
@@ -146,9 +146,9 @@ namespace ompl
         };
 
         template<>
-        inline AppType AppBase<CONTROL>::getAppType()
+        inline AppType AppBase<AppType::CONTROL>::getAppType()
         {
-            return CONTROL;
+            return AppType::CONTROL;
         }
 
     }

@@ -23,11 +23,11 @@ namespace ompl
 
         /** \brief Wrapper for ompl::app::RigidBodyPlanning that plans
             for rigid bodies in SE3. */
-        class SE3RigidBodyPlanning : public AppBase<GEOMETRIC>
+        class SE3RigidBodyPlanning : public AppBase<AppType::GEOMETRIC>
         {
         public:
 
-            SE3RigidBodyPlanning() : AppBase<GEOMETRIC>(std::make_shared<base::SE3StateSpace>(), Motion_3D)
+            SE3RigidBodyPlanning() : AppBase<AppType::GEOMETRIC>(std::make_shared<base::SE3StateSpace>(), Motion_3D)
             {
                 name_ = "Rigid body planning (3D)";
             }

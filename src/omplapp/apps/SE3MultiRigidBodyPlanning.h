@@ -20,7 +20,7 @@ namespace ompl
     {
 
         /// @brief Wrapper for ompl::app::RigidBodyPlanning that plans for multiple rigid bodies in SE3.
-        class SE3MultiRigidBodyPlanning : public AppBase<GEOMETRIC>
+        class SE3MultiRigidBodyPlanning : public AppBase<AppType::GEOMETRIC>
         {
         public:
             /// @brief Constructs an instance of multiple rigid bodies for 3D geometric planning.  n is the number of independent bodies in SE(3)
@@ -74,4 +74,3 @@ namespace ompl
 
     }
 }
-

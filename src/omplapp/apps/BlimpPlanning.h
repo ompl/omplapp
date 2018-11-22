@@ -33,11 +33,11 @@ namespace ompl
             where \f$(x,y,z)\f$ is the position, \f$\theta\f$ the heading, and the
             controls \f$(u_f,u_z,u_\theta)\f$ control their rate of change.
         */
-        class BlimpPlanning : public AppBase<CONTROL>
+        class BlimpPlanning : public AppBase<AppType::CONTROL>
         {
         public:
             BlimpPlanning()
-                : AppBase<CONTROL>(constructControlSpace(), Motion_3D),
+                : AppBase<AppType::CONTROL>(constructControlSpace(), Motion_3D),
                   odeSolver(std::make_shared<control::ODEBasicSolver<>>(si_, [this](const control::ODESolver::StateType& q, const control::Control *ctrl, control::ODESolver::StateType& qdot)
                       {
                           ode(q, ctrl, qdot);
