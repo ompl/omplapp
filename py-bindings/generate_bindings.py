@@ -27,7 +27,14 @@ class ompl_app_generator_t(code_generator_t):
 
     def filter_declarations(self):
         code_generator_t.filter_declarations(self)
+        # Py++/pygccxml generates the wrong code for scoped enums (enum class AppType),
+        # so manually generate the right code
         self.mb.enum('::ompl::app::AppType').exclude()
+        self.mb.add_registration_code("""bp::enum_< ompl::app::AppType>("AppType")
+        .value("GEOMETRIC", ompl::app::AppType::GEOMETRIC)
+        .value("CONTROL", ompl::app::AppType::CONTROL)
+        .export_values()
+        ;""")
         self.mb.class_('::ompl::app::AppBase< ompl::app::AppType::GEOMETRIC >').rename('AppBaseGeometric')
         self.mb.class_('::ompl::app::AppBase< ompl::app::AppType::CONTROL>').rename('AppBaseControl')
         self.mb.class_('::ompl::app::AppTypeSelector< ompl::app::AppType::GEOMETRIC >').rename('AppTypeGeometric')
