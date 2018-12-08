@@ -1,11 +1,6 @@
-cmake_minimum_required(VERSION 2.8)
-if(${CMAKE_VERSION} VERSION_GREATER 2.8.3)
-    cmake_policy(SET CMP0017 NEW)
-endif()
-if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0.0)
-    cmake_policy(SET CMP0042 NEW)
-endif()
-project(omplapp CXX C)
+cmake_minimum_required(VERSION 3.5)
+project(omplapp VERSION 1.5.0 LANGUAGES CXX)
+set(OMPL_ABI_VERSION 16)
 
 # set the default build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -18,13 +13,7 @@ if (NOT CMAKE_BUILD_TYPE)
     endif()
 endif()
 
-message(STATUS "Building ${CMAKE_BUILD_TYPE}")
-
-# This shouldn't be necessary, but there has been trouble
-# with MSVC being set off, but MSVCXX ON.
-if(MSVC OR MSVC90 OR MSVC10)
-    set(MSVC ON)
-endif (MSVC OR MSVC90 OR MSVC10)
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_MODULE_PATH
     "${CMAKE_MODULE_PATH}"
@@ -34,25 +23,18 @@ set(CMAKE_MODULE_PATH
 include(GNUInstallDirs)
 include(FeatureSummary)
 include(CompilerSettings)
-include(OMPLVersion)
 include(OMPLUtils)
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 
-set(OMPLAPP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(OMPLAPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src;${CMAKE_CURRENT_BINARY_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-set(OMPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+set(OMPL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src;${CMAKE_CURRENT_BINARY_DIR}/ompl/src")
 set(OMPL_DEMO_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/ompl/demos"
     CACHE STRING "Relative path to directory where demos will be installed")
 set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
     CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
-
-set(OMPLAPP_MAJOR_VERSION ${OMPL_MAJOR_VERSION})
-set(OMPLAPP_MINOR_VERSION ${OMPL_MINOR_VERSION})
-set(OMPLAPP_PATCH_VERSION ${OMPL_PATCH_VERSION})
-set(OMPLAPP_VERSION "${OMPLAPP_MAJOR_VERSION}.${OMPLAPP_MINOR_VERSION}.${OMPLAPP_PATCH_VERSION}")
-set(OMPLAPP_ABI_VERSION ${OMPL_ABI_VERSION})
 
 if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
@@ -68,7 +50,7 @@ endif(IS_ICPC)
 set_package_properties(Boost PROPERTIES
     URL "http://boost.org"
     PURPOSE "Used throughout OMPL for data serialization, graphs, etc.")
-find_package(Boost 1.54 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
+find_package(Boost 1.58 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
 
 # on macOS we need to check whether to use libc++ or libstdc++ with clang++
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -150,10 +132,10 @@ set_package_properties(Drawstuff PROPERTIES
     URL "http://ode.org"
     PURPOSE "Part of the ODE source distribution, used in one demo program.")
 find_package(Drawstuff QUIET)
-set_package_properties(Assimp PROPERTIES
+set_package_properties(assimp PROPERTIES
     URL "http://assimp.org"
     PURPOSE "Used in ompl_app for reading meshes representing robots and environments.")
-find_package(Assimp REQUIRED)
+find_package(assimp REQUIRED)
 set_package_properties(CCD PROPERTIES
     URL "https://github.com/danfis/libccd"
     PURPOSE "Used for collision checking, an FCL dependency.")
@@ -166,6 +148,10 @@ set_package_properties(Threads PROPERTIES
     URL "https://en.wikipedia.org/wiki/POSIX_Threads"
     PURPOSE "Pthreads is sometimes needed, depending on OS / compiler.")
 find_package(Threads QUIET)
+set_package_properties(Doxygen PROPERTIES
+    URL "http://doxygen.org"
+    PURPOSE "Used to create the OMPL documentation (i.e., http://ompl.kavrakilab.org).")
+find_package(Doxygen)
 
 enable_testing()
 
@@ -177,8 +163,8 @@ if(Boost_VERSION VERSION_LESS "106300")
 endif()
 
 include_directories(
-    "${OMPLAPP_INCLUDE_DIR}"
-    "${OMPL_INCLUDE_DIR}"
+    "${OMPLAPP_INCLUDE_DIRS}"
+    "${OMPL_INCLUDE_DIRS}"
     "${Boost_INCLUDE_DIR}"
     "${EIGEN3_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIRS}"
@@ -208,7 +194,7 @@ set(OMPLAPP_LIBRARIES
     ${CCD_LIBRARIES})
 link_directories(${ASSIMP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS} ${CCD_LIBRARY_DIRS})
 
-if(OPENGL_INCLUDE_DIR)
+if (OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
 
@@ -308,32 +294,29 @@ if(NOT MSVC)
     set(PKG_DESC "The Open Motion Planning Library")
     set(PKG_EXTERNAL_DEPS "${ompl_PKG_DEPS}")
     set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
-    set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc")
-    configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
-    install(FILES "${pkg_conf_file}"
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/ompl.pc" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl.pc"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
-        COMPONENT ompl
-        RENAME "ompl.pc")
-endif()
-
-if (NOT ${CMAKE_VERSION} VERSION_LESS 2.8.8)
-    include(CMakePackageConfigHelpers)
-    set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
-    set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-    configure_package_config_file(ompl/omplConfig.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
-        INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
-        PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
-        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-    write_basic_package_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
-        VERSION ${OMPL_VERSION}
-        COMPATIBILITY SameMajorVersion)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
         COMPONENT ompl)
 endif()
+
+include(CMakePackageConfigHelpers)
+set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+configure_package_config_file(ompl/omplConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
+    PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
+    VERSION ${OMPL_VERSION}
+    COMPATIBILITY SameMajorVersion)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
+    COMPONENT ompl)
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
@@ -341,7 +324,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
 
 # script to install ompl on Ubuntu
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/install-ompl-ubuntu.sh" @ONLY)
+  "${CMAKE_CURRENT_BINARY_DIR}/install-ompl-ubuntu.sh" @ONLY)
 
 # uninstall target
 configure_file(

@@ -1,11 +1,6 @@
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Open Motion Planning Library (OMPL) & front-end (OMPL-APP)")
 set(CPACK_PACKAGE_VENDOR "Rice University")
 set(CPACK_PACKAGE_CONTACT "Mark Moll <mmoll@rice.edu>")
-set(CPACK_RSRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
-
-set(CPACK_PACKAGE_VERSION_MAJOR "${OMPLAPP_MAJOR_VERSION}")
-set(CPACK_PACKAGE_VERSION_MINOR "${OMPLAPP_MINOR_VERSION}")
-set(CPACK_PACKAGE_VERSION_PATCH "${OMPLAPP_PATCH_VERSION}")
 
 # component list
 set(CPACK_COMPONENTS_ALL ompl python morse omplapp)
@@ -37,18 +32,10 @@ set(CPACK_SOURCE_IGNORE_FILES
     ".log$"
     ".DS_Store"
     "/html/"
-    "/bindings/"
     "TODO"
     "releaseChecklist.txt"
-    "ompl.pc$"
-    "create_symlinks.sh$"
-    "uninstall_symlinks.sh$"
-    "config.h$"
     ".registered$"
-    "download.md$"
-    "mainpage.md$"
-    "binding_generator.py$"
-    "install-ompl-ubuntu.sh$")
+    "binding_generator.py$")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_GENERATOR "TGZ")
 
@@ -63,12 +50,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   execute_process(COMMAND "/usr/bin/lsb_release" "-rs"
       OUTPUT_VARIABLE UBUNTU_RELEASE
       OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(CPACK_PACKAGE_FILE_NAME "omplapp_${OMPL_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}-Ubuntu${UBUNTU_RELEASE}")
+  set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}-Ubuntu${UBUNTU_RELEASE}")
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION}, libboost-serialization-dev, libboost-filesystem-dev, libboost-system-dev, libboost-program-options-dev, libboost-test-dev, python-opengl, python-pyqt5.qtopengl, freeglut3-dev, libode-dev, libassimp-dev, libtriangle-dev, libccd-dev")
-endif()
-
-if(APPLE)
-    set(CPACK_GENERATOR "PackageMaker;${CPACK_GENERATOR}")
 endif()
 
 if(WIN32)

@@ -34,7 +34,7 @@
            <li><code>./install-ompl-ubuntu.sh --python</code> will install OMPL with Python bindings</li>
            <li><code>./install-ompl-ubuntu.sh --app</code> will install OMPL.app with Python bindings</li>
          </ul>
-         The script downloads and installs OMPL and all dependencies via <code>apt-get</code> &amp; <code>pip</code> and from source. It will ask for your password to install things. The script has been tested on vanilla installs of Ubuntu 14.04 (Trusty), 15.10 (Wily), 16.04 (Xenial), 17.10 (Artful), and 18.04 (Bionic).
+         The script downloads and installs OMPL and all dependencies via <code>apt-get</code> &amp; <code>pip</code> and from source. It will ask for your password to install things. The script has been tested on vanilla installs of Ubuntu 16.04 (Xenial) and higher.
       </div>
       <div role="tabpanel" class="tab-pane" id="ubuntubinary">
         Simply type:
@@ -64,8 +64,8 @@ sudo apt-get install ros-`rosversion -d`-ompl</pre>
   <!-- Linux (generic) -->
   <div role="tabpanel" class="tab-pane" id="linux">
     <h2>Linux (generic)</h2>
-    <p>OMPL requires <a href="http://www.boost.org">Boost</a> (version 1.54 or higher), <a href="http://www.cmake.org">CMake</a> (version 2.8.7 or higher), and <a href="http://eigen.tuxfamily.org">Eigen</a> (version 3.3 or higher). Some additional features are available if <a href="http://www.ode.org">ODE</a> is installed.
-    OMPL.app requires in addition <a href="http://www.assimp.org">Assimp</a>, <a href="http://freeglut.sourceforge.net">Open GL libraries and header files</a>, <a href="https://github.com/danfis/libccd">libccd</a> (version 2.0.0 or higher), and <a href="https://github.com/flexible-collision-library/fcl">FCL</a> (version 0.4.0 or higher). To be able to generate python bindings you need to install the <a href="http://www.python.org">Python</a> library and header files and <a href="installPyPlusPlus.html">Py++</a>. The OMPL.app GUI requires <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download5">PyQt5</a> (including its OpenGL bindings) and <a href="http://pyopengl.sourceforge.net">PyOpenGL</a>. Finally, you need a C++11 compiler (g++-5 or newer).</p>
+    <p>OMPL requires <a href="http://www.boost.org">Boost</a> (version 1.58 or higher), <a href="http://www.cmake.org">CMake</a> (version 3.5 or higher), and <a href="http://eigen.tuxfamily.org">Eigen</a> (version 3.3 or higher). Some additional features are available if <a href="http://www.ode.org">ODE</a> is installed.
+    OMPL.app requires in addition <a href="http://www.assimp.org">Assimp</a>, <a href="http://freeglut.sourceforge.net">Open GL libraries and header files</a>, <a href="https://github.com/danfis/libccd">libccd</a> (version 2.0.0 or higher), and <a href="https://github.com/flexible-collision-library/fcl">FCL</a> (version 0.5.0 or higher). To be able to generate python bindings you need to install the <a href="http://www.python.org">Python</a> library and header files and <a href="installPyPlusPlus.html">Py++</a>. The OMPL.app GUI requires <a href="http://www.riverbankcomputing.co.uk/software/pyqt/download5">PyQt5</a> (including its OpenGL bindings) and <a href="http://pyopengl.sourceforge.net">PyOpenGL</a>. Finally, you need a C++14 compiler (g++-5 or newer).</p>
     <p>Once the dependencies are installed, OMPL.app can then be compiled like so:</p>
     <ul>
     <li>Create a build directory and run cmake: <pre class="fragment">cd omplapp
