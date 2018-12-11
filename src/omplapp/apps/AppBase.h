@@ -29,15 +29,15 @@ namespace ompl
         template<AppType T>
         struct AppTypeSelector
         {
-            typedef geometric::SimpleSetup SimpleSetup;
-            typedef base::StateSpacePtr SpaceType;
+            using SimpleSetup = geometric::SimpleSetup;
+            using SpaceType = base::StateSpacePtr;
         };
 
         template<>
         struct AppTypeSelector<AppType::CONTROL>
         {
-            typedef control::SimpleSetup SimpleSetup;
-            typedef control::ControlSpacePtr SpaceType;
+            using SimpleSetup = control::SimpleSetup;
+            using SpaceType = control::ControlSpacePtr;
         };
 
         template<AppType T>
