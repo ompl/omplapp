@@ -228,8 +228,8 @@ namespace ompl
                     PQPModelPtr m = getPQPModelFromScene(geom.robot[i], shift).first;
                     if (!m)
                         throw Exception("Invalid robot mesh");
-                    else
-                        OMPL_INFORM("Loaded robot model with %d triangles", m->num_tris);
+
+                    OMPL_INFORM("Loaded robot model with %d triangles", m->num_tris);
                     robotParts_.push_back(m);
                 }
             }
