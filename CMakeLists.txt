@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.5)
-cmake_policy(SET CMP0072 NEW)
 project(omplapp VERSION 1.5.0 LANGUAGES CXX)
 set(OMPL_ABI_VERSION 16)
 
@@ -73,6 +72,7 @@ endif()
 set_package_properties(OpenGL PROPERTIES
     URL "http://opengl.org"
     PURPOSE "Used to render graphics in ompl_app.")
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL)
 set_package_properties(Python PROPERTIES
     URL "http://python.org"
