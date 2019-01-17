@@ -53,7 +53,7 @@ set_package_properties(Boost PROPERTIES
 find_package(Boost 1.58 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
 
 # on macOS we need to check whether to use libc++ or libstdc++ with clang++
-if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
     include(GetPrerequisites)
     get_prerequisites("${Boost_SYSTEM_LIBRARY}" _libs 0 0 "/" "")
     set(CXXSTDLIB "")
@@ -163,10 +163,10 @@ if(Boost_VERSION VERSION_LESS "106300")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
 endif()
 
+include_directories(SYSTEM "${Boost_INCLUDE_DIR}")
 include_directories(
     "${OMPLAPP_INCLUDE_DIRS}"
     "${OMPL_INCLUDE_DIRS}"
-    "${Boost_INCLUDE_DIR}"
     "${EIGEN3_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIRS}"
     "${CCD_INCLUDE_DIRS}"
