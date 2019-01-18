@@ -1,6 +1,10 @@
 # Release Notes {#releaseNotes}
 
-# OMPL 1.4.1 (December 5, 2018)
+# OMPL.app 1.4.2 (January 18, 2019)
+
+- Misc. small bug fixes.
+
+# OMPL.app 1.4.1 (December 5, 2018)
 
 - Add support for PySide2.
 - Made Planner Arena work with latest versions of R packages.
