@@ -9,11 +9,10 @@ import tempfile
 import webbrowser
 from inspect import isclass
 
-# The ConfigParser module has been renamed to configparser in Python 3.0
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
+if sys.version_info > (3, 0):
+    import configparser
+else:
+    import ConfigParser as configparser
 
 # Constants
 ompl_app_root = dirname(dirname(abspath(__file__)))
@@ -52,38 +51,51 @@ from celery import Celery
 
 def initialize():
     ompl.initializePlannerLists()
+    preferences = { \
+        # (Time * Runs * Number of Planners) < benchmarking_limit
+        'benchmarking_limit': '100000',
 
-    if sys.version_info > (3, 0):
-        config = ConfigParser.ConfigParser(strict=False)
-    else:
-        config = ConfigParser.ConfigParser()
+        # The broker to use with Celery
+        'broker_url': 'amqp://localhost:5672', # RabbitMQ
+        #'broker': 'redis://localhost:6379', # Redis
 
-    conf_file_loc = None
-    for loc in [join(ompl_app_root, join("ompl", "ompl.conf")), \
-        join(prefix, "share/ompl/ompl.conf")]:
-        if exists(loc):
-            conf_file_loc = loc
-            break
-    config.read([conf_file_loc])
-    preferences = config._sections["webapp"]
-    preferences["plannerarena_port"] = config.get("plannerarena", "plannerarena_port")
+        # The backend to use with Celery
+        'backend_url': 'rpc://localhost:5672', # RabbitMQ
+        #'backend_url': 'redis://localhost:6379', # Redis
+
+        # Maximum allowed file size for mesh uploads, in bytes
+        'max_upload_size': '50000000',
+
+        # How often to poll the server for problem solution, in milliseconds
+        'poll_interval': '2000',
+
+        # How often the page is refreshed to check for benchmark results, in milliseconds
+        'refresh_interval': '5000',
+
+        # Auto launch browser when benchmarking completes; 0 = False, 1 = True
+        'show_results': '0',
+
+        # Port for OMPL Web, default is 5000
+        'port': '5000',
+
+        # PlannerArena port
+        'plannerarena_port': '8888'
+    }
+
+    # allow preferences to be set via uppercased environment variables, prefixed with 'OMPL_'
+    for key, _ in preferences.items():
+        up_key = 'OMPL_' + key.upper()
+        if up_key in os.environ:
+            preferences[key] = os.environ[up_key]
+
     return preferences
 
 def make_celery():
-    conf = {"rabbitmq" : {"broker" : "amqp://localhost", "backend" : "rpc://localhost"},
-            "redis" : {"broker" : "redis://localhost", "backend" : "redis://localhost"}}
-
-    broker_name = preferences["broker"]
-    broker_url = conf[broker_name]["broker"]
-    backend_url = conf[broker_name]["backend"]
-
-    if "broker_port" in preferences:
-        # If a port is specified, use it. Otherwise the default is automatically used
-        broker_url += ":" + preferences["broker_port"]
-        backend_url += ":" + preferences["broker_port"]
-
-    celery = Celery(app.name, broker=broker_url, backend=backend_url)
-    celery.conf.update({u'task_default_queue': u'omplapp'})
+    celery = Celery(app.name, broker=preferences["broker_url"], backend=preferences["backend_url"])
+    celery.conf.update(
+        task_default_queue='omplapp',
+        timezone='America/Chicago',
+        enable_utc=True)
     return celery
 
 
@@ -118,9 +130,9 @@ def parse_cfg(cfg_path):
     """
 
     if sys.version_info > (3, 0):
-        config = ConfigParser.ConfigParser(strict=False)
+        config = configparser.ConfigParser(strict=False)
     else:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
 
     config.read([cfg_path])
     return config._sections['problem']
@@ -354,9 +366,6 @@ def solve(problem):
         coords = []
         state = pd.getVertex(i).getState()
 
-        if isinstance(state) == ob.CompoundStateInternal:
-            state = state[0]
-
         coords.append(state.getX())
         coords.append(state.getY())
 
@@ -412,9 +421,7 @@ def benchmark(name, session_id, cfg_loc, db_filename, problem_name, robot_loc, e
     # Run the benchmark, produces .log file
     try:
         subprocess.check_output("ompl_benchmark " + cfg_loc + ".cfg", \
-            shell=True, \
-            stderr=subprocess.STDOUT, \
-            env=dict(os.environ, PATH=preferences["ompl_benchmark_loc"] + ":" + os.environ["PATH"]))
+            shell=True, stderr=subprocess.STDOUT)
 
         # Convert .log into database
         dbfile = join(ompl_sessions_dir, session_id, db_filename)
@@ -548,9 +555,9 @@ def request_problem():
     cfg_data = parse_cfg(cfg_file_loc)
 
     if sys.version_info > (3, 0):
-        config = ConfigParser.ConfigParser(strict=False)
+        config = configparser.ConfigParser(strict=False)
     else:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
 
     config.read([cfg_file_loc])
 

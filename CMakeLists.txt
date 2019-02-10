@@ -249,8 +249,8 @@ endif()
 # extra menu option for OMPLapp documentation:
 set(OMPLAPP_MENU "<li><a href=\"gui.html\">OMPL.app GUI</a></li><li><a href=\"webapp.html\">OMPL web app</a></li>")
 add_subdirectory(ompl/doc)
-add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/src)
+add_subdirectory(ompl/py-bindings)
 add_subdirectory(ompl/tests)
 add_subdirectory(ompl/demos)
 add_subdirectory(ompl/scripts)
@@ -312,16 +312,12 @@ configure_package_config_file(ompl/omplConfig.cmake.in
     NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
-    VERSION ${OMPL_VERSION}
+    VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
     COMPONENT ompl)
-
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ompl/ompl.conf"
-  DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
-  COMPONENT ompl)
 
 # script to install ompl on Ubuntu
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
@@ -370,3 +366,10 @@ if(PY_MODULES_NOTFOUND)
     string(REPLACE ";" " " PY_MODULES_NOTFOUND_STR "${PY_MODULES_NOTFOUND}")
     message(STATUS "The following Python modules were NOT found:\n\n * ${PY_MODULES_NOTFOUND_STR}\n")
 endif()
+
+# Create targets for building docker images
+# See ompl/CMakeModules/OMPLUtils.cmake and ompl/scripts/docker for details
+add_docker_target(ompl ompl)
+add_docker_target(plannerarena ompl/scripts)
+add_docker_target(omplapp)
+add_docker_target(omplwebapp)
