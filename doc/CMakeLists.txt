@@ -9,6 +9,7 @@ if(DOXYGEN_FOUND AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.9)
     set(DOXYGEN_EXAMPLE_PATH "ompl/demos;demos;ompl/doc/markdown/code")
     set(DOXYGEN_HTML_OUTPUT "${CMAKE_BINARY_DIR}/omplapp_doc")
     set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_HTML_OUTPUT}/ompl.tag")
+    set(DOXYGEN_ENABLED_SECTIONS "OMPLAPP")
 
     doxygen_add_docs(omplapp_doc
         "${CMAKE_SOURCE_DIR}/markdown"

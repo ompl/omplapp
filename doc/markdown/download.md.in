@@ -2,19 +2,19 @@
 
 # Releases
 
-- __OMPL.app__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):
+- __OMPL.app__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):
 
-  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
-  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@OMPLAPP_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
+  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@PROJECT_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
+  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@PROJECT_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
 
   OMPL.app is also available through the macOS MacPorts package manager (type “sudo port install ompl +app”).
 
-- __OMPL__ @OMPLAPP_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
+- __OMPL__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
 
   Just the [core OMPL library](/core/download.html) (no GUI, no bindings to [FCL](http://gamma.cs.unc.edu/FCL), [PQP](http://gamma.cs.unc.edu/SSV), and [Assimp](http://assimp.sf.net)):
 
-  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@OMPL_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
-  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@OMPL_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
+  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@PROJECT_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
+  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@PROJECT_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
 
   OMPL is also available through through several package managers:
   - [Debian](https://packages.debian.org/sid/libompl-dev),
