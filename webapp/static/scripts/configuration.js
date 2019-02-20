@@ -180,7 +180,7 @@ Problem.prototype.solve = function() {
             data: problem.asJSON(),
             success: function(data){
                 var taskID = String(data);
-                console.log("Server successfully recieved solve request. Given task ID: " + taskID);
+                console.log("Server successfully received solve request. Given task ID: " + taskID);
                 solution.poll(taskID);
             },
             error: function(data) {
@@ -210,7 +210,7 @@ Problem.prototype.hasMultipleRuns = function() {
  * Formats configuration fields into a .cfg text file
  *
  * @param None
- * @return {string} All the configuration inforamtion in text.
+ * @return {string} All the configuration information in text.
  */
 Problem.prototype.getConfigText = function() {
     if (problem.isValid()) {
@@ -1039,5 +1039,3 @@ function validateModels() {
 
     return false;
 }
-
-
