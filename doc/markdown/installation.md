@@ -110,7 +110,10 @@ cmake ../..</pre></li>
   <!-- Windows -->
   <div role="tabpanel" class="tab-pane" id="windows">
     <h2>MS Windows</h2>
-        It is recommended to use <a href="https://vcpkg.readthedocs.io/en/latest/">vcpkg</a>, a Microsoft-supported package manager for open source software. Use our Appveyor configuration files for compiling <a href="https://bitbucket.org/ompl/omplapp/src/tip/.appveyor.yml">OMPL.app</a> or <a href="https://bitbucket.org/ompl/ompl/src/tip/.appveyor.yml">OMPL</a> for a list of packages to install and build instructions.
+    It is recommended to use <a href="https://vcpkg.readthedocs.io/en/latest/">vcpkg</a>, a Microsoft-supported package manager for open source software. Once you have vcpkg installed, you can install OMPL like so:
+    <pre class="fragment">vcpkg install ompl[app]</pre>
+    Note that the vcpkg installation does not include Python bindings.
+
   </div>
 </div>
 \endhtmlonly
