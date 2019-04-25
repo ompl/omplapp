@@ -26,7 +26,7 @@ namespace ompl
 
             The dynamics of the quadrotor are described by the following equations:
             \f{eqnarray*}{
-            m\ddot \mathbf{p} &=& -u_0\mathbf{n}-\beta\dot\mathbf{p} -m\mathbf{g},\\
+            m\mathbf{\ddot p} &=& -u_0\mathbf{n}-\beta\mathbf{\dot p} -m\mathbf{g},\\
             \mathbf{\alpha} &=& (u_1,u_2,u_3)^T,\f}
             where \f$\mathbf{p}\f$ is the position, \f$\mathbf{n}\f$ is the Z-axis of
             the body frame in world coordinates, \f$\alpha\f$ is the angular
