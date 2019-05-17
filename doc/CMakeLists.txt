@@ -5,15 +5,19 @@ if(DOXYGEN_FOUND AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.9)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/markdown/download.md.in"
         "${CMAKE_BINARY_DIR}/doc/omplapp_download.md")
 
-    set(DOXYGEN_EXCLUDE "ompl/doc/markdown/installation.md;${CMAKE_BINARY_DIR}/doc/ompl_download.md;ompl/doc/markdown/license.md;ompl/doc/markdown/releaseNotes.md")
+    set(DOXYGEN_EXCLUDE
+        "${CMAKE_SOURCE_DIR}/ompl/doc/markdown/installation.md"
+        "${CMAKE_BINARY_DIR}/doc/ompl_download.md"
+        "${CMAKE_SOURCE_DIR}/ompl/doc/markdown/license.md"
+        "${CMAKE_SOURCE_DIR}/ompl/doc/markdown/releaseNotes.md")
     set(DOXYGEN_EXAMPLE_PATH "ompl/demos;demos;ompl/doc/markdown/code")
     set(DOXYGEN_HTML_OUTPUT "${CMAKE_BINARY_DIR}/omplapp_doc")
     set(DOXYGEN_GENERATE_TAGFILE "${DOXYGEN_HTML_OUTPUT}/ompl.tag")
     set(DOXYGEN_ENABLED_SECTIONS "OMPLAPP")
 
     doxygen_add_docs(omplapp_doc
-        "${CMAKE_SOURCE_DIR}/markdown"
-        "${CMAKE_SOURCE_DIR}/../demos"
+        "${CMAKE_SOURCE_DIR}/doc/markdown"
+        "${CMAKE_SOURCE_DIR}/demos"
         "${CMAKE_SOURCE_DIR}/src/omplapp"
         "${CMAKE_SOURCE_DIR}/ompl/doc/markdown"
         "${CMAKE_SOURCE_DIR}/ompl/demos"
