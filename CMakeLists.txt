@@ -125,10 +125,10 @@ set_package_properties(MORSE PROPERTIES
     URL "https://www.openrobots.org/wiki/morse"
     PURPOSE "OMPL includes a plugin for the MORSE Robot Simulation engine.")
 find_package(MORSE QUIET)
-set_package_properties(OpenDE PROPERTIES
+set_package_properties(ODE PROPERTIES
     URL "http://ode.org"
     PURPOSE "The Open Dynamics Engine can be used as a \"black box\" for kinodynamic planning.")
-find_package(OpenDE QUIET)
+find_package(ODE QUIET)
 set_package_properties(Drawstuff PROPERTIES
     URL "http://ode.org"
     PURPOSE "Part of the ODE source distribution, used in one demo program.")
@@ -137,14 +137,10 @@ set_package_properties(assimp PROPERTIES
     URL "http://assimp.org"
     PURPOSE "Used in ompl_app for reading meshes representing robots and environments.")
 find_package(assimp REQUIRED)
-set_package_properties(CCD PROPERTIES
-    URL "https://github.com/danfis/libccd"
-    PURPOSE "Used for collision checking, an FCL dependency.")
-find_package(CCD REQUIRED)
-set_package_properties(FCL PROPERTIES
+set_package_properties(fcl PROPERTIES
     URL "https://github.com/flexible-collision-library/fcl"
     PURPOSE "The default collision checking library.")
-find_package(FCL REQUIRED)
+find_package(fcl REQUIRED)
 set_package_properties(Threads PROPERTIES
     URL "https://en.wikipedia.org/wiki/POSIX_Threads"
     PURPOSE "Pthreads is sometimes needed, depending on OS / compiler.")
@@ -169,7 +165,6 @@ include_directories(
     "${OMPL_INCLUDE_DIRS}"
     "${EIGEN3_INCLUDE_DIR}"
     "${FCL_INCLUDE_DIRS}"
-    "${CCD_INCLUDE_DIRS}"
     "${ASSIMP_INCLUDE_DIRS}")
 
 # ROS installs fcl in /usr. In /usr/include/fcl/config.h it says octomap was
@@ -200,7 +195,7 @@ if (OPENGL_INCLUDE_DIR)
 endif()
 
 set(OMPL_EXTENSION_TRIANGLE ${TRIANGLE_FOUND})
-if (TRIANGLE_FOUND)
+if (OMPL_EXTENSION_TRIANGLE)
   include_directories(${TRIANGLE_INCLUDE_DIR})
 endif()
 
@@ -218,10 +213,9 @@ endif()
 
 set(OMPL_EXTENSION_MORSE ${MORSE_FOUND})
 
-set(OMPL_EXTENSION_OPENDE ${OPENDE_FOUND})
-if (OPENDE_FOUND)
-    add_definitions(${OPENDE_DEFINITIONS})
-    include_directories("${OPENDE_INCLUDE_DIR}")
+set(OMPL_EXTENSION_ODE ${ODE_FOUND})
+if (OMPL_EXTENSION_ODE)
+    include_directories("${ODE_INCLUDE_DIRS}")
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
@@ -286,16 +280,14 @@ if(OMPL_BUILD_PYBINDINGS)
     endif()
 endif()
 
-# HACK ALERT: just in case the version of OpenDE used for libdrawstuff is used for libompl
-if(TARGET drawstuff)
-    add_dependencies(ompl drawstuff)
-endif()
-
 if(NOT MSVC)
     target_link_flags(ompl ompl_app_base ompl_app)
     set(PKG_NAME "ompl")
     set(PKG_DESC "The Open Motion Planning Library")
-    set(PKG_EXTERNAL_DEPS "${ompl_PKG_DEPS}")
+    set(PKG_EXTERNAL_DEPS "eigen3 ${ompl_PKG_DEPS}")
+    if(OMPL_EXTENSION_ODE)
+        set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS}")
+    endif()
     set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/ompl.pc" @ONLY)

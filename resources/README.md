@@ -26,6 +26,6 @@ The `resources` directory contains a number of resources for the OMPL.app GUI an
 
 # Textures
 
-The files in the `textures` directory are copied from the drawstuff library, included in the [Open Dynamics Engine](http://sourceforge.net/projects/opende/). They are used in the Open Dynamics Engine demo program.
+The files in the `textures` directory are copied from the drawstuff library, included in the [Open Dynamics Engine](http://ode.org). They are used in the Open Dynamics Engine demo program.
 
 [parasol]: http://parasol.tamu.edu/groups/amatogroup/benchmarks/mp/

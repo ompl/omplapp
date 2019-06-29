@@ -12,7 +12,7 @@
 
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/config.h>
-#include <ompl/extensions/opende/OpenDESimpleSetup.h>
+#include <ompl/extensions/ode/OpenDESimpleSetup.h>
 
 namespace ob = ompl::base;
 namespace og = ompl::geometric;

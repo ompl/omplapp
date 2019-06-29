@@ -10,7 +10,7 @@
 
 /* Author: Ioan Sucan */
 
-#include <ompl/extensions/opende/OpenDEEnvironment.h>
+#include <ompl/extensions/ode/OpenDEEnvironment.h>
 
 /// @cond IGNORE
 
