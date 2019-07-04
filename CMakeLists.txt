@@ -186,9 +186,8 @@ set(OMPLAPP_LIBRARIES
     ${Boost_SYSTEM_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARIES}
-    ${FCL_LIBRARIES}
-    ${CCD_LIBRARIES})
-link_directories(${ASSIMP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS} ${CCD_LIBRARY_DIRS})
+    ${FCL_LIBRARIES})
+link_directories(${ASSIMP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS})
 
 if (OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
@@ -366,4 +365,3 @@ endif()
 add_docker_target(ompl ompl)
 add_docker_target(plannerarena ompl/scripts)
 add_docker_target(omplapp)
-add_docker_target(omplwebapp)
