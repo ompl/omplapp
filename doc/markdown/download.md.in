@@ -7,8 +7,6 @@
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@PROJECT_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
   <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@PROJECT_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
 
-  OMPL.app is also available through the macOS MacPorts package manager (type “sudo port install ompl +app”).
-
 - __OMPL__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
 
   Just the [core OMPL library](/core/download.html) (no GUI, no bindings to [FCL](http://gamma.cs.unc.edu/FCL), [PQP](http://gamma.cs.unc.edu/SSV), and [Assimp](http://assimp.sf.net)):
@@ -20,8 +18,9 @@
   - [Debian](https://packages.debian.org/sid/libompl-dev),
   - [Ubuntu (14.04 and higher)](http://packages.ubuntu.com/search?keywords=libompl-dev),
   - [Fedora](https://apps.fedoraproject.org/packages/ompl),
-  - [MacPorts](https://www.macports.org), and
-  - [Homebrew](http://brew.sh).
+  - [MacPorts](https://www.macports.org),
+  - [Homebrew](http://brew.sh), and
+  - [vcpkg](https://vcpkg.readthedocs.io).
   .
   Note that these package managers may not always have the latest release.
 

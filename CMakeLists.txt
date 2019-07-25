@@ -239,8 +239,6 @@ if(PQP_FOUND)
     set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
 endif()
 
-# extra menu option for OMPLapp documentation:
-set(OMPLAPP_MENU "<li><a href=\"gui.html\">OMPL.app GUI</a></li><li><a href=\"webapp.html\">OMPL web app</a></li>")
 add_subdirectory(ompl/doc)
 add_subdirectory(ompl/src)
 add_subdirectory(ompl/py-bindings)

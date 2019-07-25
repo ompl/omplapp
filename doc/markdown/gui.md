@@ -7,7 +7,7 @@ __Contents:__
 - \ref gui_bounding_box
 - \ref gui_paths
 
-# Defining a motion planning problem {#gui_define}
+## Defining a motion planning problem {#gui_define}
 
 <img src="images/gui_define.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
@@ -15,7 +15,7 @@ The OMPL.app GUI is launched from the command line with the `omplapp/gui/ompl_ap
 
 The GUI can also be used to simply “play back” a path consisting of either SE(3) or SE(2) states. This is useful if you want to visualize paths produced by a non-graphical program. When planning with dynamics, remember to save paths as geometric paths, not control paths. Also, the path needs to be printed in matrix form using the ompl::geometric::PathGeometric::printAsMatrix() method. See also the [Path Visualization page](pathVisualization.html) for alternative ways to visualize a path.
 
-# Setting up the planner {#gui_planners}
+## Setting up the planner {#gui_planners}
 
 <img src="images/gui_planner.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
@@ -28,7 +28,7 @@ It is not strictly necessary to choose or configure a planner; if you don't, a p
 
 In addition to these planning parameters, you can set a time limit for the planning algorithm to solve a motion planning problem and the collision checking resolution. When the environment mesh is read, a collision checking resolution is chosen based on the shortest edge length occurring in that mesh, but this setting can be overridden. The collision checking resolution is a fraction of the extent of the space in which planning is performed. The extent of the state space is the maximum distance between any two states in the state space. When the environment mesh is loaded, the collision checking resolution is computed to be the shortest edge in the environment divided by the extent of the state space. If this resolution is less than 1%, it is increased to 1%.
 
-# Defining a bounding box for the robot {#gui_bounding_box}
+## Defining a bounding box for the robot {#gui_bounding_box}
 
 By default, the robot is constrained to move inside a tight bounding box around the environment, the start pose, and the goal pose. This bounding box applies to a __reference point__ for the robot; the origin of the coordinate frame that defines its pose. This means that parts of the robot can stick outside the bounding box. It also means that if the reference point for your robot is far away from the robot itself, you can get rather unintuitive results. The reference point is whatever the origin is in the mesh; OMPL.app is _not_ using the geometric center of the mesh as the reference point.
 
@@ -36,7 +36,7 @@ By default, the robot is constrained to move inside a tight bounding box around 
 
 If you move the start or goal pose outside the bounding box, the bounding box will automatically grow. You can adjust the automatic settings in the “Bounding box” tab, as shown above.
 
-# Visualizing solution paths {#gui_paths}
+## Visualizing solution paths {#gui_paths}
 
 <img src="images/gui_path.png" class="col-md-8 col-sm-10 col-xs-10 nofloat">
 
