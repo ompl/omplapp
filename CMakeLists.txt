@@ -249,7 +249,7 @@ add_subdirectory(gui)
 add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
-#add_subdirectory(benchmark)
+add_subdirectory(benchmark)
 add_subdirectory(py-bindings)
 
 install(DIRECTORY resources
