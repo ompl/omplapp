@@ -32,6 +32,7 @@ before_build:
   - cmd: vcpkg install boost-system:%VCPKG_ARCH%
   - cmd: vcpkg install boost-test:%VCPKG_ARCH%
   - cmd: vcpkg install boost-ublas:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-timer:%VCPKG_ARCH%
   - cmd: vcpkg install eigen3:%VCPKG_ARCH%
   - cmd: vcpkg install fcl:%VCPKG_ARCH%
   - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
