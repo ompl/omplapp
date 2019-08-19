@@ -31,6 +31,7 @@ before_build:
   - cmd: vcpkg install boost-serialization:%VCPKG_ARCH%
   - cmd: vcpkg install boost-system:%VCPKG_ARCH%
   - cmd: vcpkg install boost-test:%VCPKG_ARCH%
+  - cmd: vcpkg install boost-timer:%VCPKG_ARCH%
   - cmd: vcpkg install boost-ublas:%VCPKG_ARCH%
   - cmd: vcpkg install eigen3:%VCPKG_ARCH%
   - cmd: vcpkg install fcl:%VCPKG_ARCH%
