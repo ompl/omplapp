@@ -301,15 +301,16 @@ namespace ompl
 
                         assert(t.size() % 3 == 0);
 
-                        for (auto & j : t)
+                        for (auto & p : t)
                         {
-                            pts.emplace_back(j[0], j[1], j[2]);
+                            pts.emplace_back(p[0], p[1], p[2]);
                         }
-
-                        for (unsigned int j = 0; j < t.size(); j+=3)
-                            triangles.emplace_back(j, j+1, j+2);
                     }
                 }
+
+                for (unsigned int i = 0; i < pts.size(); i+=3)
+                    triangles.emplace_back(i, i+1, i+2);
+                
                 return std::make_pair(pts, triangles);
             }
 
