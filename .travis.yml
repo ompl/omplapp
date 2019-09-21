@@ -35,8 +35,6 @@ matrix:
         update: true
 
 script:
-  # get OMPL subrepository
-  - git clone --depth=1 --branch=master git://github.com/ompl/ompl.git
   - mkdir -p build
   - cd build
   - cmake -G Ninja -DOMPL_REGISTRATION=OFF ..
