@@ -2,24 +2,20 @@ Steps to release a new version:
 * update release notes (releaseNotes.md for both ompl and omplapp; put date, features)
 * update version in CMakeLists.txt, ompl/CMakeLists.txt
     - also increment ABI version if needed (if previously existing API has changed)
-* "hg pull -u" in omplapp and ompl
-* "hg purge --all" in omplapp and ompl
+* "git pull" in omplapp and ompl
+* "git clean -fd" in omplapp and ompl
 * build omplapp with bindings
 * build ompl without bindings
 * make test for both
 * run ompl_app.py and solve a test problem
 * make install
 * make package_source
-* upload to bitbucket.org
 * make website for both omplapp and ompl to update web site repo (assumed to exist in ${HOME}/src/ompl.github.io)
 * "jekyll build" in the ompl blog repo, copy content in _site/* to ${HOME}/src/ompl.github.io
 * commit and push ${HOME}/src/ompl.github.io
 * tag omplapp, ompl, ompl.github.io with version number x.y.z (including patch level this time)
 * update MacPorts port files (ask someone with a mac or file a ticket on trac.macports.org) for ompl, fcl, libccd, flann, ode, castxml, py-pygccxml, py-pyplusplus and other possible dependencies.
 * Update homebrew OMPL recipe (https://github.com/Homebrew/homebrew-core/blob/master/Formula/ompl.rb) and create a pull request.
-* push changes to ompl and omplapp repos on bitbucket:
-    - in the folders that contains the private clone of ompl, execute this command:
-      hg push -b default ssh://hg@bitbucket.org/ompl/ompl
-    - do the same for the omplapp repo
+* push changes to ompl and omplapp repos on github:
 * update version on https://en.wikipedia.org/wiki/OMPL
 * announce on ompl-users@lists.sourceforge.net, robot-motion@mit.edu

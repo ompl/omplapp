@@ -30,18 +30,8 @@
 
 # Repositories {#download_repos}
 
-- The [latest source](https://bitbucket.org/ompl/omplapp/src) is available via Mercurial or Git. The OMPL.app repository contains a *private* OMPL repository as a subrepository. Since you do not have access to this private clone, you need to use these slightly convoluted steps to get a clone of the OMPL.app repository:
+- The [latest source](https://github.com/ompl/omplapp) is available on GitHub. The OMPL.app repository contains the OMPL repository as a submodule. You can clone both at the same time like so:
 
-      hg clone https://bitbucket.org/ompl/omplapp
-      cd omplapp
-      rm -r ompl
-      hg clone https://bitbucket.org/ompl/ompl
-      hg up
-
-  or
-
-      git clone https://github.com/ompl/omplapp.git
-      cd omplapp
-      git clone https://github.com/ompl/ompl.git
+      git clone --recurse-submodules https://github.com/ompl/omplapp.git
 
 - [Installation instructions](installation.html) are the same as for a release.
