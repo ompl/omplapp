@@ -1,11 +1,6 @@
 # Graphical User Interface to OMPL {#gui}
 
-__Contents:__
-
-- \ref gui_define
-- \ref gui_planners
-- \ref gui_bounding_box
-- \ref gui_paths
+[TOC]
 
 ## Defining a motion planning problem {#gui_define}
 

@@ -1,10 +1,6 @@
 # OMPL Web App {#webapp}
 
-__Contents__:
-
-- \ref webapp_usage
-- \ref webapp_deploy
-- \ref webapp_licenses
+[TOC]
 
 ## Usage {#webapp_usage}
 
@@ -37,7 +33,16 @@ On macOS, the following steps get the Web App can be installed and launched usin
     sudo port load redis
     ompl_webapp
 
-# JavaScript Libraries Used by the OMPL Web App {#webapp_licenses}
+## Docker
+
+The OMPL web app is also available as a set of Docker containers. The easiest way to download and run everything you need is as follows:
+
+     wget https://raw.githubusercontent.com/ompl/ompl/master/scripts/docker/omplwebapp.yml
+     docker-compose -f omplwebapp.yml up
+
+Next, open <http://127.0.0.1:5000> in your browser. This also launches [Planner Arena](plannerarena.html), which you can access at <http://127.0.0.1:8888>.
+
+## JavaScript Libraries Used by the OMPL Web App {#webapp_licenses}
 
 | Library                 | License                                                         | Distributable   |
 | ----------------------- | :-------------------------------------------------------------- | --------------- |

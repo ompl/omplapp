@@ -4,7 +4,7 @@ The Open Motion Planning Library (OMPL) is released as Open Source under the ter
 
 ---
 
-# BSD License {#bsdlicense}
+## BSD License {#bsdlicense}
 
 **Copyright &copy; 2010–2018, Rice University. All rights reserved.**
 
@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 
 ---
 
-# Rice University Software Distribution License {#ricelicense}
+## Rice University Software Distribution License {#ricelicense}
 
 **Copyright &copy; 2010–2018, Rice University. All rights reserved.**
 

@@ -1,7 +1,6 @@
 \addtogroup demos
 @{
-# OMPL.app Demos
-
+## OMPL.app Demos
 
 - [Rigid body planning in 2D using meshes and collision checking.](demos_2SE2RigidBodyPlanning_2SE2RigidBodyPlanning_8cpp_source.html)
 - [Rigid body planning in 3D using meshes and collision checking.](demos_2SE3RigidBodyPlanning_2SE3RigidBodyPlanning_8cpp_source.html)

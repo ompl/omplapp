@@ -1,18 +1,22 @@
 # Download {#download}
 
-# Releases
+## Releases
 
 - __OMPL.app__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):
 
-  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@PROJECT_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
-  <a href="https://bitbucket.org/ompl/ompl/downloads/omplapp-@PROJECT_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
+  <a href="https://github.com/ompl/omplapp/releases/download/@PROJECT_VERSION@/omplapp-@PROJECT_VERSION@.tar.gz
+" class="btn btn-primary btn-sm">TGZ</a>
+  <a href="https://github.com/ompl/omplapp/releases/download/@PROJECT_VERSION@/omplapp-@PROJECT_VERSION@.zip
+" class="btn btn-primary btn-sm">ZIP</a>
 
 - __OMPL__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
 
   Just the [core OMPL library](/core/download.html) (no GUI, no bindings to [FCL](http://gamma.cs.unc.edu/FCL), [PQP](http://gamma.cs.unc.edu/SSV), and [Assimp](http://assimp.sf.net)):
 
-  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@PROJECT_VERSION@-Source.tar.gz" class="btn btn-primary btn-sm">TGZ</a>
-  <a href="https://bitbucket.org/ompl/ompl/downloads/ompl-@PROJECT_VERSION@-Source.zip" class="btn btn-primary btn-sm">ZIP</a><br><br>
+  <a href="https://github.com/ompl/ompl/releases/download/@PROJECT_VERSION@/ompl-@PROJECT_VERSION@.tar.gz
+" class="btn btn-primary btn-sm">TGZ</a>
+  <a href="https://github.com/ompl/ompl/releases/download/@PROJECT_VERSION@/ompl-@PROJECT_VERSION@.zip
+" class="btn btn-primary btn-sm">ZIP</a>
 
   OMPL is also available through through several package managers:
   - [Debian](https://packages.debian.org/sid/libompl-dev),
@@ -28,7 +32,7 @@
 - [Installation instructions.](installation.html)
 - [Older releases](https://bitbucket.org/ompl/ompl/downloads). See the [release notes](core/releaseNotes.html) for a brief a description of changes for each release.
 
-# Repositories {#download_repos}
+## Repositories {#download_repos}
 
 - The [latest source](https://github.com/ompl/omplapp) is available on GitHub. The OMPL.app repository contains the OMPL repository as a submodule. You can clone both at the same time like so:
 
