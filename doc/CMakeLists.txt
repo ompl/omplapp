@@ -47,8 +47,8 @@ if(DOXYGEN_FOUND AND NOT CMAKE_VERSION VERSION_LESS 3.9)
     endif()
 
     add_custom_target(website
-        COMMAND rsync omplapp_doc/ "$ENV{HOME}/src/ompl.github.io"
-        COMMAND rsync ompl_doc/ "$ENV{HOME}/src/ompl.github.io/core"
+        COMMAND rsync -a omplapp_doc/ "$ENV{HOME}/src/ompl.github.io"
+        COMMAND rsync -a ompl_doc/ "$ENV{HOME}/src/ompl.github.io/core"
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
     add_dependencies(website omplapp_doc ompl_doc)
 endif()

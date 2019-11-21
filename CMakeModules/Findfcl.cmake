@@ -1,7 +1,7 @@
 include(FindPackageHandleStandardArgs)
 
 # vcpkg and MacPorts install cmake config files for fcl
-find_package(fcl CONFIG)
+find_package(fcl QUIET CONFIG)
 if(TARGET fcl)
     get_target_property(FCL_INCLUDE_DIRS fcl INTERFACE_INCLUDE_DIRECTORIES)
     set(FCL_LIBRARIES "fcl")

@@ -20,7 +20,7 @@ if (OMPL_BUILD_DEMOS)
     add_omplapp_demo(demo_AnytimePathShortening AnytimePathShorteningDemo.cpp)
 
     # create executable for planning with OPENDE
-    if (ODE_FOUND AND DRAWSTUFF_FOUND)
+    if (ODE_FOUND AND DRAWSTUFF_FOUND AND GLUT_INCLUDE_DIR AND GLUT_LIBRARIES)
         if(APPLE)
             set_package_properties(GLUT PROPERTIES
                 URL "https://www.opengl.org/resources/libraries/glut/"

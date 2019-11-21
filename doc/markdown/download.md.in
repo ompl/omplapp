@@ -34,8 +34,12 @@
 
 ## Repositories {#download_repos}
 
-- The [latest source](https://github.com/ompl/omplapp) is available on GitHub. The OMPL.app repository contains the OMPL repository as a submodule. You can clone both at the same time like so:
+- The latest source of [OMPL.app](https://github.com/ompl/omplapp) and [OMPL](https://github.com/ompl/ompl) are available on GitHub. The OMPL.app repository contains the OMPL repository as a submodule. You can clone both at the same time like so:
 
       git clone --recurse-submodules https://github.com/ompl/omplapp.git
+
+  If you are only interested in the OMPL code, clone just the OMPL repository like so:
+
+      git clone https://github.com/ompl/ompl.git
 
 - [Installation instructions](installation.html) are the same as for a release.
