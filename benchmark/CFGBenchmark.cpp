@@ -421,7 +421,6 @@ void CFGBenchmark::runBenchmark()
     req.timeBetweenUpdates = .5;
     req.displayProgress = true;
     req.saveConsoleOutput = false;
-    req.useThreads = true;
     benchmark_->benchmark(req);
     if (!bo_.declared_options_["benchmark.output"].empty())
         benchmark_->saveResultsToFile(((bo_.path_ / bo_.declared_options_["benchmark.output"]) / bo_.outfile_).string().c_str());

@@ -155,6 +155,10 @@ enable_testing()
 # Add support in Boost::Python for std::shared_ptr
 # This is a hack that replaces boost::shared_ptr related code with std::shared_ptr.
 # Proper support for std::shared_ptr was added in Boost 1.63.
+if (NOT Boost_VERSION_STRING)
+    set(Boost_VERSION_STRING
+        "${Boost_VERSION_MAJOR}.${Boost_VERSION_MINOR}.${Boost_VERSION_PATCH}")
+endif()
 if(Boost_VERSION_STRING VERSION_LESS "1.63.0")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
 endif()
@@ -218,7 +222,7 @@ if (OMPL_EXTENSION_ODE)
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
-if(PYTHON_FOUND AND NOT Boost_VERSION VERSION_LESS "1.63.0")
+if(PYTHON_FOUND AND NOT Boost_VERSION_STRING VERSION_LESS "1.63.0")
     find_python_module(numpy)
     if (PY_NUMPY)
         find_boost_numpy()

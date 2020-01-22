@@ -67,7 +67,7 @@ static const char *PlannerTypeStrings[10] = {"RRT", "RRT*", "EST",    "SBL",    
 void readArgsFromFile(const char *filename, ProblemType &probType, OptimizationType &optType, double &runtime,
                       std::vector<PlannerType> &planners)
 {
-    std::cout << __FUNCTION__ << "  " << filename << std::endl;
+    std::cout << __func__ << "  " << filename << std::endl;
 
     std::ifstream fin(filename);
     if (!fin)
