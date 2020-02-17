@@ -40,16 +40,13 @@ if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
     add_definitions(-DBOOST_PROGRAM_OPTIONS_DYN_LINK)
 endif(MSVC)
-if(IS_ICPC)
-    set(Boost_USE_STATIC_LIBS ON CACHE STRING "Use statically linked Boost libraries")
-else(IS_ICPC)
-    # Ensure dynamic linking with boost unit_test_framework
-    add_definitions(-DBOOST_TEST_DYN_LINK)
-endif(IS_ICPC)
+# Ensure dynamic linking with boost unit_test_framework
+add_definitions(-DBOOST_TEST_DYN_LINK)
 
 set_package_properties(Boost PROPERTIES
     URL "http://boost.org"
     PURPOSE "Used throughout OMPL for data serialization, graphs, etc.")
+set(Boost_USE_MULTITHREADED TRUE)
 find_package(Boost 1.58 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
 
 # on macOS we need to check whether to use libc++ or libstdc++ with clang++
@@ -137,9 +134,14 @@ set_package_properties(assimp PROPERTIES
     URL "http://assimp.org"
     PURPOSE "Used in ompl_app for reading meshes representing robots and environments.")
 find_package(assimp REQUIRED)
+set_package_properties(ccd PROPERTIES
+    URL "https://github.com/danfis/libccd"
+    PURPOSE "Collision detection library used by fcl.")
+find_package(ccd REQUIRED)
 set_package_properties(fcl PROPERTIES
     URL "https://github.com/flexible-collision-library/fcl"
     PURPOSE "The default collision checking library.")
+find_package(octomap QUIET)
 find_package(fcl REQUIRED)
 set_package_properties(Threads PROPERTIES
     URL "https://en.wikipedia.org/wiki/POSIX_Threads"
@@ -156,8 +158,13 @@ enable_testing()
 # This is a hack that replaces boost::shared_ptr related code with std::shared_ptr.
 # Proper support for std::shared_ptr was added in Boost 1.63.
 if (NOT Boost_VERSION_STRING)
-    set(Boost_VERSION_STRING
-        "${Boost_VERSION_MAJOR}.${Boost_VERSION_MINOR}.${Boost_VERSION_PATCH}")
+    if (Boost_VERSION_MAJOR)
+        set(Boost_VERSION_STRING
+            "${Boost_VERSION_MAJOR}.${Boost_VERSION_MINOR}.${Boost_VERSION_PATCH}")
+    else()
+        set(Boost_VERSION_STRING
+            "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_PATCH_VERSION}")
+    endif()
 endif()
 if(Boost_VERSION_STRING VERSION_LESS "1.63.0")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
@@ -191,7 +198,7 @@ set(OMPLAPP_LIBRARIES
     ${OPENGL_LIBRARIES}
     ${ASSIMP_LIBRARIES}
     ${FCL_LIBRARIES})
-link_directories(${ASSIMP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS})
+link_directories(${ASSIMP_LIBRARY_DIRS} ${CCD_LIBRARY_DIRS} ${OCTOMAP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS})
 
 if (OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")

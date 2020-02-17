@@ -48,7 +48,7 @@ Next, open <http://127.0.0.1:5000> in your browser. This also launches [Planner 
 | ----------------------- | :-------------------------------------------------------------- | --------------- |
 | [jQuery](https://jquery.com/) | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) | Yes             |
 | [blockUI](http://malsup.com/jquery/block/) (jQuery plugin) | [MIT and GPL Dual License](https://github.com/malsup/blockui/) | Yes (under MIT) |
-| [Bootstrap](http://getbootstrap.com) | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE) | Yes             |
-| [THREE.js](threejs.org) | [MIT](https://github.com/mrdoob/three.js/blob/master/LICENSE)   | Yes             |
+| [Bootstrap](https://getbootstrap.com) | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE) | Yes             |
+| [THREE.js](https://threejs.org) | [MIT](https://github.com/mrdoob/three.js/blob/master/LICENSE)   | Yes             |
 | TrackballControls       | MIT (part of THREE.js)                                          | Yes             |
 | ColladaLoader           | MIT (part of THREE.js)                                          | Yes             |

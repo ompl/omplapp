@@ -12,20 +12,20 @@ detailed installation instructions.
 
 OMPL.app has the following required dependencies:
 
-* [Boost](http://www.boost.org) (version 1.54 or higher)
-* [CMake](http://www.cmake.org) (version 2.8.7 or higher)
+* [Boost](https://www.boost.org) (version 1.54 or higher)
+* [CMake](https://www.cmake.org) (version 2.8.7 or higher)
 * [Eigen](http://eigen.tuxfamily.org) (version 3.3 or higher)
 * [Assimp](http://assimp.org) (version 3.0.1270 or higher)
 * [FCL](https://github.com/flexible-collision-library/fcl) (version 0.3.1 or higher)
 
 The following dependencies are optional:
 
-* [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) (for GUI)
-* [PyOpenGL](http://pyopengl.sourceforge.net/) (for GUI)
+* [PyQt](https://www.riverbankcomputing.co.uk/software/pyqt/download5) (for GUI)
+* [PyOpenGL](https://pyopengl.sourceforge.net/) (for GUI)
 * [Py++](https://bitbucket.org/ompl/ompl/src/tip/doc/markdown/installPyPlusPlus.md) (needed to generate Python bindings)
 * [ODE](http://ode.org) (needed to compile support for planning using the Open Dynamics Engine)
 * [Doxygen](http://www.doxygen.org) (needed to create a local copy of the documentation at
-  http://ompl.kavrakilab.org)
+  https://ompl.kavrakilab.org)
 
 Once dependencies are installed, you can build OMPL.app on Linux, macOS,
 and MS Windows. Go to the top-level directory of OMPL.app and type the
