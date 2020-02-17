@@ -49,13 +49,13 @@ bool BenchmarkOptions::readOptions(const char *filename)
     static const std::string KNOWN_PLANNERS[] = {
         "rrtconnect", "lazyrrt", "lazyprm",
         "kpiece", "bkpiece", "lbkpiece",
-        "est", "biest", "projest", "sbl", "prm", "rrt",
+        "est", "biest", "projest", "sbl", "prm", "rrt", "bitstar", "rrtxstatic",
         "stride", "pdst",
         "rrtstar", "prmstar", "lazyprmstar",
-        "spars", "spars2", "lbtrrt", "trrt",
+        "spars", "spars2", "sst", "lbtrrt", "lazylbtrrt", "trrt",
         "fmt", "bfmt",
         "syclopest", "sycloprrt",
-        "aps", "cforest"
+        "anytimepathshortening", "cforest"
     };
 
     std::ifstream cfg(filename);

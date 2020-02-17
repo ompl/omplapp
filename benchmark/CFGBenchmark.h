@@ -36,6 +36,7 @@
 
 #include <ompl/control/planners/syclop/Decomposition.h>
 #include <ompl/tools/benchmark/Benchmark.h>
+#include <omplapp/geometry/RigidBodyGeometry.h>
 #include "BenchmarkOptions.h"
 
 class CFGBenchmark
@@ -60,8 +61,7 @@ public:
     void setup(void);
 
 protected:
-    std::string getRobotMesh();
-    std::string getEnvironmentMesh();
+    void setMeshes(ompl::app::RigidBodyGeometry& app);
 
     virtual void configure(void) = 0;
 

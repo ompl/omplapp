@@ -42,7 +42,10 @@
 #include <ompl/geometric/planners/rrt/LazyRRT.h>
 #include <ompl/geometric/planners/rrt/RRTstar.h>
 #include <ompl/geometric/planners/rrt/LBTRRT.h>
+#include <ompl/geometric/planners/rrt/LazyLBTRRT.h>
 #include <ompl/geometric/planners/rrt/TRRT.h>
+#include <ompl/geometric/planners/rrt/RRTXstatic.h>
+#include <ompl/geometric/planners/bitstar/BITstar.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/BKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
@@ -56,6 +59,7 @@
 #include <ompl/geometric/planners/prm/PRMstar.h>
 #include <ompl/geometric/planners/prm/SPARS.h>
 #include <ompl/geometric/planners/prm/SPARStwo.h>
+#include <ompl/geometric/planners/sst/SST.h>
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <ompl/geometric/planners/pdst/PDST.h>
 #include <ompl/geometric/planners/fmt/FMT.h>
@@ -69,6 +73,7 @@
 #include <ompl/control/planners/pdst/PDST.h>
 #include <ompl/control/planners/syclop/SyclopRRT.h>
 #include <ompl/control/planners/syclop/SyclopEST.h>
+#include <ompl/control/planners/sst/SST.h>
 
 #include <ompl/base/objectives/MaximizeMinClearanceObjective.h>
 #include <ompl/base/objectives/MechanicalWorkOptimizationObjective.h>
@@ -82,22 +87,11 @@
 
 #include <fstream>
 
-namespace {
-    boost::filesystem::path getAbsolutePath(const boost::filesystem::path& path, const boost::filesystem::path& prefix)
-    {
-        return (path.is_absolute()) ? path : (prefix / path);
-    }
-}
-
-std::string CFGBenchmark::getRobotMesh()
+void CFGBenchmark::setMeshes(ompl::app::RigidBodyGeometry& app)
 {
-    return getAbsolutePath(
-        boost::filesystem::path(bo_.declared_options_["problem.robot"]), bo_.path_).string();
-}
-std::string CFGBenchmark::getEnvironmentMesh()
-{
-    return getAbsolutePath(
-        boost::filesystem::path(bo_.declared_options_["problem.world"]), bo_.path_).string();
+    app.setMeshPath({bo_.path_, OMPLAPP_RESOURCE_DIR});
+    app.setRobotMesh(bo_.declared_options_["problem.robot"]);
+    app.setEnvironmentMesh(bo_.declared_options_["problem.world"]);
 }
 
 ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInformationPtr &si, const std::string &name, const BenchmarkOptions::AllOptions &opt)
@@ -115,6 +109,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::control::KPIECE1>(siC);
         else if (name == "pdst")
             p = std::make_shared<ompl::control::PDST>(siC);
+        else if (name == "sst")
+            p = std::make_shared<ompl::control::SST>(siC);
         else if (name == "sycloprrt")
             p = std::make_shared<ompl::control::SyclopRRT>(siC, allocDecomposition());
         else if (name == "syclopest")
@@ -134,8 +130,14 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::RRTstar>(si);
         else if (name == "lbtrrt")
             p = std::make_shared<ompl::geometric::LBTRRT>(si);
+        else if (name == "lazylbtrrt")
+            p = std::make_shared<ompl::geometric::LazyLBTRRT>(si);
         else if (name == "trrt")
             p = std::make_shared<ompl::geometric::TRRT>(si);
+        else if (name == "rrtxstatic")
+            p = std::make_shared<ompl::geometric::RRTXstatic>(si);
+        else if (name == "bitstar")
+            p = std::make_shared<ompl::geometric::BITstar>(si);
         else if (name == "est")
             p = std::make_shared<ompl::geometric::EST>(si);
         else if (name == "biest")
@@ -162,6 +164,8 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::SPARS>(si);
         else if (name == "spars2")
             p = std::make_shared<ompl::geometric::SPARStwo>(si);
+        else if (name == "sst")
+            p = std::make_shared<ompl::geometric::SST>(si);
         else if (name == "stride")
             p = std::make_shared<ompl::geometric::STRIDE>(si);
         else if (name == "pdst")
@@ -170,7 +174,7 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::FMT>(si);
 		else if (name == "bfmt")
             p = std::make_shared<ompl::geometric::BFMT>(si);
-        else if (name == "aps")
+        else if (name == "anytimepathshortening")
             p = std::make_shared<ompl::geometric::AnytimePathShortening>(si);
         else if (name == "cforest")
             p = std::make_shared<ompl::geometric::CForest>(si);

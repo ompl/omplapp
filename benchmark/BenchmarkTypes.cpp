@@ -159,8 +159,7 @@ void SE3BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
 void SE2Benchmark::configure()
 {
     setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>();
-    setup_se2_->setRobotMesh(getRobotMesh());
-    setup_se2_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_se2_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_se2_->getStateSpace());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_se2_->getStateSpace());
@@ -181,8 +180,7 @@ void SE2Benchmark::configure()
 void SE3Benchmark::configure()
 {
     setup_se3_ = std::make_shared<ompl::app::SE3RigidBodyPlanning>();
-    setup_se3_->setRobotMesh(getRobotMesh());
-    setup_se3_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_se3_);
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_se3_->getStateSpace());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_se3_->getStateSpace());
     if (!getStartState(start))
@@ -202,8 +200,7 @@ void SE3Benchmark::configure()
 void KinematicCarBenchmark::configure()
 {
     setup_kinematicCar_ = std::make_shared<ompl::app::KinematicCarPlanning>();
-    setup_kinematicCar_->setRobotMesh(getRobotMesh());
-    setup_kinematicCar_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_kinematicCar_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_kinematicCar_->getStateSpace());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_kinematicCar_->getStateSpace());
@@ -224,8 +221,7 @@ void KinematicCarBenchmark::configure()
 void DynamicCarBenchmark::configure()
 {
     setup_dynamicCar_ = std::make_shared<ompl::app::DynamicCarPlanning>();
-    setup_dynamicCar_->setRobotMesh(getRobotMesh());
-    setup_dynamicCar_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_dynamicCar_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_dynamicCar_->getGeometricComponentStateSpace());
     ompl::base::ScopedState<ompl::base::SE2StateSpace> goal(setup_dynamicCar_->getGeometricComponentStateSpace());
@@ -248,8 +244,7 @@ void DynamicCarBenchmark::configure()
 void BlimpBenchmark::configure()
 {
     setup_blimp_ = std::make_shared<ompl::app::BlimpPlanning>();
-    setup_blimp_->setRobotMesh(getRobotMesh());
-    setup_blimp_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_blimp_);
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_blimp_->getGeometricComponentStateSpace());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_blimp_->getGeometricComponentStateSpace());
     if (!getStartState(start))
@@ -270,8 +265,7 @@ void BlimpBenchmark::configure()
 void QuadrotorBenchmark::configure()
 {
     setup_quadrotor_ = std::make_shared<ompl::app::QuadrotorPlanning>();
-    setup_quadrotor_->setRobotMesh(getRobotMesh());
-    setup_quadrotor_->setEnvironmentMesh(getEnvironmentMesh());
+    setMeshes(*setup_quadrotor_);
     ompl::base::ScopedState<ompl::base::SE3StateSpace> start(setup_quadrotor_->getGeometricComponentStateSpace());
     ompl::base::ScopedState<ompl::base::SE3StateSpace> goal(setup_quadrotor_->getGeometricComponentStateSpace());
     if (!getStartState(start))
