@@ -20,6 +20,7 @@
 #include <memory>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
+#include <boost/filesystem.hpp>
 #include <string>
 #include <vector>
 
@@ -145,7 +146,18 @@ namespace ompl
                 3D. */
             base::RealVectorBounds inferEnvironmentBounds() const;
 
+            /** \brief set path to search for mesh files */
+            void setMeshPath(const std::vector<boost::filesystem::path>& path)
+            {
+                for (const auto &p : path)
+                    if (!boost::filesystem::is_directory(p))
+                        OMPL_WARN("Mesh path '%s' is not an existing directory", p.c_str());
+                meshPath_ = path;
+            }
+
         protected:
+            /** \brief return absolute path to mesh file if it exists and an empty path otherwise */
+            boost::filesystem::path findMeshFile(const std::string& fname);
 
             void computeGeometrySpecification();
 
@@ -171,6 +183,10 @@ namespace ompl
 
             /** \brief Value containing the type of collision checking to use */
             CollisionChecker              ctype_;
+
+            /** \brief Paths to search for mesh files if mesh file names do not correspond to
+             * absolute paths */
+            std::vector<boost::filesystem::path> meshPath_{OMPLAPP_RESOURCE_DIR};
 
         };
 

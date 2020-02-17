@@ -16,6 +16,22 @@
 #endif
 #include "omplapp/geometry/detail/FCLStateValidityChecker.h"
 
+boost::filesystem::path ompl::app::RigidBodyGeometry::findMeshFile(const std::string& fname)
+{
+    boost::filesystem::path path(fname);
+    if (boost::filesystem::exists(path))
+        return boost::filesystem::absolute(path);
+    if (path.is_absolute())
+        return {};
+    for (const auto &dir : meshPath_)
+    {
+        boost::filesystem::path candidate(dir / path);
+        if (boost::filesystem::exists(candidate))
+            return boost::filesystem::absolute(candidate);
+    }
+    return {};
+}
+
 bool ompl::app::RigidBodyGeometry::setRobotMesh(const std::string &robot)
 {
     importerRobot_.clear();
@@ -30,7 +46,10 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
     importerRobot_.resize(p + 1);
     importerRobot_[p] = std::make_shared<Assimp::Importer>();
 
-    const aiScene* robotScene = importerRobot_[p]->ReadFile(robot.c_str(),
+    const boost::filesystem::path path = findMeshFile(robot);
+    if (path.empty())
+        OMPL_ERROR("File '%s' not found in mesh path.", robot.c_str());
+    const aiScene* robotScene = importerRobot_[p]->ReadFile(path.c_str(),
                                                             aiProcess_GenNormals             |
                                                             aiProcess_Triangulate            |
                                                             aiProcess_JoinIdenticalVertices  |
@@ -72,7 +91,10 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     importerEnv_.resize(p + 1);
     importerEnv_[p] = std::make_shared<Assimp::Importer>();
 
-    const aiScene* envScene = importerEnv_[p]->ReadFile(env.c_str(),
+    const boost::filesystem::path path = findMeshFile(env);
+    if (path.empty())
+        OMPL_ERROR("File '%s' not found in mesh path.", env.c_str());
+    const aiScene* envScene = importerEnv_[p]->ReadFile(path.c_str(),
                                                         aiProcess_GenNormals             |
                                                         aiProcess_Triangulate            |
                                                         aiProcess_JoinIdenticalVertices  |
@@ -98,7 +120,7 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
         computeGeometrySpecification();
         return true;
     }
-    
+
         return false;
 }
 
