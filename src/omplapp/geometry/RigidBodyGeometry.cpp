@@ -49,7 +49,7 @@ bool ompl::app::RigidBodyGeometry::addRobotMesh(const std::string &robot)
     const boost::filesystem::path path = findMeshFile(robot);
     if (path.empty())
         OMPL_ERROR("File '%s' not found in mesh path.", robot.c_str());
-    const aiScene* robotScene = importerRobot_[p]->ReadFile(path.c_str(),
+    const aiScene* robotScene = importerRobot_[p]->ReadFile(path.string().c_str(),
                                                             aiProcess_GenNormals             |
                                                             aiProcess_Triangulate            |
                                                             aiProcess_JoinIdenticalVertices  |
@@ -94,7 +94,7 @@ bool ompl::app::RigidBodyGeometry::addEnvironmentMesh(const std::string &env)
     const boost::filesystem::path path = findMeshFile(env);
     if (path.empty())
         OMPL_ERROR("File '%s' not found in mesh path.", env.c_str());
-    const aiScene* envScene = importerEnv_[p]->ReadFile(path.c_str(),
+    const aiScene* envScene = importerEnv_[p]->ReadFile(path.string().c_str(),
                                                         aiProcess_GenNormals             |
                                                         aiProcess_Triangulate            |
                                                         aiProcess_JoinIdenticalVertices  |
