@@ -832,7 +832,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         if value == 0:
             self.timer.stop()
         else:
-            self.timer.start(100.0/float(value))
+            self.timer.start(int(100.0/float(value)))
             self.updatePathPose()
     def updatePathPose(self):
         if self.solutionPath is not None:
