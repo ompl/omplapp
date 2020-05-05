@@ -46,7 +46,8 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 set_package_properties(Boost PROPERTIES
     URL "http://boost.org"
     PURPOSE "Used throughout OMPL for data serialization, graphs, etc.")
-set(Boost_USE_MULTITHREADED TRUE)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_NO_BOOST_CMAKE ON)
 find_package(Boost 1.58 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
 
 # on macOS we need to check whether to use libc++ or libstdc++ with clang++
@@ -209,13 +210,13 @@ if (OMPL_EXTENSION_TRIANGLE)
   include_directories(${TRIANGLE_INCLUDE_DIR})
 endif()
 
-if (FLANN_FOUND)
+if (flann_FOUND)
     set(OMPL_HAVE_FLANN 1)
     include_directories("${FLANN_INCLUDE_DIRS}")
     link_directories(${FLANN_LIBRARY_DIRS})
 endif()
 
-if (SPOT_FOUND)
+if (spot_FOUND)
     set(OMPL_HAVE_SPOT 1)
     include_directories("${SPOT_INCLUDE_DIRS}")
     link_directories(${SPOT_LIBRARY_DIRS})
