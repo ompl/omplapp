@@ -548,7 +548,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.omplSetup.getSpaceInformation().setStateValidityCheckingResolution(
                 self.mainWidget.plannerWidget.geometricPlanning.resolution.value())
         else:
-            self.omplSetup.setStartAndGoalStates(startPose, goalPose, .1)
+            self.omplSetup.setStartAndGoalStates(startPose, goalPose,
+                self.mainWidget.plannerWidget.controlPlanning.threshold.value())
             self.omplSetup.getSpaceInformation().setPropagationStepSize(
                 self.mainWidget.plannerWidget.controlPlanning.propagation.value())
             self.omplSetup.getSpaceInformation().setMinMaxControlDuration(
@@ -561,8 +562,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def solve(self):
         self.configureApp()
-        OMPL_DEBUG(str(self.omplSetup))
-
         solved = self.omplSetup.solve(self.timeLimit)
 
         # update the planner data to render, if needed
@@ -749,7 +748,7 @@ class GLViewer(QtOpenGL.QGLWidget):
         self.solutionPath = None
         self.pathIndex = 0
         self.timer = QtCore.QTimer()
-        self.timer.start(100.)
+        self.timer.start(100)
         self.timer.timeout.connect(self.updatePathPose)
         self.animate = True
         self.drawPlannerData = False
@@ -1376,6 +1375,14 @@ class ControlPlannerWidget(PlannerHelperWidget):
         self.maxControlDuration.setSingleStep(1)
         self.maxControlDuration.setValue(20)
 
+        thresholdLabel = QtWidgets.QLabel('Goal distance threshold')
+        thresholdLabel.setAlignment(QtCore.Qt.AlignRight)
+        self.threshold = QtWidgets.QDoubleSpinBox()
+        self.threshold.setRange(0.0, 100.00)
+        self.threshold.setSingleStep(.01)
+        self.threshold.setValue(1.)
+        self.threshold.setDecimals(2)
+
         layout = QtWidgets.QGridLayout()
         layout.addWidget(QtWidgets.QLabel('Planner'), 0, 0, QtCore.Qt.AlignRight)
         layout.addWidget(self.plannerSelect, 0, 1, 1, 2)
@@ -1386,7 +1393,9 @@ class ControlPlannerWidget(PlannerHelperWidget):
         layout.addWidget(durationLabel, 3, 0)
         layout.addWidget(self.minControlDuration, 3, 1)
         layout.addWidget(self.maxControlDuration, 3, 2)
-        layout.addWidget(self.stackedWidget, 4, 0, 1, 3)
+        layout.addWidget(thresholdLabel, 4, 0, QtCore.Qt.AlignRight)
+        layout.addWidget(self.threshold, 4, 1, 1, 2)
+        layout.addWidget(self.stackedWidget, 5, 0, 1, 3)
         self.setLayout(layout)
 
 class PlannerWidget(QtWidgets.QStackedWidget):

@@ -14,7 +14,6 @@
 
 import sys
 from os.path import abspath, dirname, join
-from math import pi
 
 ompl_app_root = dirname(dirname(dirname(abspath(__file__))))
 
@@ -23,45 +22,59 @@ try:
     from ompl import control as oc
     from ompl import app as oa
 except ImportError:
-    sys.path.insert(0, join(ompl_app_root, 'ompl/py-bindings'))
+    sys.path.insert(0, join(ompl_app_root, "ompl/py-bindings"))
     from ompl import base as ob
     from ompl import control as oc
     from ompl import app as oa
 
-setup = oa.KinematicCarPlanning()
-SE2 = setup.getStateSpace()
 
-bounds = ob.RealVectorBounds(2)
-bounds.setLow(-10)
-bounds.setHigh(10)
-SE2.setBounds(bounds)
+def kinematicCarDemo():
+    setup = oa.KinematicCarPlanning()
+    # comment out next two lines if you want to ignore obstacles
+    setup.setRobotMesh("2D/car2_planar_robot.dae")
+    setup.setEnvironmentMesh("2D/Maze_planar_env.dae")
+    SE2 = setup.getStateSpace()
 
-# define start state
-start = ob.State(SE2)
-start().setX(0)
-start().setY(0)
-start().setYaw(0)
+    bounds = ob.RealVectorBounds(2)
+    bounds.setLow(-55)
+    bounds.setHigh(55)
+    SE2.setBounds(bounds)
 
-# define goal state
-goal = ob.State(SE2)
-goal().setX(2)
-goal().setY(2)
-goal().setYaw(pi)
+    # define start state
+    start = ob.State(SE2)
+    start().setX(0.01)
+    start().setY(-0.15)
+    start().setYaw(0)
 
-# set the start & goal states
-setup.setStartAndGoalStates(start, goal, .1)
+    # define goal state
+    goal = ob.State(SE2)
+    goal().setX(45.01)
+    goal().setY(-0.15)
+    goal().setYaw(0.0)
 
-# set the planner
-planner = oc.RRT(setup.getSpaceInformation())
-setup.setPlanner(planner)
+    # set the start & goal states
+    setup.setStartAndGoalStates(start, goal, 1.0)
 
-# try to solve the problem
-if setup.solve(20):
-    # print the (approximate) solution path: print states along the path
-    # and controls required to get from one state to the next
-    path = setup.getSolutionPath()
-    #path.interpolate(); # uncomment if you want to plot the path
-    print(path.printAsMatrix())
-    if not setup.haveExactSolutionPath():
-        print("Solution is approximate. Distance to actual goal is %g" %
-              setup.getProblemDefinition().getSolutionDifference())
+    # set the planner
+    planner = oc.RRT(setup.getSpaceInformation())
+    setup.setPlanner(planner)
+
+    # try to solve the problem
+    print("\n\n***** Planning for a %s *****\n" % setup.getName())
+    print(setup)
+    if setup.solve(10):
+        # print the (approximate) solution path: print states along the path
+        # and controls required to get from one state to the next
+        path = setup.getSolutionPath()
+        path.interpolate()
+        # path.interpolate(); # uncomment if you want to plot the path
+        print(path.printAsMatrix())
+        if not setup.haveExactSolutionPath():
+            print(
+                "Solution is approximate. Distance to actual goal is %g"
+                % setup.getProblemDefinition().getSolutionDifference()
+            )
+
+
+if __name__ == "__main__":
+    kinematicCarDemo()

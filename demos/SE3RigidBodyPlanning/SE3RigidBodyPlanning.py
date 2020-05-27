@@ -16,7 +16,6 @@ import sys
 from os.path import abspath, dirname, join
 
 ompl_app_root = dirname(dirname(dirname(abspath(__file__))))
-ompl_resources_dir = join(ompl_app_root, 'resources/3D')
 
 try:
     from ompl import base as ob
@@ -30,8 +29,8 @@ except ImportError:
 setup = oa.SE3RigidBodyPlanning()
 
 # load the robot and the environment
-setup.setRobotMesh(join(ompl_resources_dir, 'cubicles_robot.dae'))
-setup.setEnvironmentMesh(join(ompl_resources_dir, 'cubicles_env.dae'))
+setup.setRobotMesh('3D/cubicles_robot.dae')
+setup.setEnvironmentMesh('3D/cubicles_env.dae')
 
 # define start state
 start = ob.State(setup.getSpaceInformation())

@@ -27,8 +27,12 @@ except ImportError:
     from ompl import control as oc
     from ompl import app as oa
 
-def dynamicCarDemo(setup):
-    print("\n\n***** Planning for a %s *****\n" % setup.getName())
+def dynamicCarDemo():
+    setup = oa.DynamicCarPlanning()
+    # comment out next two lines if you want to ignore obstacles
+    setup.setRobotMesh('2D/car1_planar_robot.dae')
+    setup.setEnvironmentMesh('2D/BugTrap_planar_env.dae')
+
     # plan for dynamic car in SE(2)
     stateSpace = setup.getStateSpace()
 
@@ -40,22 +44,25 @@ def dynamicCarDemo(setup):
 
     # define start state
     start = ob.State(stateSpace)
-    start[0] = start[1] = start[2] = start[3] = start[4] = 0.
+    start[0] = 6.
+    start[1] = 12.
+    start[2] = start[3] = start[4] = 0.
 
     # define goal state
     goal = ob.State(stateSpace)
-    goal[0] = goal[1] = 8.
-    goal[2] = 0
-    goal[3] = goal[4] = 0.
+    goal[0] = -39.
+    goal[1] = goal[2] = goal[3] = goal[4] = 0.
 
     # set the start & goal states
-    setup.setStartAndGoalStates(start, goal, .5)
+    setup.setStartAndGoalStates(start, goal, 3.)
 
     # set the planner
     planner = oc.RRT(setup.getSpaceInformation())
-    setup.setPlanner(planner)
+    #setup.setPlanner(planner)
 
     # try to solve the problem
+    print("\n\n***** Planning for a %s *****\n" % setup.getName())
+    print(setup)
     if setup.solve(40):
         # print the (approximate) solution path: print states along the path
         # and controls required to get from one state to the next
@@ -67,5 +74,4 @@ def dynamicCarDemo(setup):
                   setup.getProblemDefinition().getSolutionDifference())
 
 if __name__ == '__main__':
-    car = oa.DynamicCarPlanning()
-    dynamicCarDemo(car)
+    dynamicCarDemo()
