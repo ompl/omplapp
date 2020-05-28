@@ -45,7 +45,9 @@
 #include <ompl/geometric/planners/rrt/LazyLBTRRT.h>
 #include <ompl/geometric/planners/rrt/TRRT.h>
 #include <ompl/geometric/planners/rrt/RRTXstatic.h>
-#include <ompl/geometric/planners/bitstar/BITstar.h>
+#include <ompl/geometric/planners/informedtrees/BITstar.h>
+#include <ompl/geometric/planners/informedtrees/ABITstar.h>
+#include <ompl/geometric/planners/informedtrees/AITstar.h>
 #include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/BKPIECE1.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
@@ -138,6 +140,10 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::RRTXstatic>(si);
         else if (name == "bitstar")
             p = std::make_shared<ompl::geometric::BITstar>(si);
+        else if (name == "abitstar")
+            p = std::make_shared<ompl::geometric::ABITstar>(si);
+        else if (name == "aitstar")
+            p = std::make_shared<ompl::geometric::AITstar>(si);
         else if (name == "est")
             p = std::make_shared<ompl::geometric::EST>(si);
         else if (name == "biest")
