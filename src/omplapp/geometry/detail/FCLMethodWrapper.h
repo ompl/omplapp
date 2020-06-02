@@ -310,7 +310,7 @@ namespace ompl
 
                 for (unsigned int i = 0; i < pts.size(); i+=3)
                     triangles.emplace_back(i, i+1, i+2);
-                
+
                 return std::make_pair(pts, triangles);
             }
 
