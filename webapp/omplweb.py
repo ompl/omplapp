@@ -44,7 +44,7 @@ except ImportError:
     from ompl_benchmark_statistics import readBenchmarkLog
 
 import flask
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 from celery import Celery
 
