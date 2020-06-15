@@ -4,18 +4,18 @@
 
 - __OMPL.app__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](releaseNotes.html)):
 
-  <a href="https://github.com/ompl/omplapp/releases/download/@PROJECT_VERSION@/omplapp-@PROJECT_VERSION@.tar.gz
+  <a href="https://github.com/ompl/omplapp/releases/download/@PROJECT_VERSION@/omplapp-@PROJECT_VERSION@-Source.tar.gz
 " class="btn btn-primary btn-sm">TGZ</a>
-  <a href="https://github.com/ompl/omplapp/releases/download/@PROJECT_VERSION@/omplapp-@PROJECT_VERSION@.zip
+  <a href="https://github.com/ompl/omplapp/releases/download/@PROJECT_VERSION@/omplapp-@PROJECT_VERSION@-Source.zip
 " class="btn btn-primary btn-sm">ZIP</a>
 
 - __OMPL__ @PROJECT_VERSION@, released @OMPL_RELEASE_DATE@ ([release notes](core/releaseNotes.html)):
 
   Just the [core OMPL library](/core/download.html) (no GUI, no bindings to [FCL](http://gamma.cs.unc.edu/FCL), [PQP](http://gamma.cs.unc.edu/SSV), and [Assimp](http://assimp.sf.net)):
 
-  <a href="https://github.com/ompl/ompl/releases/download/@PROJECT_VERSION@/ompl-@PROJECT_VERSION@.tar.gz
+  <a href="https://github.com/ompl/ompl/archive/@PROJECT_VERSION@.tar.gz
 " class="btn btn-primary btn-sm">TGZ</a>
-  <a href="https://github.com/ompl/ompl/releases/download/@PROJECT_VERSION@/ompl-@PROJECT_VERSION@.zip
+  <a href="https://github.com/ompl/ompl/archive/@PROJECT_VERSION@.zip
 " class="btn btn-primary btn-sm">ZIP</a>
 
   OMPL is also available through through several package managers:
