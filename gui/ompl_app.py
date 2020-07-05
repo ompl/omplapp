@@ -564,6 +564,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configureApp()
         solved = self.omplSetup.solve(self.timeLimit)
 
+        if solved.getStatus() == ob.PlannerStatus.EXACT_SOLUTION:
+            self.mainWidget.solveWidget.solvedLabel.setText('found solution')
+            self.mainWidget.solveWidget.solvedLabel.setStyleSheet("*{color:green; font-weight:bold;}")
+        elif solved.getStatus() == ob.PlannerStatus.APPROXIMATE_SOLUTION:
+            self.mainWidget.solveWidget.solvedLabel.setText('found APPROXIMATE solution only')
+            self.mainWidget.solveWidget.solvedLabel.setStyleSheet("*{color:red; font-weight:bold;}")
+        else:
+            self.mainWidget.solveWidget.solvedLabel.setText('no solution found')
+            self.mainWidget.solveWidget.solvedLabel.setStyleSheet("*{color:red; font-weight:bold;}")
+
         # update the planner data to render, if needed
         pd = ob.PlannerData(self.omplSetup.getSpaceInformation())
         self.omplSetup.getPlannerData(pd)
@@ -601,6 +611,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clear(self, deepClean=False):
         self.omplSetup.clear()
+        self.mainWidget.solveWidget.solvedLabel.setText('')
         self.mainWidget.glViewer.clear(deepClean)
 
     def resetBounds(self):
@@ -1464,6 +1475,7 @@ class SolveWidget(QtWidgets.QWidget):
         super(SolveWidget, self).__init__()
         self.solveButton = QtWidgets.QPushButton('Solve')
         self.clearButton = QtWidgets.QPushButton('Clear')
+        self.solvedLabel = QtWidgets.QLabel()
         explorationVizLabel = QtWidgets.QLabel('Show:')
         self.explorationVizSelect = QtWidgets.QComboBox()
         self.explorationVizSelect.addItem('none')
@@ -1483,11 +1495,12 @@ class SolveWidget(QtWidgets.QWidget):
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.solveButton, 0, 0)
         layout.addWidget(self.clearButton, 0, 1)
-        layout.addWidget(explorationVizLabel, 0, 2, QtCore.Qt.AlignRight)
-        layout.addWidget(self.explorationVizSelect, 0, 3)
-        layout.addWidget(self.animateCheck, 0, 4)
-        layout.addWidget(speedlabel, 0, 5)
-        layout.addWidget(self.speedSlider, 0, 6)
+        layout.addWidget(self.solvedLabel, 0, 2, QtCore.Qt.AlignRight)
+        layout.addWidget(explorationVizLabel, 0, 3, QtCore.Qt.AlignRight)
+        layout.addWidget(self.explorationVizSelect, 0, 4)
+        layout.addWidget(self.animateCheck, 0, 5)
+        layout.addWidget(speedlabel, 0, 6)
+        layout.addWidget(self.speedSlider, 0, 7)
         self.setLayout(layout)
 
 if __name__ == '__main__':
