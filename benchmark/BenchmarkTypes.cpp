@@ -34,9 +34,11 @@
 
 /* Author: Ioan Sucan, Mark Moll */
 
-#include <ompl/control/planners/syclop/GridDecomposition.h>
 #include "BenchmarkTypes.h"
 
+#include <ompl/base/spaces/DubinsStateSpace.h>
+#include <ompl/base/spaces/ReedsSheppStateSpace.h>
+#include <ompl/control/planners/syclop/GridDecomposition.h>
 
 bool SE2BaseBenchmark::getStartState(ompl::base::ScopedState<ompl::base::SE2StateSpace>& start)
 {
@@ -158,7 +160,26 @@ void SE3BaseBenchmark::setBounds(const ompl::base::StateSpacePtr& space)
 
 void SE2Benchmark::configure()
 {
-    setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>();
+    double turning_radius = 1.;
+    std::string statespace;
+    if (bo_.declared_options_.find("problem.turningradius") != bo_.declared_options_.end())
+        turning_radius = std::stod(bo_.declared_options_["problem.turningradius"]);
+    if (bo_.declared_options_.find("problem.statespace") != bo_.declared_options_.end())
+        statespace = bo_.declared_options_["problem.statespace"];
+    if (statespace == "dubins")
+    {
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
+            std::make_shared<ompl::base::DubinsStateSpace>(turning_radius));
+        std::cout<<"Dubins " << turning_radius << std::endl;
+    }
+    else if (statespace == "dubinssymmetric")
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
+            std::make_shared<ompl::base::DubinsStateSpace>(turning_radius, true));
+    else if (statespace == "reedsshepp")
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
+            std::make_shared<ompl::base::ReedsSheppStateSpace>(turning_radius));
+    else
+        setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>();
     setMeshes(*setup_se2_);
 
     ompl::base::ScopedState<ompl::base::SE2StateSpace> start(setup_se2_->getStateSpace());

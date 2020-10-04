@@ -13,8 +13,9 @@
 #ifndef OMPLAPP_SE2_RIGID_BODY_PLANNING_
 #define OMPLAPP_SE2_RIGID_BODY_PLANNING_
 
-#include "omplapp/apps/AppBase.h"
 #include <ompl/base/spaces/SE2StateSpace.h>
+
+#include "omplapp/apps/AppBase.h"
 
 namespace ompl
 {
@@ -26,10 +27,15 @@ namespace ompl
         class SE2RigidBodyPlanning : public AppBase<AppType::GEOMETRIC>
         {
         public:
-
             SE2RigidBodyPlanning() : AppBase<AppType::GEOMETRIC>(std::make_shared<base::SE2StateSpace>(), Motion_2D)
             {
                 name_ = "Rigid body planning (2D)";
+            }
+            template <typename CarStateSpacePtr>
+            explicit SE2RigidBodyPlanning(CarStateSpacePtr carstatespace)
+              : AppBase<AppType::GEOMETRIC>(carstatespace, Motion_2D)
+            {
+                name_ = "Geometric car-like planning (2D)";
             }
 
             ~SE2RigidBodyPlanning() override = default;
