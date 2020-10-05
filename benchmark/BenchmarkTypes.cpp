@@ -170,7 +170,6 @@ void SE2Benchmark::configure()
     {
         setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
             std::make_shared<ompl::base::DubinsStateSpace>(turning_radius));
-        std::cout<<"Dubins " << turning_radius << std::endl;
     }
     else if (statespace == "dubinssymmetric")
         setup_se2_ = std::make_shared<ompl::app::SE2RigidBodyPlanning>(
