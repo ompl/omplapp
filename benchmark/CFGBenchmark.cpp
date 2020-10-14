@@ -88,6 +88,7 @@
 #include <ompl/base/samplers/BridgeTestValidStateSampler.h>
 
 #include <fstream>
+#include <boost/lexical_cast.hpp>
 
 void CFGBenchmark::setMeshes(ompl::app::RigidBodyGeometry& app)
 {
@@ -431,9 +432,18 @@ void CFGBenchmark::runBenchmark()
     req.timeBetweenUpdates = .5;
     req.displayProgress = true;
     req.saveConsoleOutput = false;
+    if (!bo_.declared_options_["benchmark.simplify"].empty())
+        try
+        {
+            req.simplify = boost::lexical_cast<bool>(bo_.declared_options_["benchmark.simplify"]);
+        }
+        catch (boost::bad_lexical_cast const &e)
+        {
+            OMPL_ERROR("Illegal value for benchmark.simplify parameter");
+        }
     benchmark_->benchmark(req);
     if (!bo_.declared_options_["benchmark.output"].empty())
         benchmark_->saveResultsToFile(((bo_.path_ / bo_.declared_options_["benchmark.output"]) / bo_.outfile_).string().c_str());
     else
-            benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
+        benchmark_->saveResultsToFile((bo_.path_ / bo_.outfile_).string().c_str());
 }

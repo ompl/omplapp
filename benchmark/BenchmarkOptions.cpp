@@ -102,7 +102,8 @@ bool BenchmarkOptions::readOptions(const char *filename)
     ("benchmark.mem_limit", boost::program_options::value<std::string>(), "Memory limit for each run of a planner")
     ("benchmark.run_count", boost::program_options::value<std::string>(), "Number of times to run each planner")
     ("benchmark.output", boost::program_options::value<std::string>(), "Location where to save the results")
-    ("benchmark.save_paths", boost::program_options::value<std::string>(), "Save none (default), all paths, shortest path per planner");
+    ("benchmark.save_paths", boost::program_options::value<std::string>(), "Save none (default), all paths, shortest path per planner")
+    ("benchmark.simplify", boost::program_options::value<std::string>(), "Simplify paths after each run");
 
     boost::program_options::variables_map vm;
     boost::program_options::parsed_options po = boost::program_options::parse_config_file(cfg, desc, true);
