@@ -13,6 +13,7 @@
 # Author: Mark Moll
 
 from os.path import abspath, dirname, join
+from pygccxml.declarations.runtime_errors import declaration_not_found_t
 import sys
 sys.path.insert(0, join(dirname(dirname(abspath(__file__))), 'ompl/py-bindings'))
 from ompl.bindings_generator import code_generator_t
@@ -51,6 +52,11 @@ class ompl_app_generator_t(code_generator_t):
             'def("clear", &%s_wrapper::clear)' % cls)
             self.ompl_ns.class_(cls).add_registration_code(
             'def("getStateSpace", &::ompl::geometric::SimpleSetup::getStateSpace, bp::return_value_policy< bp::copy_const_reference >())')
+            # work around bug in py++/pygccxml parsing of a templated constructor
+            try:
+                 self.ompl_ns.class_(cls).constructor(arg_types=["::ompl::app::SE2RigidBodyPlanning"]).exclude()
+            except declaration_not_found_t:
+                pass
 
         for cls in ['KinematicCarPlanning', 'GKinematicCarPlanning',
             'DynamicCarPlanning', 'GDynamicCarPlanning',
