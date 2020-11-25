@@ -20,6 +20,7 @@ set(CPACK_COMPONENT_OMPLAPP_DEPENDS python)
 set(CPACK_COMPONENT_OMPL_REQUIRED ON)
 
 set(CPACK_SOURCE_IGNORE_FILES
+    ".git"
     "/.vscode"
     "/build/"
     ".pyc$"
