@@ -41,7 +41,7 @@ if(DOXYGEN_FOUND AND NOT CMAKE_VERSION VERSION_LESS 3.9)
     find_program(LATEXMK latexmk)
     if (LATEXMK)
         add_custom_command(TARGET omplapp_doc POST_BUILD
-            COMMAND "BIBINPUTS=${CMAKE_CURRENT_SOURCE_DIR}/latex/bib" latexmk -gg -pdf "-outdir=${DOXYGEN_HTML_OUTPUT}" OMPL_Primer.tex
+            COMMAND "BIBINPUTS=${CMAKE_CURRENT_SOURCE_DIR}/latex/bib" openout_any=a latexmk -gg -pdf "-outdir=${DOXYGEN_HTML_OUTPUT}" OMPL_Primer.tex
             COMMAND latexmk -c -pdf "-outdir=${DOXYGEN_HTML_OUTPUT}" OMPL_Primer.tex
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/latex")
     endif()
