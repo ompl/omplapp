@@ -1,5 +1,6 @@
 Steps to release a new version:
 * update release notes (releaseNotes.md for both ompl and omplapp; put date, features)
+* update version number in package.xml
 * "git pull" in omplapp and ompl
 * "git clean -fd" in omplapp and ompl
 * build omplapp with bindings
