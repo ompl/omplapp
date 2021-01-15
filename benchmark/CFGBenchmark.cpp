@@ -179,7 +179,7 @@ ompl::base::PlannerPtr CFGBenchmark::allocPlanner(const ompl::base::SpaceInforma
             p = std::make_shared<ompl::geometric::PDST>(si);
         else if (name == "fmt")
             p = std::make_shared<ompl::geometric::FMT>(si);
-		else if (name == "bfmt")
+        else if (name == "bfmt")
             p = std::make_shared<ompl::geometric::BFMT>(si);
         else if (name == "anytimepathshortening")
             p = std::make_shared<ompl::geometric::AnytimePathShortening>(si);
