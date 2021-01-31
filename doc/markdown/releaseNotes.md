@@ -1,5 +1,10 @@
 # Release Notes {#releaseNotes}
 
+## OMPL.app 1.5.2 (January 31, 2021)
+
+- Small Planner Arena updates.
+- Bug fixes.
+
 ## OMPL.app 1.5.1 (November 25, 2020)
 
 - Add options to `ompl_benchmark` tool to:
