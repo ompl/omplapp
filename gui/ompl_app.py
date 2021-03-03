@@ -889,9 +889,9 @@ class GLViewer(QtOpenGL.QGLWidget):
     def transform(self, pose):
         GL.glPushMatrix()
         GL.glTranslatef(pose[3], pose[4], pose[5])
-        GL.glRotated(pose[0], 1.0, 0.0, 0.0)
-        GL.glRotated(pose[1], 0.0, 1.0, 0.0)
         GL.glRotated(pose[2], 0.0, 0.0, 1.0)
+        GL.glRotated(pose[1], 0.0, 1.0, 0.0)
+        GL.glRotated(pose[0], 1.0, 0.0, 0.0)
     def getTransform(self, xform):
         if hasattr(xform, 'rotation'):
             R = xform.rotation()
