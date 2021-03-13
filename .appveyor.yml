@@ -34,7 +34,7 @@ before_build:
   - cmd: vcpkg install boost-ublas:%VCPKG_ARCH%
   - cmd: vcpkg install eigen3:%VCPKG_ARCH%
   - cmd: vcpkg install fcl:%VCPKG_ARCH%
-  - cmd: git clone -q --depth=1 --branch=master https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
+  - cmd: git clone -q --depth=1 --branch=main https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
   - cmd: mkdir build
   - cmd: cd build
   - cmd: cmake %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_TOOLCHAIN_FILE% -DOMPL_REGISTRATION=OFF ..

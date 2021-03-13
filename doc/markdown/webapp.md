@@ -37,7 +37,7 @@ On macOS, the following steps get the Web App can be installed and launched usin
 
 The OMPL web app is also available as a set of Docker containers. The easiest way to download and run everything you need is as follows:
 
-     wget https://raw.githubusercontent.com/ompl/ompl/master/scripts/docker/omplwebapp.yml
+     wget https://raw.githubusercontent.com/ompl/ompl/main/scripts/docker/omplwebapp.yml
      docker-compose -f omplwebapp.yml up
 
 Next, open <http://127.0.0.1:5000> in your browser. This also launches [Planner Arena](plannerarena.html), which you can access at <http://127.0.0.1:8888>.
@@ -46,9 +46,9 @@ Next, open <http://127.0.0.1:5000> in your browser. This also launches [Planner 
 
 | Library                 | License                                                         | Distributable   |
 | ----------------------- | :-------------------------------------------------------------- | --------------- |
-| [jQuery](https://jquery.com/) | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) | Yes             |
+| [jQuery](https://jquery.com/) | [MIT](https://github.com/jquery/jquery/blob/main/LICENSE.txt) | Yes             |
 | [blockUI](http://malsup.com/jquery/block/) (jQuery plugin) | [MIT and GPL Dual License](https://github.com/malsup/blockui/) | Yes (under MIT) |
-| [Bootstrap](https://getbootstrap.com) | [MIT](https://github.com/twbs/bootstrap/blob/master/LICENSE) | Yes             |
+| [Bootstrap](https://getbootstrap.com) | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) | Yes             |
 | [THREE.js](https://threejs.org) | [MIT](https://github.com/mrdoob/three.js/blob/master/LICENSE)   | Yes             |
 | TrackballControls       | MIT (part of THREE.js)                                          | Yes             |
 | ColladaLoader           | MIT (part of THREE.js)                                          | Yes             |
