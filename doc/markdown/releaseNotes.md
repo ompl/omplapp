@@ -230,7 +230,7 @@
 - Moved solution paths from Goal to ProblemDefinition.
 - Implementation of PRM is now threaded (one thread for growing the roadmap, one thread for monitoring whether the problem is solved).
 - Improvements to sampleUniformNear() for SO3.
-- Options were added to the benchmark configuration file syntax to save solution paths. Either all paths, no paths, or the shortest path can be saved.
+- Options were added to the benchmark configuration file syntax to save solution paths. Either all paths, no paths, or a shortest path can be saved.
 - A TeamCity Continuous Integration server has been set up at <http://teamcity.kavrakilab.org>.
 - The public repository, issue tracker, and downloads have been moved to Bitbucket. Sourceforge is being phased out for these services.
 - Reduced dependencies: GTest has been replaced by Boost Test, subversion and CVS are no longer needed to get some optional dependencies.

@@ -194,7 +194,7 @@ that are close to one another using a straight path in the free state space.}
 
 Once the roadmap is complete, it can be used to answer motion planning queries
 by connecting the start and goal states to the roadmap using the local planner,
-and performing a graph search to find the shortest path in the roadmap.  This
+and performing a graph search to find a shortest path in the roadmap.  This
 is seen in Figure \ref {fig:prm:query}.
 
 \begin {figure}[h]
@@ -202,7 +202,7 @@ is seen in Figure \ref {fig:prm:query}.
 {
 \includegraphics [width=3.75in]{query}
 \caption {An example of a motion planning query on a {\tt PRM}.  The start and
-the goal are connected to the roadmap, and the shortest path in the graph is
+the goal are connected to the roadmap, and a shortest path in the graph is
 found.}
 \label {fig:prm:query}
 }
@@ -312,4 +312,3 @@ sampling-based motion planning.  Chapter \ref{chp:ompl.app} shows how the
 planners bundled with OMPL can be used to directly solve motion planning
 queries, and Chapter \ref{chp:ompl} details how these primitives map to concepts
 within the open motion planning library.
-
