@@ -112,8 +112,8 @@ cmake ../..</pre></li>
   <div class="tab-pane fade" id="windows" role="tabpanel" aria-labelledby="windows-tab">
     <h2>MS Windows</h2>
     It is recommended to use <a href="https://vcpkg.readthedocs.io/en/latest/">vcpkg</a>, a Microsoft-supported package manager for open source software. Once you have vcpkg installed, you can install OMPL like so:
-    <pre class="fragment">vcpkg install ompl[app]</pre>
-    (Omit the <code>[app]</code> part if you only need the OMPL library.) Note that the vcpkg installation does not include Python bindings.
+    <pre class="fragment">vcpkg install omplapp</pre>
+    (Omit the <code>app</code> part if you only need the OMPL library.) Note that the vcpkg installation does not include Python bindings.
   </div>
 </div>
 \endhtmlonly
