@@ -4,9 +4,7 @@
 
 ## Usage {#webapp_usage}
 
-The [OMPL web app](http://omplapp.kavrakilab.org) is a web front end for motion planning and benchmarking using OMPL. Basic usage is very similar to the standalone [GUI](gui.html). Since you only need a web browser, this may be the easiest way to try out OMPL without having to install or compile anything. Detailed instructions on how to use the site are available [on the site itself](http://omplapp.kavrakilab.org/) (click on “About” in the top right).
-
-One of the cool features of the [OMPL web app](http://omplapp.kavrakilab.org) is that you can configure and run motion planning benchmarks on our server. Once you have configured a motion planning problem, you can specify that this problem should be solved by various different planning algorithm. The results will be computed in the background and passed on to [Planner Arena](http://plannerarena.org), a server that is designed for letting you explore interactively the results of motion planning benchmarks.
+The OMPL web app is a web front end for motion planning and benchmarking using OMPL. Basic usage is very similar to the standalone [GUI](gui.html). Once deployed, this may be the easiest way to try out OMPL without to compile anything. Detailed instructions on how to use the site are available on the site itself (click on “About” in the top right).
 
 ## Deploying the OMPL Web App Locally {#webapp_deploy}
 
