@@ -19,7 +19,6 @@ matrix:
         - libeigen3-dev
         - libfcl-dev
         - libflann-dev
-        - libode-dev
         - ninja-build
   - os: osx
     osx_image: xcode10.3
