@@ -121,18 +121,6 @@ set_package_properties(spot PROPERTIES
     URL "http://spot.lrde.epita.fr"
     PURPOSE "Used for constructing finite automata from LTL formulae.")
 find_package(spot)
-set_package_properties(MORSE PROPERTIES
-    URL "https://www.openrobots.org/wiki/morse"
-    PURPOSE "OMPL includes a plugin for the MORSE Robot Simulation engine.")
-find_package(MORSE QUIET)
-set_package_properties(ODE PROPERTIES
-    URL "http://ode.org"
-    PURPOSE "The Open Dynamics Engine can be used as a \"black box\" for kinodynamic planning.")
-find_package(ODE QUIET)
-set_package_properties(Drawstuff PROPERTIES
-    URL "http://ode.org"
-    PURPOSE "Part of the ODE source distribution, used in one demo program.")
-find_package(Drawstuff QUIET)
 set_package_properties(assimp PROPERTIES
     URL "http://assimp.org"
     PURPOSE "Used in ompl_app for reading meshes representing robots and environments.")
@@ -218,13 +206,6 @@ if (spot_FOUND)
     set(OMPL_HAVE_SPOT 1)
     include_directories("${SPOT_INCLUDE_DIRS}")
     link_directories(${SPOT_LIBRARY_DIRS})
-endif()
-
-set(OMPL_EXTENSION_MORSE ${MORSE_FOUND})
-
-set(OMPL_EXTENSION_ODE ${ODE_FOUND})
-if (OMPL_EXTENSION_ODE)
-    include_directories("${ODE_INCLUDE_DIRS}")
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
