@@ -116,7 +116,7 @@ find_package(Triangle QUIET)
 set_package_properties(flann PROPERTIES
     URL "https://github.com/mariusmuja/flann"
     PURPOSE "If detetected, FLANN can be used for nearest neighbor queries by OMPL.")
-find_package(flann 1.8.3 QUIET)
+find_package(flann CONFIG 1.9.2 QUIET)
 set_package_properties(spot PROPERTIES
     URL "http://spot.lrde.epita.fr"
     PURPOSE "Used for constructing finite automata from LTL formulae.")
@@ -198,14 +198,10 @@ endif()
 
 if (flann_FOUND)
     set(OMPL_HAVE_FLANN 1)
-    include_directories("${FLANN_INCLUDE_DIRS}")
-    link_directories(${FLANN_LIBRARY_DIRS})
 endif()
 
 if (spot_FOUND)
     set(OMPL_HAVE_SPOT 1)
-    include_directories("${SPOT_INCLUDE_DIRS}")
-    link_directories(${SPOT_LIBRARY_DIRS})
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
