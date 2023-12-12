@@ -23,7 +23,6 @@ The following dependencies are optional:
 * [PyQt](https://www.riverbankcomputing.co.uk/software/pyqt/download5) (for GUI)
 * [PyOpenGL](https://pyopengl.sourceforge.net/) (for GUI)
 * [Py++](https://github.com/ompl/ompl/blob/main/doc/markdown/installPyPlusPlus.md) (needed to generate Python bindings)
-* [ODE](http://ode.org) (needed to compile support for planning using the Open Dynamics Engine)
 * [Doxygen](http://www.doxygen.org) (needed to create a local copy of the documentation at
   https://ompl.kavrakilab.org)
 
