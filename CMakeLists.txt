@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 project(omplapp VERSION 1.6.0 LANGUAGES CXX)
 set(OMPL_ABI_VERSION 17)
 
@@ -15,8 +15,7 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_MODULE_PATH
-    "${CMAKE_MODULE_PATH}"
+list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_ROOT_DIR}/cmake/Modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules"
     "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
@@ -49,8 +48,7 @@ set_package_properties(Boost PROPERTIES
     URL "http://boost.org"
     PURPOSE "Used throughout OMPL for data serialization, graphs, etc.")
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_NO_BOOST_CMAKE ON)
-find_package(Boost 1.58 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
+find_package(Boost 1.58 REQUIRED COMPONENTS serialization filesystem system program_options)
 
 # on macOS we need to check whether to use libc++ or libstdc++ with clang++
 if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
@@ -113,31 +111,39 @@ set_package_properties(Triangle PROPERTIES
     URL "http://www.cs.cmu.edu/~quake/triangle.html"
     PURPOSE "Used to create triangular decompositions of polygonal 2D environments.")
 find_package(Triangle QUIET)
+set(OMPL_EXTENSION_TRIANGLE ${TRIANGLE_FOUND})
+
 set_package_properties(flann PROPERTIES
     URL "https://github.com/mariusmuja/flann"
     PURPOSE "If detetected, FLANN can be used for nearest neighbor queries by OMPL.")
 find_package(flann CONFIG 1.9.2 QUIET)
+if (flann_FOUND)
+    set(OMPL_HAVE_FLANN 1)
+endif()
+
 set_package_properties(spot PROPERTIES
     URL "http://spot.lrde.epita.fr"
     PURPOSE "Used for constructing finite automata from LTL formulae.")
 find_package(spot)
+if (spot_FOUND)
+    set(OMPL_HAVE_SPOT 1)
+endif()
+
 set_package_properties(assimp PROPERTIES
     URL "http://assimp.org"
     PURPOSE "Used in ompl_app for reading meshes representing robots and environments.")
 find_package(assimp REQUIRED)
-set_package_properties(ccd PROPERTIES
-    URL "https://github.com/danfis/libccd"
-    PURPOSE "Collision detection library used by fcl.")
-find_package(ccd REQUIRED)
+
 set_package_properties(fcl PROPERTIES
     URL "https://github.com/flexible-collision-library/fcl"
     PURPOSE "The default collision checking library.")
-find_package(octomap QUIET)
 find_package(fcl REQUIRED)
+
 set_package_properties(Threads PROPERTIES
     URL "https://en.wikipedia.org/wiki/POSIX_Threads"
     PURPOSE "Pthreads is sometimes needed, depending on OS / compiler.")
 find_package(Threads QUIET)
+
 set_package_properties(Doxygen PROPERTIES
     URL "http://doxygen.org"
     PURPOSE "Used to create the OMPL documentation (i.e., http://ompl.kavrakilab.org).")
@@ -161,47 +167,21 @@ if(Boost_VERSION_STRING VERSION_LESS "1.63.0")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
 endif()
 
-include_directories(SYSTEM "${Boost_INCLUDE_DIR}")
 include_directories(
     "${OMPLAPP_INCLUDE_DIRS}"
-    "${OMPL_INCLUDE_DIRS}"
-    "${EIGEN3_INCLUDE_DIR}"
-    "${FCL_INCLUDE_DIRS}"
-    "${ASSIMP_INCLUDE_DIRS}")
-
-# ROS installs fcl in /usr. In /usr/include/fcl/config.h it says octomap was
-# enabled. Octomap is installed in /opt/ros/${ROS_DISTRO}/include (most
-# likely), but fcl.pc doesn't have that information, so we just add it to the
-# include path.
-if(DEFINED ENV{ROS_DISTRO})
-    include_directories("/opt/ros/$ENV{ROS_DISTRO}/include")
-endif()
+    "${OMPL_INCLUDE_DIRS}")
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
-    ${ASSIMP_LIBRARY}
-    ${FCL_LIBRARIES})
+    assimp::assimp
+    fcl::fcl)
 set(OMPLAPP_LIBRARIES
     ${OPENGL_LIBRARIES}
-    ${ASSIMP_LIBRARIES}
-    ${FCL_LIBRARIES})
-link_directories(${ASSIMP_LIBRARY_DIRS} ${CCD_LIBRARY_DIRS} ${OCTOMAP_LIBRARY_DIRS} ${FCL_LIBRARY_DIRS})
+    assimp::assimp
+    fcl)
 
 if (OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
-endif()
-
-set(OMPL_EXTENSION_TRIANGLE ${TRIANGLE_FOUND})
-if (OMPL_EXTENSION_TRIANGLE)
-  include_directories(${TRIANGLE_INCLUDE_DIR})
-endif()
-
-if (flann_FOUND)
-    set(OMPL_HAVE_FLANN 1)
-endif()
-
-if (spot_FOUND)
-    set(OMPL_HAVE_SPOT 1)
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
@@ -268,10 +248,7 @@ if(OPENGL_FOUND AND NOT MSVC)
     target_link_flags(ompl ompl_app_base ompl_app)
     set(PKG_NAME "ompl")
     set(PKG_DESC "The Open Motion Planning Library")
-    set(PKG_EXTERNAL_DEPS "eigen3 ${ompl_PKG_DEPS}")
-    if(OMPL_EXTENSION_ODE)
-        set(PKG_EXTERNAL_DEPS "${PKG_EXTERNAL_DEPS}")
-    endif()
+    set(PKG_EXTERNAL_DEPS "${ompl_PKG_DEPS}")
     set(PKG_OMPL_LIBS "-lompl -lompl_app_base -lompl_app ${ompl_LINK_FLAGS}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/ompl.pc" @ONLY)
@@ -296,6 +273,25 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
     COMPONENT ompl)
+install(TARGETS ompl
+    EXPORT omplExport
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT ompl)
+install(TARGETS ompl_app_base
+    EXPORT omplExport
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT omplapp)
+if(TARGET ompl_app)
+    install(TARGETS ompl_app
+        EXPORT omplExport
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT omplapp)
+endif()
+install(EXPORT omplExport
+    NAMESPACE ompl::
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake)
+export(EXPORT omplExport
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/omplExport.cmake")
 
 # script to install ompl on Ubuntu
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
