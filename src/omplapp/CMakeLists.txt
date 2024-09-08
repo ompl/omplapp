@@ -38,9 +38,6 @@ foreach(_target ${OMPLAPP_TARGETS})
         set_target_properties(${_target} PROPERTIES VERSION "${PROJECT_VERSION}" SOVERSION "${OMPL_ABI_VERSION}")
     endif(WIN32)
 
-    install(TARGETS ${_target}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT omplapp)
     if(NOT MSVC)
         add_custom_command(TARGET ${_target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${_target}>"
