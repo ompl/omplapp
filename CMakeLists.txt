@@ -17,7 +17,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 set(_ompl_cmake_modules_path "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
 if(NOT EXISTS _ompl_cmake_modules_path)
-    message(FATAL_ERROR "Missing ${_ompl_cmake_modules_path}. Did you check out the submodules?")
+    message(FATAL_ERROR "Missing ${_ompl_cmake_modules_path}. Did you check out the submodules (\"git submodule update --init --recursive\"?")
 endif()
 
 set(CMAKE_MODULE_PATH
