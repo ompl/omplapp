@@ -17,6 +17,7 @@ OMPL.app has the following required dependencies:
 * [Eigen](http://eigen.tuxfamily.org) (version 3.3 or higher)
 * [Assimp](http://assimp.org) (version 3.0.1270 or higher)
 * [FCL](https://github.com/flexible-collision-library/fcl) (version 0.3.1 or higher)
+* [libccd](https://github.com/danfis/libccd) (version 2.1 or higher)
 
 The following dependencies are optional:
 
