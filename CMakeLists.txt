@@ -1,6 +1,12 @@
-cmake_minimum_required(VERSION 3.5)
-project(omplapp VERSION 1.6.0 LANGUAGES CXX)
-set(OMPL_ABI_VERSION 17)
+cmake_minimum_required(VERSION 3.12)
+project(omplapp VERSION 1.7.0 LANGUAGES CXX)
+set(OMPL_ABI_VERSION 18)
+
+# Use the FindBoost provided by CMake, rather than the one provided by Boost
+# (for CMake >=3.30).
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.30")
+    cmake_policy(SET CMP0167 OLD)
+endif()
 
 # set the default build type
 if (NOT CMAKE_BUILD_TYPE)
@@ -55,7 +61,7 @@ set_package_properties(Boost PROPERTIES
     PURPOSE "Used throughout OMPL for data serialization, graphs, etc.")
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_NO_BOOST_CMAKE ON)
-find_package(Boost 1.58 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
+find_package(Boost 1.68 QUIET REQUIRED COMPONENTS serialization filesystem system program_options)
 
 # on macOS we need to check whether to use libc++ or libstdc++ with clang++
 if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
@@ -150,22 +156,6 @@ find_package(Doxygen)
 
 enable_testing()
 
-# Add support in Boost::Python for std::shared_ptr
-# This is a hack that replaces boost::shared_ptr related code with std::shared_ptr.
-# Proper support for std::shared_ptr was added in Boost 1.63.
-if (NOT Boost_VERSION_STRING)
-    if (Boost_VERSION_MAJOR)
-        set(Boost_VERSION_STRING
-            "${Boost_VERSION_MAJOR}.${Boost_VERSION_MINOR}.${Boost_VERSION_PATCH}")
-    else()
-        set(Boost_VERSION_STRING
-            "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_PATCH_VERSION}")
-    endif()
-endif()
-if(Boost_VERSION_STRING VERSION_LESS "1.63.0")
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
-endif()
-
 include_directories(SYSTEM "${Boost_INCLUDE_DIR}")
 include_directories(
     "${OMPLAPP_INCLUDE_DIRS}"
@@ -210,7 +200,7 @@ if (spot_FOUND)
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
-if(PYTHON_FOUND AND NOT Boost_VERSION_STRING VERSION_LESS "1.63.0")
+if(PYTHON_FOUND)
     find_python_module(numpy)
     if (PY_NUMPY)
         find_boost_numpy()
