@@ -12,7 +12,7 @@ detailed installation instructions.
 
 OMPL.app has the following required dependencies:
 
-* [Boost](https://www.boost.org) (version 1.58 or higher)
+* [Boost](https://www.boost.org) (version 1.68 or higher)
 * [CMake](https://www.cmake.org) (version 3.5 or higher)
 * [Eigen](http://eigen.tuxfamily.org) (version 3.3 or higher)
 * [Assimp](http://assimp.org) (version 3.0.1270 or higher)
