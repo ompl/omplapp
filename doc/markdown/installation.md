@@ -10,6 +10,7 @@
     <li class="nav-item"><a class="nav-link" id="linux-tab" data-toggle="pill" href="#linux" role="tab" aria-controls="linux" aria-selected="false">Linux (generic)</a></li>
     <li class="nav-item"><a class="nav-link" id="osx-tab" data-toggle="pill" href="#osx" role="tab" aria-controls="macos" aria-selected="false">macOS</a></li>
     <li class="nav-item"><a class="nav-link" id="windows-tab" data-toggle="pill" href="#windows" role="tab" aria-controls="windows" aria-selected="false">MS Windows</a></li>
+    <li class="nav-item"><a class="nav-link" id="python-wheels-tab" data-toggle="pill" href="#pythonwheels" role="tab" aria-controls="Python Wheels" aria-selected="false">Python Wheeels</a></li>
   </ul>
 </div>
 
@@ -115,5 +116,17 @@ cmake ../..</pre></li>
     <pre class="fragment">vcpkg install omplapp</pre>
     (Omit the <code>app</code> part if you only need the OMPL library.) Note that the vcpkg installation does not include Python bindings.
   </div>
+
+  <div class="tab-pane fade" id="pythonwheels" role="tabpanel" aria-labelledby="python-wheels-tab">
+
+  <h2>Python Wheels</h2>
+  There are pre-built binary wheels for ompl Python versions 3.10, 3.11, and 3.12. Download the right zip file for you OS and architecture:
+
+  <li> <a href="https://github.com/ompl/ompl/releases/download/1.7.0/wheels-ubuntu-latest-x86_64.zip"> Ubuntu 24.04 x86_64 </a> </li>
+  <li> <a href="https://github.com/ompl/ompl/releases/download/1.7.0/wheels-ubuntu-24.04-arm-aarch.zip"> Ubuntu 24.04 aarch64 </a> </li>
+  <li> <a href="https://github.com/ompl/ompl/releases/download/1.7.0/wheels-macos-15-arm64.zip"> MacOS 15 </a> </li>
+  <li> <a href="https://github.com/ompl/ompl/releases/download/1.7.0/wheels-macos-13-arm64.zip"> MacOS 13 </a> </li>
+  </div>
+  
 </div>
 \endhtmlonly
