@@ -43,3 +43,4 @@
       git clone https://github.com/ompl/ompl.git
 
 - [Installation instructions](installation.html) are the same as for a release.
+- Python wheels are available on the [github release page](https://github.com/ompl/ompl/releases)
