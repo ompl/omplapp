@@ -21,19 +21,52 @@ list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
 include(GNUInstallDirs)
 include(FeatureSummary)
-include(CompilerSettings)
-include(OMPLUtils)
+# include(CompilerSettings)
+# include(OMPLUtils)
+
+option(USE_BUNDLED_OMPL "Use OMPL from subdirectory instead of system install" OFF)
+if(NOT USE_BUNDLED_OMPL)
+    find_package(ompl CONFIG QUIET)
+    if(ompl_FOUND)
+        message(STATUS "Using installed OMPL")
+    else()
+        message(WARNING "OMPL not found. Falling back to bundled OMPL")
+        set(USE_BUNDLED_OMPL ON CACHE BOOL "Use bundled OMPL" FORCE)
+    endif()
+endif()
+
+# Only include custom modules if OMPL is being built as subdirectory
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/CompilerSettings.cmake")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules")
+    include(CompilerSettings)
+    include(OMPLUtils)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 
 set(OMPLAPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src;${CMAKE_CURRENT_BINARY_DIR}/src")
 set(OMPLAPP_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-set(OMPL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src;${CMAKE_CURRENT_BINARY_DIR}/ompl/src")
+
+if(NOT USE_BUNDLED_OMPL)
+    # OMPL is installed, we use its targets
+    message(STATUS "Using installed OMPL")
+else()
+    # OMPL is bundled, we include manually
+    # include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src")
+    set(OMPL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src;${CMAKE_CURRENT_BINARY_DIR}/ompl/src")
+    set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
+        CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
+endif()
+
 set(OMPL_DEMO_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/ompl/demos"
-    CACHE STRING "Relative path to directory where demos will be installed")
-set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
-    CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
+        CACHE STRING "Relative path to directory where demos will be installed")
+
+# set(OMPL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ompl/src;${CMAKE_CURRENT_BINARY_DIR}/ompl/src")
+# set(OMPL_DEMO_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}/ompl/demos"
+#     CACHE STRING "Relative path to directory where demos will be installed")
+# set(OMPL_CMAKE_UTIL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules"
+#     CACHE FILEPATH "Path to directory with auxiliary CMake scripts for OMPL")
 
 if(MSVC)
     add_definitions(-DBOOST_ALL_NO_LIB)
@@ -78,7 +111,15 @@ set_package_properties(Python PROPERTIES
 # This includes our own FindPython.cmake in ompl/CMakeModules. It defines,
 # among other things, the find_python_module() function used below.
 find_package(Python)
-find_boost_python()
+# find_boost_python()
+
+if(USE_BUNDLED_OMPL AND NOT TARGET docker)
+    include(OMPLUtils)
+    find_boost_python()
+    find_python_module(PyQt5 QUIET)
+else()
+    message(STATUS "Skipping internal OMPL Python utilities when using external OMPL install")
+endif()
 
 if(PYTHON_FOUND)
     set_package_properties(pypy PROPERTIES
@@ -86,23 +127,45 @@ if(PYTHON_FOUND)
         PURPOSE "Used to speed up the generation of python bindings.")
     find_package(pypy QUIET)
 endif()
-find_python_module(PyQt5 QUIET)
-if(NOT PY_PYQT5)
-    find_python_module(PySide2 QUIET)
-    if(NOT PY_PYSIDE2)
-        find_python_module(PyQt4 QUIET)
-        if(NOT PY_PYQT4)
-            find_python_module(PySide QUIET)
-            if (NOT PY_PYSIDE)
-                message(WARNING "Either PyQt5, PySide2, PyQt4 or PySide needs to be installed to use the GUI.")
+
+if(USE_BUNDLED_OMPL)
+    find_python_module(PyQt5 QUIET)
+    if(NOT PY_PYQT5)
+        find_python_module(PySide2 QUIET)
+        if(NOT PY_PYSIDE2)
+            find_python_module(PyQt4 QUIET)
+            if(NOT PY_PYQT4)
+                find_python_module(PySide QUIET)
+                if(NOT PY_PYSIDE)
+                    message(WARNING "Either PyQt5, PySide2, PyQt4 or PySide needs to be installed to use the GUI.")
+                endif()
             endif()
         endif()
     endif()
+
+    find_python_module(OpenGL)
+    if(NOT OPENGL_FOUND OR NOT PY_OPENGL)
+        message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
+    endif()
 endif()
-find_python_module(OpenGL)
-if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
-    message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
-endif()
+
+# find_python_module(PyQt5 QUIET)
+# if(NOT PY_PYQT5)
+#     find_python_module(PySide2 QUIET)
+#     if(NOT PY_PYSIDE2)
+#         find_python_module(PyQt4 QUIET)
+#         if(NOT PY_PYQT4)
+#             find_python_module(PySide QUIET)
+#             if (NOT PY_PYSIDE)
+#                 message(WARNING "Either PyQt5, PySide2, PyQt4 or PySide needs to be installed to use the GUI.")
+#             endif()
+#         endif()
+#     endif()
+# endif()
+# find_python_module(OpenGL)
+# if (NOT OPENGL_FOUND OR NOT PY_OPENGL)
+#     message(WARNING "Both OpenGL and the Python OpenGL module need to be installed to use the GUI")
+# endif()
 set_package_properties(Eigen3 PROPERTIES
     URL "http://eigen.tuxfamily.org"
     PURPOSE "A linear algebra library used throughout OMPL.")
@@ -167,9 +230,17 @@ if(Boost_VERSION_STRING VERSION_LESS "1.63.0")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ompl/src/external")
 endif()
 
-include_directories(
-    "${OMPLAPP_INCLUDE_DIRS}"
-    "${OMPL_INCLUDE_DIRS}")
+# include_directories(
+#     "${OMPLAPP_INCLUDE_DIRS}"
+#     "${OMPL_INCLUDE_DIRS}")
+
+if(OMPL_INCLUDE_DIRS)
+    include_directories("${OMPL_INCLUDE_DIRS}")
+endif()
+
+include_directories("${OMPLAPP_INCLUDE_DIRS}")
+
+
 
 set(OMPLAPP_MODULE_LIBRARIES
     ${OPENGL_LIBRARIES}
@@ -185,7 +256,18 @@ if (OPENGL_INCLUDE_DIR)
 endif()
 
 # Numpy is used to convert Eigen matrices/vectors to numpy arrays
-if(PYTHON_FOUND AND NOT Boost_VERSION_STRING VERSION_LESS "1.63.0")
+# if(PYTHON_FOUND AND NOT Boost_VERSION_STRING VERSION_LESS "1.63.0")
+#     find_python_module(numpy)
+#     if (PY_NUMPY)
+#         find_boost_numpy()
+#         if(Boost_NUMPY_LIBRARY)
+#             set(OMPL_HAVE_NUMPY 1)
+#             include_directories("${PY_NUMPY}/core/include")
+#         endif()
+#     endif()
+# endif()
+
+if(USE_BUNDLED_OMPL AND PYTHON_FOUND AND NOT Boost_VERSION_STRING VERSION_LESS "1.63.0")
     find_python_module(numpy)
     if (PY_NUMPY)
         find_boost_numpy()
@@ -195,6 +277,7 @@ if(PYTHON_FOUND AND NOT Boost_VERSION_STRING VERSION_LESS "1.63.0")
         endif()
     endif()
 endif()
+
 
 set_package_properties(PQP PROPERTIES
     URL "http://gamma.cs.unc.edu/SSV/"
@@ -206,18 +289,53 @@ if(PQP_FOUND)
     set(OMPLAPP_LIBRARIES ${OMPLAPP_LIBRARIES} ${PQP_LIBRARY})
 endif()
 
-add_subdirectory(ompl/doc)
-add_subdirectory(ompl/src)
-add_subdirectory(ompl/py-bindings)
-add_subdirectory(ompl/tests)
-add_subdirectory(ompl/demos)
-add_subdirectory(ompl/scripts)
+# find_package(ompl CONFIG QUIET)
+
+if(NOT ompl_FOUND)
+    message(WARNING "Installed OMPL not found. Falling back to building bundled OMPL.")
+
+    set(OMPL_BUILD_PYBINDINGS OFF CACHE BOOL "Disable Python bindings in OMPL")
+    add_subdirectory(ompl/doc)
+    add_subdirectory(ompl/src)
+    add_subdirectory(ompl/py-bindings)
+    add_subdirectory(ompl/tests)
+    add_subdirectory(ompl/demos)
+    add_subdirectory(ompl/scripts)
+    set(USE_BUNDLED_OMPL TRUE)
+else()
+    set(USE_BUNDLED_OMPL FALSE)
+endif()
+
+if(NOT USE_BUNDLED_OMPL)
+    function(install_python)
+        # No-op macro when using installed OMPL
+    endfunction()
+endif()
+
+if(NOT USE_BUNDLED_OMPL)
+    function(target_link_flags)
+        # noop fallback for external OMPL installs
+    endfunction()
+endif()
+
+
+# add_subdirectory(ompl/doc)
+# add_subdirectory(ompl/src)
+# add_subdirectory(ompl/py-bindings)
+# add_subdirectory(ompl/tests)
+# add_subdirectory(ompl/demos)
+# add_subdirectory(ompl/scripts)
 add_subdirectory(gui)
 add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(demos)
 add_subdirectory(benchmark)
-add_subdirectory(py-bindings)
+# add_subdirectory(py-bindings)
+
+if(USE_BUNDLED_OMPL)
+  add_subdirectory(py-bindings)
+endif()
+
 
 install(DIRECTORY resources
     DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/ompl"
@@ -244,7 +362,8 @@ if(OMPL_BUILD_PYBINDINGS)
     endif()
 endif()
 
-if(OPENGL_FOUND AND NOT MSVC)
+# if(OPENGL_FOUND AND NOT MSVC)
+if(OPENGL_FOUND AND NOT MSVC AND USE_BUNDLED_OMPL)
     target_link_flags(ompl ompl_app_base ompl_app)
     set(PKG_NAME "ompl")
     set(PKG_DESC "The Open Motion Planning Library")
@@ -257,26 +376,27 @@ if(OPENGL_FOUND AND NOT MSVC)
         COMPONENT ompl)
 endif()
 
-include(CMakePackageConfigHelpers)
+# include(CMakePackageConfigHelpers)
 set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
 set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-configure_package_config_file(ompl/omplConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
-    PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
-    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
-    COMPONENT ompl)
-install(TARGETS ompl
-    EXPORT omplExport
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    COMPONENT ompl)
+# configure_package_config_file(ompl/omplConfig.cmake.in
+#     ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
+#     INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
+#     PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
+#     NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+# write_basic_package_version_file(
+#     ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
+#     VERSION ${PROJECT_VERSION}
+#     COMPATIBILITY SameMajorVersion)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
+#     ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
+#     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
+#     COMPONENT ompl)
+# install(TARGETS ompl
+#     EXPORT omplExport
+#     DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#     COMPONENT ompl)
+
 install(TARGETS ompl_app_base
     EXPORT omplExport
     DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -287,23 +407,23 @@ if(TARGET ompl_app)
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT omplapp)
 endif()
-install(EXPORT omplExport
-    NAMESPACE ompl::
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake)
-export(EXPORT omplExport
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/omplExport.cmake")
+# install(EXPORT omplExport
+#     NAMESPACE ompl::
+#     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake)
+# export(EXPORT omplExport
+#     FILE "${CMAKE_CURRENT_BINARY_DIR}/omplExport.cmake")
 
 # script to install ompl on Ubuntu
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/install-ompl-ubuntu.sh" @ONLY)
+# configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
+#   "${CMAKE_CURRENT_BINARY_DIR}/install-ompl-ubuntu.sh" @ONLY)
 
 # uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+# configure_file(
+#     "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/cmake_uninstall.cmake.in"
+#     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+#     IMMEDIATE @ONLY)
+# add_custom_target(uninstall
+#     COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
 include(CPackSettings)
 
@@ -343,6 +463,58 @@ endif()
 
 # Create targets for building docker images
 # See ompl/CMakeModules/OMPLUtils.cmake and ompl/scripts/docker for details
-add_docker_target(ompl ompl)
-add_docker_target(plannerarena ompl/scripts)
-add_docker_target(omplapp)
+# add_docker_target(ompl ompl)
+# add_docker_target(plannerarena ompl/scripts)
+# add_docker_target(omplapp)
+if(USE_BUNDLED_OMPL)
+    # Install script for Ubuntu
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/install-ompl-ubuntu.sh.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/install-ompl-ubuntu.sh" @ONLY)
+
+    # Uninstall target
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+
+    # .pc file for pkg-config
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/ompl/CMakeModules/ompl.pc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/ompl.pc" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ompl.pc"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+        COMPONENT ompl)
+
+    # CMake config files
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+        ompl/omplConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
+        PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
+        NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion)
+
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/omplConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/omplConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake
+        COMPONENT ompl)
+
+    install(TARGETS ompl EXPORT omplExport DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ompl)
+    install(EXPORT omplExport
+        NAMESPACE ompl::
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ompl/cmake)
+    export(EXPORT omplExport
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/omplExport.cmake")
+
+    # Docker targets
+    add_docker_target(ompl ompl)
+    add_docker_target(plannerarena ompl/scripts)
+    add_docker_target(omplapp)
+endif()
