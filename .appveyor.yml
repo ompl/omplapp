@@ -21,6 +21,7 @@ cache:
 configuration: Release
 
 before_build:
+  - cmd: vcpkg update
   - cmd: vcpkg install assimp:%VCPKG_ARCH%
   - cmd: vcpkg install boost-disjoint-sets:%VCPKG_ARCH%
   - cmd: vcpkg install boost-dynamic-bitset:%VCPKG_ARCH%
