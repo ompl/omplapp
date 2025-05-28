@@ -14,6 +14,7 @@ environment:
   CMAKE_TOOLCHAIN_FILE: -DCMAKE_TOOLCHAIN_FILE="C:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
   CMAKE_GENERATOR: -G"Visual Studio 15 2017 Win64"
   VCPKG_ARCH: x64-windows-release
+  VCPKG_BINARY_SOURCES: clear
 
 cache:
   - C:\tools\vcpkg\installed -> .appveyor.yml
