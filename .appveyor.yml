@@ -21,20 +21,23 @@ cache:
 configuration: Release
 
 before_build:
-  - cmd: vcpkg update
-  - cmd: vcpkg install assimp:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-disjoint-sets:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-dynamic-bitset:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-filesystem:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-graph:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-odeint:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-program-options:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-serialization:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-system:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-test:%VCPKG_ARCH%
-  - cmd: vcpkg install boost-ublas:%VCPKG_ARCH%
-  - cmd: vcpkg install eigen3:%VCPKG_ARCH%
-  - cmd: vcpkg install fcl:%VCPKG_ARCH%
+  - cmd: git -C c:\tools\vcpkg\ fetch
+  - cmd: git -C c:\tools\vcpkg\ checkout 2025.04.09
+  - cmd: c:\tools\vcpkg\bootstrap-vcpkg.bat
+  - cmd: vcpkg x-set-installed --triplet %VCPKG_ARCH%
+         assimp
+         boost-disjoint-sets
+         boost-dynamic-bitset
+         boost-filesystem
+         boost-graph
+         boost-odeint
+         boost-program-options
+         boost-serialization
+         boost-system
+         boost-test
+         boost-ublas
+         eigen3
+         fcl
   - cmd: git clone -q --depth=1 --branch=main https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
   - cmd: mkdir build
   - cmd: cd build
