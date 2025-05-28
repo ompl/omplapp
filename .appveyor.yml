@@ -26,7 +26,6 @@ before_build:
   - cmd: c:\tools\vcpkg\bootstrap-vcpkg.bat
   - cmd: vcpkg x-set-installed --triplet %VCPKG_ARCH%
          assimp
-         boost-disjoint-sets
          boost-dynamic-bitset
          boost-filesystem
          boost-graph
