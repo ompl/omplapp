@@ -13,7 +13,7 @@ environment:
   CTEST_OUTPUT_ON_FAILURE: 1
   CMAKE_TOOLCHAIN_FILE: -DCMAKE_TOOLCHAIN_FILE="C:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
   CMAKE_GENERATOR: -G"Visual Studio 15 2017 Win64"
-  VCPKG_ARCH: x64-windows
+  VCPKG_ARCH: x64-windows-release
 
 cache:
   - C:\tools\vcpkg\installed -> .appveyor.yml
@@ -40,7 +40,7 @@ before_build:
   - cmd: git clone -q --depth=1 --branch=main https://github.com/ompl/ompl.git C:\projects\omplapp\ompl
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_TOOLCHAIN_FILE% -DOMPL_REGISTRATION=OFF ..
+  - cmd: cmake %CMAKE_GENERATOR% -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_TOOLCHAIN_FILE% -DVCPKG_TARGET_TRIPLET=%VCPKG_ARCH% -DOMPL_REGISTRATION=OFF ..
 
 build:
   project: C:\projects\omplapp\build\omplapp.sln
