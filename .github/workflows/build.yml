@@ -1,0 +1,67 @@
+name: Build & Test
+
+on:
+  pull_request:
+  push:
+    branches:
+     - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  default:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - os: windows-latest
+          triplet: x64-windows-release
+          build_type: Release
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: "Install dependencies"
+      run: >
+        vcpkg x-set-installed --triplet ${{ matrix.triplet }}
+        assimp
+        boost-dynamic-bitset
+        boost-filesystem
+        boost-graph
+        boost-odeint
+        boost-program-options
+        boost-serialization
+        boost-system
+        boost-test
+        boost-ublas
+        eigen3
+        fcl
+        pkgconf
+
+    - name: cmake generate
+      shell: bash
+      run: >
+        cmake -B build
+        -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} 
+        -DOMPL_VERSIONED_INSTALL=OFF
+        -DOMPL_BUILD_DEMOS=OFF
+        -DOMPL_BUILD_PYBINDINGS=OFF
+        -DCMAKE_POLICY_DEFAULT_CMP0167=OLD
+        -DOMPL_REGISTRATION=OFF
+
+    - name: cmake build
+      shell: bash
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --target package
+
+    - name: test
+      shell: bash
+      run: |
+        cmake --build build --config ${{ matrix.build_type }} --target RUN_TESTS
